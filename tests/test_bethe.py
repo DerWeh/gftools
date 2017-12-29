@@ -28,3 +28,25 @@ def test_dos_support():
     for eps in np.linspace(D + 1e-6, D*1e4):
         assert gftools.bethe_dos(eps, D) == 0
         assert gftools.bethe_dos(-eps, D) == 0
+
+
+def test_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gftools.bethe_gf_omega(omega, D).imag <= 0)
+
+
+def test_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS.
+    
+    ..math: DOS(\epsilon) = - \Im(G(\epsilon))/\pi
+    """
+    D = 1.
+    num=1e6
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True, num=num)
+    omega += 5j*omega_step
+    assert np.allclose(-gftools.bethe_gf_omega(omega, D).imag/np.pi,
+                       gftools.bethe_dos(omega, D),
+                       rtol=10/num, atol=10/num)
