@@ -1,9 +1,10 @@
-"""Collection of commonly used Green's functions and utilities
+"""Collection of commonly used Green's functions and utilities.
 
 So far mainly contains Bethe Green's functions.
 Main purpose is to have a tested base.
 
-FIXME: Add version via git!!!"""
+FIXME: Add version via git!!!
+"""
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
@@ -28,7 +29,7 @@ def bethe_dos(eps, half_bandwidth):
 
 
 def bethe_gf_omega(z, half_bandwidth):
-    """Local Green's function of Bethe lattice for infinite Coordination number
+    """Local Green's function of Bethe lattice for infinite Coordination number.
     
     Params
     ------
