@@ -50,3 +50,24 @@ def test_imag_gf_equals_dos():
     assert np.allclose(-gftools.bethe_gf_omega(omega, D).imag/np.pi,
                        gftools.bethe_dos(omega, D),
                        rtol=10/num, atol=10/num)
+
+
+def test_hilbert_equals_integral():
+    """Compare *bethe_hilbert_transfrom* with explicit calculation of integral.
+    
+    The integral is singular for xi=0, actually the Cauchy principal value
+    should be taken.
+    """
+    D = 1.
+    xi_mesh = np.mgrid[-2*D:2*D:4j, -2*D:2*D:4j]
+    xi_values = np.ravel(xi_mesh[0] + 1j*xi_mesh[1])
+
+    def kernel(eps, xi):
+        """Integrand for the Hilbert transform"""
+        return gftools.bethe_dos(eps, half_bandwidth=D)/(xi - eps)
+
+    for xi in xi_values:
+        compare = 0
+        compare += integrate.quad(lambda eps: kernel(eps, xi).real, -D-.1, D+.1)[0]
+        compare += 1j*integrate.quad(lambda eps: kernel(eps, xi).imag, -D-.1, D+.1)[0]
+        assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
