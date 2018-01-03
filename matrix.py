@@ -32,6 +32,23 @@ def decompose_gf_omega_symmetric(g_inv_band):
     return rv_inv, h ,rv
 
 
+def decompose_gf_omega(g_inv):
+    """Decompose the inverse Gf into eigenvalues and eigenvectors.
+    
+    The similarity transformation:
+    .. math::
+        G^{-1} = P h P^{-1}, \quad h = diag(\lambda(G))
+    
+    Params
+    ------
+    g_inv_band: (N, N) ndarray(complex)
+        matrix to be decomposed
+    """
+    h, rv = la.eig(g_inv)
+    rv_inv = la.inv(rv)
+    return rv_inv, h, rv
+
+
 def construct_gf_omega(rv_inv, diag_inv, rv):
     """Construct Gf from decomposition of its inverse.
     
