@@ -5,6 +5,7 @@ import os
 from sys import path
 
 PATH = os.path.abspath(os.path.dirname(__file__))
-path.insert(0, os.path.join(PATH, os.pardir))
+path.insert(0, os.path.join(PATH, os.pardir, os.pardir))
 
-import __init__ as gftools
+import gftools
+import gftools.matrix

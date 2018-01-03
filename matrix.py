@@ -30,3 +30,21 @@ def decompose_gf_omega_symmetric(g_inv_band):
     rv_inv = rv.T  # symmetric matrix's are orthogonal diagonalizable
     # assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
     return rv_inv, h ,rv
+
+
+def construct_gf_omega(rv_inv, diag_inv, rv):
+    """Construct Gf from decomposition of its inverse.
+    
+    .. math::
+        G^{-1} = P h P^{-1} \Rightarrow G = P h^{-1} P^{-1}
+
+    Params
+    ------
+    rv_inv: (N, N) ndarray(complex)
+        The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
+    diag_inv: (N) array_like
+        The eigenvalues (:math:`h`)
+    rv: (N, N) ndarray(complex)
+        The matrix of right eigenvectors (:math:`P`)
+    """
+    return rv.dot(np.diag(diag_inv)).dot(rv_inv)
