@@ -27,7 +27,7 @@ def test_dos_half(D):
 
 def test_dos_support():
     """DOS should have no support for |eps| > D."""
-    D = 1.
+    D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
         assert gftools.bethe_dos(eps, D) == 0
         assert gftools.bethe_dos(-eps, D) == 0
@@ -35,7 +35,7 @@ def test_dos_support():
 
 def test_imag_gf_negative():
     """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.
+    D = 1.2
     omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
     omega += 5j*omega_step
     assert np.all(gftools.bethe_gf_omega(omega, D).imag <= 0)
