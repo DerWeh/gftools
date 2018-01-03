@@ -9,6 +9,8 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
+from . import matrix
+
 
 def bethe_dos(eps, half_bandwidth):
     """DOS of non-interacting Bethe lattice for infinite coordination number.
