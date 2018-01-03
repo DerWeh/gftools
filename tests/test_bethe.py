@@ -45,7 +45,8 @@ def test_imag_gf_negative():
 def test_imag_gf_equals_dos():
     r"""Imaginary part of the GF is proportional to the DOS.
     
-    .. math: DOS(\epsilon) = - \Im(G(\epsilon))/\pi
+    .. math::
+        DOS(\epsilon) = -\Im(G(\epsilon))/\pi
     """
     D = 1.2
     num=1e6
