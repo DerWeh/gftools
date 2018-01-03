@@ -29,7 +29,7 @@ class TestDecompositionSymmetric(object):
         Eigenvector times it transpose should be unity.
         """
         t_nn = 1
-        g0_inv_banded = np.zeros((2, size))
+        g0_inv_banded = np.zeros((2, size), dtype=complex)
         g0_inv_banded[0, 1:] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_banded[1] = g0
@@ -37,6 +37,7 @@ class TestDecompositionSymmetric(object):
             assert np.allclose(rv.dot(rv_T), np.identity(*h.shape))
             assert np.allclose(rv_T.dot(rv), np.identity(*h.shape))
 
+    @pytest.mark.xfail
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
         """Decomposition we be used to calculate the inverse.
@@ -45,9 +46,9 @@ class TestDecompositionSymmetric(object):
             G^{-1} = O^{-1} h O \Rightarrow O^{-1} h^{-1} O = G
         """
         t_nn = np.ones(size-1)
-        g0_inv_banded = np.zeros((2, size))
+        g0_inv_banded = np.zeros((2, size), dtype=complex)
         g0_inv_banded[0, 1:] = t_nn
-        g0_inv_full = np.zeros((size, size))
+        g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
@@ -58,15 +59,16 @@ class TestDecompositionSymmetric(object):
             assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
             assert np.allclose(g0, la.inv(g0_inv_full))
 
+    @pytest.mark.xfail
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_eigsum_non_interacting(self, size):
         """Trace of the matrix must be trace of eigenvalues *h*.
         
         This is due to cyclic invariance under the trace."""
         t_nn = np.ones(size-1)
-        g0_inv_banded = np.zeros((2, size))
+        g0_inv_banded = np.zeros((2, size), dtype=complex)
         g0_inv_banded[0, 1:] = t_nn
-        g0_inv_full = np.zeros((size, size))
+        g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
@@ -92,7 +94,7 @@ class TestDecompositionGeneral(object):
         """Eigenvector matrices for similarity transformations must be its inverse.
         """
         t_nn = np.ones(size-1)
-        g0_inv_full = np.zeros((size, size))
+        g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
@@ -108,7 +110,7 @@ class TestDecompositionGeneral(object):
             G^{-1} = P^{-1} h P \Rightarrow P^{-1} h^{-1} P = G
         """
         t_nn = np.ones(size-1)
-        g0_inv_full = np.zeros((size, size))
+        g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
@@ -124,7 +126,7 @@ class TestDecompositionGeneral(object):
         
         This is due to cyclic invariance under the trace."""
         t_nn = np.ones(size-1)
-        g0_inv_full = np.zeros((size, size))
+        g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
