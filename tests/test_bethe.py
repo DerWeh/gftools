@@ -74,13 +74,3 @@ def test_hilbert_equals_integral():
         compare += integrate.quad(lambda eps: kernel(eps, xi).real, -D-.1, D+.1)[0]
         compare += 1j*integrate.quad(lambda eps: kernel(eps, xi).imag, -D-.1, D+.1)[0]
         assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
-
-
-@pytest.mark.skip(reason="Apperently Junyas hilbert transfrom doesn't match")
-def test_crosscheck_junya():
-    r"""Crosscheck Junyas's version of the Hilbert transform with George's.
-    
-    Junya uses :math:`s = sign(\Im(-i\sqrt{1 - (\xi/D)^2}))`
-    """
-    xi = -1. + 5j
-    assert np.sign(xi.imag) == np.sign(np.imag(-1j*np.sqrt(1 - xi**2)))
