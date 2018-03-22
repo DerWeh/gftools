@@ -2,14 +2,15 @@
 
 So far mainly contains Bethe Green's functions.
 Main purpose is to have a tested base.
-
-FIXME: Add version via git!!!
 """
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
 from . import matrix
+from ._version import get_versions
+
+__version__ = get_versions()['version']
 
 
 def bethe_dos(eps, half_bandwidth):
