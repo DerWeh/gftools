@@ -3,8 +3,11 @@ python:
   - "2.7"
 cache: pip
 before_install:
-  - pip install pytest pytest-cov
+  - pip install pytest pytest-cov coveralls
 script:
-  - pytest
+  - pytest --cov-report
+  - py.test --doctest-modules gftools
 git:
   depth: 3
+after_sucess:
+  - coveralls
