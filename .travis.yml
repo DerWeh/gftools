@@ -1,0 +1,10 @@
+language: python
+python:
+  - "2.7"
+cache: pip
+before_install:
+  - pip install pytest pytest-cov
+script:
+  - pytest
+git:
+  depth: 3
