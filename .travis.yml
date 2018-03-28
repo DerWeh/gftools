@@ -7,8 +7,6 @@ before_install:
 script:
   - pytest --cov=gftools
   - py.test --doctest-modules gftools
-git:
-  depth: 3
 after_sucess:
   - codecov
 notifications:
