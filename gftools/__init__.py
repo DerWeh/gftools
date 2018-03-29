@@ -31,10 +31,19 @@ def bethe_dos(eps, half_bandwidth):
     half_bandwidth: double
         half bandwidth of the DOS, DOS(|eps| > half_bandwidth) = 0
     """
-    D = half_bandwidth
-    eps = np.array(eps, dtype=np.complex256)
-    res = np.sqrt(D**2 - eps**2) / (0.5 * np.pi * D**2)
-    return res.real
+    D2 = half_bandwidth * half_bandwidth
+    eps2 = eps*eps
+    mask = eps2 < D2
+    try:
+        result = np.empty_like(eps)
+        result[~mask] = 0
+    except IndexError:  # eps is scalar
+        if mask:
+            return np.sqrt(D2 - eps2) / (0.5 * np.pi * D2)
+        return 0.  # outside of bandwidth
+    else:
+        result[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
+        return result
 
 
 def bethe_gf_omega(z, half_bandwidth):
