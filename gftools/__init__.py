@@ -2,6 +2,13 @@
 
 So far mainly contains Bethe Green's functions.
 Main purpose is to have a tested base.
+
+Subpackages
+-----------
+
+::
+    matrix   --- Work with Green's functions in matrix form, mainly for r-DMFT
+
 """
 from __future__ import absolute_import, division, print_function
 
