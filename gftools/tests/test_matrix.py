@@ -1,5 +1,4 @@
-"""Tests of functions for real-space Gf matrices for infinite coordination number.
-"""
+"""Tests of functions for real-space Gf matrices for infinite coordination number."""
 from __future__ import absolute_import
 
 import pytest
@@ -7,7 +6,7 @@ import scipy.linalg as la
 
 import numpy as np
 
-from .context import gftools.matrix as gfmatrix
+from .context import gfmatrix
 
 
 class TestDecompositionSymmetric(object):

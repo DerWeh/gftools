@@ -8,3 +8,4 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 path.insert(0, os.path.join(PATH, os.pardir, os.pardir))
 
 import gftools
+import gftools.matrix as gfmatrix
