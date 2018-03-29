@@ -20,8 +20,8 @@ def decompose_gf_omega_symmetric(g_inv_band):
     .. math::
         G^{-1} = O h O^T, \quad h = diag(\lambda(G))
     
-    Params
-    ------
+    Parameters:
+    -----------
     g_inv_band: (2, N) ndarray(complex)
         matrix to be decomposed, needs to be given in banded form
         (see *scipy.linalg.eig_banded*)
@@ -39,8 +39,8 @@ def decompose_gf_omega(g_inv):
     .. math::
         G^{-1} = P h P^{-1}, \quad h = diag(\lambda(G))
     
-    Params
-    ------
+    Parameters:
+    -----------
     g_inv_band: (N, N) ndarray(complex)
         matrix to be decomposed
     """
@@ -55,8 +55,8 @@ def construct_gf_omega(rv_inv, diag_inv, rv):
     .. math::
         G^{-1} = P h P^{-1} \Rightarrow G = P h^{-1} P^{-1}
 
-    Params
-    ------
+    Parameters:
+    -----------
     rv_inv: (N, N) ndarray(complex)
         The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
     diag_inv: (N) array_like
