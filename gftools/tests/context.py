@@ -1,4 +1,4 @@
-"""Provide toplevel moduel for tests"""
+"""Provide top level module for tests."""
 from __future__ import absolute_import
 import os
 
@@ -8,4 +8,3 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 path.insert(0, os.path.join(PATH, os.pardir, os.pardir))
 
 import gftools
-import gftools.matrix

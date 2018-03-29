@@ -7,7 +7,6 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-from . import matrix
 from ._version import get_versions
 
 __version__ = get_versions()['version']
@@ -79,6 +78,7 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
 
     .. math::
         2t = D
+
     """
     xi_rel = xi/half_bandwidth
     # sgn = np.sign(xi_rel.imag)

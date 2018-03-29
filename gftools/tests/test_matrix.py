@@ -7,8 +7,7 @@ import scipy.linalg as la
 
 import numpy as np
 
-from .context import gftools
-from gftools import matrix as gfmatrix
+from .context import gftools.matrix as gfmatrix
 
 
 class TestDecompositionSymmetric(object):
@@ -40,7 +39,7 @@ class TestDecompositionSymmetric(object):
     @pytest.mark.xfail
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
-        """Decomposition we be used to calculate the inverse.
+        r"""Decomposition we be used to calculate the inverse.
         
         .. math::
             G^{-1} = O^{-1} h O \Rightarrow O^{-1} h^{-1} O = G
@@ -64,7 +63,8 @@ class TestDecompositionSymmetric(object):
     def test_eigsum_non_interacting(self, size):
         """Trace of the matrix must be trace of eigenvalues *h*.
         
-        This is due to cyclic invariance under the trace."""
+        This is due to cyclic invariance under the trace.
+        """
         t_nn = np.ones(size-1)
         g0_inv_banded = np.zeros((2, size), dtype=complex)
         g0_inv_banded[0, 1:] = t_nn
@@ -74,7 +74,7 @@ class TestDecompositionSymmetric(object):
         for g0 in self.g0_loc_inv:
             g0_inv_banded[1] = g0
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            rv_inv, h, rv = gfmatrix.decompose_gf_omega_symmetric(g0_inv_banded)
+            _, h, _ = gfmatrix.decompose_gf_omega_symmetric(g0_inv_banded)
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))
 
 
@@ -91,8 +91,7 @@ class TestDecompositionGeneral(object):
 
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_eigenvectors_non_interacting(self, size):
-        """Eigenvector matrices for similarity transformations must be its inverse.
-        """
+        """Eigenvector matrices for similarity transformations must be its inverse."""
         t_nn = np.ones(size-1)
         g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
@@ -104,7 +103,7 @@ class TestDecompositionGeneral(object):
 
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
-        """Decomposition we be used to calculate the inverse.
+        r"""Decomposition we be used to calculate the inverse.
         
         .. math::
             G^{-1} = P^{-1} h P \Rightarrow P^{-1} h^{-1} P = G
@@ -124,12 +123,13 @@ class TestDecompositionGeneral(object):
     def test_eigsum_non_interacting(self, size):
         """Trace of the matrix must be trace of eigenvalues *h*.
         
-        This is due to cyclic invariance under the trace."""
+        This is due to cyclic invariance under the trace.
+        """
         t_nn = np.ones(size-1)
         g0_inv_full = np.zeros((size, size), dtype=complex)
         g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            rv_inv, h, rv = gfmatrix.decompose_gf_omega(g0_inv_full)
+            _, h, _ = gfmatrix.decompose_gf_omega(g0_inv_full)
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))

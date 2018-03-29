@@ -49,7 +49,7 @@ def test_imag_gf_equals_dos():
         DOS(\epsilon) = -\Im(G(\epsilon))/\pi
     """
     D = 1.2
-    num=1e6
+    num = 1e6
     omega = np.linspace(-D, D, dtype=np.complex, num=num)
     omega += 1j*1e-16
     assert np.allclose(-gftools.bethe_gf_omega(omega, D).imag/np.pi,

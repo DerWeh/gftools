@@ -1,4 +1,4 @@
-"""Functions to work with Green's in matrix from.
+r"""Functions to work with Green's in matrix from.
 
 In the limit of infinite coordination number the self-energy becomes local,
 inverse Gfs take the simple form:
@@ -14,7 +14,7 @@ import scipy.linalg as la
 
 
 def decompose_gf_omega_symmetric(g_inv_band):
-    """Decompose the inverse Gf into eigenvalues and eigenvectors.
+    r"""Decompose the inverse Gf into eigenvalues and eigenvectors.
     
     The similarity transformation for symmetric matrices is orthogonal.
     .. math::
@@ -29,11 +29,11 @@ def decompose_gf_omega_symmetric(g_inv_band):
     h, rv = la.eig_banded(g_inv_band)
     rv_inv = rv.T  # symmetric matrix's are orthogonal diagonalizable
     # assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
-    return rv_inv, h ,rv
+    return rv_inv, h, rv
 
 
 def decompose_gf_omega(g_inv):
-    """Decompose the inverse Gf into eigenvalues and eigenvectors.
+    r"""Decompose the inverse Gf into eigenvalues and eigenvectors.
     
     The similarity transformation:
     .. math::
@@ -50,7 +50,7 @@ def decompose_gf_omega(g_inv):
 
 
 def construct_gf_omega(rv_inv, diag_inv, rv):
-    """Construct Gf from decomposition of its inverse.
+    r"""Construct Gf from decomposition of its inverse.
     
     .. math::
         G^{-1} = P h P^{-1} \Rightarrow G = P h^{-1} P^{-1}
