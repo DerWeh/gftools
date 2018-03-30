@@ -5,10 +5,10 @@ Main purpose is to have a tested base.
 
 Subpackages
 -----------
-
-::
     matrix   --- Work with Green's functions in matrix form, mainly for r-DMFT
 
+.. _Georges et al:
+    https://doi.org/10.1103/RevModPhys.68.13
 """
 from __future__ import absolute_import, division, print_function
 
@@ -24,24 +24,33 @@ def bethe_dos(eps, half_bandwidth):
     
     Works by evaluating the complex function and truncating imaginary part.
 
-    Params
-    ------
+    Parameters
+    ----------
     eps: array(double), double
-        DOS is evaluated at points *eps*
+        DOS is evaluated at points `eps`
     half_bandwidth: double
-        half bandwidth of the DOS, DOS(|eps| > half_bandwidth) = 0
+        half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0
     """
-    D = half_bandwidth
-    eps = np.array(eps, dtype=np.complex256)
-    res = np.sqrt(D**2 - eps**2) / (0.5 * np.pi * D**2)
-    return res.real
+    D2 = half_bandwidth * half_bandwidth
+    eps2 = eps*eps
+    mask = eps2 < D2
+    try:
+        result = np.empty_like(eps)
+        result[~mask] = 0
+    except IndexError:  # eps is scalar
+        if mask:
+            return np.sqrt(D2 - eps2) / (0.5 * np.pi * D2)
+        return 0.  # outside of bandwidth
+    else:
+        result[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
+        return result
 
 
 def bethe_gf_omega(z, half_bandwidth):
     """Local Green's function of Bethe lattice for infinite Coordination number.
     
-    Params
-    ------
+    Parameters
+    ----------
     z: array(complex), complex
         Green's function is evaluated at complex frequency *z*
     half_bandwidth: double
@@ -53,8 +62,7 @@ def bethe_gf_omega(z, half_bandwidth):
 
 
 def bethe_hilbert_transfrom(xi, half_bandwidth):
-    r"""
-    Hilbert transform of non-interacting DOS of the Bethe lattice.
+    r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
 
     The Hilbert transform
     :math:`\tilde{D}(\xi) = \int_{-{}\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}`
@@ -67,21 +75,19 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
 
     with :math:`s=sgn[\Im{\xi}]`.
 
-    see Georges_
+    see `Georges et al`_
 
 
-    Params
-    ------
+    Parameters
+    ----------
     xi: array(complex), complex
         Point at which the Hilbert transform is evaluated
     half_bandwidth: double
         half-bandwidth of the DOS of the Bethe lattice
 
-    .. _Georges: https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.68.13
-
     Notes
     -----
-    Relation between nearest neighbor hopping t and half-bandwidth D:
+    Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math::
         2t = D
