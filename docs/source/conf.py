@@ -86,7 +86,7 @@ language = None
 #
 # Else, today_fmt is used as the format for a strftime call.
 #
-today_fmt = '%Y-%d-%b'
+today_fmt = '%Y-%d-%m'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -176,7 +176,7 @@ html_static_path = ['_static']
 # bottom, using the given strftime format.
 # The empty string is equivalent to '%b %d, %Y'.
 #
-html_last_updated_fmt = '%Y-%d-%b'
+html_last_updated_fmt = '%Y-%d-%m'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
