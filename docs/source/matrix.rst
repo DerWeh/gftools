@@ -6,8 +6,8 @@ GfTools.matrix
 
 .. currentmodule:: gftools.matrix
 
-The 
-The main module contains a collaction of different Green's functions.
+The :mod:`gftools.matrix` module contains functions to work with Green's functions
+in matrix form.
 
 API
 ===
