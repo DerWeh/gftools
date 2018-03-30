@@ -1,7 +1,7 @@
 r"""Functions to work with Green's in matrix from.
 
 In the limit of infinite coordination number the self-energy becomes local,
-inverse Gfs take the simple form:
+inverse Green's functions take the simple form:
 
 .. math::
 
@@ -18,7 +18,7 @@ import scipy.linalg as la
 
 
 def decompose_gf_omega_symmetric(g_inv_band):
-    r"""Decompose the inverse Gf into eigenvalues and eigenvectors.
+    r"""Decompose the Green's function into eigenvalues and eigenvectors.
     
     The similarity transformation for symmetric matrices is orthogonal.
 
@@ -31,6 +31,15 @@ def decompose_gf_omega_symmetric(g_inv_band):
         matrix to be decomposed, needs to be given in banded form
         (see `scipy.linalg.eig_banded`_)
 
+    Returns
+    -------
+    rv_inv : (N, N) ndarray(complex)
+        The *inverse* of the right eigenvectors :math:`O`
+    h : (N) ndarray(complex)
+        The complex eigenvalues of `g_inv_band`
+    rv : (N, N) ndarray(complex)
+        The right eigenvectors :math:`O`
+
     """
     h, rv = la.eig_banded(g_inv_band)
     rv_inv = rv.T  # symmetric matrix's are orthogonal diagonalizable
@@ -39,7 +48,7 @@ def decompose_gf_omega_symmetric(g_inv_band):
 
 
 def decompose_gf_omega(g_inv):
-    r"""Decompose the inverse Gf into eigenvalues and eigenvectors.
+    r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
     
     The similarity transformation:
 
@@ -48,8 +57,18 @@ def decompose_gf_omega(g_inv):
     
     Parameters
     ----------
-    g_inv_band: (N, N) ndarray(complex)
+    g_inv: (N, N) ndarray(complex)
         matrix to be decomposed
+
+    Returns
+    -------
+    rv_inv : (N, N) ndarray(complex)
+        The *inverse* of the right eigenvectors :math:`P`
+    h : (N) ndarray(complex)
+        The complex eigenvalues of `g_inv`
+    rv : (N, N) ndarray(complex)
+        The right eigenvectors :math:`P`
+
     """
     h, rv = la.eig(g_inv)
     rv_inv = la.inv(rv)
@@ -57,7 +76,7 @@ def decompose_gf_omega(g_inv):
 
 
 def construct_gf_omega(rv_inv, diag_inv, rv):
-    r"""Construct Gf from decomposition of its inverse.
+    r"""Construct Green's function from decomposition of its inverse.
     
     .. math::
         G^{-1} = P h P^{-1} \Rightarrow G = P h^{-1} P^{-1}
@@ -70,5 +89,10 @@ def construct_gf_omega(rv_inv, diag_inv, rv):
         The eigenvalues (:math:`h`)
     rv: (N, N) ndarray(complex)
         The matrix of right eigenvectors (:math:`P`)
+
+    Returns
+    -------
+    gf_omega: (N, N) ndarray(complex)
+        The Green's function
     """
     return rv.dot(np.diag(diag_inv)).dot(rv_inv)

@@ -26,10 +26,16 @@ def bethe_dos(eps, half_bandwidth):
 
     Parameters
     ----------
-    eps: array(double), double
-        DOS is evaluated at points `eps`
-    half_bandwidth: double
-        half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0
+    eps : array(double), double
+        DOS is evaluated at points `eps`.
+    half_bandwidth : double
+        Half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+
+    Returns
+    -------
+    bethe_dos : array(double), double
+        The value of the DOS.
+
     """
     D2 = half_bandwidth * half_bandwidth
     eps2 = eps*eps
@@ -52,9 +58,15 @@ def bethe_gf_omega(z, half_bandwidth):
     Parameters
     ----------
     z: array(complex), complex
-        Green's function is evaluated at complex frequency *z*
+        Green's function is evaluated at complex frequency `z`
     half_bandwidth: double
         half-bandwidth of the DOS of the Bethe lattice
+
+    Returns
+    -------
+    bethe_gf_omega : array(complex), complex
+        Value of the Green's function
+
     """
     D = half_bandwidth
     return 2.*z*(1 - np.sqrt(1 - (D/z)**2))/D
@@ -65,7 +77,7 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
     r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
 
     The Hilbert transform
-    :math:`\tilde{D}(\xi) = \int_{-{}\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}`
+    :math:`\tilde{D}(\xi) = \int_{-\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}`
     takes for Bethe lattice in the limit of infinite coordination number the
     explicit form
 
@@ -84,6 +96,11 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
         Point at which the Hilbert transform is evaluated
     half_bandwidth: double
         half-bandwidth of the DOS of the Bethe lattice
+
+    Returns
+    -------
+    bethe_hilbert_transfrom : array(complex), complex
+        Hilbert transform of `xi`.
 
     Notes
     -----
