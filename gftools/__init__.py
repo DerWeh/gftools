@@ -7,6 +7,8 @@ Subpackages
 -----------
     matrix   --- Work with Green's functions in matrix form, mainly for r-DMFT
 
+.. _Georges et al:
+    https://doi.org/10.1103/RevModPhys.68.13
 """
 from __future__ import absolute_import, division, print_function
 
@@ -22,12 +24,12 @@ def bethe_dos(eps, half_bandwidth):
     
     Works by evaluating the complex function and truncating imaginary part.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     eps: array(double), double
-        DOS is evaluated at points *eps*
+        DOS is evaluated at points `eps`
     half_bandwidth: double
-        half bandwidth of the DOS, DOS(|eps| > half_bandwidth) = 0
+        half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0
     """
     D2 = half_bandwidth * half_bandwidth
     eps2 = eps*eps
@@ -47,8 +49,8 @@ def bethe_dos(eps, half_bandwidth):
 def bethe_gf_omega(z, half_bandwidth):
     """Local Green's function of Bethe lattice for infinite Coordination number.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     z: array(complex), complex
         Green's function is evaluated at complex frequency *z*
     half_bandwidth: double
@@ -73,21 +75,19 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
 
     with :math:`s=sgn[\Im{\xi}]`.
 
-    see Georges_
+    see `Georges et al`_
 
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     xi: array(complex), complex
         Point at which the Hilbert transform is evaluated
     half_bandwidth: double
         half-bandwidth of the DOS of the Bethe lattice
 
-    .. _Georges: https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.68.13
-
     Notes
     -----
-    Relation between nearest neighbor hopping `t` and half-bandwidth `D`:
+    Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math::
         2t = D
