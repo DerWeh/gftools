@@ -4,14 +4,14 @@ python:
 sudo: false
 cache: pip
 before_install:
-  - pip install pytest pytest-cov codecov travis-sphinx guzzle_sphinx_theme
+  - pip install pytest pytest-cov codecov travis-sphinx guzzle_sphinx_theme pydocstyle pyflakes
 install:
   - pip install -r requirements.txt
   - python setup.py install
 script:
   - pytest --cov=gftools --doctest-modules -v
-  - find gftools -name *.py -not -path */tests/* -not -path *.ropeproject* -not -name _version.py -exec pydocstyle {} +
-  - find gftools -name *.py -not -path */tests/* -not -path *.ropeproject* -not -name _version.py -exec pyflakes {} +
+  - find gftools -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pydocstyle -v {} +
+  - find gftools -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pyflakes {} +
   - travis-sphinx build 
 after_success:
   - codecov
