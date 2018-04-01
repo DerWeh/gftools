@@ -13,7 +13,7 @@ script:
   - travis-sphinx build 
 after_success:
   - codecov
-  - travis-sphinx deploy --branches=master,develope
+  - travis-sphinx deploy --branches=master,develop
 notifications:
   email:
     on_success: never
