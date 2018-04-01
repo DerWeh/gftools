@@ -22,14 +22,13 @@ __version__ = get_versions()['version']
 def bethe_dos(eps, half_bandwidth):
     """DOS of non-interacting Bethe lattice for infinite coordination number.
     
-    Works by evaluating the complex function and truncating imaginary part.
-
     Parameters
     ----------
     eps : array(double), double
         DOS is evaluated at points `eps`.
     half_bandwidth : double
-        Half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
     Returns
     -------
@@ -57,10 +56,11 @@ def bethe_gf_omega(z, half_bandwidth):
     
     Parameters
     ----------
-    z: array(complex), complex
+    z : array(complex), complex
         Green's function is evaluated at complex frequency `z`
-    half_bandwidth: double
+    half_bandwidth : double
         half-bandwidth of the DOS of the Bethe lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
     Returns
     -------
@@ -68,33 +68,36 @@ def bethe_gf_omega(z, half_bandwidth):
         Value of the Green's function
 
     """
-    D = half_bandwidth
-    return 2.*z*(1 - np.sqrt(1 - (D/z)**2))/D
-    # return 2./z/(1 + np.sqrt(1 - (D**2)*(z**(-2))))
+    z_rel = z / half_bandwidth
+    return 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - 1/(z_rel*z_rel)))
 
 
 def bethe_hilbert_transfrom(xi, half_bandwidth):
     r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
 
+    FIXME: the lattice Hilbert transform is the same as the non-interacting
+        Green's function.
+
     The Hilbert transform
-    :math:`\tilde{D}(\xi) = \int_{-\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}`
+
+    .. math::
+        \tilde{D}(\xi) = \int_{-\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}
+
     takes for Bethe lattice in the limit of infinite coordination number the
     explicit form
 
     .. math::
-
         \tilde{D}(\xi) = 2*(\xi - s\sqrt{\xi^2 - D^2})/D^2
 
     with :math:`s=sgn[\Im{\xi}]`.
-
-    see `Georges et al`_
+    See `Georges et al`_.
 
 
     Parameters
     ----------
-    xi: array(complex), complex
+    xi : array(complex), complex
         Point at which the Hilbert transform is evaluated
-    half_bandwidth: double
+    half_bandwidth : double
         half-bandwidth of the DOS of the Bethe lattice
 
     Returns
@@ -110,7 +113,4 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
         2t = D
 
     """
-    xi_rel = xi/half_bandwidth
-    # sgn = np.sign(xi_rel.imag)
-    # return 2*(xi_rel - 1j*sgn*np.sqrt(1 - xi_rel**2))/half_bandwidth
-    return 2.*xi_rel*(1 - np.sqrt(1 - xi_rel**-2))/half_bandwidth
+    return bethe_gf_omega(xi, half_bandwidth)

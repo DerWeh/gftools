@@ -41,7 +41,6 @@ def test_imag_gf_negative():
     assert np.all(gftools.bethe_gf_omega(omega, D).imag <= 0)
 
 
-@pytest.mark.skip(reason="Accuracy around bandeges is to low!")
 def test_imag_gf_equals_dos():
     r"""Imaginary part of the GF is proportional to the DOS.
     
@@ -62,12 +61,12 @@ def test_hilbert_equals_integral():
     The integral is singular for xi=0, actually the Cauchy principal value
     should be taken.
     """
-    D = 1.
+    D = 1.2
     xi_mesh = np.mgrid[-2*D:2*D:4j, -2*D:2*D:4j]
     xi_values = np.ravel(xi_mesh[0] + 1j*xi_mesh[1])
 
     def kernel(eps, xi):
-        """Integrand for the Hilbert transform"""
+        """Integrand for the Hilbert transform."""
         return gftools.bethe_dos(eps, half_bandwidth=D)/(xi - eps)
 
     for xi in xi_values:
