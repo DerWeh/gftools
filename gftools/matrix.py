@@ -27,7 +27,7 @@ def decompose_gf_omega_symmetric(g_inv_band):
     
     Parameters
     ----------
-    g_inv_band: (2, N) ndarray(complex)
+    g_inv_band : (2, N) ndarray(complex)
         matrix to be decomposed, needs to be given in banded form
         (see `scipy.linalg.eig_banded`_)
 
@@ -57,7 +57,7 @@ def decompose_gf_omega(g_inv):
     
     Parameters
     ----------
-    g_inv: (N, N) ndarray(complex)
+    g_inv : (N, N) ndarray(complex)
         matrix to be decomposed
 
     Returns
@@ -83,16 +83,17 @@ def construct_gf_omega(rv_inv, diag_inv, rv):
 
     Parameters
     ----------
-    rv_inv: (N, N) ndarray(complex)
+    rv_inv : (N, N) ndarray(complex)
         The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
-    diag_inv: (N) array_like
+    diag_inv : (N) array_like
         The eigenvalues (:math:`h`)
-    rv: (N, N) ndarray(complex)
+    rv : (N, N) ndarray(complex)
         The matrix of right eigenvectors (:math:`P`)
 
     Returns
     -------
-    gf_omega: (N, N) ndarray(complex)
+    gf_omega : (N, N) ndarray(complex)
         The Green's function
+
     """
     return rv.dot(np.diag(diag_inv)).dot(rv_inv)

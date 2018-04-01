@@ -10,6 +10,8 @@ install:
   - python setup.py install
 script:
   - pytest --cov=gftools --doctest-modules -v
+  - find gftools -name *.py -not -path */tests/* -not -path *.ropeproject* -not -name _version.py -exec pydocstyle {} +
+  - find gftools -name *.py -not -path */tests/* -not -path *.ropeproject* -not -name _version.py -exec pyflakes {} +
   - travis-sphinx build 
 after_success:
   - codecov
