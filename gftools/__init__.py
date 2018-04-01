@@ -27,7 +27,8 @@ def bethe_dos(eps, half_bandwidth):
     eps : array(double), double
         DOS is evaluated at points `eps`.
     half_bandwidth : double
-        Half bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
     Returns
     -------
@@ -55,10 +56,11 @@ def bethe_gf_omega(z, half_bandwidth):
     
     Parameters
     ----------
-    z: array(complex), complex
+    z : array(complex), complex
         Green's function is evaluated at complex frequency `z`
-    half_bandwidth: double
+    half_bandwidth : double
         half-bandwidth of the DOS of the Bethe lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
     Returns
     -------
