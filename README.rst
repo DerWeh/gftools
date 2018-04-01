@@ -21,4 +21,4 @@ The documentation and API can be found here: `documentation`_.
   :target: https://codecov.io/gh/DerWeh/gftools
   :alt: Coverage
 .. _documentation:
-  https://derweh.github.io/gftools/
+   https://derweh.github.io/gftools/
