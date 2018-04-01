@@ -22,8 +22,6 @@ __version__ = get_versions()['version']
 def bethe_dos(eps, half_bandwidth):
     """DOS of non-interacting Bethe lattice for infinite coordination number.
     
-    Works by evaluating the complex function and truncating imaginary part.
-
     Parameters
     ----------
     eps : array(double), double
