@@ -111,7 +111,4 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
         2t = D
 
     """
-    xi_rel = xi/half_bandwidth
-    # sgn = np.sign(xi_rel.imag)
-    # return 2*(xi_rel - 1j*sgn*np.sqrt(1 - xi_rel**2))/half_bandwidth
-    return 2.*xi_rel*(1 - np.sqrt(1 - xi_rel**-2))/half_bandwidth
+    return bethe_gf_omega(xi, half_bandwidth)
