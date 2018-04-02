@@ -67,6 +67,8 @@ def bethe_gf_omega(z, half_bandwidth):
     bethe_gf_omega : array(complex), complex
         Value of the Green's function
 
+    TODO: source
+
     """
     z_rel = z / half_bandwidth
     return 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - 1/(z_rel*z_rel)))
@@ -105,8 +107,8 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
     bethe_hilbert_transfrom : array(complex), complex
         Hilbert transform of `xi`.
 
-    Notes
-    -----
+    Note
+    ----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math::
@@ -114,3 +116,31 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
 
     """
     return bethe_gf_omega(xi, half_bandwidth)
+
+
+def bethe_surface_gf(z, eps, hopping_nn):
+    r"""Surface Green's function for stacked layers of Bethe lattices.
+
+    .. math::
+        \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
+
+    with :math:`g_{00} = (z-\epsilon)^{-1}`
+
+    TODO: source
+
+    Parameters
+    ----------
+    z : complex
+        Green's function is evaluated at complex frequency `z`.
+    eps : double
+        Eigenenergy (dispersion) for which the Green's function is evaluated.
+    hopping_nn : double
+        Nearest neighbor hopping `t` between neighboring layers.
+
+    Returns
+    -------
+    bethe_surface_gf : complex
+        Value of the surface Green's function
+
+    """
+    return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
