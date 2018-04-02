@@ -14,6 +14,14 @@ Documentation
 
 The documentation and API can be found here: `documentation`_.
 
+Roadmap
+-------
+
+For the future inclusion of the following content is planned:
+
+* Padé analytical continuation
+* Particle number of Green's functions 
+
 .. |build-status| image:: https://travis-ci.org/DerWeh/gftools.svg?branch=develop
     :target: https://travis-ci.org/DerWeh/gftools
     :alt: Build status
