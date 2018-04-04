@@ -1,6 +1,8 @@
 """Tests for functions related to Bethe GFs.
 
 TODO: use accuracy of *integrate.quad* for *pytest.approx*
+TODO: explicit add imaginary axis to the mesh
+TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
 from __future__ import absolute_import
 
@@ -10,6 +12,82 @@ import scipy.integrate as integrate
 import numpy as np
 
 from .context import gftools
+
+
+class GfProperties(object):
+    r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
+
+    Checks the analytical properties a one particle Gf of the structure
+
+    .. math::
+        G_{ii}(z) = -\langle c_i(z) c_i^\dagger(z) \rangle.
+
+    Here `i` can be any quantum number.
+    Look into https://gist.github.com/abele/ee049b1fdf7e4a1af71a
+    """
+    z_mesh = None  # mesh on which the function's properties will be tested
+    s = +1  # Fermions
+
+    def gf(self, z, **kwargs):
+        """signature: gf(z: array(complex), ** kwargs) -> array(complex)"""
+        raise NotImplementedError('This is just a placeholder')
+
+    def test_symmetry(self, **kwargs):
+        r""":math:`G_{ij}(-z) = -s G_ji(z)`.
+
+        FIXME: this is not correct!!!
+        As we have :math:`i=j` we get anti-symmetry for fermions
+        `G_{ii}(-z) = -s G_ii(z)`.
+        """
+        assert np.allclose(self.gf(-self.z_mesh, **kwargs),
+                           -self.s * self.gf(self.z_mesh, **kwargs))
+
+    def test_complex(self, **kwargs):
+        r""":math:`G_{AB}^\star(z) = G_{B^\dagger A^\dagger}(z^\star)`."""
+        assert np.allclose(np.conjugate(self.gf(self.z_mesh, **kwargs)),
+                           self.gf(np.conjugate(self.z_mesh), **kwargs))
+
+
+class TestBetheGf(GfProperties):
+    """Check properties of Bethe Gf."""
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]  # noqa
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    def gf(self, z, half_bandwidth):
+        return gftools.bethe_gf_omega(z, half_bandwidth)
+
+    def test_symmetry(self, half_bandwidth=D):
+        super(TestBetheGf, self).test_symmetry(half_bandwidth=half_bandwidth)
+
+    def test_complex(self, half_bandwidth=D):
+        super(TestBetheGf, self).test_complex(half_bandwidth=half_bandwidth)
+
+
+class TestBetheSurfaceGf(GfProperties):
+    """Check properties of Bethe surface Gf."""
+    hopping_nn = .2
+    z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    def gf(self, z, eps, hopping_nn):
+        return gftools.bethe_surface_gf(z, eps, hopping_nn)
+
+    @pytest.mark.skip(reson="This test probably is wrong!")
+    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
+    def test_symmetry(self, eps, hopping_nn=hopping_nn):
+        super(TestBetheSurfaceGf, self).test_symmetry(eps=eps, hopping_nn=hopping_nn)
+
+    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
+    def test_complex(self, eps, hopping_nn=hopping_nn):
+        super(TestBetheSurfaceGf, self).test_complex(eps=eps, hopping_nn=hopping_nn)
+    
+    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
+    def test_normalization(self, eps, hopping_nn=hopping_nn):
+        dos = lambda z, eps: -self.gf(z+1e-16j, eps, hopping_nn).imag/np.pi
+        assert 1 == pytest.approx(integrate.quad(
+            dos, args=(eps,), a=-2*hopping_nn-abs(eps), b=2*hopping_nn+abs(eps)
+        )[0])
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
