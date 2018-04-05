@@ -1,3 +1,4 @@
+# encoding: utf-8
 r"""Functions to work with Green's in matrix from.
 
 In the limit of infinite coordination number the self-energy becomes local,
@@ -5,9 +6,9 @@ inverse Green's functions take the simple form:
 
 .. math::
 
-    (G^{-1}(i\omega))_{ii} &= i\omega - \mu_i - t_{ii} - \Sigma_i(i\omega)
+    (G^{-1}(iω))_{ii} &= iω - μ_i - t_{ii} - Σ_i(iω)
 
-    (G^{-1}(i\omega))_{ij} &= t_{ij} \quad \text{for } i \neq j
+    (G^{-1}(iω))_{ij} &= t_{ij} \quad \text{for } i ≠ j
 
 
 .. _`scipy.linalg.eig_banded`:
@@ -23,7 +24,7 @@ def decompose_gf_omega_symmetric(g_inv_band):
     The similarity transformation for symmetric matrices is orthogonal.
 
     .. math::
-        G^{-1} = O h O^T, \quad h = diag(\lambda(G))
+        G^{-1} = O h O^T, \quad h = diag(λ(G))
     
     Parameters
     ----------
@@ -53,7 +54,7 @@ def decompose_gf_omega(g_inv):
     The similarity transformation:
 
     .. math::
-        G^{-1} = P h P^{-1}, \quad h = diag(\lambda(G))
+        G^{-1} = P h P^{-1}, \quad h = diag(λ(G))
     
     Parameters
     ----------
@@ -79,7 +80,7 @@ def construct_gf_omega(rv_inv, diag_inv, rv):
     r"""Construct Green's function from decomposition of its inverse.
     
     .. math::
-        G^{-1} = P h P^{-1} \Rightarrow G = P h^{-1} P^{-1}
+        G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
 
     Parameters
     ----------

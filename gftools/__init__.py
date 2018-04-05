@@ -1,3 +1,4 @@
+# encoding: utf-8
 """Collection of commonly used Green's functions and utilities.
 
 So far mainly contains Bethe Green's functions.
@@ -83,15 +84,15 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
     The Hilbert transform
 
     .. math::
-        \tilde{D}(\xi) = \int_{-\infty}^{\infty}d\epsilon \frac{DOS(\epsilon)}{\xi - \epsilon}
+        \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
 
     takes for Bethe lattice in the limit of infinite coordination number the
     explicit form
 
     .. math::
-        \tilde{D}(\xi) = 2*(\xi - s\sqrt{\xi^2 - D^2})/D^2
+        \tilde{D}(ξ) = 2*(ξ - s\sqrt{ξ^2 - D^2})/D^2
 
-    with :math:`s=sgn[\Im{\xi}]`.
+    with :math:`s=sgn[ℑ{ξ}]`.
     See `Georges et al`_.
 
 
@@ -124,7 +125,7 @@ def bethe_surface_gf(z, eps, hopping_nn):
     .. math::
         \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
 
-    with :math:`g_{00} = (z-\epsilon)^{-1}`
+    with :math:`g_{00} = (z-ϵ)^{-1}`
 
     TODO: source
 
