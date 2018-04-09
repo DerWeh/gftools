@@ -8,12 +8,21 @@ TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 from __future__ import absolute_import, unicode_literals
 
 import pytest
-import scipy.integrate as integrate
+
+from functools import wraps
 
 import numpy as np
+import scipy.integrate as integrate
 
 from .context import gftools
 
+
+def method(func):
+    """Perpend `self` to `func` to turn it into a method."""
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
 
 class GfProperties(object):
     r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
@@ -30,24 +39,29 @@ class GfProperties(object):
     z_mesh = None  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
+    @pytest.fixture
+    def params():
+        """Contains possible parameters needed for the Green's function."""
+        return (), {}
+
     def gf(self, z, **kwargs):
         """signature: gf(z: array(complex), ** kwargs) -> array(complex)."""
         raise NotImplementedError('This is just a placeholder')
 
-    def test_symmetry(self, **kwargs):
+    def test_symmetry(self, params):
         r""":math:`G_{ij}(-z) = -s G_ji(z)`.
 
         FIXME: this is not correct!!!
         As we have :math:`i=j` we get anti-symmetry for fermions
         `G_{ii}(-z) = -s G_ii(z)`.
         """
-        assert np.allclose(self.gf(-self.z_mesh, **kwargs),
-                           -self.s * self.gf(self.z_mesh, **kwargs))
+        assert np.allclose(self.gf(-self.z_mesh, *params[0], **params[1]),
+                           -self.s * self.gf(self.z_mesh, *params[0], **params[1]))
 
-    def test_complex(self, **kwargs):
+    def test_complex(self, params):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
-        assert np.allclose(np.conjugate(self.gf(self.z_mesh, **kwargs)),
-                           self.gf(np.conjugate(self.z_mesh), **kwargs))
+        assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
+                           self.gf(np.conjugate(self.z_mesh), *params[0], **params[1]))
 
 
 class TestBetheGf(GfProperties):
@@ -57,14 +71,12 @@ class TestBetheGf(GfProperties):
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    def gf(self, z, half_bandwidth):
-        return gftools.bethe_gf_omega(z, half_bandwidth)
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), {'half_bandwidth': request.param}
 
-    def test_symmetry(self, half_bandwidth=D):
-        super(TestBetheGf, self).test_symmetry(half_bandwidth=half_bandwidth)
-
-    def test_complex(self, half_bandwidth=D):
-        super(TestBetheGf, self).test_complex(half_bandwidth=half_bandwidth)
+    gf = method(gftools.bethe_gf_omega)
 
 
 class TestBetheSurfaceGf(GfProperties):
@@ -74,17 +86,19 @@ class TestBetheSurfaceGf(GfProperties):
     z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    def gf(self, z, eps, hopping_nn):
-        return gftools.bethe_surface_gf(z, eps, hopping_nn)
+    gf = method(gftools.bethe_surface_gf)
 
     @pytest.mark.skip(reson="This test probably is wrong!")
     @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
     def test_symmetry(self, eps, hopping_nn=hopping_nn):
         super(TestBetheSurfaceGf, self).test_symmetry(eps=eps, hopping_nn=hopping_nn)
 
-    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
-    def test_complex(self, eps, hopping_nn=hopping_nn):
-        super(TestBetheSurfaceGf, self).test_complex(eps=eps, hopping_nn=hopping_nn)
+    @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
+    def params(self, request):
+        """Parameters for the Surface Bethe Green's function."""
+        return (), {'eps': request.param,
+                    'hopping_nn': .2,
+                    }
 
     @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
     def test_normalization(self, eps, hopping_nn=hopping_nn):
