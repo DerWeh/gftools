@@ -1,10 +1,11 @@
+# coding: utf8
 """Tests for functions related to Bethe GFs.
 
 TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
 TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import pytest
 import scipy.integrate as integrate
@@ -20,16 +21,17 @@ class GfProperties(object):
     Checks the analytical properties a one particle Gf of the structure
 
     .. math::
-        G_{ii}(z) = -\langle c_i(z) c_i^\dagger(z) \rangle.
+        G_{ii}(z) = -⟨c_i(z) c_i^†(z)⟩.
 
     Here `i` can be any quantum number.
     Look into https://gist.github.com/abele/ee049b1fdf7e4a1af71a
     """
+
     z_mesh = None  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
     def gf(self, z, **kwargs):
-        """signature: gf(z: array(complex), ** kwargs) -> array(complex)"""
+        """signature: gf(z: array(complex), ** kwargs) -> array(complex)."""
         raise NotImplementedError('This is just a placeholder')
 
     def test_symmetry(self, **kwargs):
@@ -43,15 +45,16 @@ class GfProperties(object):
                            -self.s * self.gf(self.z_mesh, **kwargs))
 
     def test_complex(self, **kwargs):
-        r""":math:`G_{AB}^\star(z) = G_{B^\dagger A^\dagger}(z^\star)`."""
+        r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
         assert np.allclose(np.conjugate(self.gf(self.z_mesh, **kwargs)),
                            self.gf(np.conjugate(self.z_mesh), **kwargs))
 
 
 class TestBetheGf(GfProperties):
     """Check properties of Bethe Gf."""
+
     D = 1.2
-    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]  # noqa
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
     def gf(self, z, half_bandwidth):
@@ -66,6 +69,7 @@ class TestBetheGf(GfProperties):
 
 class TestBetheSurfaceGf(GfProperties):
     """Check properties of Bethe surface Gf."""
+
     hopping_nn = .2
     z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
@@ -81,10 +85,12 @@ class TestBetheSurfaceGf(GfProperties):
     @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
     def test_complex(self, eps, hopping_nn=hopping_nn):
         super(TestBetheSurfaceGf, self).test_complex(eps=eps, hopping_nn=hopping_nn)
-    
+
     @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
     def test_normalization(self, eps, hopping_nn=hopping_nn):
-        dos = lambda z, eps: -self.gf(z+1e-16j, eps, hopping_nn).imag/np.pi
+        def dos(z, eps):
+            return -self.gf(z+1e-16j, eps, hopping_nn).imag/np.pi
+
         assert 1 == pytest.approx(integrate.quad(
             dos, args=(eps,), a=-2*hopping_nn-abs(eps), b=2*hopping_nn+abs(eps)
         )[0])
@@ -104,7 +110,7 @@ def test_dos_half(D):
 
 
 def test_dos_support():
-    """DOS should have no support for |eps| > D."""
+    """DOS should have no support for | eps | > D."""
     D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
         assert gftools.bethe_dos(eps, D) == 0
@@ -123,7 +129,7 @@ def test_imag_gf_equals_dos():
     r"""Imaginary part of the GF is proportional to the DOS.
     
     .. math::
-        DOS(\epsilon) = -\Im(G(\epsilon))/\pi
+        DOS(ϵ) = -ℑ(G(ϵ))/π
     """
     D = 1.2
     num = 1e6
