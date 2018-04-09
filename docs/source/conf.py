@@ -86,7 +86,7 @@ language = None
 #
 # Else, today_fmt is used as the format for a strftime call.
 #
-today_fmt = '%Y-%d-%m'
+today_fmt = '%Y-%m-%d'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -130,9 +130,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-import guzzle_sphinx_theme
 html_theme = 'guzzle_sphinx_theme'
-extensions.append("guzzle_sphinx_theme")
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -143,7 +141,7 @@ html_theme_options = {
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
+html_theme_path = ["."]
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
