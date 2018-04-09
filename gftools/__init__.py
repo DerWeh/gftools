@@ -26,15 +26,15 @@ def bethe_dos(eps, half_bandwidth):
     
     Parameters
     ----------
-    eps : array(double), double
+    eps : array(float), float
         DOS is evaluated at points `eps`.
-    half_bandwidth : double
+    half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
     Returns
     -------
-    bethe_dos : array(double), double
+    bethe_dos : array(float), float
         The value of the DOS.
 
     """
@@ -60,7 +60,7 @@ def bethe_gf_omega(z, half_bandwidth):
     ----------
     z : array(complex), complex
         Green's function is evaluated at complex frequency `z`
-    half_bandwidth : double
+    half_bandwidth : float
         half-bandwidth of the DOS of the Bethe lattice
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
@@ -101,7 +101,7 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
     ----------
     xi : array(complex), complex
         Point at which the Hilbert transform is evaluated
-    half_bandwidth : double
+    half_bandwidth : float
         half-bandwidth of the DOS of the Bethe lattice
 
     Returns
@@ -134,9 +134,9 @@ def bethe_surface_gf(z, eps, hopping_nn):
     ----------
     z : complex
         Green's function is evaluated at complex frequency `z`.
-    eps : double
+    eps : float
         Eigenenergy (dispersion) for which the Green's function is evaluated.
-    hopping_nn : double
+    hopping_nn : float
         Nearest neighbor hopping `t` between neighboring layers.
 
     Returns
