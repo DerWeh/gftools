@@ -7,9 +7,9 @@ TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
 from __future__ import absolute_import, unicode_literals
 
-import pytest
-
 from functools import wraps
+
+import pytest
 
 import numpy as np
 import scipy.integrate as integrate
@@ -23,6 +23,7 @@ def method(func):
     def wrapper(self, *args, **kwargs):
         return func(*args, **kwargs)
     return wrapper
+
 
 class GfProperties(object):
     r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
@@ -39,14 +40,21 @@ class GfProperties(object):
     z_mesh = None  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
-    @pytest.fixture
-    def params():
-        """Contains possible parameters needed for the Green's function."""
-        return (), {}
-
     def gf(self, z, **kwargs):
         """signature: gf(z: array(complex), ** kwargs) -> array(complex)."""
         raise NotImplementedError('This is just a placeholder')
+
+    @pytest.fixture
+    def params(self):
+        """Contains possible parameters needed for the Green's function."""
+        return (), {}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function, by default (-∞, ∞).
+        
+        Can be overwritten by subclasses using the `params`.
+        """
+        return -np.infty, np.infty
 
     def test_symmetry(self, params):
         r""":math:`G_{ij}(-z) = -s G_ji(z)`.
@@ -63,6 +71,15 @@ class GfProperties(object):
         assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
                            self.gf(np.conjugate(self.z_mesh), *params[0], **params[1]))
 
+    def test_normalization(self, params):
+        r""":math:`-∫dωℑG(ω+iϵ)/π = ∫dϵ ρ(ϵ) = 1`."""
+        def dos(omega):
+            r"""Wrap the DOS :math:`ρ(ω) = -ℑG(ω+iϵ)/π`."""
+            return -self.gf(omega+1e-16j, *params[0], **params[1]).imag/np.pi
+
+        lower, upper = self.band_edges(params)
+        assert pytest.approx(integrate.quad(dos, a=lower, b=upper)[0]) == 1.
+
 
 class TestBetheGf(GfProperties):
     """Check properties of Bethe Gf."""
@@ -71,12 +88,12 @@ class TestBetheGf(GfProperties):
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
+    gf = method(gftools.bethe_gf_omega)
+
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(self, request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
-
-    gf = method(gftools.bethe_gf_omega)
 
 
 class TestBetheSurfaceGf(GfProperties):
@@ -88,11 +105,6 @@ class TestBetheSurfaceGf(GfProperties):
 
     gf = method(gftools.bethe_surface_gf)
 
-    @pytest.mark.skip(reson="This test probably is wrong!")
-    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
-    def test_symmetry(self, eps, hopping_nn=hopping_nn):
-        super(TestBetheSurfaceGf, self).test_symmetry(eps=eps, hopping_nn=hopping_nn)
-
     @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
     def params(self, request):
         """Parameters for the Surface Bethe Green's function."""
@@ -100,14 +112,16 @@ class TestBetheSurfaceGf(GfProperties):
                     'hopping_nn': .2,
                     }
 
-    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
-    def test_normalization(self, eps, hopping_nn=hopping_nn):
-        def dos(z, eps):
-            return -self.gf(z+1e-16j, eps, hopping_nn).imag/np.pi
+    def band_edges(self, params):
+        """Bandages are shifted ones of `gftools.bethe_gf_omega`."""
+        hopping_nn = params[1]['hopping_nn']
+        eps = params[1]['eps']
+        return -2*hopping_nn-abs(eps), 2*hopping_nn+abs(eps)
 
-        assert 1 == pytest.approx(integrate.quad(
-            dos, args=(eps,), a=-2*hopping_nn-abs(eps), b=2*hopping_nn+abs(eps)
-        )[0])
+    @pytest.mark.skip(reson="This test probably is wrong!")
+    @pytest.mark.parametrize("eps", [-.8, -.4, 0., .5, .7])
+    def test_symmetry(self, eps, hopping_nn=hopping_nn):
+        super(TestBetheSurfaceGf, self).test_symmetry(eps=eps, hopping_nn=hopping_nn)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -167,8 +181,16 @@ def test_hilbert_equals_integral():
         """Integrand for the Hilbert transform."""
         return gftools.bethe_dos(eps, half_bandwidth=D)/(xi - eps)
 
+    def kernel_real(eps, xi):
+        """Real part of the integrand."""
+        return kernel(eps, xi).real
+
+    def kernel_imag(eps, xi):
+        """Real part of the integrand."""
+        return kernel(eps, xi).imag
+
     for xi in xi_values:
         compare = 0
-        compare += integrate.quad(lambda eps: kernel(eps, xi).real, -D-.1, D+.1)[0]
-        compare += 1j*integrate.quad(lambda eps: kernel(eps, xi).imag, -D-.1, D+.1)[0]
+        compare += integrate.quad(kernel_real, -D, D, args=(xi,))[0]
+        compare += 1j*integrate.quad(kernel_imag, -D, D, args=(xi,))[0]
         assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
