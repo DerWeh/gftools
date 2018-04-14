@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -438,3 +439,10 @@ epub_exclude_files = ['search.html']
 
 # Napoleon settings
 napoleon_numpy_docstring = True
+
+# intersphinx settings
+# taken from https://gist.github.com/bskinn/0e164963428d4b51017cebdb6cda5209
+intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
+                       'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
+                       'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+                       }

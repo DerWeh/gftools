@@ -10,9 +10,6 @@ inverse Green's functions take the simple form:
 
     (G^{-1}(iω))_{ij} &= t_{ij} \quad \text{for } i ≠ j
 
-
-.. _`scipy.linalg.eig_banded`:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.eig_banded.html
 """
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
@@ -33,7 +30,7 @@ def decompose_gf_omega_symmetric(g_inv_band):
     ----------
     g_inv_band : (2, N) ndarray(complex)
         matrix to be decomposed, needs to be given in banded form
-        (see `scipy.linalg.eig_banded`_)
+        (see :func:`scipy.linalg.eig_banded`)
 
     Returns
     -------
