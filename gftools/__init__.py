@@ -14,6 +14,8 @@ Subpackages
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+import math
+
 import numpy as np
 
 from ._version import get_versions
@@ -146,3 +148,53 @@ def bethe_surface_gf(z, eps, hopping_nn):
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
+
+
+def density(gf_iw, potential, sigma_max, beta):
+    r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
+
+    Parameters
+    ----------
+    gf_iw : array(complex)
+        The Matsubara frequency Green's function for positive frequencies :math:`iω_n`.
+    potential : float
+        Is the on-site energy of the Green's function, which is a real constant
+        shift of the frequencies :math:`iω_n`.
+    sigma_max : complex
+        The maximal calculated self-energy. `sigma_max` is assumed to be the constant
+        part of the self-energy, the rest decays like :math:`1/ω`.
+    beta : float
+        The inverse temperature `beta` = 1/T.
+
+    Returns
+    -------
+    density : float
+        The number density of the given Green's function `gf_iw`.
+
+    Notes
+    -----
+    The number density can be obtained from the Matsubara frequency Green's function using
+
+    .. math:: n = 1/β ∑_{n=-∞}^{∞} G(iω_n)
+
+    Green's functions, however, only decay like :math:`O(\omega)`,
+    thus truncation of the summation yields a non-vanishing contribution of the tail.
+    To take this into consideration the tail has to be summed analytically.
+    The most general and leading contribution is :math:`1/(i\omega_n)`.
+    The summation yields an additional contribution :math:`1/2`.
+
+    References
+    ----------
+    .. [1] Hale, S. T. F., and J. K. Freericks. "Many-Body Effects on the
+       Capacitance of Multilayers Made from Strongly Correlated Materials."
+       Physical Review B 85, no. 20 (May 24, 2012).
+       https://doi.org/10.1103/PhysRevB.85.205444.
+
+    """
+    raise NotImplementedError
+    # iw = matsubara(beta, fermion, n=len(gf_iw))
+    iw = None  # FIXME
+    tail = iw - potential - sigma_max
+    n = np.sum(gf_iw - 1/tail) / beta
+    n += .5 + 0.5*math.tanh(0.5 * beta * (potential - sigma_max))
+    return n
