@@ -23,6 +23,25 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 
 
+def matsubara_frequencies(n_points, beta):
+    r"""Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
+
+    Parameters
+    ----------
+    n_poins : array(int)
+        Points for which the Matsubara frequencies :math:`iω_n` are returned.
+    beta : float
+        Inverse temperature `beta` = 1/T
+
+    Returns
+    -------
+    matsubara_frequencies : array(complex)
+        Array of the imaginary Matsubara frequencies
+
+    """
+    return 1j * np.pi * (2*n_points + 1) / beta
+
+
 def bethe_dos(eps, half_bandwidth):
     """DOS of non-interacting Bethe lattice for infinite coordination number.
     
