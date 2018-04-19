@@ -172,16 +172,17 @@ def bethe_surface_gf(z, eps, hopping_nn):
 def density(gf_iw, potential, beta):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
+    As Green's functions decay only as :math:`1/ω`, the known part of the form
+    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
+    :math:`Σ_{\text{static}}` is the ω-independent mean-field part of the self-energy.
+
     Parameters
     ----------
     gf_iw : array(complex)
         The Matsubara frequency Green's function for positive frequencies :math:`iω_n`.
     potential : float
-        Is the on-site energy of the Green's function, which is a real constant
-        shift of the frequencies :math:`iω_n`.
-    sigma_max : complex
-        The maximal calculated self-energy. `sigma_max` is assumed to be the constant
-        part of the self-energy, the rest decays like :math:`1/ω`.
+        The static potential for the large-ω behavior of the Green's function.
+        It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`
     beta : float
         The inverse temperature `beta` = 1/T.
 
@@ -194,13 +195,34 @@ def density(gf_iw, potential, beta):
     -----
     The number density can be obtained from the Matsubara frequency Green's function using
 
-    .. math:: n = 1/β ∑_{n=-∞}^{∞} G(iω_n)
+    .. math:: ⟨n⟩ = \lim_{ϵ↗0} G(τ=-ϵ) = 1/β ∑_{n=-∞}^{∞} G(iω_n)
 
-    Green's functions, however, only decay like :math:`O(\omega)`,
-    thus truncation of the summation yields a non-vanishing contribution of the tail.
-    To take this into consideration the tail has to be summed analytically.
-    The most general and leading contribution is :math:`1/(i\omega_n)`.
-    The summation yields an additional contribution :math:`1/2`.
+    As Green's functions decay only as :math:`O(1/ω)`, truncation of the summation
+    yields a non-vanishing contribution of the tail.
+    To take this into consideration the known part of the form
+    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
+    This yields [1]_
+
+    .. math::
+
+       ⟨n⟩ = 1/β ∑_{n=-∞}^{∞} [G(iω_n) - 1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})] \\
+             + 1/2 + 1/2 \tanh[1/2 β(μ - ϵ - ℜΣ_{\text{static}})].
+
+    We can use the symmetry :math:`G(z*) = G^*(z)` do reduce the sum only over
+    positive Matsubara frequencies
+
+    .. math::
+
+       ∑_{n=-∞}^{∞} G(iω_n)
+          &= ∑_{n=-∞}^{-1} G(iω_n) + ∑_{n=0}^{n=∞} G(iω_n) \\
+          &= ∑_{n=0}^{∞} [G(-iω_n) + G(iω_n)] \\
+          &= 2 ∑_{n=0}^{∞} ℜG(iω_n).
+
+    Thus we get the final expression
+
+    .. math::
+       ⟨n⟩ = 2/β ∑_{n≥0} ℜ[G(iω_n) - 1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})] \\
+             + 1/2 + 1/2 \tanh[1/2 β(μ - ϵ - ℜΣ_{\text{static}})].
 
     References
     ----------
