@@ -169,7 +169,7 @@ def bethe_surface_gf(z, eps, hopping_nn):
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
 
 
-def density(gf_iw, potential, sigma_max, beta):
+def density(gf_iw, potential, beta):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     Parameters
@@ -210,10 +210,9 @@ def density(gf_iw, potential, sigma_max, beta):
        https://doi.org/10.1103/PhysRevB.85.205444.
 
     """
-    raise NotImplementedError
-    # iw = matsubara(beta, fermion, n=len(gf_iw))
-    iw = None  # FIXME
-    tail = iw - potential - sigma_max
-    n = np.sum(gf_iw - 1/tail) / beta
-    n += .5 + 0.5*math.tanh(0.5 * beta * (potential - sigma_max))
+    iw = matsubara_frequencies(np.arange(len(gf_iw)), beta=beta)
+    tail = 1/(iw + potential)
+    n = 2 * np.sum(gf_iw.real - tail.real) / beta
+    n += .5  # contribution of the 1/iω_n tail
+    n += 0.5*math.tanh(0.5 * beta * potential)  # correction of the static part
     return n
