@@ -252,6 +252,7 @@ def density(gf_iw, potential, beta):
 
     As Green's functions decay only as :math:`O(1/ω)`, truncation of the summation
     yields a non-vanishing contribution of the tail.
+    For the analytic structure of the Green's function see [2]_, [3]_.
     To take this into consideration the known part of the form
     :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
     This yields [1]_
@@ -283,6 +284,15 @@ def density(gf_iw, potential, beta):
        Capacitance of Multilayers Made from Strongly Correlated Materials."
        Physical Review B 85, no. 20 (May 24, 2012).
        https://doi.org/10.1103/PhysRevB.85.205444.
+    .. [2] Eder, Robert. “Introduction to the Hubbard Mode.” In The Physics of
+       Correlated Insulators, Metals and Superconductors, edited by Eva
+       Pavarini, Erik Koch, Richard Scalettar, and Richard Martin. Schriften
+       Des Forschungszentrums Jülich Reihe Modeling and Simulation 7. Jülich:
+       Forschungszentrum Jülich, 2017.
+       https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
+    .. [3] Luttinger, J. M. “Analytic Properties of Single-Particle Propagators
+       for Many-Fermion Systems.” Physical Review 121, no. 4 (February 15,
+       1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.
 
     """
     iw = matsubara_frequencies(np.arange(len(gf_iw)), beta=beta)
