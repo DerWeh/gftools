@@ -1,5 +1,5 @@
 # coding: utf8
-"""Tests for functions related to Bethe GFs.
+"""Tests for Green's functions and related functions.
 
 TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
