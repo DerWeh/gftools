@@ -44,7 +44,7 @@ def matsubara_frequencies(n_points, beta):
 
 def bethe_dos(eps, half_bandwidth):
     """DOS of non-interacting Bethe lattice for infinite coordination number.
-    
+
     Parameters
     ----------
     eps : array(float), float
@@ -76,7 +76,7 @@ def bethe_dos(eps, half_bandwidth):
 
 def bethe_gf_omega(z, half_bandwidth):
     """Local Green's function of Bethe lattice for infinite Coordination number.
-    
+
     Parameters
     ----------
     z : array(complex), complex
@@ -167,6 +167,59 @@ def bethe_surface_gf(z, eps, hopping_nn):
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
+
+
+def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
+    r"""Green's function for the two site Hubbard model on a *dimer*.
+
+    The Hamilton is given
+
+    .. math:: H = -t∑_{σ}(c^†_{1σ} c_{2σ} + c^†_{2σ} c_{1σ}) + U∑_i n_{i↑} n_{i↓}
+
+    with the `hopping` :math:`t` and the `interaction` :math:`U`.
+    The Green's function is given for the operators :math:`c_{±σ} = 1/√2 (c_{1σ} ± c_{2σ})`,
+    where :math:`±` is given by `kind`
+
+    Parameters
+    ----------
+    z : array(complex), complex
+        Green's function is evaluated at complex frequency `z`
+    hopping : float
+        The hopping parameter between the sites of the dimer.
+    interaction : float
+        The Hubbard interaction strength for the on-site interaction.
+    kind : {'+', '-'}
+        The operator  for which the Green's function is calculated.
+
+    Returns
+    -------
+    gf_omega : array(complex)
+        Value of the Hubbard dimer Green's function at frequencies `z`.
+
+    Notes
+    -----
+    The solution is obtained by exact digitalization and shown in [4]_.
+
+    References
+    ----------
+    .. [4] Eder, Robert. “Introduction to the Hubbard Mode.” In The Physics of
+       Correlated Insulators, Metals and Superconductors, edited by Eva
+       Pavarini, Erik Koch, Richard Scalettar, and Richard Martin. Schriften
+       Des Forschungszentrums Jülich Reihe Modeling and Simulation 7. Jülich:
+       Forschungszentrum Jülich, 2017.
+       https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
+
+    """
+    if kind not in ('+', '-'):
+        raise ValueError("invalid literal for `kind`: '{}'".format(kind))
+    s = 1 if kind == '+' else -1
+    t = hopping
+    U = interaction
+    W = (0.25*U*U + 4*t*t)**0.5
+    E_0 = 0.5*U - W
+    gf_omega  = (0.5 + s*t/W) / (z - (E_0 + s*t))
+    gf_omega += (0.5 - s*t/W) / (z - (U + s*t - E_0))
+    return gf_omega
 
 
 def density(gf_iw, potential, beta):

@@ -119,6 +119,26 @@ class TestBetheSurfaceGf(GfProperties):
         return -2*hopping_nn-abs(eps), 2*hopping_nn+abs(eps)
 
 
+class TestHubbardDimer(GfProperties):
+    """Check properties of Hubbard Dimer Gf."""
+
+    z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gftools.hubbard_dimer_gf_omega)
+
+    @pytest.fixture(params=['+', '-'])
+    def params(self, request):
+        """Parameters for the Hubbard Dimer Green's function."""
+        return (), {'kind': request.param,
+                    'hopping': 1.1,
+                    'interaction': 1.3,
+                    }
+
+    @pytest.mark.skip(reason="Fixing integral: nearly Delta-functions, no band_edges!")
+    def test_normalization(self, params):
+        raise NotImplementedError
+
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_unit(D):
