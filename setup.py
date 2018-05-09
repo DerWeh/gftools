@@ -10,8 +10,17 @@ def readme():
 
 setup(name="gftools",
       version=versioneer.get_version(),
-      description="FIXME",
+      description="Collection of commonly used Green's functions and utilities",
       long_description=readme(),
+      keywords="Green's\ function physics",
+      classifiers=[
+          'Intended Audience :: Science/Research',
+          'Programming Language :: Python :: 2'
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.0',
+          'Programming Language :: Python :: 3.6',
+          'Topic :: Scientific/Engineering :: Physics',
+      ],
       url="https://github.com/DerWeh/gftools",
       author="Weh",
       author_email="andreas.weh@student.uni-augsburg.de",
