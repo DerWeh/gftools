@@ -14,8 +14,6 @@ Subpackages
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import math
-
 import numpy as np
 
 from ._version import get_versions
@@ -233,9 +231,11 @@ def density(gf_iw, potential, beta):
     ----------
     gf_iw : array(complex)
         The Matsubara frequency Green's function for positive frequencies :math:`iω_n`.
-    potential : float
+        The last axis corresponds to the Matsubara frequencies.
+    potential : float, array(float)
         The static potential for the large-ω behavior of the Green's function.
-        It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`
+        It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`.
+        The shape must agree with `gf_iw` without the last axis. 
     beta : float
         The inverse temperature `beta` = 1/T.
 
@@ -295,9 +295,9 @@ def density(gf_iw, potential, beta):
        1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.
 
     """
-    iw = matsubara_frequencies(np.arange(len(gf_iw)), beta=beta)
-    tail = 1/(iw + potential)
-    n = 2 * np.sum(gf_iw.real - tail.real) / beta
+    iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
+    tail = 1/np.add.outer(potential, iw)
+    n = 2 * np.sum(gf_iw.real - tail.real, axis=-1) / beta
     n += .5  # contribution of the 1/iω_n tail
-    n += 0.5*math.tanh(0.5 * beta * potential)  # correction of the static part
+    n += 0.5*np.tanh(0.5 * beta * potential)  # correction of the static part
     return n
