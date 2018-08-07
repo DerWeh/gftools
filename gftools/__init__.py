@@ -45,7 +45,7 @@ def matsubara_frequencies(n_points, beta):
 
     Parameters
     ----------
-    n_poins : array(int)
+    n_points : array(int)
         Points for which the Matsubara frequencies :math:`iω_n` are returned.
     beta : float
         Inverse temperature `beta` = 1/T
@@ -72,7 +72,7 @@ def bethe_dos(eps, half_bandwidth):
 
     Returns
     -------
-    bethe_dos : array(float), float
+    result : array(float), float
         The value of the DOS.
 
     """
@@ -254,7 +254,7 @@ def density(gf_iw, potential, beta):
     potential : float, array(float)
         The static potential for the large-ω behavior of the Green's function.
         It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`.
-        The shape must agree with `gf_iw` without the last axis. 
+        The shape must agree with `gf_iw` without the last axis.
     beta : float
         The inverse temperature `beta` = 1/T.
 
