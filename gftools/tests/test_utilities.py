@@ -2,11 +2,26 @@
 """Test the utility functions related to Green's functions."""
 from __future__ import absolute_import, unicode_literals
 
-import pytest
+from functools import partial
 
+import pytest
 import numpy as np
+import hypothesis.strategies as st
+
+from hypothesis import given
 
 from .context import gftools
+
+approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
+
+
+@given(z=st.floats())
+@pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
+def test_fermi(z, beta):
+    """Check if Fermi functions agrees with the standard form."""
+    fermi_comp = 1./(np.exp(beta*z) + 1)
+    # assert approx(fermi_comp) == gftools.fermi_fct(z, beta=beta)
+    assert approx(gftools.fermi_fct(z, beta=beta), fermi_comp)
 
 
 def test_density():

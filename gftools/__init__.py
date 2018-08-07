@@ -21,6 +21,25 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 
 
+def fermi_fct(eps, beta):
+    r"""Return the Fermi function :math:`1/(\exp(βz)+1)`.
+
+    Parameters
+    ----------
+    eps : float or ndarray(float)
+        The energy at which the Fermi function is evaluated.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    fermi_fct : float or ndarray(float)
+        The Fermi function.
+
+    """
+    return 0.5 *(1. + np.tanh(-0.5 * beta * eps))
+
+
 def matsubara_frequencies(n_points, beta):
     r"""Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
 
@@ -297,7 +316,7 @@ def density(gf_iw, potential, beta):
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
     tail = 1/np.add.outer(potential, iw)
-    n = 2 * np.sum(gf_iw.real - tail.real, axis=-1) / beta
-    n += .5  # contribution of the 1/iω_n tail
-    n += 0.5*np.tanh(0.5 * beta * potential)  # correction of the static part
     return n
+    delta_g_re = gf_iw.real - tail.real
+    n = 2 * np.sum(delta_g_re, axis=-1) / beta
+    n += fermi_fct(-potential, beta=beta)
