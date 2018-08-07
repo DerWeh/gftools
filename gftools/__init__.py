@@ -14,6 +14,8 @@ Subpackages
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+import warnings
+
 import numpy as np
 
 from ._version import get_versions
@@ -37,7 +39,7 @@ def fermi_fct(eps, beta):
         The Fermi function.
 
     """
-    return 0.5 *(1. + np.tanh(-0.5 * beta * eps))
+    return 0.5 * (1. + np.tanh(-0.5 * beta * eps))
 
 
 def matsubara_frequencies(n_points, beta):
@@ -239,7 +241,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
     return gf_omega
 
 
-def density(gf_iw, potential, beta):
+def density(gf_iw, potential, beta, return_err=True):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     As Green's functions decay only as :math:`1/ω`, the known part of the form
@@ -257,11 +259,19 @@ def density(gf_iw, potential, beta):
         The shape must agree with `gf_iw` without the last axis.
     beta : float
         The inverse temperature `beta` = 1/T.
+    return_err : bool or float, optional
+        If `True` (default), the error estimate will be returned along with the density.
+        If `return_err` is a float, a warning will Warning will be issued if
+        the error estimate is larger than `return_err`. If `False`, no error
+        estimate is calculated.
+        See `density_error` for description of the error estimate.
 
     Returns
     -------
     density : float
         The number density of the given Green's function `gf_iw`.
+    density_error : float
+        An estimate for the density error. Only returned if `return_err` is `True`.
 
     Notes
     -----
@@ -317,9 +327,17 @@ def density(gf_iw, potential, beta):
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
     tail = 1/np.add.outer(potential, iw)
     delta_g_re = gf_iw.real - tail.real
-    n = 2 * np.sum(delta_g_re, axis=-1) / beta
-    n += fermi_fct(-potential, beta=beta)
-    return n, density_error(delta_g_re, iw)
+    density = 2 * np.sum(delta_g_re, axis=-1) / beta
+    density += fermi_fct(-potential, beta=beta)
+    if return_err:
+        err = density_error(delta_g_re, iw)
+        if return_err is True:
+            return density, err
+        else:
+            if err > return_err:
+                warnings.warn("density result inaccurate, error estimate = "
+                              + str(err), Warning)
+    return density
 
 
 def density_error(delta_gf_iw, iw_n):
