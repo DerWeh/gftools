@@ -316,7 +316,42 @@ def density(gf_iw, potential, beta):
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
     tail = 1/np.add.outer(potential, iw)
-    return n
     delta_g_re = gf_iw.real - tail.real
     n = 2 * np.sum(delta_g_re, axis=-1) / beta
     n += fermi_fct(-potential, beta=beta)
+    return n, density_error(delta_g_re, iw)
+
+
+def density_error(delta_gf_iw, iw_n):
+    """Return an estimate for the upper bound of the error in the density.
+
+    This estimate is based on the *integral test*. The crucial assumption is,
+    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^2` for all larger
+    :math:`n`.
+    If this criteria is not met, the error estimate is unreasonable and can
+    **not** be trusted. If the error is of the same magnitude as the density
+    itself, the behavior of the variable `factor` should be checked.
+
+    Parameters
+    ----------
+    delta_gf_iw : (..., N) ndarray
+        The difference between the Green's function :math:`Δ G(iω_n)`
+        and the non-interacting high-frequency estimate. Only it's real part is
+        needed.
+    iw_n : (N) ndarray(complex)
+        The Matsubara frequencies corresponding to `delta_gf_iw`.
+
+    Returns
+    -------
+    estimate : float
+        The estimate of the upper bound of the error. Reliable only for large
+        enough Matsubara frequencies.
+
+    """
+    delta_gf_iw = abs(delta_gf_iw.real)
+    part = slice(iw_n.size//10, None, None)  # only consider last 10, iw must be big
+    wn = iw_n[part].imag
+    denominator = 1./np.pi/wn[-1]
+    factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
+    estimate = factor * denominator
+    return estimate
