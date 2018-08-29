@@ -19,6 +19,7 @@ from collections import namedtuple
 
 import numpy as np
 
+from . import matrix as gtmatrix
 from ._version import get_versions
 
 __version__ = get_versions()['version']
@@ -245,7 +246,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
 Result = namedtuple('Result', ['x', 'err'])
 
 
-def density(gf_iw, potential, beta, return_err=True):
+def density(gf_iw, potential, beta, return_err=True, matrix=False):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     As Green's functions decay only as :math:`1/ω`, the known part of the form
@@ -261,6 +262,8 @@ def density(gf_iw, potential, beta, return_err=True):
         The static potential for the large-ω behavior of the Green's function.
         It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`.
         The shape must agree with `gf_iw` without the last axis.
+        If `matrix`, then potential needs to be a (N, N) matrix. It is the
+        negative of the Hamiltonian matrix and thus needs to be hermitian.
     beta : float
         The inverse temperature `beta` = 1/T.
     return_err : bool or float, optional
@@ -329,10 +332,20 @@ def density(gf_iw, potential, beta, return_err=True):
 
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
-    tail = 1/np.add.outer(potential, iw)
+
+    if matrix:
+        rv_inv, xi, rv = gtmatrix.decompose_hamiltonian(potential)
+        tail = np.einsum('ij, j..., ji -> i...',
+                         rv, 1./np.add.outer(xi, iw), rv_inv)
+        analytic = np.einsum('ij, j, ji -> i',
+                             rv, fermi_fct(-xi, beta=beta), rv_inv)
+    else:
+        tail = 1/np.add.outer(potential, iw)
+        analytic = fermi_fct(-potential, beta=beta)
+
     delta_g_re = gf_iw.real - tail.real
-    density = 2 * np.sum(delta_g_re, axis=-1) / beta
-    density += fermi_fct(-potential, beta=beta)
+    density = 2. * np.sum(delta_g_re, axis=-1) / beta
+    density += analytic
     if return_err:
         err = density_error(delta_g_re, iw)
         if return_err is True:

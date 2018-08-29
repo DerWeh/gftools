@@ -76,6 +76,35 @@ def decompose_gf_omega(g_inv):
     return rv_inv, h, rv
 
 
+def decompose_hamiltonian(hamilton):
+    r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
+    
+    The similarity transformation:
+
+    .. math::
+        H = U^\dagger h U^\dagger, \quad h = diag(λ(G))
+    
+    Parameters
+    ----------
+    hamilton : (N, N) ndarray(complex)
+        matrix to be decomposed
+
+    Returns
+    -------
+    rv_inv : (N, N) ndarray(complex)
+        The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
+        hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
+    h : (N) ndarray(complex)
+        The eigenvalues of `hamilton`
+    rv : (N, N) ndarray(complex)
+        The right eigenvectors :math:`U`
+
+    """
+    h, rv = la.eigh(hamilton)
+    rv_inv = rv.conj().T
+    return rv_inv, h, rv
+
+
 def construct_gf_omega(rv_inv, diag_inv, rv):
     r"""Construct Green's function from decomposition of its inverse.
     
