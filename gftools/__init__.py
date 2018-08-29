@@ -15,6 +15,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import warnings
+from collections import namedtuple
 
 import numpy as np
 
@@ -241,6 +242,9 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
     return gf_omega
 
 
+Result = namedtuple('Result', ['x', 'err'])
+
+
 def density(gf_iw, potential, beta, return_err=True):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
@@ -268,9 +272,9 @@ def density(gf_iw, potential, beta, return_err=True):
 
     Returns
     -------
-    density : float
+    x : float
         The number density of the given Green's function `gf_iw`.
-    density_error : float
+    err : float
         An estimate for the density error. Only returned if `return_err` is `True`.
 
     Notes
@@ -332,7 +336,7 @@ def density(gf_iw, potential, beta, return_err=True):
     if return_err:
         err = density_error(delta_g_re, iw)
         if return_err is True:
-            return density, err
+            return Result(x=density, err=err)
         else:
             if err > return_err:
                 warnings.warn("density result inaccurate, error estimate = "
