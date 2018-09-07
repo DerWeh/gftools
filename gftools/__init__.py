@@ -351,7 +351,7 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
         if return_err is True:
             return Result(x=density, err=err)
         else:
-            if err > return_err:
+            if np.any(err > return_err):
                 warnings.warn("density result inaccurate, error estimate = "
                               + str(err), Warning)
     return density

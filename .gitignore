@@ -1,4 +1,5 @@
 *@neomake*
+tempfiles/
 
 tags.*
 tags
