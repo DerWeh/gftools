@@ -168,8 +168,7 @@ def decompose_gf_omega(g_inv):
 
     """
     h, rv = la.eig(g_inv)
-    rv_inv = la.inv(rv)
-    return rv_inv, h, rv
+    return Decomposition(rv=rv, xi=h, rv_inv=la.inv(rv))
 
 
 def decompose_hamiltonian(hamilton):
@@ -197,11 +196,10 @@ def decompose_hamiltonian(hamilton):
 
     """
     h, rv = la.eigh(hamilton)
-    rv_inv = rv.conj().T
-    return rv_inv, h, rv
+    return Decomposition(rv=rv, xi=h, rv_inv=rv.conj().T)
 
 
-def construct_gf_omega(rv_inv, diag_inv, rv):
+def construct_gf_omega(rv, diag_inv, rv_inv):
     r"""Construct Green's function from decomposition of its inverse.
     
     .. math::

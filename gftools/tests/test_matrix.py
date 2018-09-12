@@ -78,7 +78,7 @@ class TestDecompositionSymmetric(object):
 
 
 class TestDecompositionGeneral(object):
-    """Tests for the function *gftools.matrix.decompose_gf_omega*.
+    """Tests for the function `gftools.matrix.decompose_gf_omega`.
     
     Main use for the function is to invert Green's functions,
     so we mainly test for that purpose.
@@ -97,7 +97,7 @@ class TestDecompositionGeneral(object):
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[1] = g0
-            rv_inv, h, rv = gfmatrix.decompose_gf_omega(g0_inv_full)
+            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
             assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
 
     @pytest.mark.parametrize("size", [4, 9, 20])
@@ -113,10 +113,12 @@ class TestDecompositionGeneral(object):
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            rv_inv, h, rv = gfmatrix.decompose_gf_omega(g0_inv_full)
+            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
             g0 = gfmatrix.construct_gf_omega(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
             assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
             assert np.allclose(g0, la.inv(g0_inv_full))
+            g0_alt = gfmatrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
+            assert np.allclose(g0, g0_alt)
 
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_eigsum_non_interacting(self, size):
