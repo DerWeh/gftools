@@ -35,11 +35,23 @@ class Decomposition(object):
     rv_inv : (N, N) complex np.ndarray
         The inverse of `rv`.
 
-    TODO: include example
     """
+
     __slots__ = ('rv', 'xi', 'rv_inv')
 
     def __init__(self, rv, xi, rv_inv):
+        """Assign the attributes obtained from a matrix digitalization.
+
+        Parameters
+        ----------
+        rv : (N, N) complex np.ndarray
+            The matrix of right eigenvalues.
+        xi : (N, ...) complex np.ndarray
+            The vector of eigenvalues
+        rv_inv : (N, N) complex np.ndarray
+            The inverse of `rv`.
+
+        """
         self.rv = rv
         self.xi = xi
         self.rv_inv = rv_inv
