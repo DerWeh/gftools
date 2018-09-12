@@ -220,4 +220,4 @@ def construct_gf_omega(rv, diag_inv, rv_inv):
         The Green's function
 
     """
-    return rv.dot(np.diag(diag_inv)).dot(rv_inv)
+    return rv.dot(np.diagflat(diag_inv)).dot(rv_inv)
