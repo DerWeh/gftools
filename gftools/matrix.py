@@ -91,8 +91,9 @@ class Decomposition(object):
         return self._reconstruct_einsum(xi, sum_str=kind)
 
     def _reconstruct_diag(self, xi):
-        if xi.ndim == 1:  # simple matrix case
-            return np.diagonal(np.matmul(self.rv*xi, self.rv_inv))
+        if xi.ndim <= 2:  # simple matrix case
+            # calculated with einsum_path
+            return np.matmul(self.rv_inv.T*self.rv, xi)
         elif xi.shape[0] == self.rv.shape[0]:
             return np.einsum('ij, j..., ji -> i...', self.rv, xi, self.rv_inv)
         else:
