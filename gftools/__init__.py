@@ -44,6 +44,28 @@ def fermi_fct(eps, beta):
     return 0.5 * (1. + np.tanh(-0.5 * beta * eps))
 
 
+def fermi_fct_d1(eps, beta):
+    r"""Return the 1st derivative of the Fermi function.
+    
+    .. math:: `-β\exp(βz)/{(\exp(βz)+1)}^2`
+
+    Parameters
+    ----------
+    eps : float or ndarray(float)
+        The energy at which the Fermi function is evaluated.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    fermi_fct : float or ndarray(float)
+        The Fermi function.
+
+    """
+    exp = np.exp(beta*eps)
+    return -beta*exp/(exp+1)**2
+
+
 def matsubara_frequencies(n_points, beta):
     r"""Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
 
