@@ -356,11 +356,10 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
 
     if matrix:
-        rv_inv, xi, rv = gtmatrix.decompose_hamiltonian(potential)
-        tail = np.einsum('ij, j..., ji -> i...',
-                         rv, 1./np.add.outer(xi, iw), rv_inv)
-        analytic = np.einsum('ij, j, ji -> i',
-                             rv, fermi_fct(-xi, beta=beta), rv_inv)
+        dec = gtmatrix.decompose_hamiltonian(potential)
+        xi = dec.xi
+        tail = dec.reconstruct(1./np.add.outer(xi, iw), kind='diag')
+        analytic = dec.reconstruct(fermi_fct(-xi, beta=beta), kind='diag')
     else:
         tail = 1/np.add.outer(potential, iw)
         analytic = fermi_fct(-potential, beta=beta)
