@@ -102,22 +102,17 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
     assert kind in set(('Gf', 'self'))
     id1 = np.ones_like(z, dtype=complex)
     A0, A1 = 0.*id1, coeff[0]*id1
-    B0, B1 = 1.*id1, 1.*id1
     A2, B2 = np.empty_like(z, dtype=complex), np.empty_like(z, dtype=complex)
+    A2[:] = coeff[0]
+    B2[:] = 1
 
     # pythran export calc_iterator._iteration(int)
     def _iteration(ii):
         A2[:] = A1 + (z - iw[ii-1])*coeff[ii]*A0
-        B2[:] = B1 + (z - iw[ii-1])*coeff[ii]*B0
-        A1[:] /= B2
-        A2[:] /= B2
-        B1[:] /= B2
-        B2[:] /= B2
+        B2[:] = 1. + (z - iw[ii-1])*coeff[ii]/B2
 
-        A0[:] = A1
-        A1[:] = A2
-        B0[:] = B1
-        B1[:] = B2
+        A0[:] = A1 / B2
+        A1[:] = A2 / B2
 
     assert n_min >= 1
     for ii in range(1, n_min):
