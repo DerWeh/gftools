@@ -4,6 +4,8 @@ from __future__ import (absolute_import, division, print_function,
 
 import numpy as np
 
+from . import Result
+
 
 # pythran export coefficients(complex[], complex[])
 def coefficients(iw, gf_iw):
@@ -128,13 +130,22 @@ def calc_iterator(z, iw, coeff, n_min, n_max):
 
 
 def averaged(z, iw, gf_iw, n_min, n_max):
+    z = np.asarray(z)
+    scalar_input = False
+    if z.ndim == 0:
+        z = z[np.newaxis]
+        scalar_input = True
+
     coeff = coefficients(iw, gf_iw=gf_iw)
     pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max)
     # TODO: filter unphysical results
     pades = np.array(list(pade_iter))
     pade_avg = np.average(pades, axis=0)
     std = np.std(pades.real, axis=0, ddof=1) + 1j*np.std(pades.real, axis=0, ddof=1)
-    return pade_avg, std
+
+    if scalar_input:
+        return Result(x=np.squeeze(pade_avg), err=np.squeeze(std))
+    return Result(x=pade_avg, err=std)
 
 
 # def Averaged(object):
