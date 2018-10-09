@@ -79,7 +79,7 @@ def calc(z, iw, coeff, n_max):
 
 
 # pythran export calc_iterator(complex[], complex[], complex[], int, int)
-def calc_iterator(z, iw, coeff, n_min, n_max):
+def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
     """Calculate Pade continuation of function at points `z` for all n<=`n_max`.
 
     Parameters
@@ -99,6 +99,7 @@ def calc_iterator(z, iw, coeff, n_min, n_max):
         function evaluated at points `z`
 
     """
+    assert kind in set(('Gf', 'self'))
     id1 = np.ones_like(z, dtype=complex)
     A0, A1 = 0.*id1, coeff[0]*id1
     B0, B1 = 1.*id1, 1.*id1
@@ -122,14 +123,21 @@ def calc_iterator(z, iw, coeff, n_min, n_max):
     for ii in range(1, n_min):
         _iteration(ii)
 
-    for ii in range(n_min, n_max):
-        _iteration(ii)
-        # if not ii % 2:  # only return for even numbers for 1/w behavior
-        if ii % 2:  # only return for odd numbers for 1/w behavior
-            yield A2 / B2
+    if kind == 'Gf':
+        for ii in range(n_min, n_max):
+            _iteration(ii)
+            # if not ii % 2:  # only return for even numbers for 1/w behavior
+            if ii % 2:  # only return for odd numbers for 1/w behavior
+                yield A2 / B2
+    elif kind == 'self':
+        for ii in range(n_min, n_max):
+            _iteration(ii)
+            # if not ii % 2:  # only return for even numbers for 1/w behavior
+            if not ii % 2:  # only return for odd numbers for 1/w behavior
+                yield A2 / B2
 
 
-def averaged(z, iw, gf_iw, n_min, n_max, threshold=1e-8):
+def averaged(z, iw, gf_iw, n_min, n_max, threshold=1e-8, kind='Gf'):
     z = np.asarray(z)
     scalar_input = False
     if z.ndim == 0:
@@ -138,10 +146,10 @@ def averaged(z, iw, gf_iw, n_min, n_max, threshold=1e-8):
 
     coeff = coefficients(iw, gf_iw=gf_iw)
 
-    validity_iter = calc_iterator(valid_z, iw, coeff=coeff, n_min=n_min, n_max=n_max)
+    validity_iter = calc_iterator(valid_z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
     is_valid = (np.all(pade.imag < -threshold) for pade in validity_iter)
 
-    pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max)
+    pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
 
     pades = np.array([pade for pade, valid in zip(pade_iter, is_valid) if valid])
     if pades.size == 0:
