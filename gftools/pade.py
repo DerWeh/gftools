@@ -142,7 +142,7 @@ def averaged(z, iw, gf_iw, n_min, n_max, threshold=1e-8, kind='Gf'):
     coeff = coefficients(iw, gf_iw=gf_iw)
 
     validity_iter = calc_iterator(valid_z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
-    is_valid = (np.all(pade.imag < -threshold) for pade in validity_iter)
+    is_valid = (np.all(pade.imag < threshold) for pade in validity_iter)
 
     pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
 
