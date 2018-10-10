@@ -107,11 +107,12 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
     B2[:] = 1
 
     multiplier = np.subtract.outer(z, iw[:-1])*coeff[1:]
+    multiplier = np.moveaxis(multiplier, -1, 0).copy()
 
     # pythran export calc_iterator._iteration(int)
     def _iteration(ii):
-        A2[:] = A1 + multiplier[..., ii-1]*A0
-        B2[:] = 1. + multiplier[..., ii-1]/B2
+        A2[:] = A1 + multiplier[ii-1]*A0
+        B2[:] = 1. + multiplier[ii-1]/B2
 
         A0[:] = A1 / B2
         A1[:] = A2 / B2
