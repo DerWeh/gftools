@@ -167,16 +167,16 @@ def decompose_gf_omega(g_inv):
     
     Parameters
     ----------
-    g_inv : (N, N) ndarray(complex)
+    g_inv : (N, N) complex ndarray
         matrix to be decomposed
 
     Returns
     -------
-    rv_inv : (N, N) ndarray(complex)
+    rv_inv : (N, N) complex ndarray
         The *inverse* of the right eigenvectors :math:`P`
-    h : (N) ndarray(complex)
+    h : (N) complex ndarray
         The complex eigenvalues of `g_inv`
-    rv : (N, N) ndarray(complex)
+    rv : (N, N) complex ndarray
         The right eigenvectors :math:`P`
 
     """
@@ -194,17 +194,17 @@ def decompose_hamiltonian(hamilton):
     
     Parameters
     ----------
-    hamilton : (N, N) ndarray(complex)
+    hamilton : (N, N) complex ndarray
         matrix to be decomposed
 
     Returns
     -------
-    rv_inv : (N, N) ndarray(complex)
+    rv_inv : (N, N) complex ndarray
         The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
-    h : (N) ndarray(complex)
+    h : (N) complex ndarray
         The eigenvalues of `hamilton`
-    rv : (N, N) ndarray(complex)
+    rv : (N, N) complex ndarray
         The right eigenvectors :math:`U`
 
     """
@@ -220,16 +220,16 @@ def construct_gf_omega(rv, diag_inv, rv_inv):
 
     Parameters
     ----------
-    rv_inv : (N, N) ndarray(complex)
+    rv_inv : (N, N) complex ndarray
         The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
     diag_inv : (N) array_like
         The eigenvalues (:math:`h`)
-    rv : (N, N) ndarray(complex)
+    rv : (N, N) complex ndarray
         The matrix of right eigenvectors (:math:`P`)
 
     Returns
     -------
-    gf_omega : (N, N) ndarray(complex)
+    gf_omega : (N, N) complex ndarray
         The Green's function
 
     """

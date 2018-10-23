@@ -30,14 +30,14 @@ def fermi_fct(eps, beta):
 
     Parameters
     ----------
-    eps : float or ndarray(float)
+    eps : float or float ndarray
         The energy at which the Fermi function is evaluated.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct : float or ndarray(float)
+    fermi_fct : float or float ndarray
         The Fermi function.
 
     """
@@ -51,14 +51,14 @@ def fermi_fct_d1(eps, beta):
 
     Parameters
     ----------
-    eps : float or ndarray(float)
+    eps : float or float ndarray
         The energy at which the Fermi function is evaluated.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct : float or ndarray(float)
+    fermi_fct : float or float ndarray
         The Fermi function.
 
     """
@@ -71,14 +71,14 @@ def matsubara_frequencies(n_points, beta):
 
     Parameters
     ----------
-    n_points : array(int)
+    n_points : int ndarray
         Points for which the Matsubara frequencies :math:`iω_n` are returned.
     beta : float
         Inverse temperature `beta` = 1/T
 
     Returns
     -------
-    matsubara_frequencies : array(complex)
+    matsubara_frequencies : complex ndarray
         Array of the imaginary Matsubara frequencies
 
     """
@@ -90,7 +90,7 @@ def bethe_dos(eps, half_bandwidth):
 
     Parameters
     ----------
-    eps : array(float), float
+    eps : float ndarray or float
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
@@ -98,7 +98,7 @@ def bethe_dos(eps, half_bandwidth):
 
     Returns
     -------
-    result : array(float), float
+    result : float ndarray or float
         The value of the DOS.
 
     """
@@ -122,7 +122,7 @@ def bethe_gf_omega(z, half_bandwidth):
 
     Parameters
     ----------
-    z : array(complex), complex
+    z : complex ndarray or complex
         Green's function is evaluated at complex frequency `z`
     half_bandwidth : float
         half-bandwidth of the DOS of the Bethe lattice
@@ -130,7 +130,7 @@ def bethe_gf_omega(z, half_bandwidth):
 
     Returns
     -------
-    bethe_gf_omega : array(complex), complex
+    bethe_gf_omega : complex ndarray or complex
         Value of the Green's function
 
     TODO: source
@@ -163,14 +163,14 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
 
     Parameters
     ----------
-    xi : array(complex), complex
+    xi : complex ndarray or complex
         Point at which the Hilbert transform is evaluated
     half_bandwidth : float
         half-bandwidth of the DOS of the Bethe lattice
 
     Returns
     -------
-    bethe_hilbert_transfrom : array(complex), complex
+    bethe_hilbert_transfrom : complex ndarray or complex
         Hilbert transform of `xi`.
 
     Note
@@ -225,7 +225,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
 
     Parameters
     ----------
-    z : array(complex), complex
+    z : complex ndarray or complex
         Green's function is evaluated at complex frequency `z`
     hopping : float
         The hopping parameter between the sites of the dimer.
@@ -236,7 +236,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
 
     Returns
     -------
-    gf_omega : array(complex)
+    gf_omega : complex ndarray
         Value of the Hubbard dimer Green's function at frequencies `z`.
 
     Notes
@@ -277,10 +277,10 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
 
     Parameters
     ----------
-    gf_iw : array(complex)
+    gf_iw : complex ndarray
         The Matsubara frequency Green's function for positive frequencies :math:`iω_n`.
         The last axis corresponds to the Matsubara frequencies.
-    potential : float, array(float)
+    potential : float ndarray or float
         The static potential for the large-ω behavior of the Green's function.
         It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`.
         The shape must agree with `gf_iw` without the last axis.
@@ -394,7 +394,7 @@ def density_error(delta_gf_iw, iw_n):
         The difference between the Green's function :math:`Δ G(iω_n)`
         and the non-interacting high-frequency estimate. Only it's real part is
         needed.
-    iw_n : (N) ndarray(complex)
+    iw_n : (N) complex ndarray
         The Matsubara frequencies corresponding to `delta_gf_iw`.
 
     Returns
