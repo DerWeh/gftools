@@ -424,3 +424,43 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
         factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
     estimate = factor * denominator
     return estimate
+
+
+def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False):
+    """Return data for visual inspection of  the density error.
+
+    The calculation of the density error assumes that *sufficient* Matsubara
+    frequencies were used. Sufficient means here, that the reminder :math:`ΔG`
+    does **not** grow anymore. If the error estimate is small, but
+    `check_convergence` returns rapidly growing data, the number of Matsubara
+    frequencies is not sufficient
+
+    Parameters
+    ----------
+    see `density`
+
+    Other Parameters
+    ----------------
+    order : int
+        The assumed order of the first non-vanishing term of the Laurent expansion.
+
+    Returns
+    -------
+    check_convergence : float ndarray
+        The last dimension of `check_convergence` corresponds to the Matsubara
+        frequencies.
+
+    """
+    iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
+
+    if matrix:
+        dec = gtmatrix.decompose_hamiltonian(potential)
+        tail = dec.reconstruct(1./np.add.outer(dec.xi, iw), kind='diag')
+    else:
+        tail = 1/np.add.outer(potential, iw)
+
+    if total:
+        tail = tail.real.sum(axis=tuple(range(tail.ndim - 1)))
+
+    delta_g_re = gf_iw.real - tail.real
+    return iw.imag**order * delta_g_re
