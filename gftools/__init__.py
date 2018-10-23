@@ -268,7 +268,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
 Result = namedtuple('Result', ['x', 'err'])
 
 
-def density(gf_iw, potential, beta, return_err=True, matrix=False):
+def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     As Green's functions decay only as :math:`1/ω`, the known part of the form
@@ -294,6 +294,9 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
         the error estimate is larger than `return_err`. If `False`, no error
         estimate is calculated.
         See `density_error` for description of the error estimate.
+    total : bool or tuple
+        If `total` the total density (summed over all dimensions) is returned.
+        Also a tuple can be given, over which axes the sums is taken.
 
     Returns
     -------
@@ -354,6 +357,8 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
 
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
+    if total:
+        assert gf_iw.ndim == 1
 
     if matrix:
         dec = gtmatrix.decompose_hamiltonian(potential)
@@ -363,6 +368,11 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False):
     else:
         tail = 1/np.add.outer(potential, iw)
         analytic = fermi_fct(-potential, beta=beta)
+
+    if total:
+        axis = tuple(range(tail.ndim - 1)) if total is True else total
+        tail = tail.real.sum(axis=axis)
+        analytic = np.sum(analytic)
 
     delta_g_re = gf_iw.real - tail.real
     density = 2. * np.sum(delta_g_re, axis=-1) / beta
