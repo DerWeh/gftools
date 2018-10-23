@@ -135,30 +135,42 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
                 yield A2 / B2
 
 
-def averaged(z, iw, gf_iw, n_min, n_max, threshold=1e-8, kind='Gf'):
-    z = np.asarray(z)
-    scalar_input = False
-    if z.ndim == 0:
-        z = z[np.newaxis]
-        scalar_input = True
+def Averager(iw, coeff, n_min, n_max, valid_pades, kind='Gf'):
+    assert kind in set(('Gf', 'self'))
 
-    coeff = coefficients(iw, gf_iw=gf_iw)
+    def averaged(z):
+        z = np.asarray(z)
+        scalar_input = False
+        if z.ndim == 0:
+            z = z[np.newaxis]
+            scalar_input = True
+
+        pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
+        pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
+
+        if pades.size == 0:
+            raise RuntimeError("No Pade fulfills requirements")
+        pade_avg = np.average(pades, axis=0)
+        std = np.std(pades.real, axis=0, ddof=1) + 1j*np.std(pades.real, axis=0, ddof=1)
+
+        if scalar_input:
+            return Result(x=np.squeeze(pade_avg), err=np.squeeze(std))
+        return Result(x=pade_avg, err=std)
+    return averaged
+
+
+# TODO: make it more abstract, allow to pass a filter function taken a Pade list/iterator
+def averaged(z, iw, n_min, n_max, valid_z, gf_iw=None, coeff=None, threshold=1e-8, kind='Gf'):
+    assert gf_iw is None or coeff is None
+    if gf_iw is not None:
+        coeff = coefficients(iw, gf_iw=gf_iw)
 
     validity_iter = calc_iterator(valid_z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
     is_valid = (np.all(pade.imag < threshold) for pade in validity_iter)
 
-    pade_iter = calc_iterator(z, iw, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
-
-    pades = np.array([pade for pade, valid in zip(pade_iter, is_valid) if valid])
-    if pades.size == 0:
-        raise RuntimeError("No Pade fulfills requirements")
-    pade_avg = np.average(pades, axis=0)
-    std = np.std(pades.real, axis=0, ddof=1) + 1j*np.std(pades.real, axis=0, ddof=1)
-
-    if scalar_input:
-        return Result(x=np.squeeze(pade_avg), err=np.squeeze(std))
-    return Result(x=pade_avg, err=std)
-
+    _averaged = Averager(iw, coeff=coeff, n_min=n_min, n_max=n_max,
+                         valid_pades=is_valid, kind=kind)
+    return _averaged(z)
 
 # def Averaged(object):
 #     """Pade based on averaging over different number of Matsubara frequencies."""
