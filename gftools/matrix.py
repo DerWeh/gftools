@@ -127,36 +127,6 @@ class Decomposition(object):
         return (self.rv, self.xi, self.rv_inv)[key]
 
 
-def decompose_gf_omega_symmetric(g_inv_band):
-    r"""Decompose the Green's function into eigenvalues and eigenvectors.
-    
-    The similarity transformation for symmetric matrices is orthogonal.
-
-    .. math::
-        G^{-1} = O h O^T, \quad h = diag(λ(G))
-    
-    Parameters
-    ----------
-    g_inv_band : (2, N) ndarray(complex)
-        matrix to be decomposed, needs to be given in banded form
-        (see :func:`scipy.linalg.eig_banded`)
-
-    Returns
-    -------
-    rv_inv : (N, N) ndarray(complex)
-        The *inverse* of the right eigenvectors :math:`O`
-    h : (N) ndarray(complex)
-        The complex eigenvalues of `g_inv_band`
-    rv : (N, N) ndarray(complex)
-        The right eigenvectors :math:`O`
-
-    """
-    h, rv = la.eig_banded(g_inv_band)
-    rv_inv = rv.T  # symmetric matrix's are orthogonal diagonalizable
-    # assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
-    return rv_inv, h, rv
-
-
 def decompose_gf_omega(g_inv):
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
     
