@@ -388,7 +388,7 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     return density
 
 
-def density_error(delta_gf_iw, iw_n):
+def density_error(delta_gf_iw, iw_n, noisy=True):
     """Return an estimate for the upper bound of the error in the density.
 
     This estimate is based on the *integral test*. The crucial assumption is,
@@ -414,10 +414,13 @@ def density_error(delta_gf_iw, iw_n):
         enough Matsubara frequencies.
 
     """
-    delta_gf_iw = abs(delta_gf_iw.real)
     part = slice(iw_n.size//10, None, None)  # only consider last 10, iw must be big
     wn = iw_n[part].imag
     denominator = 1./np.pi/wn[-1]
-    factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
+    if noisy:
+        factor = np.average(delta_gf_iw[..., part] * wn**2, axis=-1)
+    else:
+        delta_gf_iw = abs(delta_gf_iw.real)
+        factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
     estimate = factor * denominator
     return estimate
