@@ -129,12 +129,12 @@ class Decomposition(object):
 
 def decompose_gf_omega(g_inv):
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
-    
+
     The similarity transformation:
 
     .. math::
         G^{-1} = P h P^{-1}, \quad h = diag(λ(G))
-    
+
     Parameters
     ----------
     g_inv : (N, N) complex ndarray
@@ -142,11 +142,11 @@ def decompose_gf_omega(g_inv):
 
     Returns
     -------
-    rv_inv : (N, N) complex ndarray
+    Decomposition.rv_inv : (N, N) complex ndarray
         The *inverse* of the right eigenvectors :math:`P`
-    h : (N) complex ndarray
+    Decomposition.h : (N) complex ndarray
         The complex eigenvalues of `g_inv`
-    rv : (N, N) complex ndarray
+    Decomposition.rv : (N, N) complex ndarray
         The right eigenvectors :math:`P`
 
     """
@@ -156,12 +156,12 @@ def decompose_gf_omega(g_inv):
 
 def decompose_hamiltonian(hamilton):
     r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
-    
+
     The similarity transformation:
 
     .. math::
         H = U^\dagger h U^\dagger, \quad h = diag(λ(G))
-    
+
     Parameters
     ----------
     hamilton : (N, N) complex ndarray
@@ -169,12 +169,12 @@ def decompose_hamiltonian(hamilton):
 
     Returns
     -------
-    rv_inv : (N, N) complex ndarray
+    Decomposition.rv_inv : (N, N) complex ndarray
         The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
-    h : (N) complex ndarray
+    Decomposition.h : (N) float ndarray
         The eigenvalues of `hamilton`
-    rv : (N, N) complex ndarray
+    Decomposition.rv : (N, N) complex ndarray
         The right eigenvectors :math:`U`
 
     """
@@ -184,7 +184,7 @@ def decompose_hamiltonian(hamilton):
 
 def construct_gf_omega(rv, diag_inv, rv_inv):
     r"""Construct Green's function from decomposition of its inverse.
-    
+
     .. math::
         G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
 

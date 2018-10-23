@@ -13,14 +13,14 @@ def coefficients(iw, gf_iw):
 
     Parameters
     ----------
-    iw : ndarray(complex)
+    iw : complex ndarray
         Array of Matsubara frequencies.
-    gf_iw : ndarray(complex)
+    gf_iw : complex ndarray
         Green's function at the Matsubara frequencies
 
     Returns
     -------
-    coefficients : ndarray(complex)
+    coefficients : complex ndarray
         Array of Pade coefficients, needed to perform Pade continuation.
 
     Raises
@@ -44,18 +44,18 @@ def calc(z, iw, coeff, n_max):
 
     Parameters
     ----------
-    z : (N,) ndarray(complex)
+    z : (N,) complex ndarray
         points at with the functions will be evaluated
-    iw : (M,) ndarray(complex)
+    iw : (M,) complex ndarray
         imaginary mesh used to calculate `coeff`
-    coeff : (M,) ndarray(complex)
+    coeff : (M,) complex ndarray
         coefficients for Pade, calculated from `coefficients`
     n_max : int
         number of imaginary frequencies used for the Pade
 
     Returns
     -------
-    pade_calc : (N,) ndarray(complex)
+    pade_calc : (N,) complex ndarray
         function evaluated at points `z`
 
     """
@@ -84,18 +84,18 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
 
     Parameters
     ----------
-    z : (N,) ndarray(complex)
+    z : (N,) complex ndarray
         points at with the functions will be evaluated
-    iw : (M,) ndarray(complex)
+    iw : (M,) complex ndarray
         imaginary mesh used to calculate `coeff`
-    coeff : (M,) ndarray(complex)
+    coeff : (M,) complex ndarray
         coefficients for Pade, calculated from `coefficients`
     n_max : int
         Number of maximum imaginary frequencies used for the Pade
 
     Returns
     -------
-    pade_calc : (N,) ndarray(complex)
+    pade_calc : (N,) complex ndarray
         function evaluated at points `z`
 
     """
