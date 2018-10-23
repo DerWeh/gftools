@@ -150,6 +150,8 @@ def decompose_gf_omega(g_inv):
         The right eigenvectors :math:`P`
 
     """
+    if isinstance(g_inv, Decomposition):
+        return g_inv
     h, rv = la.eig(g_inv)
     return Decomposition(rv=rv, xi=h, rv_inv=la.inv(rv))
 
@@ -178,6 +180,8 @@ def decompose_hamiltonian(hamilton):
         The right eigenvectors :math:`U`
 
     """
+    if isinstance(hamilton, Decomposition):
+        return hamilton
     h, rv = la.eigh(hamilton)
     return Decomposition(rv=rv, xi=h, rv_inv=rv.conj().T)
 
