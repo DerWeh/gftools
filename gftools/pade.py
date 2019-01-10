@@ -2,6 +2,8 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+from itertools import islice
+
 import numpy as np
 
 from . import Result
@@ -100,6 +102,17 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
 
     """
     assert kind in set(('Gf', 'self'))
+    assert n_min >= 1
+    assert n_min < n_max
+    n_min -= 1
+    n_max -= 1
+    if kind == 'Gf' and n_min % 2:
+        # odd number for 1/ω required -> index must be even
+        n_min += 1
+    if kind == 'self' and not n_min % 2:
+        # even number for constant tail required -> index must be odd
+        n_min += 1
+
     id1 = np.ones_like(z, dtype=complex)
     A0, A1 = 0.*id1, coeff[0]*id1
     A2 = coeff[0] * id1
@@ -109,8 +122,8 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
     multiplier = np.moveaxis(multiplier, -1, 0).copy()
 
     # pythran export calc_iterator._iteration(int)
-    def _iteration(ii):
-        multiplier_im = multiplier[ii-1]/B2
+    def _iteration(multiplier_im):
+        multiplier_im = multiplier_im/B2
         A2[:] = A1 + multiplier_im*A0
         B2[:] = 1. + multiplier_im
 
@@ -118,16 +131,8 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
         A1[:] = A2 / B2
         return A1
 
-    assert n_min >= 1
-    for ii in range(1, n_min):
-        _iteration(ii)
-
-    complete_iterator = ((_iteration(ii), ii) for ii in range(n_min, n_max))
-    if kind == 'Gf':  # only return for odd numbers for 1/w behavior
-        return (iteration for iteration, ii in complete_iterator if ii % 2)
-    elif kind == 'self':  # only return for even numbers for constant behavior
-        return (iteration for iteration, ii in complete_iterator if not ii % 2)
-
+    complete_iterations = (_iteration(multiplier_im) for multiplier_im in multiplier)
+    return islice(complete_iterations, n_min, n_max, 2)
 
 
 def Averager(iw, coeff, n_min, n_max, valid_pades, kind='Gf'):
