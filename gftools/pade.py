@@ -116,23 +116,18 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
 
         A0[:] = A1
         A1[:] = A2 / B2
+        return A1
 
     assert n_min >= 1
     for ii in range(1, n_min):
         _iteration(ii)
 
-    if kind == 'Gf':
-        for ii in range(n_min, n_max):
-            _iteration(ii)
-            # if not ii % 2:  # only return for even numbers for 1/w behavior
-            if ii % 2:  # only return for odd numbers for 1/w behavior
-                yield A2 / B2
-    elif kind == 'self':
-        for ii in range(n_min, n_max):
-            _iteration(ii)
-            # if not ii % 2:  # only return for even numbers for 1/w behavior
-            if not ii % 2:  # only return for odd numbers for 1/w behavior
-                yield A2 / B2
+    complete_iterator = ((_iteration(ii), ii) for ii in range(n_min, n_max))
+    if kind == 'Gf':  # only return for odd numbers for 1/w behavior
+        return (iteration for iteration, ii in complete_iterator if ii % 2)
+    elif kind == 'self':  # only return for even numbers for constant behavior
+        return (iteration for iteration, ii in complete_iterator if not ii % 2)
+
 
 
 def Averager(iw, coeff, n_min, n_max, valid_pades, kind='Gf'):
