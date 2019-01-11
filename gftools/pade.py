@@ -128,8 +128,9 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
         B2[:] = 1. + multiplier_im
 
         A0[:] = A1
-        A1[:] = A2 / B2
-        return A1
+        pade = A2 / B2
+        A1[:] = pade
+        return pade
 
     complete_iterations = (_iteration(multiplier_im) for multiplier_im in multiplier)
     return islice(complete_iterations, n_min, n_max, 2)
