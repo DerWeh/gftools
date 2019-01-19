@@ -114,22 +114,26 @@ def calc_iterator(z, iw, coeff, n_min, n_max, kind='Gf'):
         n_min += 1
 
     id1 = np.ones_like(z, dtype=complex)
-    A0, A1 = 0.*id1, coeff[0]*id1
-    A2 = coeff[0] * id1
-    B2 = 1. * id1
+
+    class State(object):
+        __slots__ = ('A0', 'A1', 'A2', 'B2')
+
+        def __init__(self, A0, A1, A2, B2):
+            self.A0, self.A1, self.A2, self.B2 = A0, A1, A2, B2
+
+    cs = State(A0=0.*id1, A1=coeff[0]*id1, A2=coeff[0]*id1, B2=id1)
 
     multiplier = np.subtract.outer(z, iw[:-1])*coeff[1:]
     multiplier = np.moveaxis(multiplier, -1, 0).copy()
 
     # pythran export calc_iterator._iteration(int)
     def _iteration(multiplier_im):
-        multiplier_im = multiplier_im/B2
-        A2[:] = A1 + multiplier_im*A0
-        B2[:] = 1. + multiplier_im
+        multiplier_im = multiplier_im/cs.B2
+        cs.A2 = cs.A1 + multiplier_im*cs.A0
+        cs.B2 = 1 + multiplier_im
 
-        A0[:] = A1
-        pade = A2 / B2
-        A1[:] = pade
+        cs.A0 = cs.A1
+        pade = cs.A1 = cs.A2 / cs.B2
         return pade
 
     complete_iterations = (_iteration(multiplier_im) for multiplier_im in multiplier)
