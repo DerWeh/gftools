@@ -9,35 +9,41 @@ import numpy as np
 from . import Result
 
 
+def _contains_nan(array) -> bool:
+    flat = array.reshape(-1)
+    return np.isnan(np.dot(flat, flat))
+
+
 # pythran export coefficients(complex[], complex[])
 def coefficients(z, fct_z) -> np.ndarray:
-    """Calculate the coefficients needed to perform the Pade continuation.
+    """Calculate the coefficients for the Pade continuation.
 
     Parameters
     ----------
     z : (N_z, ) complex ndarray
         Array of complex points
-    fct_z : (N_z, ) complex ndarray
+    fct_z : (..., N_z) complex ndarray
         Function at points `z`
 
     Returns
     -------
-    coefficients : (N_z, ) complex ndarray
+    coefficients : (..., N_z) complex ndarray
         Array of Pade coefficients, needed to perform Pade continuation.
+        Has the same same shape as `fct_z`.
 
     Raises
     ------
     ValueError
-        If the shape of `z` and `fct_z` do not match.
+        If the size of `z` and the last dimension of `fct_z` do not match.
 
     """
-    if z.shape != fct_z.shape:
+    if z.shape != fct_z.shape[-1:]:
         raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
-    mat = np.zeros((z.size, z.size), dtype=complex)
+    mat = np.zeros((z.size, *fct_z.shape), dtype=complex)
     mat[0] = fct_z
     for ii, mat_pi in enumerate(mat[1:]):
-        mat_pi[ii+1:] = (mat[ii, ii]/mat[ii, ii+1:] - 1.)/(z[ii+1:] - z[ii])
-    return mat.diagonal()
+        mat_pi[..., ii+1:] = (mat[ii, ..., ii:ii+1]/mat[ii, ..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
+    return mat.diagonal(axis1=0, axis2=-1)
 
 
 # pythran export calc(complex[], complex[], complex[], int)
@@ -91,11 +97,11 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
 
     Parameters
     ----------
-    z_out : (N_out,) complex ndarray
+    z_out : complex ndarray
         points at with the functions will be evaluated
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
-    coeff : (N_in,) complex ndarray
+    coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
     n_min, n_max : int
         Number of minimum (maximum) input points and coefficients used for Pade
@@ -106,8 +112,11 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
 
     Returns
     -------
-    pade_calc : (N_out,) complex ndarray
-        function evaluated at points `z_out`
+    pade_calc : iterator
+        Function evaluated at points `z_out` for all correspond (see `kind`)
+        number of Matsubara frequencies between `n_min` and `n_max`.
+        The shape of the elements is the same as `coeff.shape` with the last
+        dimension corresponding to N_in replaced by the shape of `z_out`.
 
     """
     assert kind in set(('Gf', 'self'))
@@ -121,10 +130,13 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
     if kind == 'self' and not n_min % 2:
         # even number for constant tail required -> index must be odd
         n_min += 1
+    out_shape = z_out.shape
+    coeff_shape = coeff.shape
 
+    z_out = z_out.reshape(-1)  # accept arbitrary shaped z_out
     id1 = np.ones_like(z_out, dtype=complex)
 
-    class State(object):
+    class State:
         """State of the calculation to emulate nonlocal behavior."""
 
         __slots__ = ('A0', 'A1', 'A2', 'B2')
@@ -132,10 +144,11 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
         def __init__(self, A0, A1, A2, B2):
             self.A0, self.A1, self.A2, self.B2 = A0, A1, A2, B2
 
-    cs = State(A0=0.*id1, A1=coeff[0]*id1, A2=coeff[0]*id1, B2=id1)
+    cs = State(A0=0.*id1, A1=coeff[..., 0:1]*id1, A2=coeff[..., 0:1]*id1, B2=id1)
 
-    multiplier = np.subtract.outer(z_out, z_in[:-1])*coeff[1:]
-    multiplier = np.moveaxis(multiplier, -1, 0).copy()
+    multiplier = (z_out - z_in[:-1, np.newaxis])*coeff[..., 1:, np.newaxis]
+    # move N_in axis in front to iterate over it
+    multiplier = np.moveaxis(multiplier, -2, 0).copy()
 
     # pythran export calc_iterator._iteration(int)
     def _iteration(multiplier_im):
@@ -147,7 +160,8 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
         pade = cs.A1 = cs.A2 / cs.B2
         return pade
 
-    complete_iterations = (_iteration(multiplier_im) for multiplier_im in multiplier)
+    complete_iterations = (_iteration(multiplier_im).reshape(*coeff_shape[:-1], *out_shape)
+                           for multiplier_im in multiplier)
     return islice(complete_iterations, n_min, n_max, 2)
 
 
@@ -158,7 +172,7 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
     ----------
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
-    coeff : (N_in,) complex ndarray
+    coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
     n_min, n_max : int
         Number of minimum (maximum) input points and coefficients used for Pade
@@ -176,9 +190,21 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
         The continued function `f(z)` (`z`, ) -> Result. `f(z).x` contains the
         function values `f(z).err` the associated variance.
 
+    Raises
+    ------
+    TypeError
+        If `valid_pades` not of type `bool`
+    RuntimeError
+        If all there are none elements of `valid_pades` that evaluate to True.
+
     """
     assert kind in set(('Gf', 'self'))
-    valid_pades = list(valid_pades)
+    valid_pades = np.array(valid_pades)
+    if valid_pades.dtype != bool:
+        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
+                        "Expected `bool`.")
+    if not valid_pades.any():
+        raise RuntimeError("No Pade fulfills is valid.")
 
     def averaged(z):
         """Calculate Pade continuation of function at points `z`.
@@ -190,15 +216,21 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
 
         Parameters
         ----------
-        z : (N,) complex ndarray
+        z : complex ndarray
             points at with the functions will be evaluated
 
         Returns
         -------
-        pade.x : (N,) complex ndarray
+        pade.x : complex ndarray
             function evaluated at points `z`
-        pade.err : (N,) complex ndarray
+        pade.err : complex ndarray
             variance associated with the function values `pade.x` at points `z`
+
+        Raises
+        ------
+        RuntimeError
+            If the calculated continuation contain any NaNs. This indicates
+            invalid input in the coefficients and thus the original function.
 
         """
         z = np.asarray(z)
@@ -208,15 +240,23 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
             scalar_input = True
 
         pade_iter = calc_iterator(z, z_in, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
-        pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
+        if valid_pades.ndim == 1:
+            # validity determined for all dimensions -> drop invalid pades
+            pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
+            if _contains_nan(pades):
+                # check if fct_z already contained nans
+                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+        else:
+            pades = np.array(list(pade_iter))
+            if _contains_nan(pades):
+                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+            pades[~valid_pades] = np.nan
 
-        if pades.size == 0:
-            raise RuntimeError("No Pade fulfills requirements")
-        pade_avg = np.average(pades, axis=0)
-        std = np.std(pades.real, axis=0, ddof=1) + 1j*np.std(pades.real, axis=0, ddof=1)
+        pade_avg = np.nanmean(pades, axis=0)
+        std = np.nanstd(pades.real, axis=0, ddof=1) + 1j*np.std(pades.real, axis=0, ddof=1)
 
         if scalar_input:
-            return Result(x=np.squeeze(pade_avg), err=np.squeeze(std))
+            return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
         return Result(x=pade_avg, err=std)
     return averaged
 
@@ -271,7 +311,9 @@ def averaged(z_out, z_in, n_min, n_max, valid_z=None, fct_z=None, coeff=None, th
         valid_z = z_out
 
     validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
-    is_valid = [np.all(pade.imag < threshold) for pade in validity_iter]
+    is_valid = np.array([np.all(pade.imag < threshold, axis=tuple(-np.arange(valid_z.ndim)-1))
+                         for pade in validity_iter])
+    assert is_valid.shape[1:] == coeff.shape[:-1]
 
     _averaged = Averager(z_in, coeff=coeff, n_min=n_min, n_max=n_max,
                          valid_pades=is_valid, kind=kind)
