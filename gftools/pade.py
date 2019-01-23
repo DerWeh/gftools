@@ -203,8 +203,11 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
     if valid_pades.dtype != bool:
         raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
                         "Expected `bool`.")
-    if not valid_pades.any():
-        raise RuntimeError("No Pade fulfills is valid.")
+    if not valid_pades.any(axis=0).all():
+        # for some axis no valid pade was found
+        raise RuntimeError("No Pade fulfills is valid.\n"
+                           f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
+                           f"{np.argwhere(~valid_pades.any(axis=0))}")
 
     def averaged(z):
         """Calculate Pade continuation of function at points `z`.
