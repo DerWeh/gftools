@@ -1,11 +1,8 @@
 """Basic implementation of Pade extracted from Junyas code.
 
 notation: function u({iw}), a: coefficients for Pade, N: length of arrays
+
 """
-import os
-
-from collections import namedtuple
-
 import numpy as np
 
 
@@ -52,7 +49,7 @@ def test_pade_init_junya(z, u, N):
 
     a = np.zeros((N,), dtype=np.complex256)
     for i in range(N):
-        a[i] = g[i,i]
+        a[i] = g[i, i]
     return a
 
 
@@ -92,6 +89,3 @@ def pade_calc(iw, a, w, n_pade):
         B0 = B1
         B1 = B2
     return A2 / B2
-
-
-

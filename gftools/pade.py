@@ -1,4 +1,23 @@
-"""Pade analytic continuation for Green's functions and self-energies."""
+"""Pade analytic continuation for Green's functions and self-energies.
+
+The main aim of this module is to provide analytic continuation based on
+averaging over multiple Pade approximates (similar to _[1]).
+
+In most cases the following high level function should be used:
+
+`averaged`
+   Returns one-shot analytic continuation evaluated at `z`.
+
+`Averager`
+   Returns a function for repeated evaluation of the continued function.
+
+References
+----------
+.. [1] Schött et al. “Analytic Continuation by Averaging Pade Approximants”.
+   Phys Rev B 93, no. 7 (2016): 075104.
+   https://doi.org/10.1103/PhysRevB.93.075104.
+
+"""
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -10,11 +29,11 @@ from . import Result
 
 
 def _contains_nan(array) -> bool:
+    """Check if `array` contains any NaN."""
     flat = array.reshape(-1)
     return np.isnan(np.dot(flat, flat))
 
 
-# pythran export coefficients(complex[], complex[])
 def coefficients(z, fct_z) -> np.ndarray:
     """Calculate the coefficients for the Pade continuation.
 
@@ -46,7 +65,6 @@ def coefficients(z, fct_z) -> np.ndarray:
     return mat.diagonal(axis1=0, axis2=-1)
 
 
-# pythran export calc(complex[], complex[], complex[], int)
 def calc(z_out, z_in, coeff, n_max):
     """Calculate Pade continuation of function at points `z_out`.
 
@@ -88,7 +106,6 @@ def calc(z_out, z_in, coeff, n_max):
     return A2 / B2
 
 
-# pythran export calc_iterator(complex[], complex[], complex[], int, int)
 def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
     """Calculate Pade continuation of function at points `z_out`.
 
@@ -113,10 +130,18 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
     Returns
     -------
     pade_calc : iterator
-        Function evaluated at points `z_out` for all correspond (see `kind`)
-        number of Matsubara frequencies between `n_min` and `n_max`.
+        Function evaluated at points `z_out` for all corresponding (see `kind`)
+        numbers of Matsubara frequencies between `n_min` and `n_max`.
         The shape of the elements is the same as `coeff.shape` with the last
-        dimension corresponding to N_in replaced by the shape of `z_out`.
+        dimension corresponding to N_in replaced by the shape of `z_out`:
+        (..., N_in, *z_out.shape).
+
+    References
+    ----------
+    .. [2] Vidberg, H. J., and J. W. Serene. “Solving the Eliashberg Equations
+       by Means of N-Point Pade Approximants.” Journal of Low Temperature
+       Physics 29, no. 3-4 (November 1, 1977): 179-92.
+       https://doi.org/10.1007/BF00655090.
 
     """
     assert kind in set(('Gf', 'self'))
@@ -209,7 +234,7 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
                            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
                            f"{np.argwhere(~valid_pades.any(axis=0))}")
 
-    def averaged(z):
+    def averaged(z) -> Result:
         """Calculate Pade continuation of function at points `z`.
 
         The continuation is calculated for different numbers of coefficients
