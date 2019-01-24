@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Pade analytic continuation for Green's functions and self-energies.
 
 The main aim of this module is to provide analytic continuation based on
@@ -29,13 +28,13 @@ import numpy as np
 from . import Result
 
 
-def _contains_nan(array):
+def _contains_nan(array) -> bool:
     """Check if `array` contains any NaN."""
     flat = array.reshape(-1)
     return np.isnan(np.dot(flat, flat))
 
 
-def coefficients(z, fct_z):
+def coefficients(z, fct_z) -> np.ndarray:
     """Calculate the coefficients for the Pade continuation.
 
     Parameters
@@ -58,8 +57,8 @@ def coefficients(z, fct_z):
 
     """
     if z.shape != fct_z.shape[-1:]:
-        raise ValueError("Dimensions of `z` ({z}) and `fct_z` ({fct_z}) mismatch.".format(z=z.shape, fct_z=fct_z.shape))
-    mat = np.zeros([z.size,] + list(fct_z.shape), dtype=complex)
+        raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
+    mat = np.zeros((z.size, *fct_z.shape), dtype=complex)
     mat[0] = fct_z
     for ii, mat_pi in enumerate(mat[1:]):
         mat_pi[..., ii+1:] = (mat[ii, ..., ii:ii+1]/mat[ii, ..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
@@ -186,7 +185,7 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
         pade = cs.A1 = cs.A2 / cs.B2
         return pade
 
-    complete_iterations = (_iteration(multiplier_im).reshape(list(coeff_shape[:-1]) + list(out_shape))
+    complete_iterations = (_iteration(multiplier_im).reshape(*coeff_shape[:-1], *out_shape)
                            for multiplier_im in multiplier)
     return islice(complete_iterations, n_min, n_max, 2)
 
@@ -227,15 +226,15 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
     assert kind in set(('Gf', 'self'))
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
-        raise TypeError("Invalid type of `valid_pades`: {valid_pades}\n".fromat(valid_pades=valid_pades.type)
-                        + "Expected `bool`.")
+        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
+                        "Expected `bool`.")
     if not valid_pades.any(axis=0).all():
         # for some axis no valid pade was found
         raise RuntimeError("No Pade fulfills is valid.\n"
-                           + "No solution found for coefficient (shape: {coeff}) axes ".format(coeff=coeff.shape[:-1])
-                           + "{valid_pades}".format(np.argwhere(valid_pades=~valid_pades.any(axis=0))))
+                           f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
+                           f"{np.argwhere(~valid_pades.any(axis=0))}")
 
-    def averaged(z):
+    def averaged(z) -> Result:
         """Calculate Pade continuation of function at points `z`.
 
         The continuation is calculated for different numbers of coefficients
