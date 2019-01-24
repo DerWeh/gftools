@@ -15,8 +15,6 @@ setup(name="gftools",
       keywords="Green's\ function physics",
       classifiers=[
           'Intended Audience :: Science/Research',
-          'Programming Language :: Python :: 2'
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3.0',
           'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering :: Physics',
