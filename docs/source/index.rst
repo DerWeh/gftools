@@ -21,6 +21,7 @@ describing what they are and what they do.
    
    gftools
    matrix
+   pade
 
 
 

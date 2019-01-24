@@ -2,7 +2,7 @@
 """Pade analytic continuation for Green's functions and self-energies.
 
 The main aim of this module is to provide analytic continuation based on
-averaging over multiple Pade approximates (similar to _[1]).
+averaging over multiple Pade approximates (similar to [1]_).
 
 In most cases the following high level function should be used:
 
@@ -135,7 +135,7 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
         numbers of Matsubara frequencies between `n_min` and `n_max`.
         The shape of the elements is the same as `coeff.shape` with the last
         dimension corresponding to N_in replaced by the shape of `z_out`:
-        (..., N_in, *z_out.shape).
+        (..., N_in, \*z_out.shape).
 
     References
     ----------
