@@ -161,9 +161,8 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
     z_out = z_out.reshape(-1)  # accept arbitrary shaped z_out
     id1 = np.ones_like(z_out, dtype=complex)
 
-    A0 = 0.*id1
-    A1 = coeff[..., 0:1]*id1
-    A2 = coeff[..., 0:1]*id1
+    pade_prev = 0.*id1
+    pade = coeff[..., 0:1]*id1
     B2 = id1
 
     multiplier = (z_out - z_in[:-1, np.newaxis])*coeff[..., 1:, np.newaxis]
@@ -171,13 +170,11 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
     multiplier = np.moveaxis(multiplier, -2, 0).copy()
 
     def _iteration(multiplier_im):
-        nonlocal A0, A1, A2, B2
-        multiplier_im = multiplier_im/B2
-        A2 = A1 + multiplier_im*A0
+        nonlocal pade_prev, pade, B2
+        multiplier_im = multiplier_im / B2
         B2 = 1 + multiplier_im
+        pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
 
-        A0 = A1
-        pade = A1 = A2 / B2
         return pade
 
     complete_iterations = (_iteration(multiplier_im).reshape(*coeff_shape[:-1], *out_shape)
