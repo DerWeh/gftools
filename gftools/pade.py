@@ -107,10 +107,11 @@ def calc(z_out, z_in, coeff, n_max):
 
 
 def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
-    """Calculate Pade continuation of function at points `z_out`.
+    r"""Calculate Pade continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
     into account, where the number is in [n_min, n_max].
+    The algorithm is take from [2]_.
 
     Parameters
     ----------
