@@ -1,4 +1,4 @@
-"""Basic implementation of Pade extracted from Junyas code.
+"""Basic implementation of Pade extracted from Junyas code as a reference.
 
 notation: function u({iw}), a: coefficients for Pade, N: length of arrays
 
