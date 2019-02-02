@@ -18,14 +18,78 @@ References
    https://doi.org/10.1103/PhysRevB.93.075104.
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 from itertools import islice
+from abc import ABC, abstractmethod
 
 import numpy as np
 
 from . import Result
+
+
+class KindSelector(ABC):
+    """Abstract filter class to determine high-frequency behavior of Pade.
+
+    We denote approximants with the corresponding high frequency behavior as
+    *valid*.
+    Considers all valid approximants including between `n_min` and `n_max`
+    Matsubara frequencies.
+    """
+
+    @abstractmethod
+    def __init__(self, n_min, n_max):
+        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        assert n_min >= 1
+        assert n_min < n_max
+        self.start = n_min - 1  # indices start from 0
+        self.stop = n_max - 1  # indices start from 0
+        self.step = NotImplemented
+
+    def islice(self, iterable):
+        """Return an iterator whose next() method returns valid values from `iterable`."""
+        return islice(iterable, self.start, self.stop, self.step)
+
+    @property
+    def slice(self):
+        """Return slice selecting the valid approximants."""
+        return slice(self.start, self.stop, self.step)
+
+    def __getitem__(self, index):
+        """Get indices."""
+        return range(self.start, self.stop, self.step)[index]
+
+
+class KindGf(KindSelector):
+    """Filter approximants such that the high-frequency behavior is :math:`1/ω`.
+
+    We denote approximants with the corresponding high frequency behavior as
+    *valid*.
+    Considers all valid approximants including between `n_min` and `n_max`
+    Matsubara frequencies.
+    """
+
+    def __init__(self, n_min, n_max):
+        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        if not n_min % 2:
+            n_min += 1  # odd number for 1/z required
+        super().__init__(n_min, n_max)
+        self.step = 2
+
+
+class KindSelf(KindSelector):
+    """Filter approximants such that the high-frequency behavior is a constant.
+
+    We denote approximants with the corresponding high frequency behavior as
+    *valid*.
+    Considers all valid approximants including between `n_min` and `n_max`
+    Matsubara frequencies.
+    """
+
+    def __init__(self, n_min, n_max):
+        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        if n_min % 2:
+            n_min += 1  # even number for constant tail required
+        super().__init__(n_min, n_max)
+        self.step = 2
 
 
 def _contains_nan(array) -> bool:
@@ -106,7 +170,7 @@ def calc(z_out, z_in, coeff, n_max):
     return A2 / B2
 
 
-def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
+def calc_iterator(z_out, z_in, coeff, kind: KindSelector):
     r"""Calculate Pade continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
@@ -121,12 +185,11 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
-    n_min, n_max : int
-        Number of minimum (maximum) input points and coefficients used for Pade
-    kind : {'Gf', 'self'}
-        Defines the asymptotic of the continued function. For 'Gf' the function
-        goes like :math:`1/z` for large `z`, for 'self' the function behaves
-        like a constant for large `z`.
+    kind : {KindGf, KindSelf}
+        Defines the asymptotic of the continued function and the number of
+        minumum and maximum input points used for Pade. For `KindGf` the
+        function goes like :math:`1/z` for large `z`, for `KindSelf` the
+        function behaves like a constant for large `z`.
 
     Returns
     -------
@@ -145,17 +208,9 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
        https://doi.org/10.1007/BF00655090.
 
     """
-    assert kind in set(('Gf', 'self'))
-    assert n_min >= 1
-    assert n_min < n_max
-    n_min -= 1
-    n_max -= 1
-    if kind == 'Gf' and n_min % 2:
-        # odd number for 1/ω required -> index must be even
-        n_min += 1
-    if kind == 'self' and not n_min % 2:
-        # even number for constant tail required -> index must be odd
-        n_min += 1
+    # FIXME: move to kinds
+    # n_min -= 1
+    # n_max -= 1
     out_shape = z_out.shape
     coeff_shape = coeff.shape
 
@@ -180,10 +235,10 @@ def calc_iterator(z_out, z_in, coeff, n_min, n_max, kind='Gf'):
 
     complete_iterations = (_iteration(multiplier_im).reshape(*coeff_shape[:-1], *out_shape)
                            for multiplier_im in multiplier)
-    return islice(complete_iterations, n_min, n_max, 2)
+    return kind.islice(complete_iterations)
 
 
-def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
+def Averager(z_in, coeff, valid_pades, kind: KindSelector):
     """Create function for averaging Pade scheme.
 
     Parameters
@@ -192,15 +247,14 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
-    n_min, n_max : int
-        Number of minimum (maximum) input points and coefficients used for Pade
     valid_pades : list_like of bool
         Mask which continuations are correct, all Pades where `valid_pades`
         evaluates to false will be ignored for the average.
-    kind : {'Gf', 'self'}
-        Defines the asymptotic of the continued function. For 'Gf' the function
-        goes like :math:`1/z` for large `z`, for 'self' the function behaves
-        like a constant for large `z`.
+    kind : {KindGf, KindSelf}
+        Defines the asymptotic of the continued function and the number of
+        minumum and maximum input points used for Pade. For `KindGf` the
+        function goes like :math:`1/z` for large `z`, for `KindSelf` the
+        function behaves like a constant for large `z`.
 
     Returns
     -------
@@ -216,7 +270,6 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
         If all there are none elements of `valid_pades` that evaluate to True.
 
     """
-    assert kind in set(('Gf', 'self'))
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
         raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
@@ -260,7 +313,7 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
             z = z[np.newaxis]
             scalar_input = True
 
-        pade_iter = calc_iterator(z, z_in, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
+        pade_iter = calc_iterator(z, z_in, coeff=coeff, kind=kind)
         if valid_pades.ndim == 1:
             # validity determined for all dimensions -> drop invalid pades
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
@@ -283,7 +336,7 @@ def Averager(z_in, coeff, n_min, n_max, valid_pades, kind='Gf'):
 
 
 # TODO: make it more abstract, allow to pass a filter function taken a Pade list/iterator
-def averaged(z_out, z_in, n_min, n_max, valid_z=None, fct_z=None, coeff=None, threshold=1e-8, kind='Gf'):
+def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None, threshold=1e-8, kind: KindSelector):
     """Return the averaged Pade continuation with its variance.
 
     The output is checked to have an imaginary part smaller than `threshold`,
@@ -298,8 +351,6 @@ def averaged(z_out, z_in, n_min, n_max, valid_z=None, fct_z=None, coeff=None, th
         points at with the functions will be evaluated
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
-    n_min, n_max : int
-        Number of minimum (maximum) input points and coefficients used for Pade
     valid_z : (N_out,) complex ndarray, optional
         The output range according to which the Pade approximation is validated
         (compared to the `threshold`).
@@ -312,10 +363,11 @@ def averaged(z_out, z_in, n_min, n_max, valid_z=None, fct_z=None, coeff=None, th
     threshold : float, optional
         The numerical threshold, how large of an positive imaginary part is
         tolerated (default: 1e-8). `np.infty` can be given to accept all.
-    kind : {'Gf', 'self'}
-        Defines the asymptotic of the continued function. For 'Gf' the function
-        goes like :math:`1/z` for large `z`, for 'self' the function behaves
-        like a constant for large `z`.
+    kind : {KindGf, KindSelf}
+        Defines the asymptotic of the continued function and the number of
+        minumum and maximum input points used for Pade. For `KindGf` the
+        function goes like :math:`1/z` for large `z`, for `KindSelf` the
+        function behaves like a constant for large `z`.
 
     Returns
     -------
@@ -331,13 +383,12 @@ def averaged(z_out, z_in, n_min, n_max, valid_z=None, fct_z=None, coeff=None, th
     if valid_z is None:
         valid_z = z_out
 
-    validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, n_min=n_min, n_max=n_max, kind=kind)
+    validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, kind=kind)
     is_valid = np.array([np.all(pade.imag < threshold, axis=tuple(-np.arange(valid_z.ndim)-1))
                          for pade in validity_iter])
     assert is_valid.shape[1:] == coeff.shape[:-1]
 
-    _averaged = Averager(z_in, coeff=coeff, n_min=n_min, n_max=n_max,
-                         valid_pades=is_valid, kind=kind)
+    _averaged = Averager(z_in, coeff=coeff, valid_pades=is_valid, kind=kind)
     return _averaged(z_out)
 
 # def SelectiveAverage(object):

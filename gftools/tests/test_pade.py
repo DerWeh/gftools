@@ -27,7 +27,7 @@ def test_stacked_pade():
                              gt_pade.coefficients(iws, fct_z=gf_bethe_iw_shift)])
     coeff_parall = gt_pade.coefficients(iws, fct_z=gf_bethe_fcts[np.newaxis])
     assert np.all(coeff_single == coeff_parall[0])
-    avg_param = {'kind': 'Gf', 'n_min': 100, 'n_max': n_max, 'threshold': 1e-8}
+    avg_param = {'kind': gt_pade.KindGf(100, n_max), 'threshold': 1e-8}
     omega = np.linspace(-D*1.5, D*1.5, num=1000) + iws[0]/10
     avg_gf_z = [gt_pade.averaged(omega, z_in=iws, coeff=coeff_i, **avg_param)
                 for coeff_i in coeff_single]
