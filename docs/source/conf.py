@@ -22,6 +22,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
 import gftools
+from gftools import matrix, pade
 
 # -- General configuration ------------------------------------------------
 
