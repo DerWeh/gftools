@@ -2,6 +2,8 @@
 
 notation: function u({iw}), a: coefficients for Pade, N: length of arrays
 
+The algorithm is and exact implementation of the Vidberg & Serene paper.
+
 """
 import numpy as np
 
