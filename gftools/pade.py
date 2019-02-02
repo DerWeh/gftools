@@ -136,47 +136,6 @@ def coefficients(z, fct_z) -> np.ndarray:
     return mat.diagonal(axis1=0, axis2=-1)
 
 
-def calc(z_out, z_in, coeff, n_max):
-    """Calculate Pade continuation of function at points `z_out`.
-
-    Naive implementation of Vidberg & Serene paper. Not recommended to use!
-
-    Parameters
-    ----------
-    z_out : (N,) complex ndarray
-        points at with the functions will be evaluated
-    z_in : (M,) complex ndarray
-        complex mesh used to calculate `coeff`
-    coeff : (M,) complex ndarray
-        coefficients for Pade, calculated from `pade.coefficients`
-    n_max : int
-        number of `z_in` points used for the Pade
-
-    Returns
-    -------
-    pade_calc : (N,) complex ndarray
-        function evaluated at points `z_out`
-
-    """
-    id1 = np.ones_like(z_out, dtype=complex)
-    A0, A1 = 0.*id1, coeff[0]*id1
-    B0, B1 = 1.*id1, 1.*id1
-    A2, B2 = np.empty_like(z_out, dtype=complex), np.empty_like(z_out, dtype=complex)
-    for ii in range(1, n_max):
-        A2 = A1 + (z_out - z_in[ii-1])*coeff[ii]*A0
-        B2 = B1 + (z_out - z_in[ii-1])*coeff[ii]*B0
-        A1 /= B2
-        A2 /= B2
-        B1 /= B2
-        B2 /= B2
-
-        A0 = A1
-        A1 = A2
-        B0 = B1
-        B1 = B2
-    return A2 / B2
-
-
 def calc_iterator(z_out, z_in, coeff, kind: KindSelector):
     r"""Calculate Pade continuation of function at points `z_out`.
 
@@ -215,9 +174,6 @@ def calc_iterator(z_out, z_in, coeff, kind: KindSelector):
        https://doi.org/10.1007/BF00655090.
 
     """
-    # FIXME: move to kinds
-    # n_min -= 1
-    # n_max -= 1
     out_shape = z_out.shape
     coeff_shape = coeff.shape
 
