@@ -18,12 +18,17 @@ References
    https://doi.org/10.1103/PhysRevB.93.075104.
 
 """
-from itertools import islice
+import logging
+
 from abc import ABC, abstractmethod
+from itertools import islice
 
 import numpy as np
 
 from . import Result
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.addHandler(logging.NullHandler())
 
 
 class KindSelector(ABC):
@@ -281,6 +286,7 @@ def Averager(z_in, coeff, valid_pades, kind: KindSelector):
         raise RuntimeError("No Pade fulfills is valid.\n"
                            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
                            f"{np.argwhere(~valid_pades.any(axis=0))}")
+    LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def averaged(z) -> Result:
         """Calculate Pade continuation of function at points `z`.
