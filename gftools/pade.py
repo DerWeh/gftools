@@ -38,8 +38,10 @@ class KindSelector(ABC):
     @abstractmethod
     def __init__(self, n_min, n_max):
         """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
-        assert n_min >= 1
-        assert n_min < n_max
+        if n_min < 1:
+            raise ValueError(f"`n_min` needs to be at least 1 (n_min: {n_min}).")
+        if n_max <= n_min:
+            raise ValueError(f"`n_max` ({n_max}) needs to be bigger than `n_min` ({n_min}).")
         self.start = n_min - 1  # indices start from 0
         self.stop = n_max - 1  # indices start from 0
         self.step = NotImplemented
