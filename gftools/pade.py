@@ -201,7 +201,7 @@ def calc_iterator(z_out, z_in, coeff, kind: KindSelector):
     return kind.islice(complete_iterations)
 
 
-def Averager(z_in, coeff, valid_pades, kind: KindSelector):
+def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     """Create function for averaging Pade scheme.
 
     Parameters
