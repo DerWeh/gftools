@@ -68,6 +68,11 @@ class KindSelector(ABC):
         """Get number of approximants."""
         return len(range(self.start, self.stop, self.step))
 
+    def __repr__(self):
+        """Return Meaningful string."""
+        return (self.__class__.__name__
+                + f'(start={self.start}, stop={self.stop}, step={self.step})')
+
 
 class KindGf(KindSelector):
     """Filter approximants such that the high-frequency behavior is :math:`1/ω`.
@@ -258,7 +263,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
 
     Returns
     -------
-    averaged : function
+    average : function
         The continued function `f(z)` (`z`, ) -> Result. `f(z).x` contains the
         function values `f(z).err` the associated variance.
 
@@ -281,7 +286,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
                            f"{np.argwhere(~valid_pades.any(axis=0))}")
     LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
-    def averaged(z) -> Result:
+    def average(z) -> Result:
         """Calculate Pade continuation of function at points `z`.
 
         The continuation is calculated for different numbers of coefficients
@@ -333,7 +338,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         if scalar_input:
             return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
         return Result(x=pade_avg, err=std)
-    return averaged
+    return average
 
 
 def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
