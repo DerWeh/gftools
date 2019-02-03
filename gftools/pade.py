@@ -385,6 +385,126 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     return average
 
 
+def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vectorized=True):
+    r"""Create function for averaging Pade scheme using `mod_fct` before the average.
+
+    This function behaves like `Averager` just that `mod_fct` is applied before
+    taking the averages. This should be used, if not the analytic continuation
+    but a mollification thereof is used.
+
+    Parameters
+    ----------
+    z_in : (N_in,) complex ndarray
+        complex mesh used to calculate `coeff`
+    coeff : (..., N_in) complex ndarray
+        coefficients for Pade, calculated from `pade.coefficients`
+    mod_fct : callable
+        Modification of the analytic continuation. The signature of the function
+        should be `mod_fct` (z, pade_z, \*args, \*\*kwds), the tow first
+        arguments are the point of evaluation `z` and the single Pade approximants.
+    valid_pades : list_like of bool
+        Mask which continuations are correct, all Pades where `valid_pades`
+        evaluates to false will be ignored for the average.
+    kind : {KindGf, KindSelf}
+        Defines the asymptotic of the continued function and the number of
+        minumum and maximum input points used for Pade. For `KindGf` the
+        function goes like :math:`1/z` for large `z`, for `KindSelf` the
+        function behaves like a constant for large `z`.
+    vectorized : bool, optional
+        If `vectorized`, all approximants are given to the function simultaniously
+        where the first dimension corresponds to the approximants.
+        If not `vectorized`, `mod_fct` will be called for every approximant
+        seperately. (default: True)
+
+    Returns
+    -------
+    mod_average : function
+        The continued function `f(z)` (`z`, ) -> Result. `f(z).x` contains the
+        function values `f(z).err` the associated variance.
+
+    Raises
+    ------
+    TypeError
+        If `valid_pades` not of type `bool`
+    RuntimeError
+        If all there are none elements of `valid_pades` that evaluate to True.
+
+    """
+    valid_pades = np.array(valid_pades)
+    if valid_pades.dtype != bool:
+        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
+                        "Expected `bool`.")
+    if not valid_pades.any(axis=0).all():
+        # for some axis no valid pade was found
+        raise RuntimeError("No Pade fulfills is valid.\n"
+                           f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
+                           f"{np.argwhere(~valid_pades.any(axis=0))}")
+    LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
+
+    def mod_average(z, *args, **kwds) -> Result:
+        f"""Calculate modified Pade continuation of function at points `z`.
+
+        Calculate the averaged continuation of `mod_fct(f_z, *args, **kwds)`
+        The continuation is calculated for different numbers of coefficients
+        taken into account, where the number is in [n_min, n_max]. The function
+        value es well as its variance is calculated. The variance should not be
+        confused with an error estimate.
+
+        Parameters
+        ----------
+        z : complex ndarray
+            points at with the functions will be evaluated
+        args, kwds :
+            Passed to the `mod_fct` {mod_fct.__name__}.
+
+        Returns
+        -------
+        pade.x : complex ndarray
+            function evaluated at points `z`
+        pade.err : complex ndarray
+            variance associated with the function values `pade.x` at points `z`
+
+        Raises
+        ------
+        RuntimeError
+            If the calculated continuation contain any NaNs. This indicates
+            invalid input in the coefficients and thus the original function.
+
+        """
+        z = np.asarray(z)
+        scalar_input = False
+        if z.ndim == 0:
+            z = z[np.newaxis]
+            scalar_input = True
+
+        pade_iter = calc_iterator(z, z_in, coeff=coeff, kind=kind)
+        if valid_pades.ndim == 1:
+            # validity determined for all dimensions -> drop invalid pades
+            pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
+            if _contains_nan(pades):
+                # check if fct_z already contained nans
+                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+        else:
+            pades = np.array(list(pade_iter))
+            if _contains_nan(pades):
+                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+            pades[~valid_pades] = np.nan + 1j*np.nan
+
+        if vectorized:
+            mod_pade = mod_fct(z, pades, *args, **kwds)
+        else:
+            mod_pade = np.array([mod_fct(z, pade_ii, *args, **kwds)
+                                 for pade_ii in pades])
+        pade_avg = np.nanmean(mod_pade, axis=0)
+        # define helper pade_std np.nanstd( ,axis=0, ddof=1) if complex...
+        std = np.nanstd(mod_pade.real, axis=0, ddof=1) + 1j*np.nanstd(mod_pade.imag, axis=0, ddof=1)
+
+        if scalar_input:
+            return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
+        return Result(x=pade_avg, err=std)
+    return mod_average
+
+
 def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
              filter_valid=None, kind: KindSelector):
     """Return the averaged Pade continuation with its variance.
