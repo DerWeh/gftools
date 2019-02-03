@@ -288,10 +288,11 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
             pades = np.array(list(pade_iter))
             if _contains_nan(pades):
                 raise RuntimeError("Calculation of Pades failed, results contains NaNs")
-            pades[~valid_pades] = np.nan + 1j*np.nan
+            mask = np.broadcast_to(~valid_pades[..., np.newaxis], pades.shape)
+            pades = np.ma.masked_array(pades, mask=mask)
 
-        pade_avg = np.nanmean(pades, axis=0)
-        std = np.nanstd(pades.real, axis=0, ddof=1) + 1j*np.nanstd(pades.imag, axis=0, ddof=1)
+        pade_avg = pades.mean(axis=0)
+        std = pades.real.std(axis=0, ddof=1) + 1j*pades.imag.std(axis=0, ddof=1)
 
         if scalar_input:
             return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
