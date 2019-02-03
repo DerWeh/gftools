@@ -42,7 +42,7 @@ class KindSelector(ABC):
 
     @abstractmethod
     def __init__(self, n_min, n_max):
-        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        """Consider approximants including between `n_min` and `n_max` Matsubara frequencies."""
         if n_min < 1:
             raise ValueError(f"`n_min` needs to be at least 1 (n_min: {n_min}).")
         if n_max <= n_min:
@@ -79,7 +79,7 @@ class KindGf(KindSelector):
     """
 
     def __init__(self, n_min, n_max):
-        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        """Consider approximants including between `n_min` and `n_max` Matsubara frequencies."""
         if not n_min % 2:
             n_min += 1  # odd number for 1/z required
         super().__init__(n_min, n_max)
@@ -96,7 +96,7 @@ class KindSelf(KindSelector):
     """
 
     def __init__(self, n_min, n_max):
-        """Consider Pade approximants including between `n_min` and `n_max` Matsubara frequencies."""
+        """Consider approximants including between `n_min` and `n_max` Matsubara frequencies."""
         if n_min % 2:
             n_min += 1  # even number for constant tail required
         super().__init__(n_min, n_max)
@@ -173,7 +173,7 @@ def coefficients(z, fct_z) -> np.ndarray:
     return mat.diagonal(axis1=0, axis2=-1)
 
 
-def calc_iterator(z_out, z_in, coeff, kind: KindSelector):
+def calc_iterator(z_out, z_in, coeff, *, kind: KindSelector):
     r"""Calculate Pade continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
