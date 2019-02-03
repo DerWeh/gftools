@@ -8,6 +8,27 @@ from .context import gftools as gt
 from .context import gt_pade
 
 
+def test_regression():
+    """Compare the improved methods to the standard implementation."""
+    # check coefficients
+    T = 0.037
+    D = 1.2
+    iws = gt.matsubara_frequencies(np.arange(2**10), beta=1./T)
+    rand = np.random.random(iws.size) + 1j*np.random.random(iws.size)
+    rand *= 1e-3
+    rand *= 1 + np.sqrt(np.arange(iws.size))
+    gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D) + rand
+    coeff_old = old_pade.test_pade_init_junya(iws, u=gf_bethe_iw, N=iws.size)
+    coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw)
+    assert np.all(coeff_old == coeff)
+    omega = np.linspace(-D*1.2, D*1.2, num=1000) + iws[0]/10
+    kind = gt_pade.KindGf(iws.size-4, iws.size-2)
+    # FIXME: look into different counting
+    gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
+    gf_bethe = list(gt_pade.calc_iterator(omega, z_in=iws, coeff=coeff, kind=kind))[-1]
+    assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
+
+
 def test_stacked_pade():
     """Test results of calculating stacked Pades in parallel against single Pade."""
     # Test setup

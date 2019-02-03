@@ -78,6 +78,7 @@ def pade_calc(iw, a, w, n_pade):
     """
     A0, A1 = 0., a[0]
     B0, B1 = 1., 1.
+    w = w.astype(dtype=np.complex256)
     for i in range(1, n_pade):
         A2 = A1 + (w - iw[i-1]) * a[i] * A0
         B2 = B1 + (w - iw[i-1]) * a[i] * B0
