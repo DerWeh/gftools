@@ -5,8 +5,8 @@ averaging over multiple Pade approximates (similar to [1]_).
 
 In most cases the following high level function should be used:
 
-`averaged`
-   Returns one-shot analytic continuation evaluated at `z`.
+`averaged`, `avg_no_neg_imag`
+   Return one-shot analytic continuation evaluated at `z`.
 
 `Averager`
    Returns a function for repeated evaluation of the continued function.
@@ -64,6 +64,10 @@ class KindSelector(ABC):
         """Get indices."""
         return range(self.start, self.stop, self.step)[index]
 
+    def __len__(self):
+        """Get number of approximants."""
+        return len(range(self.start, self.stop, self.step))
+
 
 class KindGf(KindSelector):
     """Filter approximants such that the high-frequency behavior is :math:`1/ω`.
@@ -97,6 +101,39 @@ class KindSelf(KindSelector):
             n_min += 1  # even number for constant tail required
         super().__init__(n_min, n_max)
         self.step = 2
+
+
+def FilterNegImag(threshold=1e-8):
+    """Return function to check if imaginary part is smaller than `threshold`.
+
+    This methods is designed to create `valid_pades` for `Averager`.
+    The imaginary part of retarded Green's functions and self-energies must be
+    negative, this is checked by this filter.
+    A threshold is given as Pade overshoots when the function goes sharply to 0.
+    See for example the semi-circular spectral function of the Bethe lattice
+    with infinite Coordination number as example.
+    """
+    def filter_neg_imag(z, pade_iter):
+        r"""Check which pade approximants have a negative imaginary part.
+
+        Parameters
+        ----------
+        z : complex ndarray
+            The inputpoints at which `pade_iter` is calculated.
+        pade_iter : iterable
+            Iterator yielding the Pade approximants of shape
+            (\*approximant.shape, \*z.shape).
+
+        Returns
+        -------
+        is_valid : (len(pade_iter), \*approximants.shape) bool ndarray
+            True for all approximants that fulfill `apporximant.imag < threshold`.
+
+        """
+        axis = tuple(-np.arange(z.ndim) - 1)  # keep axis not corresponding to z
+        is_valid = np.array([np.all(pade.imag < threshold, axis=axis) for pade in pade_iter])
+        return is_valid
+    return filter_neg_imag
 
 
 def _contains_nan(array) -> bool:
@@ -299,8 +336,8 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     return averaged
 
 
-# TODO: make it more abstract, allow to pass a filter function taken a Pade list/iterator
-def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None, threshold=1e-8, kind: KindSelector):
+def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
+             filter_valid=None, kind: KindSelector):
     """Return the averaged Pade continuation with its variance.
 
     The output is checked to have an imaginary part smaller than `threshold`,
@@ -324,9 +361,12 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None, threshold=1e-
     coeff : (N_in,) complex ndarray, optional
         Coefficients for Pade, calculated from `pade.coefficients`. Can be given
         instead of `fct_z`.
-    threshold : float, optional
-        The numerical threshold, how large of an positive imaginary part is
-        tolerated (default: 1e-8). `np.infty` can be given to accept all.
+    filter_valid : callable
+        Function determining which approximants to keep. The signature should
+        be filter_valid(ndarray, iterable) -> bool ndarray.
+        Currently there are the functions {`FilterNegImag`, } implemented
+        to generate filter functions. Look into the implemented for details
+        to create new filters.
     kind : {KindGf, KindSelf}
         Defines the asymptotic of the continued function and the number of
         minumum and maximum input points used for Pade. For `KindGf` the
@@ -335,9 +375,9 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None, threshold=1e-
 
     Returns
     -------
-    averaged.x : (N,) complex ndarray
+    averaged.x : (N_in, N_out) complex ndarray
         function evaluated at points `z`
-    averaged.err : (N,) complex ndarray
+    averaged.err : (N_in, N_out) complex ndarray
         variance associated with the function values `pade.x` at points `z`
 
     """
@@ -346,14 +386,41 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None, threshold=1e-
         coeff = coefficients(z_in, fct_z=fct_z)
     if valid_z is None:
         valid_z = z_out
+    if filter_valid is not None:
+        validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, kind=kind)
+        is_valid = filter_valid(valid_z, validity_iter)
+    else:
+        is_valid = np.ones((len(kind), *coeff.shape[:-1]), dtype=bool)
 
-    validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, kind=kind)
-    is_valid = np.array([np.all(pade.imag < threshold, axis=tuple(-np.arange(valid_z.ndim)-1))
-                         for pade in validity_iter])
     assert is_valid.shape[1:] == coeff.shape[:-1]
 
-    _averaged = Averager(z_in, coeff=coeff, valid_pades=is_valid, kind=kind)
-    return _averaged(z_out)
+    _average = Averager(z_in, coeff=coeff, valid_pades=is_valid, kind=kind)
+    return _average(z_out)
+
+
+def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
+                    threshold=1e-8, kind: KindSelector):
+    """Average Pade filtering approximants with non-negative imaginary part.
+
+    This function wraps `averaged`, see `averaged` for the parameters.
+
+    Other Parameters
+    ----------------
+    threshold : float, optional
+        The numerical threshold, how large of an positive imaginary part is
+        tolerated (default: 1e-8). `np.infty` can be given to accept all.
+
+    Returns
+    -------
+    averaged.x : (N_in, N_out) complex ndarray
+        function evaluated at points `z`
+    averaged.err : (N_in, N_out) complex ndarray
+        variance associated with the function values `pade.x` at points `z`
+
+    """
+    filter_neg_imag = FilterNegImag(threshold)
+    return averaged(z_out=z_out, z_in=z_in, valid_z=valid_z, fct_z=fct_z,
+                    coeff=coeff, filter_valid=filter_neg_imag, kind=kind)
 
 # def SelectiveAverage(object):
 #     """Do not accept Matsubara frequencies, which make the result unphysical."""
