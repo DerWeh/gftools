@@ -178,6 +178,50 @@ def coefficients(z, fct_z) -> np.ndarray:
     return mat.diagonal(axis1=0, axis2=-1)
 
 
+def masked_coefficients(z, fct_z):
+    mat = np.zeros((z.size, *fct_z.shape), dtype=np.complex256)
+    mask = np.empty_like(z, dtype=bool)
+    mask[:] = True
+    # cutoff = 1e-6
+    cutoff = 1e-4
+    mat[0] = fct_z
+
+    assert np.abs(fct_z[0]) > cutoff
+    # last valid
+    last_it = 0
+    last_coeff = mat[last_it, last_it]
+
+    def signi_diff(element) -> bool:
+        """Return if the difference of `element` and `last_coeff` is larger `cutoff`."""
+        return abs(last_coeff - element) > cutoff
+
+    def comparable_mag(element) -> bool:
+        """Return weather the magnitude of `element` is comparable to `last_coeff`"""
+        return abs(last_coeff)/cutoff > abs(element) > abs(last_coeff)*cutoff
+
+    for ii, mat_pi in enumerate(mat[1:], start=1):
+        if signi_diff(mat[last_it, ii]) and comparable_mag(mat[last_it, ii]):
+            # regular update
+            mat_pi[ii] = (last_coeff/mat[last_it, ii] - 1.)/(z[ii] - z[last_it])
+            for jj in range(ii+1, z.size):
+                if not mask[jj]:
+                    continue
+                if comparable_mag(mat[last_it, jj]):
+                    mat_pi[jj] = (last_coeff/mat[last_it, jj] - 1.)/(z[jj] - z[last_it])
+                elif abs(last_coeff) < abs(mat[last_it, jj])*cutoff:  # tiny quotient
+                    print('truncate')
+                    mat_pi[jj] = (-1)/(z[jj] - z[last_it])
+                else:  # huge quotient
+                    print('infty')
+                    mat_pi[jj] = np.infty
+            last_it = ii
+            last_coeff = mat_pi[ii]
+        else:
+            mask[ii] = False
+    LOGGER.info("Number of eliminated coefficients: %s", np.count_nonzero(~mask))
+    return mat.diagonal(axis1=0, axis2=-1)
+
+
 def calc_iterator(z_out, z_in, coeff, *, kind: KindSelector):
     r"""Calculate Pade continuation of function at points `z_out`.
 
