@@ -30,6 +30,8 @@ from . import Result
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
 
+_PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
+
 
 class KindSelector(ABC):
     """Abstract filter class to determine high-frequency behavior of Pade.
@@ -168,6 +170,15 @@ def coefficients(z, fct_z) -> np.ndarray:
     ValueError
         If the size of `z` and the last dimension of `fct_z` do not match.
 
+    Notes
+    -----
+    The calculation is always done in quad precision (complex256), as it is
+    very sensitive towards rounding errors. Afterwards the type of the result
+    is cast back to double precision (complex128) unless the input data of
+    `fct_z` was already quad precision {float128, complex256}, see
+    `_PRECISE_TYPES`. This avoids giving the illusion that the results are more
+    precise than the input.
+
     """
     if z.shape != fct_z.shape[-1:]:
         raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
@@ -175,7 +186,10 @@ def coefficients(z, fct_z) -> np.ndarray:
     mat[0] = fct_z
     for ii, mat_pi in enumerate(mat[1:]):
         mat_pi[..., ii+1:] = (mat[ii, ..., ii:ii+1]/mat[ii, ..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
-    return mat.diagonal(axis1=0, axis2=-1)
+    complex_pres = np.complex256 if fct_z.dtype in _PRECISE_TYPES else np.complex
+    LOGGER.debug("Input type %s precise: %s -> result type: %s",
+                 fct_z.dtype, fct_z.dtype in _PRECISE_TYPES, complex_pres)
+    return mat.diagonal(axis1=0, axis2=-1).astype(complex_pres, copy=False)
 
 
 def masked_coefficients(z, fct_z):

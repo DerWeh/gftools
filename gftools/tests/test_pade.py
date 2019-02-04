@@ -1,11 +1,13 @@
 """Test the functionality of the pade module."""
+import logging
+
 import pytest
 import numpy as np
 
 from . import old_pade
+from .context import gftools as gt, gt_pade
 
-from .context import gftools as gt
-from .context import gt_pade
+logging.basicConfig(level=logging.DEBUG)
 
 
 def test_regression():
@@ -14,6 +16,8 @@ def test_regression():
     T = 0.037
     D = 1.2
     iws = gt.matsubara_frequencies(np.arange(2**10), beta=1./T)
+    # use quad precision for comparability
+    iws = iws.astype(dtype=np.complex256)
     rand = np.random.random(iws.size) + 1j*np.random.random(iws.size)
     rand *= 1e-3
     rand *= 1 + np.sqrt(np.arange(iws.size))
@@ -27,6 +31,18 @@ def test_regression():
     gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
     gf_bethe = list(gt_pade.calc_iterator(omega, z_in=iws, coeff=coeff, kind=kind))[-1]
     assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
+
+
+def test_coeff_type_reduction():
+    """Check that `coefficients` returns complex128 if input is only double precision."""
+    T = 0.037
+    D = 1.2
+    iws = gt.matsubara_frequencies(np.arange(10), beta=1./T)
+    gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D)
+    coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw)
+    assert coeff.dtype == np.dtype(np.complex128)
+    coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex256))
+    assert coeff.dtype == np.dtype(np.complex256)
 
 
 def test_stacked_pade():
