@@ -179,6 +179,10 @@ def coefficients(z, fct_z) -> np.ndarray:
 
 
 def masked_coefficients(z, fct_z):
+    """Calculate coefficients but ignore extreme values.
+
+    Like `coefficients` but probably better for noisy data.
+    """
     mat = np.zeros((z.size, *fct_z.shape), dtype=np.complex256)
     mask = np.empty_like(z, dtype=bool)
     mask[:] = True
@@ -196,7 +200,7 @@ def masked_coefficients(z, fct_z):
         return abs(last_coeff - element) > cutoff
 
     def comparable_mag(element) -> bool:
-        """Return weather the magnitude of `element` is comparable to `last_coeff`"""
+        """Return weather the magnitude of `element` is comparable to `last_coeff`."""
         return abs(last_coeff)/cutoff > abs(element) > abs(last_coeff)*cutoff
 
     for ii, mat_pi in enumerate(mat[1:], start=1):
@@ -442,7 +446,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def mod_average(z, *args, **kwds) -> Result:
-        f"""Calculate modified Pade continuation of function at points `z`.
+        """Calculate modified Pade continuation of function at points `z`.
 
         Calculate the averaged continuation of `mod_fct(f_z, *args, **kwds)`
         The continuation is calculated for different numbers of coefficients
@@ -502,6 +506,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         if scalar_input:
             return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
         return Result(x=pade_avg, err=std)
+    mod_average.__doc__ = mod_average.__doc__.format(mod_fct=mod_fct)
     return mod_average
 
 
