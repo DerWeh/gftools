@@ -46,7 +46,7 @@ def fermi_fct(eps, beta):
 
 def fermi_fct_d1(eps, beta):
     r"""Return the 1st derivative of the Fermi function.
-    
+
     .. math:: `-β\exp(βz)/{(\exp(βz)+1)}^2`
 
     Parameters
@@ -83,6 +83,25 @@ def matsubara_frequencies(n_points, beta):
 
     """
     return 1j * np.pi * (2*n_points + 1) / beta
+
+
+def matsubara_frequencies_b(n_points, beta):
+    r"""Return *bosonic* Matsubara frequencies :math:`iν_n` for the points `n_points`.
+
+    Parameters
+    ----------
+    n_points : int ndarray
+        Points for which the Matsubara frequencies :math:`iν_n` are returned.
+    beta : float
+        Inverse temperature `beta` = 1/T
+
+    Returns
+    -------
+    matsubara_frequencies : complex ndarray
+        Array of the imaginary Matsubara frequencies
+
+    """
+    return 2j * np.pi * n_points / beta
 
 
 def bethe_dos(eps, half_bandwidth):
