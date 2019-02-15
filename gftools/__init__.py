@@ -173,6 +173,42 @@ def bethe_dos(eps, half_bandwidth):
         return result
 
 
+# from:
+# https://www.wolframalpha.com/input/?i=integrate+sqrt(1+-+x%5E2)%2F(.5*pi)+*x%5E%7B2*n%7Ddx+from+-1+to+1+assuming+n+is+integer
+bethe_dos_moment_coefficients = {
+    2: 0.25,
+    4: 0.125,
+    6: 0.078125,
+    8: 0.0546875,
+    10: 0.0410156,
+    12: 0.0322266,
+    14: 0.0261841,
+    16: 0.0218201,
+    18: 0.0185471,
+    20: 0.0160179,
+}
+
+
+def bethe_dos_odd(half_bandwidth=None):
+    del half_bandwidth
+    return 0
+
+
+def bethe_dos_m2(half_bandwidth):
+    return 0.25 * half_bandwidth**2
+
+
+def bethe_dos_m4(half_bandwidth):
+    return 0.125 * half_bandwidth**4
+
+
+bethe_dos.m1 = bethe_dos_odd
+bethe_dos.m2 = bethe_dos_m2
+bethe_dos.m3 = bethe_dos_odd
+bethe_dos.m4 = bethe_dos_m4
+bethe_dos.m5 = bethe_dos_odd
+
+
 def bethe_gf_omega(z, half_bandwidth):
     """Local Green's function of Bethe lattice for infinite coordination number.
 
