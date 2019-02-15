@@ -137,7 +137,7 @@ def bethe_dos(eps, half_bandwidth):
 
 
 def bethe_gf_omega(z, half_bandwidth):
-    """Local Green's function of Bethe lattice for infinite Coordination number.
+    """Local Green's function of Bethe lattice for infinite coordination number.
 
     Parameters
     ----------
@@ -156,7 +156,34 @@ def bethe_gf_omega(z, half_bandwidth):
 
     """
     z_rel = z / half_bandwidth
-    return 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - 1/(z_rel*z_rel)))
+    return 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
+
+
+def bethe_gf_d1_omega(z, half_bandwidth):
+    """First derivative of local Green's function of Bethe lattice for infinite coordination number.
+
+    Parameters
+    ----------
+    z : complex ndarray or complex
+        Green's function is evaluated at complex frequency `z`
+    half_bandwidth : float
+        half-bandwidth of the DOS of the Bethe lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    bethe_gf_omega : complex ndarray or complex
+        Value of the Green's function
+
+    See Also
+    --------
+    bethe_gf_omega
+
+    """
+    z_rel = z / half_bandwidth
+    sqrt = (1 - z_rel**-2)
+    # return 2. * (1. - sqrt - (z_rel**-2 / sqrt))
+    return 2. * (1 - 1/sqrt)
 
 
 def bethe_hilbert_transfrom(xi, half_bandwidth):
