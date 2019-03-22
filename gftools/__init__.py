@@ -497,6 +497,34 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
     return gf_omega
 
 
+# FIXME: write tests for moments
+def hubbard_I_self_z(z, U, occ):
+    """Self-energy in Hubbard I approximation (atomic solution).
+
+    The chemical potential and the onsite energy have to be included in `z`.
+
+    Parameters
+    ----------
+    z : complex array_like
+        The complex frequencies at which the self-energy is evaluated. `z`
+        should be shifted by the onsite energy and the chemical potential.
+    U : float
+        The local Hubbard interaction U.
+    occ : float or float np.ndarray
+        The occupation of the opposite spin as the spin of the self-energy.
+
+    Returns
+    -------
+    Σ_{Hub I} : (*z.shape, *occ.shape) complex np.ndarray
+        The self-energy in Hubbard I approximation, the shape is the sum of the
+        shape of `z` and `occ`.
+
+    """
+    hartree = U*occ
+    U_1mocc = U*(1 - occ)
+    return hartree * (1 + U_1mocc / np.subtract.outer(z, U_1mocc))
+
+
 Result = namedtuple('Result', ['x', 'err'])
 
 
