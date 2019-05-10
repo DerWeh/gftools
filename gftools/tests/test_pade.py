@@ -29,7 +29,7 @@ def test_regression():
     kind = gt_pade.KindGf(iws.size-4, iws.size-2)
     # FIXME: look into different counting
     gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
-    gf_bethe = list(gt_pade.calc_iterator(omega, z_in=iws, coeff=coeff, kind=kind))[-1]
+    gf_bethe = list(kind.islice(gt_pade.calc_iterator(omega, z_in=iws, coeff=coeff)))[-1]
     assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
 
 

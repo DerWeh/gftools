@@ -240,7 +240,7 @@ def masked_coefficients(z, fct_z):
     return mat.diagonal(axis1=0, axis2=-1)
 
 
-def calc_iterator(z_out, z_in, coeff, *, kind: KindSelector):
+def calc_iterator(z_out, z_in, coeff):
     r"""Calculate Pade continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
@@ -278,8 +278,7 @@ def calc_iterator(z_out, z_in, coeff, *, kind: KindSelector):
        https://doi.org/10.1007/BF00655090.
 
     """
-    out_shape = z_out.shape
-    coeff_shape = coeff.shape
+    target_shape = coeff.shape[:-1] + z_out.shape
 
     z_out = z_out.reshape(-1)  # accept arbitrary shaped z_out
     id1 = np.ones_like(z_out, dtype=complex)
@@ -292,17 +291,13 @@ def calc_iterator(z_out, z_in, coeff, *, kind: KindSelector):
     # move N_in axis in front to iterate over it
     multiplier = np.moveaxis(multiplier, -2, 0).copy()
 
-    def _iteration(multiplier_im):
-        nonlocal pade_prev, pade, B2
+    for multiplier_im in multiplier:
         multiplier_im = multiplier_im / B2
         B2 = 1 + multiplier_im
         pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
 
-        return pade
+        yield pade.reshape(target_shape)
 
-    complete_iterations = (_iteration(multiplier_im).reshape(*coeff_shape[:-1], *out_shape)
-                           for multiplier_im in multiplier)
-    return kind.islice(complete_iterations)
 
 
 def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
@@ -381,7 +376,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
             z = z[np.newaxis]
             scalar_input = True
 
-        pade_iter = calc_iterator(z, z_in, coeff=coeff, kind=kind)
+        pade_iter = kind.islice(calc_iterator(z, z_in, coeff=coeff))
         if valid_pades.ndim == 1:
             # validity determined for all dimensions -> drop invalid pades
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
@@ -495,7 +490,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
             z = z[np.newaxis]
             scalar_input = True
 
-        pade_iter = calc_iterator(z, z_in, coeff=coeff, kind=kind)
+        pade_iter = kind.islice(calc_iterator(z, z_in, coeff=coeff))
         if valid_pades.ndim == 1:
             # validity determined for all dimensions -> drop invalid pades
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
@@ -575,7 +570,7 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     if valid_z is None:
         valid_z = z_out
     if filter_valid is not None:
-        validity_iter = calc_iterator(valid_z, z_in, coeff=coeff, kind=kind)
+        validity_iter = kind.islice(calc_iterator(valid_z, z_in, coeff=coeff))
         is_valid = filter_valid(valid_z, validity_iter)
     else:
         is_valid = np.ones((len(kind), *coeff.shape[:-1]), dtype=bool)
