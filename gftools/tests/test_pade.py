@@ -39,7 +39,7 @@ def test_coeff_type_reduction():
     D = 1.2
     iws = gt.matsubara_frequencies(np.arange(10), beta=1./T)
     gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D)
-    coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw)
+    coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex128))
     assert coeff.dtype == np.dtype(np.complex128)
     coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex256))
     assert coeff.dtype == np.dtype(np.complex256)
