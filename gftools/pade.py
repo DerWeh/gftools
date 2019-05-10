@@ -510,7 +510,10 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
                                  for pade_ii in pades])
         pade_avg = np.nanmean(mod_pade, axis=0)
         # define helper pade_std np.nanstd( ,axis=0, ddof=1) if complex...
-        std = np.nanstd(mod_pade.real, axis=0, ddof=1) + 1j*np.nanstd(mod_pade.imag, axis=0, ddof=1)
+        if np.iscomplexobj(mod_pade):
+            std = np.nanstd(mod_pade.real, axis=0, ddof=1) + 1j*np.nanstd(mod_pade.imag, axis=0, ddof=1)
+        else:
+            std = np.nanstd(mod_pade, axis=0, ddof=1)
 
         if scalar_input:
             return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
