@@ -395,6 +395,66 @@ def calc_iterator(z_out, z_in, coeff):
         yield pade.reshape(target_shape)
 
 
+@jit(nopython=True)
+def calc_iterator_numba(z_out, z_in, coeff):
+    r"""Calculate Pade continuation of function at points `z_out`.
+
+    The continuation is calculated for different numbers of coefficients.
+    To take numbers in [n_min, n_max] into account use
+    `KindSelector(n_min, n_max).islice(calc_iterator_numba(...))`.
+
+    This function should always be used in combination with a `KindSelector`,
+    as even and uneven numbers of Matsubaras result in different high-frequency
+    tails.
+
+    The algorithm is take from [2]_.
+
+    Parameters
+    ----------
+    z_out : complex ndarray
+        points at with the functions will be evaluated
+    z_in : (N_in,) complex ndarray
+        complex mesh used to calculate `coeff`
+    coeff : (..., N_in) complex ndarray
+        coefficients for Pade, calculated from `pade.coefficients`
+    kind : {KindGf, KindSelf}
+        Defines the asymptotic of the continued function and the number of
+        minumum and maximum input points used for Pade. For `KindGf` the
+        function goes like :math:`1/z` for large `z`, for `KindSelf` the
+        function behaves like a constant for large `z`.
+
+    Yields
+    ------
+    pade_calc : iterator
+        Function evaluated at points `z_out` for all corresponding (see `kind`)
+        numbers of Matsubara frequencies between `n_min` and `n_max`.
+        The shape of the elements is the same as `coeff.shape` with the last
+        dimension corresponding to N_in replaced by the shape of `z_out`:
+        (..., N_in, \*z_out.shape).
+
+    References
+    ----------
+    .. [2] Vidberg, H. J., and J. W. Serene. “Solving the Eliashberg Equations
+       by Means of N-Point Pade Approximants.” Journal of Low Temperature
+       Physics 29, no. 3-4 (November 1, 1977): 179-92.
+       https://doi.org/10.1007/BF00655090.
+
+    """
+    target_shape = coeff.shape[:-1] + z_out.shape
+    z_out_flat = np.ravel(z_out)  # accept arbitrary shaped z_out
+
+    pade = coeff[..., 0:1]*np.ones_like(z_out_flat, dtype=coeff.dtype)
+    pade_prev = np.zeros_like(pade, dtype=coeff.dtype)
+    B2 = np.ones_like(pade, dtype=coeff.dtype)
+
+    for im in range(z_in.size):
+        multiplier_im = (z_out_flat - z_in[im])*coeff[..., im+1:im+2] / B2
+        B2 = 1 + multiplier_im
+        pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
+
+        yield pade.copy().reshape(target_shape)
+
+
 def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     """Create function for averaging Pade scheme.
 
