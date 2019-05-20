@@ -417,17 +417,11 @@ def calc_iterator_numba(z_out, z_in, coeff):
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
-    kind : {KindGf, KindSelf}
-        Defines the asymptotic of the continued function and the number of
-        minumum and maximum input points used for Pade. For `KindGf` the
-        function goes like :math:`1/z` for large `z`, for `KindSelf` the
-        function behaves like a constant for large `z`.
 
     Yields
     ------
     pade_calc : iterator
-        Function evaluated at points `z_out` for all corresponding (see `kind`)
-        numbers of Matsubara frequencies between `n_min` and `n_max`.
+        Function evaluated at points `z_out`.
         The shape of the elements is the same as `coeff.shape` with the last
         dimension corresponding to N_in replaced by the shape of `z_out`:
         (..., N_in, \*z_out.shape).
@@ -440,6 +434,7 @@ def calc_iterator_numba(z_out, z_in, coeff):
        https://doi.org/10.1007/BF00655090.
 
     """
+    assert coeff.shape[-1] == z_in.size
     target_shape = coeff.shape[:-1] + z_out.shape
     z_out_flat = np.ravel(z_out)  # accept arbitrary shaped z_out
 
