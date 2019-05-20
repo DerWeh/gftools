@@ -255,16 +255,11 @@ def calc_iterator(z_out, z_in, coeff):
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
         coefficients for Pade, calculated from `pade.coefficients`
-    kind : {KindGf, KindSelf}
-        Defines the asymptotic of the continued function and the number of
-        minumum and maximum input points used for Pade. For `KindGf` the
-        function goes like :math:`1/z` for large `z`, for `KindSelf` the
-        function behaves like a constant for large `z`.
 
-    Returns
-    -------
-    pade_calc : iterator
-        Function evaluated at points `z_out` for all corresponding (see `kind`)
+    Yields
+    ------
+    pade_calc : (..., N_in, z_out.shape) complex np.ndarray
+        Function evaluated at points `z_out`.
         numbers of Matsubara frequencies between `n_min` and `n_max`.
         The shape of the elements is the same as `coeff.shape` with the last
         dimension corresponding to N_in replaced by the shape of `z_out`:
@@ -278,6 +273,7 @@ def calc_iterator(z_out, z_in, coeff):
        https://doi.org/10.1007/BF00655090.
 
     """
+    assert coeff.shape[-1] == z_in.size
     target_shape = coeff.shape[:-1] + z_out.shape
 
     z_out = z_out.reshape(-1)  # accept arbitrary shaped z_out
@@ -297,7 +293,6 @@ def calc_iterator(z_out, z_in, coeff):
         pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
 
         yield pade.reshape(target_shape)
-
 
 
 def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
@@ -334,7 +329,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
-        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
+        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
                         "Expected `bool`.")
     if not valid_pades.any(axis=0).all():
         # for some axis no valid pade was found
@@ -445,7 +440,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
-        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.type}\n"
+        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
                         "Expected `bool`.")
     if not valid_pades.any(axis=0).all():
         # for some axis no valid pade was found
