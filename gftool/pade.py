@@ -27,6 +27,7 @@ from functools import partial
 from itertools import islice
 
 import numpy as np
+from numba import jit
 
 from gftool import Result
 from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
@@ -442,7 +443,7 @@ def calc_iterator_numba(z_out, z_in, coeff):
     pade_prev = np.zeros_like(pade, dtype=coeff.dtype)
     B2 = np.ones_like(pade, dtype=coeff.dtype)
 
-    for im in range(z_in.size):
+    for im in range(z_in.size-1):
         multiplier_im = (z_out_flat - z_in[im])*coeff[..., im+1:im+2] / B2
         B2 = 1 + multiplier_im
         pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
