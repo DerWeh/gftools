@@ -18,6 +18,7 @@ import warnings
 from collections import namedtuple
 
 import numpy as np
+from scipy.special import expit, logit
 
 from . import matrix as gtmatrix
 from ._version import get_versions
@@ -62,8 +63,10 @@ def fermi_fct_d1(eps, beta):
         The Fermi function.
 
     """
-    exp = np.exp(beta*eps)
-    return -beta*exp/(exp+1)**2
+    # exp = np.exp(beta*eps)
+    # return -beta*exp/(exp+1)**2
+    fermi = fermi_fct(eps, beta=beta)
+    return -beta*fermi*(1-fermi)
 
 
 def matsubara_frequencies(n_points, beta):
