@@ -366,10 +366,6 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
 
         """
         z = np.asarray(z)
-        scalar_input = False
-        if z.ndim == 0:
-            z = z[np.newaxis]
-            scalar_input = True
 
         pade_iter = kind.islice(calc_iterator(z, z_in, coeff=coeff))
         if valid_pades.ndim == 1:
@@ -387,8 +383,6 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         pade_avg = np.nanmean(pades, axis=0)
         std = np.nanstd(pades.real, axis=0, ddof=1) + 1j*np.nanstd(pades.imag, axis=0, ddof=1)
 
-        if scalar_input:
-            return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
         return Result(x=pade_avg, err=std)
     return average
 
@@ -480,10 +474,6 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
 
         """
         z = np.asarray(z)
-        scalar_input = False
-        if z.ndim == 0:
-            z = z[np.newaxis]
-            scalar_input = True
 
         pade_iter = kind.islice(calc_iterator(z, z_in, coeff=coeff))
         if valid_pades.ndim == 1:
@@ -510,8 +500,6 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         else:
             std = np.nanstd(mod_pade, axis=0, ddof=1)
 
-        if scalar_input:
-            return Result(x=np.squeeze(pade_avg, axis=-1), err=np.squeeze(std, axis=-1))
         return Result(x=pade_avg, err=std)
     mod_average.__doc__ = mod_average.__doc__.format(mod_fct=mod_fct)
     return mod_average
