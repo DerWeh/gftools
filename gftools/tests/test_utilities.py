@@ -24,6 +24,16 @@ def test_fermi(z, beta):
     assert approx(gt.fermi_fct(z, beta=beta), fermi_comp)
 
 
+@given(z=st.floats(min_value=0., max_value=1.))
+@pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
+def test_inverse_fermi(z, beta):
+    """Check that `gt.fermi_fct_inv` is indeed the inverse.
+
+    The other direction does not work in general, due to rounding.
+    """
+    assert approx(gt.fermi_fct(gt.fermi_fct_inv(z, beta), beta), z)
+
+
 @given(z=st.floats())
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_fermi_d1(z, beta):

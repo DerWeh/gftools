@@ -69,6 +69,14 @@ def fermi_fct_d1(eps, beta):
     return -beta*fermi*(1-fermi)
 
 
+def fermi_fct_inv(fermi, beta):
+    """Inverse of the Fermi function.
+    
+    This is e.g. useful for integrals over the derivative of the Fermi function.
+    """
+    return -logit(fermi)/beta
+
+
 def matsubara_frequencies(n_points, beta):
     r"""Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
 
