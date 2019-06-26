@@ -20,6 +20,7 @@ References
 
 """
 import logging
+from functools import partial
 
 from abc import ABC, abstractmethod
 from itertools import islice
@@ -271,6 +272,7 @@ def coefficients(z, fct_z) -> np.ndarray:
     return res.astype(complex_pres, copy=False)
 
 
+@partial(np.vectorize, otypes=[np.complex], signature='(n),(n)->(n)')
 def masked_coefficients(z, fct_z):
     """Calculate coefficients but ignore extreme values.
 
@@ -306,10 +308,8 @@ def masked_coefficients(z, fct_z):
                 if comparable_mag(mat[last_it, jj]):
                     mat_pi[jj] = (last_coeff/mat[last_it, jj] - 1.)/(z[jj] - z[last_it])
                 elif abs(last_coeff) < abs(mat[last_it, jj])*cutoff:  # tiny quotient
-                    print('truncate')
                     mat_pi[jj] = (-1)/(z[jj] - z[last_it])
                 else:  # huge quotient
-                    print('infty')
                     mat_pi[jj] = np.infty
             last_it = ii
             last_coeff = mat_pi[ii]
