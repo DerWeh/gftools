@@ -51,7 +51,7 @@ class GfProperties(object):
 
     def band_edges(self, params):
         """Return the support of the Green's function, by default (-∞, ∞).
-        
+
         Can be overwritten by subclasses using the `params`.
         """
         return -np.infty, np.infty
@@ -90,6 +90,21 @@ class TestBetheGf(GfProperties):
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
     gf = method(gftools.bethe_gf_omega)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+
+class TestSquareGf(GfProperties):
+    """Check properties of Bethe Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gftools.square_gf_omega)
 
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(self, request):

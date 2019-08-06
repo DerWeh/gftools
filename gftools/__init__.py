@@ -13,17 +13,21 @@ Subpackages
 """
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+from functools import partial
 
 import warnings
 from collections import namedtuple
 
 import numpy as np
 from scipy.special import expit, logit
+from mpmath import fp
 
 from . import matrix as gtmatrix
 from ._version import get_versions
 
 __version__ = get_versions()['version']
+
+ellipk = partial(fp.ellipf, np.pi/2)
 
 
 def fermi_fct(eps, beta):
@@ -267,6 +271,77 @@ def bethe_surface_gf(z, eps, hopping_nn):
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
+
+
+def square_gf_omega(zz, half_bandwidth):
+    r"""Local Green's function of the 2D square lattice.
+
+    .. math::
+        G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}
+
+    where :math:`D` is the half bandwidth and the integral is the complete
+    elliptic integral of first kind.
+
+    Parameters
+    ----------
+    z : complex ndarray or complex
+        Green's function is evaluated at complex frequency `z`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the squre lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`
+
+    Returns
+    -------
+    square_gf_omega : complex ndarray or complex
+        Value of the Green's function
+
+    References
+    ----------
+    .. [5] Economou, E. N. Green's Functions in Quantum Physics. Springer, 2006.
+
+    """
+    zz_rel = zz/half_bandwidth
+    elliptic = np.frompyfunc(ellipk, 1, 1)(zz_rel**-2)
+    try:
+        elliptic = elliptic.astype(np.complex)
+    except AttributeError:  # elliptic no array, thus no conversion necessary
+        pass
+    gf_z = 2./np.pi/zz*elliptic
+    return gf_z
+
+
+def square_dos(eps, half_bandwidth):
+    """DOS of non-interacting 2D square lattice.
+
+    Parameters
+    ----------
+    eps : float ndarray or float
+        DOS is evaluated at points `eps`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    result : float ndarray or float
+        The value of the DOS.
+
+    """
+    eps_ = np.asarray(eps).reshape(-1)
+    dos = np.zeros_like(eps_)
+    neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
+    dos[neg] = +square_gf_omega(eps_[neg], half_bandwidth).imag
+    pos = (eps_ > 0.) & (eps_ < +half_bandwidth)  # FIXME: use not neg
+    dos[pos] = -square_gf_omega(eps_[pos], half_bandwidth).imag
+    return dos.reshape(eps.shape)/np.pi
+
+
+# from: wolframalpha, to integral in python to assert accuracy
+square_dos_moment_coefficients = {
+    2: 0.25,
+    4: 0.140625,
+    6: 0.0976563,
+}
 
 
 def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):

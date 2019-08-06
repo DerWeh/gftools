@@ -33,6 +33,7 @@ setup(
     install_requires=[
         'numpy',
         'scipy',
+        'mpmath'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'hypothesis'],
