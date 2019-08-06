@@ -11,6 +11,7 @@ GfTools' Reference
 :Date: |today|
 
 .. module:: gftools
+   :noindex:
 
 
 This reference manual details functions, modules, and objects included in GfTools,

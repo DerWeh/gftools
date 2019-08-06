@@ -19,7 +19,7 @@ import warnings
 from collections import namedtuple
 
 import numpy as np
-from scipy.special import expit, logit
+from scipy.special import logit
 from mpmath import fp
 
 from . import matrix as gtmatrix
@@ -280,7 +280,7 @@ def square_gf_omega(zz, half_bandwidth):
         G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}
 
     where :math:`D` is the half bandwidth and the integral is the complete
-    elliptic integral of first kind.
+    elliptic integral of first kind. [5]_
 
     Parameters
     ----------
