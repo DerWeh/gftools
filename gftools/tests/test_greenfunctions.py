@@ -14,13 +14,15 @@ import pytest
 import numpy as np
 import scipy.integrate as integrate
 
+from mpmath import fp
+
 from .context import gftools
 
 
 def method(func):
     """Perpend `self` to `func` to turn it into a method."""
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(__, *args, **kwargs):
         return func(*args, **kwargs)
     return wrapper
 
@@ -37,7 +39,7 @@ class GfProperties(object):
     Look into https://gist.github.com/abele/ee049b1fdf7e4a1af71a
     """
 
-    z_mesh = None  # mesh on which the function's properties will be tested
+    z_mesh: np.ndarray  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
     def gf(self, z, **kwargs):
@@ -71,6 +73,17 @@ class GfProperties(object):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
         assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
                            self.gf(np.conjugate(self.z_mesh), *params[0], **params[1]))
+
+    def test_limit(self, params):
+        r""":math:`\lim_{z→∞} zG(z) = 1`."""
+        assert np.allclose(  # along real axis
+            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
+            rtol=1e-2
+        )
+        assert np.allclose(  # along imaginary axis
+            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
+            rtol=1e-2
+        )
 
     def test_normalization(self, params):
         r""":math:`-∫dωℑG(ω+iϵ)/π = ∫dϵ ρ(ϵ) = 1`."""
@@ -154,6 +167,16 @@ class TestHubbardDimer(GfProperties):
     def test_normalization(self, params):
         raise NotImplementedError
 
+    def test_limit(self, params):
+        """Limit of Pols cannot be accurately determined, thus accuracy is reduced."""
+        assert np.allclose(  # along real axis
+            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
+            rtol=1e-1
+        )
+        assert np.allclose(  # along imaginary axis
+            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
+            rtol=1e-2
+        )
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_unit(D):
@@ -186,7 +209,7 @@ def test_imag_gf_negative():
 
 def test_imag_gf_equals_dos():
     r"""Imaginary part of the GF is proportional to the DOS.
-    
+
     .. math::
         DOS(ϵ) = -ℑ(G(ϵ))/π
     """
@@ -200,7 +223,7 @@ def test_imag_gf_equals_dos():
 
 def test_hilbert_equals_integral():
     """Compare *bethe_hilbert_transfrom* with explicit calculation of integral.
-    
+
     The integral is singular for xi=0, actually the Cauchy principal value
     should be taken.
     """
