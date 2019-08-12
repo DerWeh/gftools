@@ -525,6 +525,52 @@ def hubbard_I_self_z(z, U, occ):
     return hartree * (1 + U_1mocc / np.subtract.outer(z, U_1mocc))
 
 
+def multipole_z(z, poles, weights):
+    """Green's function containing multiple poles.
+
+    To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
+
+    Parameters
+    ----------
+    z : np.ndarray
+        The frequencies
+    poles, weights : (N, ) float np.ndarray
+        The position and weight of the poles
+
+    Returns
+    -------
+    multipole_z : complex np.ndarray
+        Green's function shaped as `z`.
+
+    """
+    return np.sum(weights/(np.subtract.outer(z, poles)), axis=-1)
+
+
+def multipole_tau(tau, poles, weights, beta):
+    """Corresponding imaginary time Green's function to `multipole_z`.
+
+    Parameters
+    ----------
+    tau : float np.ndarray
+        Time points.
+    poles, weights : (N,) float np.ndarray
+        Position and weight of the poles.
+    beta : float
+        Inverse temperature
+
+    Returns
+    -------
+    multipole_tau : float np.ndarray
+        Imaginary time Green's function shaped like `tau`.
+
+    """
+    assert np.all((tau >= 0.) & (tau <= beta))
+    # per_pole_tau = weights*np.exp(np.multiply.outer(beta - tau, poles))/(1. + np.exp(beta*poles))
+    # per_pole_tau = weights*np.exp(np.multiply.outer(-tau, poles))*gt.fermi_fct(poles, -beta)
+    per_pole_tau = weights * np.exp(-np.logaddexp(np.multiply.outer(tau-beta, poles), np.multiply.outer(tau, poles)))
+    return -np.sum(per_pole_tau, axis=-1)
+
+
 Result = namedtuple('Result', ['x', 'err'])
 
 
