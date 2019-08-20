@@ -183,14 +183,13 @@ def coefficients(z, fct_z) -> np.ndarray:
     """
     if z.shape != fct_z.shape[-1:]:
         raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
-    mat = np.zeros((z.size, *fct_z.shape), dtype=np.complex256)
-    mat[0] = fct_z
-    for ii, mat_pi in enumerate(mat[1:]):
-        mat_pi[..., ii+1:] = (mat[ii, ..., ii:ii+1]/mat[ii, ..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
+    res = fct_z.astype(dtype=np.complex256, copy=True)
+    for ii in range(z.size - 1):
+        res[..., ii+1:] = (res[..., ii:ii+1]/res[..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
     complex_pres = np.complex256 if fct_z.dtype in _PRECISE_TYPES else np.complex
     LOGGER.debug("Input type %s precise: %s -> result type: %s",
                  fct_z.dtype, fct_z.dtype in _PRECISE_TYPES, complex_pres)
-    return mat.diagonal(axis1=0, axis2=-1).astype(complex_pres, copy=False)
+    return res.astype(complex_pres, copy=False)
 
 
 def masked_coefficients(z, fct_z):
