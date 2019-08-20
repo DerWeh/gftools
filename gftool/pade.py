@@ -628,6 +628,12 @@ def apply_filter(*filters, validity_iter):
         for filt in filters:
             is_valid_filt = filt(i_validity_iter[i_valid])
             i_valid[i_valid] = is_valid_filt
+            if np.count_nonzero(i_valid) == 0:
+                raise RuntimeError(
+                    f"No Pade is valid due to filter {filt}.\n"
+                    f"No solution found for coefficient (shape: {validity_iter.shape[1:-1]}) axes "
+                    f"{np.argwhere(~is_valid.any(axis=0))}"
+                )
     return np.moveaxis(is_valid, 0, -1).reshape(shape[:-1])
 
 
