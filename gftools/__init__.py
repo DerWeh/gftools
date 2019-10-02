@@ -202,10 +202,14 @@ def bethe_gf_d1_omega(z, half_bandwidth):
     bethe_gf_omega
 
     """
-    z_rel = z / half_bandwidth
-    sqrt = (1 - z_rel**-2)
-    # return 2. * (1. - sqrt - (z_rel**-2 / sqrt))
-    return 2. * (1 - 1/sqrt)
+    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    try:
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+    except AttributeError:
+        complex_pres = np.complex
+    sqrt = np.sqrt(1 - z_rel**-2)
+    gf_d1 = 2. / half_bandwidth**2 * (1 - 1/sqrt)
+    return gf_d1.astype(dtype=complex_pres, copy=False)
 
 
 def bethe_hilbert_transfrom(xi, half_bandwidth):

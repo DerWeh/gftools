@@ -7,13 +7,15 @@ TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
 from __future__ import absolute_import, unicode_literals
 
-from functools import wraps
+from functools import wraps, partial
 
 import pytest
+from hypothesis import assume, given, strategies as st
 
 import numpy as np
 import scipy.integrate as integrate
 
+import mpmath
 from mpmath import fp
 
 from .context import gftools
@@ -177,6 +179,23 @@ class TestHubbardDimer(GfProperties):
             fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
             rtol=1e-2
         )
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+@given(a=st.complex_numbers(allow_infinity=False, max_magnitude=1e8),  # quad doesn't handle inf
+       b=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
+def test_bethe_derivative_1(a, b, D):
+    """Check if integrated derivative yields the original function."""
+    assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
+    assume(np.sign(a.imag) == np.sign(b.imag))  # same half-plane
+    assume(abs(b-a) < 1e8)  # reasonable integration lengthes
+    diff = gftools.bethe_gf_omega(b, half_bandwidth=D) - gftools.bethe_gf_omega(a, half_bandwidth=D)
+    with mpmath.workdps(30):  # improved integration accuracy in case of large inter
+        assert np.allclose(
+            diff,
+            fp.quad(partial(gftools.bethe_gf_d1_omega, half_bandwidth=D), [a, b])
+        )
+
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_unit(D):
