@@ -27,6 +27,8 @@ from ._version import get_versions
 
 __version__ = get_versions()['version']
 
+_PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
+
 ellipk = partial(fp.ellipf, np.pi/2)
 
 
@@ -170,8 +172,13 @@ def bethe_gf_omega(z, half_bandwidth):
     TODO: source
 
     """
-    z_rel = z / half_bandwidth
-    return 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
+    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    try:
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+    except AttributeError:
+        complex_pres = np.complex
+    gf_z = 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
+    return gf_z.astype(dtype=complex_pres, copy=False)
 
 
 def bethe_gf_d1_omega(z, half_bandwidth):
