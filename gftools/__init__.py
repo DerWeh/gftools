@@ -99,7 +99,8 @@ def matsubara_frequencies(n_points, beta):
         Array of the imaginary Matsubara frequencies
 
     """
-    return 1j * np.pi * (2*n_points + 1) / beta
+    n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
+    return 1j * np.pi / beta * (2*n_points + 1)
 
 
 def matsubara_frequencies_b(n_points, beta):
@@ -118,7 +119,8 @@ def matsubara_frequencies_b(n_points, beta):
         Array of the imaginary Matsubara frequencies
 
     """
-    return 2j * np.pi * n_points / beta
+    n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
+    return 2j * np.pi / beta * n_points
 
 
 def bethe_dos(eps, half_bandwidth):
