@@ -198,6 +198,20 @@ def test_bethe_derivative_1(a, b, D):
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
+@given(a=st.complex_numbers(allow_infinity=False, max_magnitude=1e8),  # quad doesn't handle inf
+       b=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
+def test_bethe_derivative_2(a, b, D):
+    """Check if integrated derivative yields the original function."""
+    assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
+    assume(np.sign(a.imag) == np.sign(b.imag))  # same half-plane
+    assume(abs(b-a) < 1e8)  # reasonable integration lengthes
+    fct = partial(gftools.bethe_gf_d1_omega, half_bandwidth=D)
+    fct_d1 = partial(gftools.bethe_gf_d2_omega, half_bandwidth=D)
+    with mpmath.workdps(30):  # improved integration accuracy in case of large inter
+        assert np.allclose(fct(b) - fct(a), fp.quad(fct_d1, [a, b]))
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_unit(D):
     """Integral over the whole DOS should be 1."""
     assert integrate.quad(gftools.bethe_dos, -D-.1, D+.1, args=(D,))[0] == pytest.approx(1.)
