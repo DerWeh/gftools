@@ -24,6 +24,21 @@ def test_fermi(z, beta):
     assert approx(gt.fermi_fct(z, beta=beta), fermi_comp)
 
 
+@given(z=st.floats(), n=st.integers(min_value=-100, max_value=100))
+@pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
+def test_complex_fermi(z, n, beta):
+    """Check if Fermi function has imaginary periodicity.
+
+    For bosonic Matsubara frequencies :math:`f(z+iν_n) = f(z)` should hold.
+    """
+    iv_n = gt.matsubara_frequencies_b(n, beta=beta)
+    fermi_cmpx = gt.fermi_fct(z+iv_n, beta=beta)
+    fermi_real = gt.fermi_fct(z, beta=beta)
+    assert approx(fermi_cmpx.real, fermi_real)
+    if not np.isnan(fermi_cmpx.real):
+        assert fermi_cmpx.imag < 1e-6
+
+
 @given(z=st.floats(min_value=0., max_value=1.))
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_inverse_fermi(z, beta):

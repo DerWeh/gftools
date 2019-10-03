@@ -19,7 +19,7 @@ import warnings
 from collections import namedtuple
 
 import numpy as np
-from scipy.special import logit
+from scipy.special import logit, expit
 from mpmath import fp
 
 from . import matrix as gtmatrix
@@ -35,20 +35,31 @@ ellipk = partial(fp.ellipf, np.pi/2)
 def fermi_fct(eps, beta):
     r"""Return the Fermi function :math:`1/(\exp(βz)+1)`.
 
+    For complex inputs the function is not as accurate as for real inputs.
+
     Parameters
     ----------
-    eps : float or float ndarray
+    eps : complex or float or ndarray
         The energy at which the Fermi function is evaluated.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct : float or float ndarray
-        The Fermi function.
+    fermi_fct
+        The Fermi function, same type as eps.
 
     """
-    return 0.5 * (1. + np.tanh(-0.5 * beta * eps))
+    z = eps*beta
+    try:
+        return expit(-z)  # = 0.5 * (1. + tanh(-0.5 * beta * eps))
+    except TypeError:  # complex
+        pos = z.real > 0
+        res = np.empty_like(z)
+        res[~pos] = 1./(np.exp(z[~pos]) + 1)
+        exp_m = np.exp(-z[pos])
+        res[pos] = exp_m/(1 + exp_m)
+        return res
 
 
 def fermi_fct_d1(eps, beta):
@@ -77,7 +88,7 @@ def fermi_fct_d1(eps, beta):
 
 def fermi_fct_inv(fermi, beta):
     """Inverse of the Fermi function.
-    
+
     This is e.g. useful for integrals over the derivative of the Fermi function.
     """
     return -logit(fermi)/beta
