@@ -5,10 +5,13 @@ from __future__ import absolute_import, unicode_literals
 from functools import partial
 
 import pytest
-import numpy as np
 import hypothesis.strategies as st
 
 from hypothesis import given, assume
+
+import numpy as np
+import mpmath
+from mpmath import fp
 
 from .context import gftools as gt
 
@@ -51,12 +54,20 @@ def test_inverse_fermi(z, beta):
 
 @given(z=st.floats())
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
-def test_fermi_d1(z, beta):
+def test_fermi_d1_std_form(z, beta):
     """Check if Fermi functions agrees with the standard form."""
     assume(z*beta < 500.)  # avoid overflows in naive implementation
     exp = np.exp(beta*z)
     fermi_d1_comp = -beta*exp/(exp+1)**2
     assert approx(gt.fermi_fct_d1(z, beta=beta), fermi_d1_comp)
+
+
+@given(z=st.complex_numbers(allow_infinity=False, max_magnitude=1e2))  # quad doesn't handle inf
+def test_fermi_derivative_1(z):
+    """Check if integrated derivative yields the original function."""
+    assume(abs(z.real) > 1e-4)  # avoid imaginary axis
+    assert np.allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad'),
+                       gt.fermi_fct_d1(z, beta=1))
 
 
 def test_density():
