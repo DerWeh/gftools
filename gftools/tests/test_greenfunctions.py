@@ -281,3 +281,26 @@ def test_hilbert_equals_integral():
         compare += integrate.quad(kernel_real, -D, D, args=(xi,))[0]
         compare += 1j*integrate.quad(kernel_imag, -D, D, args=(xi,))[0]
         assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_square_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gftools.bethe_dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, 0., D]) == pytest.approx(1.)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_square_dos_half(D):
+    """DOS should be symmetric -> integral over the half should yield 0.5."""
+    dos = partial(gftools.bethe_dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
+    assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
+
+
+def test_square_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gftools.square_dos(eps, D) == 0
+        assert gftools.square_dos(-eps, D) == 0

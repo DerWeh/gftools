@@ -389,13 +389,15 @@ def square_dos(eps, half_bandwidth):
         The value of the DOS.
 
     """
-    eps_ = np.asarray(eps).reshape(-1)
+    eps_ = np.asarray(eps)
+    shape = eps_.shape
+    eps_.reshape(-1)
     dos = np.zeros_like(eps_)
     neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
     dos[neg] = +square_gf_omega(eps_[neg], half_bandwidth).imag
     pos = (eps_ > 0.) & (eps_ < +half_bandwidth)  # FIXME: use not neg
     dos[pos] = -square_gf_omega(eps_[pos], half_bandwidth).imag
-    return dos.reshape(eps.shape)/np.pi
+    return dos.reshape(shape)/np.pi
 
 
 # from: wolframalpha, to integral in python to assert accuracy
