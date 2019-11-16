@@ -343,15 +343,14 @@ def bethe_hilbert_transfrom(xi, half_bandwidth):
     return bethe_gf_omega(xi, half_bandwidth)
 
 
-def bethe_surface_gf(z, eps, hopping_nn):
-    r"""Surface Green's function for stacked layers of Bethe lattices.
+def surface_gf(z, eps, hopping_nn):
+    r"""Surface Green's function for stacked layers.
 
     .. math::
         \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
 
-    with :math:`g_{00} = (z-ϵ)^{-1}`
-
-    TODO: source
+    with :math:`g_{00} = (z-ϵ)^{-1}` [6]_. This is in principle the Green's function
+    for a semi-infinite chain.
 
     Parameters
     ----------
@@ -364,8 +363,16 @@ def bethe_surface_gf(z, eps, hopping_nn):
 
     Returns
     -------
-    bethe_surface_gf : complex
+    surface_gf : complex
         Value of the surface Green's function
+
+    References
+    ----------
+    .. [6] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical
+    Introduction to Equilibrium Green's Functions: Condensed-Matter Examples
+    with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
+    no. 1 (September 22, 2016).
+    https://doi.org/10.1590/1806-9126-rbef-2016-0087.
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)

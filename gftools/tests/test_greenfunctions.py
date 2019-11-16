@@ -127,13 +127,13 @@ class TestSquareGf(GfProperties):
         return (), {'half_bandwidth': request.param}
 
 
-class TestBetheSurfaceGf(GfProperties):
-    """Check properties of Bethe surface Gf."""
+class TestSurfaceGf(GfProperties):
+    """Check properties of surface Gf."""
 
     z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    gf = method(gftools.bethe_surface_gf)
+    gf = method(gftools.surface_gf)
 
     @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
     def params(self, request):
