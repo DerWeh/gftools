@@ -1,15 +1,13 @@
 # encoding: utf-8
 """Collection of commonly used Green's functions and utilities.
 
-So far mainly contains Bethe Green's functions.
 Main purpose is to have a tested base.
 
 Subpackages
 -----------
     matrix   --- Work with Green's functions in matrix form, mainly for r-DMFT
+    lattice  --- Different lattice containing Green's functions and related functions
 
-.. _Georges et al:
-    https://doi.org/10.1103/RevModPhys.68.13
 """
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
@@ -19,17 +17,13 @@ import warnings
 from collections import namedtuple
 
 import numpy as np
-from scipy.special import logit, expit
-from mpmath import fp
+from scipy.special import expit, logit
 
 from . import matrix as gtmatrix
+from . import lattice
 from ._version import get_versions
 
 __version__ = get_versions()['version']
-
-_PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
-
-ellipk = partial(fp.ellipf, np.pi/2)
 
 
 def fermi_fct(eps, beta):
@@ -140,207 +134,27 @@ def matsubara_frequencies_b(n_points, beta):
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 2j * np.pi / beta * n_points
 
+# Bethe lattice. The names will change with the next big refactor.
+bethe_gf_omega = lattice.bethe.gf_z
+bethe_gf_d1_omega = lattice.bethe.gf_z
+bethe_hilbert_transfrom = lattice.bethe.hilbert_transform
+bethe_dos = lattice.bethe.dos
+# FIXME: write tests for moments
+bethe_dos.m1 = partial(lattice.bethe.dos_moment, m=1)
+bethe_dos.m2 = partial(lattice.bethe.dos_moment, m=2)
+bethe_dos.m3 = partial(lattice.bethe.dos_moment, m=3)
+bethe_dos.m4 = partial(lattice.bethe.dos_moment, m=4)
+bethe_dos.m5 = partial(lattice.bethe.dos_moment, m=5)
 
-def bethe_dos(eps, half_bandwidth):
-    """DOS of non-interacting Bethe lattice for infinite coordination number.
-
-    Parameters
-    ----------
-    eps : float ndarray or float
-        DOS is evaluated at points `eps`.
-    half_bandwidth : float
-        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
-
-    Returns
-    -------
-    result : float ndarray or float
-        The value of the DOS.
-
-    """
-    D2 = half_bandwidth * half_bandwidth
-    eps2 = eps*eps
-    mask = eps2 < D2
-    try:
-        result = np.empty_like(eps)
-        result[~mask] = 0
-    except IndexError:  # eps is scalar
-        if mask:
-            return np.sqrt(D2 - eps2) / (0.5 * np.pi * D2)
-        return 0.  # outside of bandwidth
-    else:
-        result[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
-        return result
-
-
-# from:
-# https://www.wolframalpha.com/input/?i=integrate+sqrt(1+-+x%5E2)%2F(.5*pi)+*x%5E%7B2*n%7Ddx+from+-1+to+1+assuming+n+is+integer
-bethe_dos_moment_coefficients = {
-    2: 0.25,
-    4: 0.125,
-    6: 0.078125,
-    8: 0.0546875,
-    10: 0.0410156,
-    12: 0.0322266,
-    14: 0.0261841,
-    16: 0.0218201,
-    18: 0.0185471,
-    20: 0.0160179,
-}
-
-
-def bethe_dos_odd(half_bandwidth=None):
-    del half_bandwidth
-    return 0
-
-
-def bethe_dos_m2(half_bandwidth):
-    return 0.25 * half_bandwidth**2
-
-
-def bethe_dos_m4(half_bandwidth):
-    return 0.125 * half_bandwidth**4
-
-
-bethe_dos.m1 = bethe_dos_odd
-bethe_dos.m2 = bethe_dos_m2
-bethe_dos.m3 = bethe_dos_odd
-bethe_dos.m4 = bethe_dos_m4
-bethe_dos.m5 = bethe_dos_odd
-
-
-def bethe_gf_omega(z, half_bandwidth):
-    """Local Green's function of Bethe lattice for infinite coordination number.
-
-    Parameters
-    ----------
-    z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`
-    half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
-
-    Returns
-    -------
-    bethe_gf_omega : complex ndarray or complex
-        Value of the Green's function
-
-    TODO: source
-
-    """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
-    try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
-    except AttributeError:
-        complex_pres = np.complex
-    gf_z = 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
-    return gf_z.astype(dtype=complex_pres, copy=False)
-
-
-def bethe_gf_d1_omega(z, half_bandwidth):
-    """First derivative of local Green's function of Bethe lattice for infinite coordination number.
-
-    Parameters
-    ----------
-    z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`
-    half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
-
-    Returns
-    -------
-    bethe_gf_omega : complex ndarray or complex
-        Value of the Green's function
-
-    See Also
-    --------
-    bethe_gf_omega
-
-    """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
-    try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
-    except AttributeError:
-        complex_pres = np.complex
-    sqrt = np.sqrt(1 - z_rel**-2)
-    gf_d1 = 2. / half_bandwidth**2 * (1 - 1/sqrt)
-    return gf_d1.astype(dtype=complex_pres, copy=False)
-
-
-def bethe_gf_d2_omega(z, half_bandwidth):
-    """Second derivative of local Green's function of Bethe lattice for infinite coordination number.
-
-    Parameters
-    ----------
-    z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`
-    half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
-
-    Returns
-    -------
-    bethe_gf_omega : complex ndarray or complex
-        Value of the Green's function
-
-    See Also
-    --------
-    bethe_gf_omega
-
-    """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
-    try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
-    except AttributeError:
-        complex_pres = np.complex
-    sqrt = np.sqrt(1 - z_rel**-2)
-    gf_d2 = 2. / half_bandwidth**3 * z_rel * sqrt / (1 - z_rel**2)**2
-    return gf_d2.astype(dtype=complex_pres, copy=False)
-
-
-def bethe_hilbert_transfrom(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
-
-    FIXME: the lattice Hilbert transform is the same as the non-interacting
-        Green's function.
-
-    The Hilbert transform
-
-    .. math::
-        \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
-
-    takes for Bethe lattice in the limit of infinite coordination number the
-    explicit form
-
-    .. math::
-        \tilde{D}(ξ) = 2*(ξ - s\sqrt{ξ^2 - D^2})/D^2
-
-    with :math:`s=sgn[ℑ{ξ}]`.
-    See `Georges et al`_.
-
-
-    Parameters
-    ----------
-    xi : complex ndarray or complex
-        Point at which the Hilbert transform is evaluated
-    half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-
-    Returns
-    -------
-    bethe_hilbert_transfrom : complex ndarray or complex
-        Hilbert transform of `xi`.
-
-    Note
-    ----
-    Relation between nearest neighbor hopping `t` and half-bandwidth `D`
-
-    .. math::
-        2t = D
-
-    """
-    return bethe_gf_omega(xi, half_bandwidth)
+# Square lattice. The names will change with the next big refactor.
+square_gf_omega = lattice.square.gf_z
+square_hilbert_transfrom = lattice.square.hilbert_transform
+square_dos = lattice.square.dos
+square_dos.m1 = partial(lattice.square.dos_moment, m=1)
+square_dos.m2 = partial(lattice.square.dos_moment, m=2)
+square_dos.m3 = partial(lattice.square.dos_moment, m=3)
+square_dos.m4 = partial(lattice.square.dos_moment, m=4)
+square_dos.m5 = partial(lattice.square.dos_moment, m=5)
 
 
 def surface_gf(z, eps, hopping_nn):
@@ -376,79 +190,6 @@ def surface_gf(z, eps, hopping_nn):
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
-
-
-def square_gf_omega(zz, half_bandwidth):
-    r"""Local Green's function of the 2D square lattice.
-
-    .. math::
-        G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}
-
-    where :math:`D` is the half bandwidth and the integral is the complete
-    elliptic integral of first kind. [5]_
-
-    Parameters
-    ----------
-    z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`.
-    half_bandwidth : float
-        Half-bandwidth of the DOS of the squre lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`
-
-    Returns
-    -------
-    square_gf_omega : complex ndarray or complex
-        Value of the Green's function
-
-    References
-    ----------
-    .. [5] Economou, E. N. Green's Functions in Quantum Physics. Springer, 2006.
-
-    """
-    zz_rel = zz/half_bandwidth
-    elliptic = np.frompyfunc(ellipk, 1, 1)(zz_rel**-2)
-    try:
-        elliptic = elliptic.astype(np.complex)
-    except AttributeError:  # elliptic no array, thus no conversion necessary
-        pass
-    gf_z = 2./np.pi/zz*elliptic
-    return gf_z
-
-
-def square_dos(eps, half_bandwidth):
-    """DOS of non-interacting 2D square lattice.
-
-    Parameters
-    ----------
-    eps : float ndarray or float
-        DOS is evaluated at points `eps`.
-    half_bandwidth : float
-        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
-
-    Returns
-    -------
-    result : float ndarray or float
-        The value of the DOS.
-
-    """
-    eps_ = np.asarray(eps)
-    shape = eps_.shape
-    eps_.reshape(-1)
-    dos = np.zeros_like(eps_)
-    neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
-    dos[neg] = +square_gf_omega(eps_[neg], half_bandwidth).imag
-    pos = (eps_ > 0.) & (eps_ < +half_bandwidth)  # FIXME: use not neg
-    dos[pos] = -square_gf_omega(eps_[pos], half_bandwidth).imag
-    return dos.reshape(shape)/np.pi
-
-
-# from: wolframalpha, to integral in python to assert accuracy
-square_dos_moment_coefficients = {
-    2: 0.25,
-    4: 0.140625,
-    6: 0.0976563,
-}
 
 
 def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
