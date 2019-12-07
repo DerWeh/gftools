@@ -86,12 +86,12 @@ def gf_d1_z(z, half_bandwidth):
     gf_z
 
     """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    z_rel_inv = np.array(half_bandwidth / z, dtype=np.complex256)
     try:
         complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
     except AttributeError:
         complex_pres = np.complex
-    sqrt = np.sqrt(1 - z_rel**-2)
+    sqrt = np.sqrt(1 - z_rel_inv**2)
     gf_d1 = 2. / half_bandwidth**2 * (1 - 1/sqrt)
     return gf_d1.astype(dtype=complex_pres, copy=False)
 
@@ -198,19 +198,11 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
-    D2 = half_bandwidth * half_bandwidth
-    eps2 = eps*eps
-    mask = eps2 < D2
-    try:
-        dos = np.empty_like(eps)
-        dos[~mask] = 0
-    except IndexError:  # eps is scalar
-        if mask:
-            return np.sqrt(D2 - eps2) / (0.5 * np.pi * D2)
-        return 0.  # outside of bandwidth
-    else:
-        dos[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
-        return dos
+    eps_rel = np.asarray(eps / half_bandwidth)
+    dos = np.zeros_like(eps_rel)
+    nonzero = abs(eps_rel) < 1
+    dos[nonzero] = 2. / (np.pi*half_bandwidth) * np.sqrt(1 - eps_rel[nonzero]**2)
+    return dos
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
