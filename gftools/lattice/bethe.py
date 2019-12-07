@@ -68,6 +68,35 @@ def gf_d1_z(z, half_bandwidth):
     return gf_d1.astype(dtype=complex_pres, copy=False)
 
 
+def gf_d2_z(z, half_bandwidth):
+    """Second derivative of local Green's function of Bethe lattice for infinite coordination number.
+
+    Parameters
+    ----------
+    z : complex ndarray or complex
+        Green's function is evaluated at complex frequency `z`
+    half_bandwidth : float
+        half-bandwidth of the DOS of the Bethe lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    gf_d2_z : complex ndarray or complex
+        Value of the Green's function
+
+    See Also
+    --------
+    gf_z
+
+    """
+    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    try:
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+    except AttributeError:
+        complex_pres = np.complex
+    sqrt = np.sqrt(1 - z_rel**-2)
+    gf_d2 = 2. / half_bandwidth**3 * z_rel * sqrt / (1 - z_rel**2)**2
+    return gf_d2.astype(dtype=complex_pres, copy=False)
 
 
 def hilbert_transform(xi, half_bandwidth):
