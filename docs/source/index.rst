@@ -1,28 +1,40 @@
-.. gftools documentation master file, created by
-   sphinx-quickstart on Thu Mar 29 17:18:49 2018.
+.. GfTools documentation master file, created by
+   sphinx-quickstart on Sat Nov 30 17:11:49 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-===================================
-GfTools' Reference
+Welcome to GfTools's documentation!
 ===================================
 
 :Release: |version|
 :Date: |today|
-
-.. module:: gftools
-   :noindex:
-
 
 This reference manual details functions, modules, and objects included in GfTools,
 describing what they are and what they do.
 
 .. toctree::
    :maxdepth: 2
-   
-   gftools
-   matrix
-   pade
+   :caption: Contents:
+
+
+README
+======
+
+.. include:: ../../README.rst
+
+
+
+API
+===
+
+
+.. autosummary::
+  :toctree: _autosummary
+
+  gftools
+  gftools.lattice
+  gftools.pade
+  gftools.matrix
 
 
 
