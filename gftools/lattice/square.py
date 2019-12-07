@@ -118,7 +118,7 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculated the `m`th moment of the square DOS.
+    """Calculate the `m`th moment of the square DOS.
 
     The moments are defined as `math`:∫dϵ ϵ^m DOS(ϵ):.
 

@@ -11,3 +11,7 @@ Submodules
 
 """
 from . import bethe, square
+
+# silence warnings of unused imports
+assert bethe
+assert square
