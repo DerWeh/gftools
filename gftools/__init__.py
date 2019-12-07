@@ -188,10 +188,10 @@ def surface_gf(z, eps, hopping_nn):
     References
     ----------
     .. [6] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical
-    Introduction to Equilibrium Green's Functions: Condensed-Matter Examples
-    with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
-    no. 1 (September 22, 2016).
-    https://doi.org/10.1590/1806-9126-rbef-2016-0087.
+       Introduction to Equilibrium Green's Functions: Condensed-Matter Examples
+       with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
+       no. 1 (September 22, 2016).
+       https://doi.org/10.1590/1806-9126-rbef-2016-0087.
 
     """
     return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
@@ -268,7 +268,7 @@ def hubbard_I_self_z(z, U, occ):
 
     Returns
     -------
-    Σ_{Hub I} : (*z.shape, *occ.shape) complex np.ndarray
+    Σ_{Hub I} : (\*z.shape, \*occ.shape) complex np.ndarray
         The self-energy in Hubbard I approximation, the shape is the sum of the
         shape of `z` and `occ`.
 

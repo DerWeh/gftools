@@ -82,7 +82,7 @@ def hilbert_transform(xi, half_bandwidth):
         \tilde{D}(ξ) = 2*(ξ - s\sqrt{ξ^2 - D^2})/D^2
 
     with :math:`s=sgn[ℑ{ξ}]`.
-    See `Georges et al`_.
+    See [1]_.
 
 
     Parameters
@@ -97,8 +97,8 @@ def hilbert_transform(xi, half_bandwidth):
     hilbert_transfrom : complex ndarray or complex
         Hilbert transform of `xi`.
 
-    Note
-    ----
+    Notes
+    -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math::
@@ -163,7 +163,7 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m`th moment of the Bethe DOS.
+    """Calculate the `m` th moment of the Bethe DOS.
 
     The moments are defined as `math`:∫dϵ ϵ^m DOS(ϵ):.
 
@@ -177,7 +177,7 @@ def dos_moment(m, half_bandwidth):
     Returns
     -------
     dos_moment : float
-        The `m`th moment of the Bethe DOS.
+        The `m` th moment of the Bethe DOS.
 
     Raises
     ------
