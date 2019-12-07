@@ -141,7 +141,7 @@ def matsubara_frequencies_b(n_points, beta):
 
 # Bethe lattice. The names will change with the next big refactor.
 bethe_gf_omega = lattice.bethe.gf_z
-bethe_gf_d1_omega = lattice.bethe.gf_z
+bethe_gf_d1_omega = lattice.bethe.gf_d1_z
 bethe_hilbert_transfrom = lattice.bethe.hilbert_transform
 bethe_dos = lattice.bethe.dos
 # FIXME: write tests for moments
