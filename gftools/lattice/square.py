@@ -1,4 +1,4 @@
-"""Square lattice.
+"""2D square lattice.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/4`
@@ -23,7 +23,7 @@ def gf_z(z, half_bandwidth):
 
     Parameters
     ----------
-    zz : complex ndarray or complex
+    z : complex ndarray or complex
         Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the square lattice.
@@ -32,7 +32,7 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex ndarray or complex
-        Value of the Green's function
+        Value of the square lattice Green's function
 
     References
     ----------
@@ -120,7 +120,6 @@ def dos(eps, half_bandwidth):
     dos : float ndarray or float
         The value of the DOS.
 
-
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=500)
@@ -157,7 +156,7 @@ dos_moment_coefficients = {
 def dos_moment(m, half_bandwidth):
     """Calculate the `m` th moment of the square DOS.
 
-    The moments are defined as `math`:∫dϵ ϵ^m DOS(ϵ):.
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
     Parameters
     ----------

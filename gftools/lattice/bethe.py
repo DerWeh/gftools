@@ -3,6 +3,9 @@
 This is in fact no real lattice, but a tree. It corresponds to a semi-circular
 DOS.
 
+:half_bandwidth: The half_bandwidth corresponds to a scaled nearest neighbor
+                 hopping of `t=D/2`
+
 """
 import numpy as np
 
@@ -10,7 +13,13 @@ _PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
 
 
 def gf_z(z, half_bandwidth):
-    """Local Green's function of Bethe lattice for infinite coordination number.
+    r"""Local Green's function of Bethe lattice for infinite coordination number.
+
+    .. math::
+        G(z) = 2*(z - s\sqrt{z^2 - D^2})/D^2
+
+    where :math:`D` is the half bandwidth and :math:`s=sgn[ℑ{ξ}]`. See
+    [georges1996]_.
 
     Parameters
     ----------
@@ -23,9 +32,28 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex ndarray or complex
-        Value of the Green's function
+        Value of the Bethe Green's function
 
-    TODO: source
+    References
+    ----------
+    .. [georges1996] Georges et al., Rev. Mod. Phys. 68, 13 (1996)
+       https://doi.org/10.1103/RevModPhys.68.13
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.5, 1.5, num=500)
+    >>> gf_ww = gt.lattice.bethe.gf_z(ww, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(ww, gf_ww.real, label=r"$\Re G$")
+    >>> plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> plt.xlabel(r"$\omega/D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=ww.min(), right=ww.max())
+    >>> plt.grid()
+    >>> plt.legend()
+    >>> plt.show()
 
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
@@ -102,23 +130,13 @@ def gf_d2_z(z, half_bandwidth):
 def hilbert_transform(xi, half_bandwidth):
     r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
 
-    FIXME: the lattice Hilbert transform is the same as the non-interacting
-        Green's function.
-
-    The Hilbert transform
+    The Hilbert transform is defined
 
     .. math::
         \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
 
-    takes for Bethe lattice in the limit of infinite coordination number the
-    explicit form
-
-    .. math::
-        \tilde{D}(ξ) = 2*(ξ - s\sqrt{ξ^2 - D^2})/D^2
-
-    with :math:`s=sgn[ℑ{ξ}]`.
-    See [1]_.
-
+    The lattice Hilbert transform is the same as the non-interacting Green's
+    function.
 
     Parameters
     ----------
@@ -139,16 +157,16 @@ def hilbert_transform(xi, half_bandwidth):
     .. math::
         2t = D
 
-    References
-    ----------
-    .. [1] Georges et al: https://doi.org/10.1103/RevModPhys.68.13
+    See Also
+    --------
+    gf_z
 
     """
     return gf_z(xi, half_bandwidth)
 
 
 def dos(eps, half_bandwidth):
-    """DOS of non-interacting Bethe lattice for infinite coordination number.
+    r"""DOS of non-interacting Bethe lattice for infinite coordination number.
 
     Parameters
     ----------
@@ -160,23 +178,39 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    result : float ndarray or float
+    dos : float ndarray or float
         The value of the DOS.
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.1, 1.1, num=500)
+    >>> dos = gt.lattice.bethe.dos(eps, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(eps, dos)
+    >>> plt.xlabel(r"$\epsilon/D$")
+    >>> plt.ylabel(r"DOS * $D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.grid()
+    >>> plt.legend()
+    >>> plt.show()
 
     """
     D2 = half_bandwidth * half_bandwidth
     eps2 = eps*eps
     mask = eps2 < D2
     try:
-        result = np.empty_like(eps)
-        result[~mask] = 0
+        dos = np.empty_like(eps)
+        dos[~mask] = 0
     except IndexError:  # eps is scalar
         if mask:
             return np.sqrt(D2 - eps2) / (0.5 * np.pi * D2)
         return 0.  # outside of bandwidth
     else:
-        result[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
-        return result
+        dos[mask] = np.sqrt(D2 - eps2[mask]) / (0.5 * np.pi * D2)
+        return dos
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
@@ -200,7 +234,7 @@ dos_moment_coefficients = {
 def dos_moment(m, half_bandwidth):
     """Calculate the `m` th moment of the Bethe DOS.
 
-    The moments are defined as `math`:∫dϵ ϵ^m DOS(ϵ):.
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
     Parameters
     ----------
@@ -218,6 +252,10 @@ def dos_moment(m, half_bandwidth):
     ------
     NotImplementedError
         Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry
