@@ -25,6 +25,7 @@ copyright = '2019, Weh Andreas'
 author = 'Weh Andreas'
 today_fmt = '%Y-%m-%d'
 html_last_updated_fmt = '%Y-%d-%m'
+master_doc = 'index'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
