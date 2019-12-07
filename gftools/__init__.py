@@ -3,10 +3,15 @@
 
 Main purpose is to have a tested base.
 
-Subpackages
------------
-    matrix   --- Work with Green's functions in matrix form, mainly for r-DMFT
-    lattice  --- Different lattice containing Green's functions and related functions
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   gftools.lattice
+   gftools.matrix
+   gftools.pade
 
 """
 from __future__ import (absolute_import, division, print_function,
