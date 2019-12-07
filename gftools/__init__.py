@@ -253,7 +253,7 @@ def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
 
 # FIXME: write tests for moments
 def hubbard_I_self_z(z, U, occ):
-    """Self-energy in Hubbard I approximation (atomic solution).
+    r"""Self-energy in Hubbard I approximation (atomic solution).
 
     The chemical potential and the onsite energy have to be included in `z`.
 
