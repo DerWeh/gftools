@@ -56,8 +56,8 @@ def gf_z(z, half_bandwidth):
     >>> plt.show()
 
     """
-    z_rel = z/half_bandwidth
-    elliptic = np.frompyfunc(ellipk, 1, 1)(z_rel**-2)
+    z_rel_inv = half_bandwidth/z
+    elliptic = np.frompyfunc(ellipk, 1, 1)(z_rel_inv**2)
     try:
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
@@ -141,10 +141,9 @@ def dos(eps, half_bandwidth):
     eps_ = np.asarray(eps).reshape(-1)
     dos = np.zeros_like(eps_)
     neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
-    dos[neg] = +gf_z(eps_[neg], half_bandwidth).imag
-    pos = (eps_ > 0.) & (eps_ < +half_bandwidth)  # FIXME: use not neg
-    dos[pos] = -gf_z(eps_[pos], half_bandwidth).imag
-    return dos.reshape(eps.shape)/np.pi
+    dos[+neg] = +gf_z(eps_[+neg], half_bandwidth).imag
+    dos[~neg] = -gf_z(eps_[~neg], half_bandwidth).imag
+    return 1./np.pi*dos.reshape(eps.shape)
 
 
 # from: wolframalpha, to integral in python to assert accuracy
