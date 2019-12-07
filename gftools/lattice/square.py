@@ -12,21 +12,21 @@ from mpmath import fp
 ellipk = partial(fp.ellipf, np.pi/2)
 
 
-def gf_z(zz, half_bandwidth):
+def gf_z(z, half_bandwidth):
     r"""Local Green's function of the 2D square lattice.
 
     .. math::
         G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}
 
     where :math:`D` is the half bandwidth and the integral is the complete
-    elliptic integral of first kind.
+    elliptic integral of first kind. See [economou2006]_.
 
     Parameters
     ----------
     zz : complex ndarray or complex
         Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
-        Half-bandwidth of the DOS of the squre lattice
+        Half-bandwidth of the DOS of the square lattice.
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`
 
     Returns
@@ -36,29 +36,46 @@ def gf_z(zz, half_bandwidth):
 
     References
     ----------
-    .. [5] Economou, E. N. Green's Functions in Quantum Physics. Springer, 2006.
+    .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
+       Springer, 2006.
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.5, 1.5, num=500)
+    >>> gf_ww = gt.lattice.square.gf_z(ww, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(ww, gf_ww.real, label=r"$\Re G$")
+    >>> plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> plt.xlabel(r"$\omega/D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=ww.min(), right=ww.max())
+    >>> plt.grid()
+    >>> plt.legend()
+    >>> plt.show()
 
     """
-    zz_rel = zz/half_bandwidth
-    elliptic = np.frompyfunc(ellipk, 1, 1)(zz_rel**-2)
+    z_rel = z/half_bandwidth
+    elliptic = np.frompyfunc(ellipk, 1, 1)(z_rel**-2)
     try:
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
-    gf_z = 2./np.pi/zz*elliptic
+    gf_z = 2./np.pi/z*elliptic
     return gf_z
 
 
 def hilbert_transform(xi, half_bandwidth):
     r"""Hilbert transform of non-interacting DOS of the square lattice.
 
-    FIXME: the lattice Hilbert transform is the same as the non-interacting
-        Green's function.
-
-    The Hilbert transform
+    The Hilbert transform is defined
 
     .. math::
         \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+
+    The lattice Hilbert transform is the same as the non-interacting Green's
+    function.
 
     Parameters
     ----------
@@ -79,12 +96,16 @@ def hilbert_transform(xi, half_bandwidth):
     .. math::
         4t = D
 
+    See Also
+    --------
+    gf_z
+
     """
     return gf_z(xi, half_bandwidth)
 
 
 def dos(eps, half_bandwidth):
-    """DOS of non-interacting 2D square lattice.
+    r"""DOS of non-interacting 2D square lattice.
 
     Parameters
     ----------
@@ -96,8 +117,25 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    result : float ndarray or float
+    dos : float ndarray or float
         The value of the DOS.
+
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.1, 1.1, num=500)
+    >>> dos = gt.lattice.square.dos(eps, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(eps, dos)
+    >>> plt.xlabel(r"$\epsilon/D$")
+    >>> plt.ylabel(r"DOS * $D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.grid()
+    >>> plt.legend()
+    >>> plt.show()
 
     """
     eps_ = np.asarray(eps).reshape(-1)
@@ -138,6 +176,10 @@ def dos_moment(m, half_bandwidth):
     ------
     NotImplementedError
         Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry
