@@ -194,7 +194,6 @@ def dos(eps, half_bandwidth):
     >>> plt.axvline(0, color='black', linewidth=0.8)
     >>> plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.grid()
-    >>> plt.legend()
     >>> plt.show()
 
     """

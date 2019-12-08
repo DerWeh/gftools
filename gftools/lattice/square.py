@@ -52,7 +52,6 @@ def gf_z(z, half_bandwidth):
     >>> plt.axvline(0, color='black', linewidth=0.8)
     >>> plt.xlim(left=ww.min(), right=ww.max())
     >>> plt.grid()
-    >>> plt.legend()
     >>> plt.show()
 
     """
@@ -140,7 +139,7 @@ def dos(eps, half_bandwidth):
     eps_ = np.asarray(eps).reshape(-1)
     dos = np.zeros_like(eps_)
     neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
-    dos[+neg] = +gf_z(eps_[+neg], half_bandwidth).imag
+    dos[ neg] = +gf_z(eps_[ neg], half_bandwidth).imag  # pylint: disable=bad-whitespace
     dos[~neg] = -gf_z(eps_[~neg], half_bandwidth).imag
     return 1./np.pi*dos.reshape(eps.shape)
 
