@@ -42,17 +42,17 @@ def gf_z(z, half_bandwidth):
     Examples
     --------
     >>> ww = np.linspace(-1.5, 1.5, num=500)
-    >>> gf_ww = gf_z(ww, half_bandwidth=1)
+    >>> gf_ww = gt.lattice.bethe.gf_z(ww, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
-    >>> plt.plot(ww, gf_ww.real, label=r"$\Re G$")  # doctest: +SKIP
-    >>> plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")  # doctest: +SKIP
-    >>> plt.xlabel(r"$\omega/D$")  # doctest: +SKIP
-    >>> plt.axhline(0, color='black', linewidth=0.8)  # doctest: +SKIP
-    >>> plt.axvline(0, color='black', linewidth=0.8)  # doctest: +SKIP
-    >>> plt.xlim(left=ww.min(), right=ww.max())  # doctest: +SKIP
-    >>> plt.grid()  # doctest: +SKIP
-    >>> plt.legend()  # doctest: +SKIP
+    >>> plt.plot(ww, gf_ww.real, label=r"$\Re G$")
+    >>> plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> plt.xlabel(r"$\omega/D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=ww.min(), right=ww.max())
+    >>> plt.grid()
+    >>> plt.legend()
     >>> plt.show()
 
     """
@@ -184,17 +184,17 @@ def dos(eps, half_bandwidth):
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=500)
-    >>> dos = dos(eps, half_bandwidth=1)
+    >>> dos = gt.lattice.bethe.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
-    >>> plt.plot(eps, dos)  # doctest: +SKIP
-    >>> plt.xlabel(r"$\epsilon/D$")  # doctest: +SKIP
-    >>> plt.ylabel(r"DOS * $D$")  # doctest: +SKIP
-    >>> plt.axhline(0, color='black', linewidth=0.8)  # doctest: +SKIP
-    >>> plt.axvline(0, color='black', linewidth=0.8)  # doctest: +SKIP
-    >>> plt.xlim(left=eps.min(), right=eps.max())  # doctest: +SKIP
-    >>> plt.grid()  # doctest: +SKIP
-    >>> plt.legend()  # doctest: +SKIP
+    >>> plt.plot(eps, dos)
+    >>> plt.xlabel(r"$\epsilon/D$")
+    >>> plt.ylabel(r"DOS * $D$")
+    >>> plt.axhline(0, color='black', linewidth=0.8)
+    >>> plt.axvline(0, color='black', linewidth=0.8)
+    >>> plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.grid()
+    >>> plt.legend()
     >>> plt.show()
 
     """
