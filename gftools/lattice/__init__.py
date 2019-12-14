@@ -4,7 +4,7 @@ Submodules
 ----------
 
 .. autosummary::
-    :toctree:  _autosummary
+    :toctree:
 
     bethe
     square
