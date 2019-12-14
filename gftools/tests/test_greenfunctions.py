@@ -187,8 +187,9 @@ class TestHubbardDimer(GfProperties):
 def test_bethe_derivative_1(a, b, D):
     """Check if integrated derivative yields the original function."""
     assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
-    assume(np.sign(a.imag) == np.sign(b.imag))  # same half-plane
-    assume(abs(b-a) < 1e8)  # reasonable integration lengthes
+    # flip b in same half-plane as a
+    b = b.real + 1j*np.sign(a.imag)*abs(b.imag)
+    assume(abs(b-a) < 1e8)  # reasonable integration lengths
     diff = gftools.bethe_gf_omega(b, half_bandwidth=D) - gftools.bethe_gf_omega(a, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
         assert np.allclose(
@@ -203,8 +204,9 @@ def test_bethe_derivative_1(a, b, D):
 def test_bethe_derivative_2(a, b, D):
     """Check if integrated derivative yields the original function."""
     assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
-    assume(np.sign(a.imag) == np.sign(b.imag))  # same half-plane
-    assume(abs(b-a) < 1e8)  # reasonable integration lengthes
+    # flip b in same half-plane as a
+    b = b.real + 1j*np.sign(a.imag)*abs(b.imag)
+    assume(abs(b-a) < 2e8)  # reasonable integration lengthes
     fct = partial(gftools.bethe_gf_d1_omega, half_bandwidth=D)
     fct_d1 = partial(gftools.bethe_gf_d2_omega, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
