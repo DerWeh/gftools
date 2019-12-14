@@ -45,14 +45,14 @@ def gf_z(z, half_bandwidth):
     >>> gf_ww = gt.lattice.square.gf_z(ww, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
-    >>> plt.plot(ww, gf_ww.real, label=r"$\Re G$")
-    >>> plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
-    >>> plt.xlabel(r"$\omega/D$")
-    >>> plt.axhline(0, color='black', linewidth=0.8)
-    >>> plt.axvline(0, color='black', linewidth=0.8)
-    >>> plt.xlim(left=ww.min(), right=ww.max())
+    >>> _ = plt.plot(ww, gf_ww.real, label=r"$\Re G$")
+    >>> _ = plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> _ = plt.xlabel(r"$\omega/D$")
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.xlim(left=ww.min(), right=ww.max())
+    >>> _ = plt.legend()
     >>> plt.grid()
-    >>> plt.legend()
     >>> plt.show()
 
     """
@@ -126,12 +126,12 @@ def dos(eps, half_bandwidth):
     >>> dos = gt.lattice.square.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
-    >>> plt.plot(eps, dos)
-    >>> plt.xlabel(r"$\epsilon/D$")
-    >>> plt.ylabel(r"DOS * $D$")
-    >>> plt.axhline(0, color='black', linewidth=0.8)
-    >>> plt.axvline(0, color='black', linewidth=0.8)
-    >>> plt.xlim(left=eps.min(), right=eps.max())
+    >>> _ = plt.plot(eps, dos)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.grid()
     >>> plt.show()
 
@@ -144,6 +144,7 @@ def dos(eps, half_bandwidth):
     return 1./np.pi*dos.reshape(eps.shape)
 
 
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
 # from: wolframalpha, to integral in python to assert accuracy
 dos_moment_coefficients = {
     2: 0.25,

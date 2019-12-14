@@ -104,6 +104,7 @@ import numpy as np
 import gftools as gt
 np.random.seed(0)
 """
+doctest_global_setup = plot_pre_code  # make doctests consistent
 plot_include_source = True
 plot_formats = [('png', 100), 'pdf']
 

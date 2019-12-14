@@ -15,6 +15,7 @@ script:
   - find gftools -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pydocstyle -v {} +
   - find gftools -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pyflakes {} +
   - travis-sphinx build
+  - sphinx-build -b doctest -d docs/build/doctrees   docs/source docs/build/doctest
 after_success:
   - codecov
   - travis-sphinx deploy --branches=master,develop
