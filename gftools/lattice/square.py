@@ -7,9 +7,10 @@
 from functools import partial
 
 import numpy as np
+from scipy.special import ellipkm1
 from mpmath import fp
 
-ellipk = partial(fp.ellipf, np.pi/2)
+ellipk_z = partial(fp.ellipf, np.pi/2)
 
 
 def gf_z(z, half_bandwidth):
@@ -57,12 +58,12 @@ def gf_z(z, half_bandwidth):
 
     """
     z_rel_inv = half_bandwidth/z
-    elliptic = np.frompyfunc(ellipk, 1, 1)(z_rel_inv**2)
+    elliptic = np.frompyfunc(ellipk_z, 1, 1)(z_rel_inv**2)
     try:
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
-    gf_z = 2./np.pi/z*elliptic
+    gf_z = 2./np.pi/half_bandwidth*z_rel_inv*elliptic
     return gf_z
 
 
@@ -136,12 +137,12 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
-    eps_ = np.asarray(eps).reshape(-1)
-    dos = np.zeros_like(eps_)
-    neg = (eps_ > -half_bandwidth) & (eps_ <= 0.)
-    dos[ neg] = +gf_z(eps_[ neg], half_bandwidth).imag  # pylint: disable=bad-whitespace
-    dos[~neg] = -gf_z(eps_[~neg], half_bandwidth).imag
-    return 1./np.pi*dos.reshape(eps.shape)
+    eps_rel = np.asarray(eps / half_bandwidth)
+    dos = np.zeros_like(eps_rel)
+    nonzero = abs(eps_rel) <= 1
+    elliptic = ellipkm1(eps_rel[nonzero]**2)  # on the real axis we can use fast scipy Implementation
+    dos[nonzero] = 2 / np.pi**2 / half_bandwidth * elliptic
+    return dos
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
