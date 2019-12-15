@@ -272,17 +272,29 @@ def test_hilbert_equals_integral():
         assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_bethe_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    m2 = fp.quad(lambda eps: eps**2 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m3 = fp.quad(lambda eps: eps**3 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m4 = fp.quad(lambda eps: eps**4 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    assert gftools.bethe_dos.m2(half_bandwidth=D) == pytest.approx(m2)
+    assert gftools.bethe_dos.m3(half_bandwidth=D) == pytest.approx(m3)
+    assert gftools.bethe_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_square_dos_unit(D):
     """Integral over the whole DOS should be 1."""
-    dos = partial(gftools.bethe_dos, half_bandwidth=D)
+    dos = partial(gftools.square_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, 0., D]) == pytest.approx(1.)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_square_dos_half(D):
     """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gftools.bethe_dos, half_bandwidth=D)
+    dos = partial(gftools.square_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
     assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
 
@@ -293,3 +305,15 @@ def test_square_dos_support():
     for eps in np.linspace(D + 1e-6, D*1e4):
         assert gftools.square_dos(eps, D) == 0
         assert gftools.square_dos(-eps, D) == 0
+
+
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_square_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    m2 = fp.quad(lambda eps: eps**2 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m3 = fp.quad(lambda eps: eps**3 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m4 = fp.quad(lambda eps: eps**4 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    assert gftools.square_dos.m2(half_bandwidth=D) == pytest.approx(m2)
+    assert gftools.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
+    assert gftools.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
