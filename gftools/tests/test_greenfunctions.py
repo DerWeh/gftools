@@ -60,17 +60,6 @@ class GfProperties(object):
         """
         return -np.infty, np.infty
 
-    @pytest.mark.skip(reason="This test probably is wrong!")
-    def test_symmetry(self, params):
-        r""":math:`G_{ij}(-z) = -s G_ji(z)`.
-
-        FIXME: this is not correct!!!
-        As we have :math:`i=j` we get anti-symmetry for fermions
-        `G_{ii}(-z) = -s G_ii(z)`.
-        """
-        assert np.allclose(self.gf(-self.z_mesh, *params[0], **params[1]),
-                           -self.s * self.gf(self.z_mesh, *params[0], **params[1]))
-
     def test_complex(self, params):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
         assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
