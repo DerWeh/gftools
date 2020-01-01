@@ -279,34 +279,39 @@ def hubbard_I_self_z(z, U, occ):
     return hartree * (1 + U_1mocc / np.subtract.outer(z, U_1mocc))
 
 
-def multipole_z(z, poles, weights):
-    """Green's function containing multiple poles.
+def pole_gf_z(z, poles, weights):
+    """Green's function given by a finite number of `poles`.
 
     To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
 
     Parameters
     ----------
-    z : np.ndarray
-        The frequencies
+    z : (...) complex np.ndarray
+        Green's function is evaluated at complex frequency `z`.
     poles, weights : (N, ) float np.ndarray
-        The position and weight of the poles
+        The position and weight of the poles.
 
     Returns
     -------
-    multipole_z : complex np.ndarray
-        Green's function shaped as `z`.
+    pole_gf_z : (...) complex np.ndarray
+        Green's function shaped like `z`.
+
+    See Also
+    --------
+    pole_gf_tau : corresponding imaginary time Green's function
 
     """
     return np.sum(weights/(np.subtract.outer(z, poles)), axis=-1)
 
 
-def multipole_tau(tau, poles, weights, beta):
-    """Corresponding imaginary time Green's function to `multipole_z`.
+def pole_gf_tau(tau, poles, weights, beta):
+    """Imaginary time Green's function given by a finite number of `poles`.
 
     Parameters
     ----------
-    tau : float np.ndarray
-        Time points.
+    tau : (...) float np.ndarray
+        Green's function is evaluated at imaginary times `tau`.
+        Only implemented for :math:`τ ∈ [0, β]`.
     poles, weights : (N,) float np.ndarray
         Position and weight of the poles.
     beta : float
@@ -314,8 +319,12 @@ def multipole_tau(tau, poles, weights, beta):
 
     Returns
     -------
-    multipole_tau : float np.ndarray
+    pole_gf_tau : (...) float np.ndarray
         Imaginary time Green's function shaped like `tau`.
+
+    See Also
+    --------
+    pole_gf_z : corresponding commutator Green's function
 
     """
     assert np.all((tau >= 0.) & (tau <= beta))
