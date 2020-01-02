@@ -9,6 +9,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   gftools.fourier
    gftools.lattice
    gftools.matrix
    gftools.pade
