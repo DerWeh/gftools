@@ -11,7 +11,7 @@ from .context import gftools as gt
 @given(pole=st.floats(-10, 10))  # necessary Matsubaras depend on Bandwidth!
 def test_iw2tau_dft_soft_single_pole(pole):
     """Low accurcy test of `iw2tau_dft_soft` on a single pole."""
-    BETA = 1
+    BETA = 1.3
     N_IW = 4096
     iws = gt.matsubara_frequencies(range(N_IW), beta=BETA)
     tau = np.linspace(0, BETA, num=2*N_IW+1)
@@ -26,7 +26,7 @@ def test_iw2tau_dft_soft_single_pole(pole):
 @given(pole=st.floats(-10, 10))  # necessary Matsubaras depend on Bandwidth!
 def test_iw2tau_dft_single_pole(pole):
     """Low accurcy test of `iw2tau_dft` on a single pole."""
-    BETA = 1
+    BETA = 1.3
     N_IW = 4096
     iws = gt.matsubara_frequencies(range(N_IW), beta=BETA)
     tau = np.linspace(0, BETA, num=2*N_IW+1)
@@ -41,7 +41,7 @@ def test_iw2tau_dft_single_pole(pole):
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_ft_lin_single_pole(pole):
     """Low accurcy test of `tau2iw_ft_lin` on a single pole."""
-    BETA = 1
+    BETA = 1.3
     N_TAU = 4096 + 1
     tau = np.linspace(0, BETA, num=N_TAU)
     iws = gt.matsubara_frequencies(range(N_TAU//2), beta=BETA)
@@ -56,7 +56,7 @@ def test_tau2iw_ft_lin_single_pole(pole):
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_dft_single_pole(pole):
     """Low accurcy test of `tau2iw_dft` on a single pole."""
-    BETA = 1
+    BETA = 1.3
     N_TAU = 8192 + 1
     tau = np.linspace(0, BETA, num=N_TAU)
     iws = gt.matsubara_frequencies(range(N_TAU//2), beta=BETA)
