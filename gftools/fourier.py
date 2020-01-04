@@ -192,19 +192,11 @@ def iw2tau_dft_soft(gf_iw, beta):
     >>> plt.show()
 
     """
-    shape = gf_iw.shape
-    gf_iw_extended = np.zeros(shape[:-1] + (shape[-1]*2,), dtype=gf_iw.dtype)
-    gf_iw_extended[..., :shape[-1]] = gf_iw
-    tail_range = np.linspace(0, np.pi, num=shape[-1])
+    tail_range = np.linspace(0, np.pi, num=gf_iw.shape[-1])
     tail = .5*(np.cos(tail_range) + 1.)
     LOGGER.debug("Remaining tail approximated by 'cos': %s", gf_iw[..., -1:])
-    gf_iw_extended[..., shape[-1]:] = tail*gf_iw[..., -1:]
-    N_tau = 2*gf_iw_extended.shape[-1] + 1
-    gf_iw_paded = np.zeros(shape[:-1] + (N_tau,), dtype=gf_iw.dtype)
-    gf_iw_paded[..., 1:-1:2] = gf_iw_extended
-    gf_tau = np.fft.hfft(gf_iw_paded/beta)
-    gf_tau = gf_tau[..., :N_tau:2]  # trim to [0, \beta]
-
+    gf_iw_extended = np.concatenate((gf_iw, tail*gf_iw[..., -1:]), axis=-1)
+    gf_tau = iw2tau_dft(gf_iw_extended, beta=beta)[..., ::2]  # trim artificial resolution
     return gf_tau
 
 
