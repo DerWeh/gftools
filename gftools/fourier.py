@@ -22,7 +22,176 @@ Glossary
       Imaginary time points
 
 """
+import logging
+
 import numpy as np
+
+LOGGER = logging.getLogger(__name__)
+
+
+def iw2tau_dft(gf_iw, beta):
+    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+
+    Fourier transformation of a fermionic Matsubara Green's function to
+    imaginary-time domain.
+    The infinite Fourier sum is truncated.
+    We assume a Hermitian Green's function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,
+    which is the case for commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`
+    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.
+
+    Parameters
+    ----------
+    gf_iw : (..., N_iw) complex np.ndarray
+        The Green's function at positive **fermionic** Matsubara frequencies
+        :math:`iω_n`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf_tau : (..., 2*N_iw + 1) float np.ndarray
+        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
+
+    See Also
+    --------
+    iw2tau_dft_soft : Fourier transform with artificial softening of oszillations
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
+    >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)
+    >>> # 1/z tail has to be handled manually
+    >>> gf_dft = gt.fourier.iw2tau_dft(gf_iw - 1/iws, beta=BETA) - .5
+    >>> gf_iw.size, gf_dft.size
+    (1024, 2049)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(tau, gf_tau, label='exact')
+    >>> __ = plt.plot(tau, gf_dft, '--', label='DFT')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    >>> __ = plt.title('Oscillations around boundaries 0, β')
+    >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft)
+    >>> plt.xlabel('τ/β')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-7
+    >>> noise = np.random.normal(scale=magnitude, size=gf_iw.size)
+    >>> gf_dft_noisy = gt.fourier.iw2tau_dft(gf_iw + noise - 1/iws, beta=BETA) - .5
+    >>> __ = plt.plot(tau, abs(gf_tau - gf_dft_noisy), '--', label='noisy')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(tau, abs(gf_tau - gf_dft), label='clean')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+    gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
+    gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
+    gf_tau = np.fft.hfft(1./beta * gf_iwall)
+    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
+    return gf_tau
+
+
+def iw2tau_dft_soft(gf_iw, beta):
+    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+
+    Fourier transformation of a fermionic Matsubara Green's function to
+    imaginary-time domain.
+    Add a tail letting `gf_iw` go to 0. The tail is just a cosine function to
+    exactly hit the 0.
+    This is unphysical but suppresses oscillations. This methods should be used
+    with care, as it might hide errors.
+    We assume a Hermitian Green's function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,
+    which is the case for commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`
+    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.
+
+    Parameters
+    ----------
+    gf_iw : (..., N_iw) complex np.ndarray
+        The Green's function at positive **fermionic** Matsubara frequencies
+        :math:`iω_n`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf_tau : (..., 2*N_iw + 1) float np.ndarray
+        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
+
+    See Also
+    --------
+    iw2tau_dft : Plain implementation of fourier transform
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
+    >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)
+    >>> # 1/z tail has to be handled manually
+    >>> gf_dft = gt.fourier.iw2tau_dft_soft(gf_iw - 1/iws, beta=BETA) - .5
+    >>> gf_iw.size, gf_dft.size
+    (1024, 2049)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(tau, gf_tau, label='exact')
+    >>> __ = plt.plot(tau, gf_dft, '--', label='DFT')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    >>> __ = plt.title('Oscillations around boundaries 0, β slightly suppressed')
+    >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft, label='DFT soft')
+    >>> gf_dft_bare = gt.fourier.iw2tau_dft(gf_iw - 1/iws, beta=BETA) - .5
+    >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft_bare, '--',  label='DFT bare')
+    >>> __ = plt.legend()
+    >>> plt.xlabel('τ/β')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-7
+    >>> noise = np.random.normal(scale=magnitude, size=gf_iw.size)
+    >>> gf_dft_noisy = gt.fourier.iw2tau_dft_soft(gf_iw + noise - 1/iws, beta=BETA) - .5
+    >>> __ = plt.plot(tau, abs(gf_tau - gf_dft_noisy), '--', label='noisy')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(tau, abs(gf_tau - gf_dft), label='clean')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+    shape = gf_iw.shape
+    gf_iw_extended = np.zeros(shape[:-1] + (shape[-1]*2,), dtype=gf_iw.dtype)
+    gf_iw_extended[..., :shape[-1]] = gf_iw
+    tail_range = np.linspace(0, np.pi, num=shape[-1])
+    tail = .5*(np.cos(tail_range) + 1.)
+    LOGGER.debug("Remaining tail approximated by 'cos': %s", gf_iw[..., -1:])
+    gf_iw_extended[..., shape[-1]:] = tail*gf_iw[..., -1:]
+    N_tau = 2*gf_iw_extended.shape[-1] + 1
+    gf_iw_paded = np.zeros(shape[:-1] + (N_tau,), dtype=gf_iw.dtype)
+    gf_iw_paded[..., 1:-1:2] = gf_iw_extended
+    gf_tau = np.fft.hfft(gf_iw_paded/beta)
+    gf_tau = gf_tau[..., :N_tau:2]  # trim to [0, \beta]
+
+    return gf_tau
 
 
 def tau2iw_dft(gf_tau, beta):
