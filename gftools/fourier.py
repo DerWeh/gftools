@@ -6,7 +6,11 @@ Glossary
 .. glossary::
 
    dft
-      discrete Foruier transform
+      <discrete Foruier transform>
+
+   ft
+      <Fourier transformation> In contrast to :term:`dft`, this is used for
+      Fourier integration of continous variables without discretization.
 
    iv
       Bosonic Matsubara frequncies
@@ -22,11 +26,11 @@ import numpy as np
 
 
 def tau2iw_dft(gf_tau, beta):
-    r"""Discrete Fourier transfrom of the real Green's function `gf_tau`.
+    r"""Discrete Fourier transform of the real Green's function `gf_tau`.
 
-    Fourier transformation of a fermionc imaginary-time Green's function to
+    Fourier transformation of a fermionic imaginary-time Green's function to
     Matsubara domain.
-    The fourier integral is replaced by a Riemann sum giving a discrete
+    The Fourier integral is replaced by a Riemann sum giving a discrete
     Fourier transform (DFT).
     We assume a real Green's function `gf_tau`, which is the case for
     commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
@@ -102,9 +106,14 @@ def tau2iw_dft(gf_tau, beta):
 def tau2iw_ft_lin(gf_tau, beta):
     r"""Fourier integration of the real Green's function `gf_tau`.
 
+    Fourier transformation of a fermionc imaginary-time Green's function to
+    Matsubara domain.
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`.
     Filon's method is used to calculated the Fourier integral
 
-    .. math:: G^n = .5 ∫_{-β}^{β}dτ G(τ) e^{iω_n τ},
+    .. math:: G^n = 0.5 ∫_{-β}^{β}dτ G(τ) e^{iω_n τ},
 
     :math:`G(τ)` is approximated by a linear spline. A linear approximation was
     chosen to be able to integrate noisy functions. Information on oscillatory
