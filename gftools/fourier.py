@@ -192,7 +192,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     >>> plt.show()
 
     """
-    tail_range = np.linspace(0, np.pi, num=gf_iw.shape[-1])
+    tail_range = np.linspace(0, np.pi, num=gf_iw.shape[-1] + 1)[1:]
     tail = .5*(np.cos(tail_range) + 1.)
     LOGGER.debug("Remaining tail approximated by 'cos': %s", gf_iw[..., -1:])
     gf_iw_extended = np.concatenate((gf_iw, tail*gf_iw[..., -1:]), axis=-1)
