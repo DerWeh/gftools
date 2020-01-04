@@ -209,7 +209,7 @@ def tau2iw_dft(gf_tau, beta):
     Fourier transform (DFT).
     We assume a real Green's function `gf_tau`, which is the case for
     commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
-    :math:`A = B^†`.
+    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.
 
     Parameters
     ----------
@@ -258,7 +258,7 @@ def tau2iw_dft(gf_tau, beta):
     >>> plt.yscale('log')
     >>> plt.show()
 
-    The method is resistent against noise:
+    The method is resistant against noise:
 
     >>> magnitude = 2e-5
     >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
@@ -285,7 +285,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     Matsubara domain.
     We assume a real Green's function `gf_tau`, which is the case for
     commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
-    :math:`A = B^†`.
+    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.
     Filon's method is used to calculated the Fourier integral
 
     .. math:: G^n = 0.5 ∫_{-β}^{β}dτ G(τ) e^{iω_n τ},
@@ -359,7 +359,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     >>> plt.yscale('log')
     >>> plt.show()
 
-    The method is resistent against noise:
+    The method is resistant against noise:
 
     >>> magnitude = 5e-6
     >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
