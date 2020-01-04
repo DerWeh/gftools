@@ -56,6 +56,13 @@ def iw2tau_dft(gf_iw, beta):
     --------
     iw2tau_dft_soft : Fourier transform with artificial softening of oszillations
 
+    Notes
+    -----
+    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
+    has already reached it's high-frequency behaviour, which need to be included
+    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    bandwidht!
+
     Examples
     --------
     >>> import gftools.fourier
@@ -133,6 +140,13 @@ def iw2tau_dft_soft(gf_iw, beta):
     See Also
     --------
     iw2tau_dft : Plain implementation of fourier transform
+
+    Notes
+    -----
+    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
+    has already reached it's high-frequency behaviour, which need to be included
+    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    bandwidht!
 
     Examples
     --------
