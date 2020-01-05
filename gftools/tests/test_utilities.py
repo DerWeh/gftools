@@ -66,7 +66,13 @@ def test_fermi_d1_std_form(z, beta):
 def test_fermi_derivative_1(z):
     """Check if integrated derivative yields the original function."""
     assume(abs(z.real) > 1e-4)  # avoid imaginary axis
-    assert np.allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad'),
+    # make sure to be away from poles
+    if abs(z.real) < 0.5:
+        zimag_per = (z.imag - np.pi) % (2*np.pi)
+        dist = min(zimag_per, 2*np.pi - zimag_per)
+    else:
+        dist = abs(z.real) / 2
+    assert np.allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad', radius=dist/2),
                        gt.fermi_fct_d1(z, beta=1))
 
 
