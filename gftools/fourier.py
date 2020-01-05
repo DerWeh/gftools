@@ -88,7 +88,7 @@ def iw2tau_dft(gf_iw, beta):
 
     >>> __ = plt.title('Oscillations around boundaries 0, β')
     >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft)
-    >>> plt.xlabel('τ/β')
+    >>> __ = plt.xlabel('τ/β')
     >>> plt.show()
 
     The method is resistant against noise:
@@ -176,7 +176,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     >>> gf_dft_bare = gt.fourier.iw2tau_dft(gf_iw - 1/iws, beta=BETA) - .5
     >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft_bare, '--',  label='DFT bare')
     >>> __ = plt.legend()
-    >>> plt.xlabel('τ/β')
+    >>> __ = plt.xlabel('τ/β')
     >>> plt.show()
 
     The method is resistant against noise:
