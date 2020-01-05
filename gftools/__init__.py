@@ -14,6 +14,30 @@ Submodules
    gftools.matrix
    gftools.pade
 
+Glossary
+--------
+
+.. glossary::
+
+   DOS
+      Density of States
+
+   eps
+      <ϵ, epsilon> (real) energy variable. Typically used for for the :term:`DOS`
+      where it replaces the k-dependent Dispersion :math:`ϵ_k`.
+
+   iv
+      Bosonic Matsubara frequncies
+
+   iw
+      <iω_n> Fermionic Matusbara frequncies
+
+   tau
+      Imaginary time points
+
+   z
+      Complex frequency variable
+
 """
 import warnings
 
@@ -31,7 +55,7 @@ __version__ = get_versions()['version']
 
 
 def fermi_fct(eps, beta):
-    r"""Return the Fermi function :math:`1/(\exp(βz)+1)`.
+    r"""Return the Fermi function `1/(exp(βϵ)+1)`.
 
     For complex inputs the function is not as accurate as for real inputs.
 
@@ -44,8 +68,12 @@ def fermi_fct(eps, beta):
 
     Returns
     -------
-    fermi_fct
+    fermi_fct : complex of float or ndarray
         The Fermi function, same type as eps.
+
+    See Also
+    --------
+    fermi_fct_inv : The inverse of the Fermi function for real arguments
 
     """
     z = eps*beta
@@ -65,7 +93,7 @@ def fermi_fct(eps, beta):
 def fermi_fct_d1(eps, beta):
     r"""Return the 1st derivative of the Fermi function.
 
-    .. math:: `-β\exp(βz)/{(\exp(βz)+1)}^2`
+    .. math:: -β\exp(βϵ)/{(\exp(βϵ)+1)}^2
 
     Parameters
     ----------
@@ -76,8 +104,12 @@ def fermi_fct_d1(eps, beta):
 
     Returns
     -------
-    fermi_fct : float or float ndarray
-        The Fermi function.
+    fermi_fct_d1 : float or float ndarray
+        The Fermi function, same type as eps.
+
+    See Also
+    --------
+    fermi_fct
 
     """
     fermi = fermi_fct(eps, beta=beta)
@@ -88,6 +120,23 @@ def fermi_fct_inv(fermi, beta):
     """Inverse of the Fermi function.
 
     This is e.g. useful for integrals over the derivative of the Fermi function.
+
+    Parameters
+    ----------
+    fermi : float or float ndarray
+        The values of the Fermi function
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    fermi_fct_inv : float or float ndarray
+        The inverse of the Fermi function `fermi_fct(fermi_fct_inv, beta)=fermi`.
+
+    See Also
+    --------
+    fermi_fct
+
     """
     return -logit(fermi)/beta
 
@@ -97,10 +146,10 @@ def matsubara_frequencies(n_points, beta):
 
     Parameters
     ----------
-    n_points : int ndarray
+    n_points : int array_like
         Points for which the Matsubara frequencies :math:`iω_n` are returned.
     beta : float
-        Inverse temperature `beta` = 1/T
+        The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
@@ -120,7 +169,7 @@ def matsubara_frequencies_b(n_points, beta):
     n_points : int ndarray
         Points for which the Matsubara frequencies :math:`iν_n` are returned.
     beta : float
-        Inverse temperature `beta` = 1/T
+        The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
@@ -161,8 +210,8 @@ def surface_gf_zeps(z, eps, hopping_nn):
     .. math::
         \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
 
-    with :math:`g_{00} = (z-ϵ)^{-1}` [6]_. This is in principle the Green's function
-    for a semi-infinite chain.
+    with :math:`g_{00} = (z-ϵ)^{-1}` [odashima2016]_. This is in principle the
+    Green's function for a semi-infinite chain.
 
     Parameters
     ----------
@@ -171,16 +220,16 @@ def surface_gf_zeps(z, eps, hopping_nn):
     eps : float
         Eigenenergy (dispersion) for which the Green's function is evaluated.
     hopping_nn : float
-        Nearest neighbor hopping `t` between neighboring layers.
+        Nearest neighbor hopping :math:`t` between neighboring layers.
 
     Returns
     -------
-    surface_gf : complex
+    surface_gf_zeps : complex
         Value of the surface Green's function
 
     References
     ----------
-    .. [6] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical
+    .. [odashima2016] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical
        Introduction to Equilibrium Green's Functions: Condensed-Matter Examples
        with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
        no. 1 (September 22, 2016).
@@ -214,20 +263,20 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
 
     Returns
     -------
-    gf_omega : complex ndarray
+    gf_z : complex ndarray
         Value of the Hubbard dimer Green's function at frequencies `z`.
 
     Notes
     -----
-    The solution is obtained by exact digitalization and shown in [4]_.
+    The solution is obtained by exact digitalization and shown in [eder2017]_.
 
     References
     ----------
-    .. [4] Eder, Robert. “Introduction to the Hubbard Mode.” In The Physics of
-       Correlated Insulators, Metals and Superconductors, edited by Eva
-       Pavarini, Erik Koch, Richard Scalettar, and Richard Martin. Schriften
-       Des Forschungszentrums Jülich Reihe Modeling and Simulation 7. Jülich:
-       Forschungszentrum Jülich, 2017.
+    .. [eder2017] Eder, Robert. “Introduction to the Hubbard Mode.” In The
+       Physics of Correlated Insulators, Metals and Superconductors, edited by
+       Eva Pavarini, Erik Koch, Richard Scalettar, and Richard Martin.
+       Schriften Des Forschungszentrums Jülich Reihe Modeling and Simulation 7.
+       Jülich: Forschungszentrum Jülich, 2017.
        https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
 
     """
@@ -245,7 +294,7 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
 
 # FIXME: write tests for moments
 def hubbard_I_self_z(z, U, occ):
-    r"""Self-energy in Hubbard I approximation (atomic solution).
+    r"""Self-energy in Hubbard-I approximation (atomic solution).
 
     The chemical potential and the onsite energy have to be included in `z`.
 
@@ -255,7 +304,7 @@ def hubbard_I_self_z(z, U, occ):
         The complex frequencies at which the self-energy is evaluated. `z`
         should be shifted by the onsite energy and the chemical potential.
     U : float
-        The local Hubbard interaction U.
+        The local Hubbard interaction `U`.
     occ : float or float np.ndarray
         The occupation of the opposite spin as the spin of the self-energy.
 
