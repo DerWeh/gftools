@@ -79,15 +79,15 @@ def test_density():
     #
     # Bethe lattice Gf
     #
-    bethe_half = gt.bethe_gf_omega(iw_array, half_bandwidth=D)
+    bethe_half = gt.bethe_gf_z(iw_array, half_bandwidth=D)
     assert gt.density(bethe_half, potential=0, beta=beta)[0] == 0.5
 
     large_shift = 10000*D
     # Bethe lattice almost filled (depends on small temperature)
-    bethe_full = gt.bethe_gf_omega(iw_array+large_shift, half_bandwidth=D)
+    bethe_full = gt.bethe_gf_z(iw_array+large_shift, half_bandwidth=D)
     assert gt.density(bethe_full, potential=large_shift, beta=beta)[0] == pytest.approx(1.0)
     # Bethe lattice almost empty (depends on small temperature)
-    bethe_empty = gt.bethe_gf_omega(iw_array-large_shift, half_bandwidth=D)
+    bethe_empty = gt.bethe_gf_z(iw_array-large_shift, half_bandwidth=D)
     assert gt.density(bethe_empty, potential=-large_shift, beta=beta)[0] \
         == pytest.approx(0.0, abs=1e-6)
 

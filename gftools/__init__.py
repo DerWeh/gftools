@@ -14,18 +14,16 @@ Submodules
    gftools.pade
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from functools import partial
-
 import warnings
+
+from functools import partial
 from collections import namedtuple
 
 import numpy as np
+
 from scipy.special import expit, logit
 
-from . import matrix as gtmatrix
-from . import lattice
+from . import lattice, matrix as gtmatrix
 from ._version import get_versions
 
 __version__ = get_versions()['version']
@@ -132,31 +130,31 @@ def matsubara_frequencies_b(n_points, beta):
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 2j * np.pi / beta * n_points
 
-# Bethe lattice. The names will change with the next big refactor.
-bethe_gf_omega = lattice.bethe.gf_z
-bethe_gf_d1_omega = lattice.bethe.gf_d1_z
-bethe_gf_d2_omega = lattice.bethe.gf_d2_z
+
+# Bethe lattice
+bethe_gf_z = lattice.bethe.gf_z
+bethe_gf_d1_z = lattice.bethe.gf_d1_z
+bethe_gf_d2_z = lattice.bethe.gf_d2_z
 bethe_hilbert_transfrom = lattice.bethe.hilbert_transform
 bethe_dos = lattice.bethe.dos
-# FIXME: write tests for moments
-bethe_dos.m1 = partial(lattice.bethe.dos_moment, m=1)
-bethe_dos.m2 = partial(lattice.bethe.dos_moment, m=2)
-bethe_dos.m3 = partial(lattice.bethe.dos_moment, m=3)
-bethe_dos.m4 = partial(lattice.bethe.dos_moment, m=4)
-bethe_dos.m5 = partial(lattice.bethe.dos_moment, m=5)
+bethe_dos.m1 = partial(lattice.bethe.dos_moment, 1)
+bethe_dos.m2 = partial(lattice.bethe.dos_moment, 2)
+bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
+bethe_dos.m4 = partial(lattice.bethe.dos_moment, 4)
+bethe_dos.m5 = partial(lattice.bethe.dos_moment, 5)
 
-# Square lattice. The names will change with the next big refactor.
-square_gf_omega = lattice.square.gf_z
+# Square lattice
+square_gf_z = lattice.square.gf_z
 square_hilbert_transfrom = lattice.square.hilbert_transform
 square_dos = lattice.square.dos
-square_dos.m1 = partial(lattice.square.dos_moment, m=1)
-square_dos.m2 = partial(lattice.square.dos_moment, m=2)
-square_dos.m3 = partial(lattice.square.dos_moment, m=3)
-square_dos.m4 = partial(lattice.square.dos_moment, m=4)
-square_dos.m5 = partial(lattice.square.dos_moment, m=5)
+square_dos.m1 = partial(lattice.square.dos_moment, 1)
+square_dos.m2 = partial(lattice.square.dos_moment, 2)
+square_dos.m3 = partial(lattice.square.dos_moment, 3)
+square_dos.m4 = partial(lattice.square.dos_moment, 4)
+square_dos.m5 = partial(lattice.square.dos_moment, 5)
 
 
-def surface_gf(z, eps, hopping_nn):
+def surface_gf_zeps(z, eps, hopping_nn):
     r"""Surface Green's function for stacked layers.
 
     .. math::
@@ -188,10 +186,10 @@ def surface_gf(z, eps, hopping_nn):
        https://doi.org/10.1590/1806-9126-rbef-2016-0087.
 
     """
-    return bethe_gf_omega(z-eps, half_bandwidth=2.*hopping_nn)
+    return bethe_gf_z(z-eps, half_bandwidth=2.*hopping_nn)
 
 
-def hubbard_dimer_gf_omega(z, hopping, interaction, kind='+'):
+def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
     r"""Green's function for the two site Hubbard model on a *dimer*.
 
     The Hamilton is given

@@ -21,7 +21,7 @@ def test_regression():
     rand = np.random.random(iws.size) + 1j*np.random.random(iws.size)
     rand *= 1e-3
     rand *= 1 + np.sqrt(np.arange(iws.size))
-    gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D) + rand
+    gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D) + rand
     coeff_old = old_pade.test_pade_init_junya(iws, u=gf_bethe_iw, N=iws.size)
     coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw)
     assert np.all(coeff_old == coeff)
@@ -38,7 +38,7 @@ def test_coeff_type_reduction():
     T = 0.037
     D = 1.2
     iws = gt.matsubara_frequencies(np.arange(10), beta=1./T)
-    gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D)
+    gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D)
     coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex128))
     assert coeff.dtype == np.dtype(np.complex128)
     coeff = gt_pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex256))
@@ -55,8 +55,8 @@ def test_stacked_pade():
     iws = gt.matsubara_frequencies(np.arange(n_max), beta=1./T)
     # disturb results to have invalid values in averaging
     pseudo_nois = np.sin(iws.imag) * 2e-4
-    gf_bethe_iw = gt.bethe_gf_omega(iws, half_bandwidth=D) + pseudo_nois
-    gf_bethe_iw_shift = gt.bethe_gf_omega(iws+shift, half_bandwidth=D) + pseudo_nois
+    gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D) + pseudo_nois
+    gf_bethe_iw_shift = gt.bethe_gf_z(iws+shift, half_bandwidth=D) + pseudo_nois
     gf_bethe_fcts = np.array([gf_bethe_iw, gf_bethe_iw_shift])
 
     # compare sequential and parallel calculation
