@@ -175,7 +175,6 @@ class TestHubbardDimer(GfProperties):
 def test_bethe_derivative_1(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
-    # flip b in same half-plane as a
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(partial(gftools.bethe_gf_z, half_bandwidth=D), z,
                         method='quad', radius=z.imag/2)
@@ -183,17 +182,15 @@ def test_bethe_derivative_1(z, D):
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
-@given(a=st.complex_numbers(allow_infinity=False, max_magnitude=1e8),  # quad doesn't handle inf
-       b=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
-def test_bethe_derivative_2(a, b, D):
-    """Check if integrated derivative yields the original function."""
-    assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
-    # flip b in same half-plane as a
-    b = b.real + 1j*np.sign(a.imag)*abs(b.imag)
+@given(z=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))  # quad doesn't handle inf
+def test_bethe_derivative_2(z, D):
+    """Check derivative against numerical solution."""
+    assume(z.imag != 0)  # Gf have poles on real axis
     fct = partial(gftools.bethe_gf_d1_z, half_bandwidth=D)
     fct_d1 = partial(gftools.bethe_gf_d2_z, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
-        assert np.allclose(fct(b) - fct(a), fp.quad(fct_d1, [a, b]))
+        gf_d1 = fp.diff(fct, z, method='quad', radius=z.imag/2)
+    assert np.allclose(gf_d1, fct_d1(z))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
