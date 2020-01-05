@@ -56,15 +56,10 @@ def fermi_fct(eps, beta):
         pass  # complex arguments not handled by expit
     z = np.asanyarray(z)
     pos = z.real > 0
-    scalar_input = (z.ndim == 0)
-    if scalar_input:
-        z = z[np.newaxis]
     res = np.empty_like(z)
     res[~pos] = 1./(np.exp(z[~pos]) + 1)
     exp_m = np.exp(-z[pos])
     res[pos] = exp_m/(1 + exp_m)
-    if scalar_input:
-        return np.squeeze(res)
     return res
 
 
@@ -86,8 +81,6 @@ def fermi_fct_d1(eps, beta):
         The Fermi function.
 
     """
-    # exp = np.exp(beta*eps)
-    # return -beta*exp/(exp+1)**2
     fermi = fermi_fct(eps, beta=beta)
     return -beta*fermi*(1-fermi)
 
