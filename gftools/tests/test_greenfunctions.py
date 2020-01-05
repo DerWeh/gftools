@@ -171,19 +171,15 @@ class TestHubbardDimer(GfProperties):
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
-@given(a=st.complex_numbers(allow_infinity=False, max_magnitude=1e8),  # quad doesn't handle inf
-       b=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
-def test_bethe_derivative_1(a, b, D):
-    """Check if integrated derivative yields the original function."""
-    assume(a.imag != 0 and b.imag != 0)  # Gf have poles on real axis
+@given(z=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))  # quad doesn't handle inf
+def test_bethe_derivative_1(z, D):
+    """Check derivative against numerical solution."""
+    assume(z.imag != 0)  # Gf have poles on real axis
     # flip b in same half-plane as a
-    b = b.real + 1j*np.sign(a.imag)*abs(b.imag)
-    diff = gftools.bethe_gf_omega(b, half_bandwidth=D) - gftools.bethe_gf_omega(a, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
-        assert np.allclose(
-            diff,
-            fp.quad(partial(gftools.bethe_gf_d1_omega, half_bandwidth=D), [a, b])
-        )
+        gf_d1 = fp.diff(partial(gftools.bethe_gf_omega, half_bandwidth=D), z,
+                        method='quad', radius=z.imag/2)
+    assert np.allclose(gf_d1, gftools.bethe_gf_d1_omega(z, half_bandwidth=D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
