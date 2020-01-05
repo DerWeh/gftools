@@ -13,7 +13,8 @@ Collection of commonly used Green's functions and utilities.
 The main propose of this module is to have a tested and thus reliable basis
 to do numerics. It happened to me too often, that I just made a mistake copying 
 the Green's function and was then wondering what was wrong with my algorithm.
-The main use case of GfTools was DMFT and its real space generalization.
+The main use case of GfTools was DMFT and its real space generalization,
+in particular using CT-QMC algorithms.
 
 
 
@@ -28,8 +29,16 @@ Currently the packages main content is
 
 gftools
    * collection of non-interacting Green's functions and spectral functions
+     see the `lattice` submodule
    * utility functions like Matsubara frequencies and Fermi functions.
    * reliable calculation of particle numbers via Matsubara sums
+     (Needs a refactor and more accurate extrapolation)
+
+fourier
+   * Fourier transforms from Matsubara frequencies to imaginary time and back
+     Handling of high-frequencies moments is not yet included and has to be
+     done by hand (especially import for transforms from Matsubara to imaginary
+     time)
 
 matrix
    * helper for Green's functions in matrix form
