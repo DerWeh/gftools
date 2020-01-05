@@ -328,10 +328,13 @@ def pole_gf_tau(tau, poles, weights, beta):
 
     """
     assert np.all((tau >= 0.) & (tau <= beta))
-    # per_pole_tau = weights*np.exp(np.multiply.outer(beta - tau, poles))/(1. + np.exp(beta*poles))
-    # per_pole_tau = weights*np.exp(np.multiply.outer(-tau, poles))*gt.fermi_fct(poles, -beta)
-    per_pole_tau = weights * np.exp(-np.logaddexp(np.multiply.outer(tau-beta, poles), np.multiply.outer(tau, poles)))
-    return -np.sum(per_pole_tau, axis=-1)
+    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
+    tau = np.asanyarray(tau)
+    tau = tau.reshape(tau.shape + (1,)*poles.ndim)
+    # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
+    exponent = np.where(poles.real >= 0, -tau, beta-tau) * poles
+    single_pole_tau = np.exp(exponent) * fermi_fct(-np.sign(poles.real)*poles, beta)
+    return -np.sum(weights*single_pole_tau, axis=-1)
 
 
 Result = namedtuple('Result', ['x', 'err'])
