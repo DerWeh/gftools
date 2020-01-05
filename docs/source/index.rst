@@ -32,9 +32,10 @@ API
   :toctree: _autosummary
 
   gftools
+  gftools.fourier
   gftools.lattice
-  gftools.pade
   gftools.matrix
+  gftools.pade
 
 
 
