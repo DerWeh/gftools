@@ -27,7 +27,7 @@ Currently the packages is only vailable via GitHub. You can install it using
 
    $ pip install https://github.com/DerWeh/gftools/archive/VERSION.zip
 
-where `VERSION` can be a release (e.g. `0.5.0`) or a branch (e.g. `develop`).
+where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
 (As always, it is not advised to install it into your system Python,
 considere using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
 Of course you can also clone or fork the project.
