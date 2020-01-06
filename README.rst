@@ -18,6 +18,22 @@ in particular using CT-QMC algorithms.
 
 
 
+Installation
+------------
+
+Currently the packages is only vailable via GitHub. You can install it using
+
+.. code-block:: console
+
+   $ pip install https://github.com/DerWeh/gftools/archive/VERSION.zip
+
+where `VERSION` can be a release (e.g. `0.5.0`) or a branch (e.g. `develop`).
+(As always, it is not advised to install it into your system Python,
+considere using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
+Of course you can also clone or fork the project.
+
+
+
 Documentation
 -------------
 
@@ -66,3 +82,11 @@ pade
    https://gftools.readthedocs.io/en/develop/
 .. _latest doc:
    https://gftools.readthedocs.io/en/latest/
+.. _pipenv:
+   https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
+.. _venv:
+   https://docs.python.org/3/library/venv.html
+.. _conda:
+   https://docs.conda.io/en/latest/
+.. _pyenv:
+   https://github.com/pyenv/pyenv
