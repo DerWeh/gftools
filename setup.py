@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import versioneer
 
@@ -16,20 +16,19 @@ setup(
     keywords=r"Green's\ function physics",
     classifiers=[
         'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 3.0',
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Physics',
     ],
     url="https://github.com/DerWeh/gftools",
     project_urls={
-        "Documentation": "https://derweh.github.io/gftools/",
         "ReadTheDocs": "https://gftools.readthedocs.io/en/latest/",
         "Source Code": "https://github.com/DerWeh/gftools",
+        "Documentation": "https://derweh.github.io/gftools/",
     },
     author="Weh",
-    author_email="andreas.weh@student.uni-augsburg.de",
+    author_email="andreas.weh@physik.uni-augsburg.de",
     cmdclass=versioneer.get_cmdclass(),
-    packages=['gftools'],
+    packages=find_packages(),
     install_requires=[
         'numpy',
         'scipy',
