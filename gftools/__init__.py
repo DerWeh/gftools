@@ -384,7 +384,8 @@ def pole_gf_z(z, poles, weights):
 
     See Also
     --------
-    pole_gf_tau : corresponding imaginary time Green's function
+    pole_gf_tau : corresponding fermionic imaginary time Green's function
+    pole_gf_tau_b : corresponding bosonic imaginary time Green's function
 
     """
     return np.sum(weights/(np.subtract.outer(z, poles)), axis=-1)
@@ -421,6 +422,62 @@ def pole_gf_tau(tau, poles, weights, beta):
     exponent = np.where(poles.real >= 0, -tau, beta-tau) * poles
     single_pole_tau = np.exp(exponent) * fermi_fct(-np.sign(poles.real)*poles, beta)
     return -np.sum(weights*single_pole_tau, axis=-1)
+
+
+def pole_gf_tau_b(tau, poles, weights, beta):
+    """Bosonic imaginary time Green's function given by a finite number of `poles`.
+
+    The bosonic Green's function is given by
+    `G(tau) = -(1 + bose_fct(poles, beta))*exp(-poles*tau)`
+
+    Parameters
+    ----------
+    tau : (...) float np.ndarray
+        Green's function is evaluated at imaginary times `tau`.
+        Only implemented for :math:`τ ∈ [0, β]`.
+    poles, weights : (N,) float np.ndarray
+        Position and weight of the poles. The real part of the poles needs to
+        be positive `poles.real > 0`.
+    beta : float
+        Inverse temperature
+
+    Returns
+    -------
+    pole_gf_tau_b : (...) float np.ndarray
+        Imaginary time Green's function shaped like `tau`.
+
+    See Also
+    --------
+    pole_gf_z : corresponding commutator Green's function
+
+    Raises
+    ------
+    ValueError
+        If any `poles.real <= 0`.
+
+    Examples
+    --------
+    >>> beta = 10
+    >>> tau = np.linspace(0, beta, num=1000)
+    >>> gf_tau = gt.pole_gf_tau_b(tau, .5, 1., beta=beta)
+
+    The integrated imaginary time Green's function gives `-np.sum(weights/poles)`
+
+    >>> np.trapz(gf_tau, x=tau)
+    -2.0000041750107735
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(tau, gf_tau)
+    >>> plt.xlabel('τ')
+    >>> plt.show()
+
+    """
+    assert np.all((tau >= 0.) & (tau <= beta))
+    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
+    if np.any(poles.real <= 0):
+        raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
+    # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
+    return np.sum(weights*bose_fct(poles, -beta)*np.exp(np.multiply.outer(-tau, poles)), axis=-1)
 
 
 Result = namedtuple('Result', ['x', 'err'])
