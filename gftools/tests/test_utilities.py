@@ -18,6 +18,25 @@ from .context import gftools as gt
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 
 
+def test_bose_edge_cases():
+    assert gt.bose_fct(0., 1) == np.infty
+    assert gt.bose_fct(np.infty, 1) == 0
+
+
+@given(z=st.floats(min_value=1e-4, max_value=1e4), n=st.integers(min_value=-100, max_value=100))
+@pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
+def test_complex_bose(z, n, beta):
+    """Check if Bose function has imaginary periodicity.
+
+    For bosonic Matsubara frequencies :math:`f(z+iν_n) = f(z)` should hold.
+    """
+    iv_n = gt.matsubara_frequencies_b(n, beta=beta)
+    bose_cmpx = gt.bose_fct(z+iv_n, beta=beta)
+    bose_real = gt.bose_fct(z, beta=beta)
+    assert np.allclose(bose_cmpx.real, bose_real)
+    assert bose_cmpx.imag < 1e-6*max(1, bose_real)
+
+
 @given(z=st.floats())
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_fermi(z, beta):

@@ -54,6 +54,39 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 
 
+def bose_fct(eps, beta):
+    r"""Return the Bose function `1/(exp(βϵ)-1)`.
+
+    Parameters
+    ----------
+    eps : complex or float or ndarray
+        The energy at which the Bose function is evaluated.
+        The real part needs to be positive `eps.real > 0`
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    bose_fct : complex of float or ndarray
+        The Bose function, same type as eps.
+
+    Raises
+    ------
+    ValueError
+        If `eps.real < 0`.
+
+    """
+    if np.any(eps.real < 0):
+        raise ValueError("Bose function only well defined for non-negative energies `eps`.")
+    betaeps = np.asanyarray(beta*eps)
+    res = np.empty_like(betaeps)
+    small = betaeps < 700
+    res[small] = 1./np.expm1(betaeps[small])
+    # avoid overflows for big numbers using negative exponents
+    res[~small] = -np.exp(-betaeps[~small])/np.expm1(-betaeps[~small])
+    return res
+
+
 def fermi_fct(eps, beta):
     r"""Return the Fermi function `1/(exp(βϵ)+1)`.
 
