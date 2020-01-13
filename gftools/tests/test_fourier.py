@@ -38,6 +38,22 @@ def test_iw2tau_dft_single_pole(pole):
     assert np.allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
 
 
+# TODO: check if there is a way to improve result for pole↘0
+@given(pole=st.floats(min_value=1e-12, exclude_min=True, allow_infinity=False))
+def test_tau2iv_ft_lin_single_pole(pole):
+    """Low accuracy test of `tau2iv_ft_lin` on a single pole."""
+    BETA = 1.3
+    N_TAU = 4096 + 1
+    tau = np.linspace(0, BETA, num=N_TAU)
+    ivs = gt.matsubara_frequencies_b(range(N_TAU//2 + 1), beta=BETA)
+
+    gf_tau = gt.pole_gf_tau_b(tau, poles=[pole], weights=[1.], beta=BETA)
+    gf_ft_lin = gt.fourier.tau2iv_ft_lin(gf_tau, beta=BETA)
+    gf_iv = gt.pole_gf_z(ivs, poles=[pole], weights=[1.])
+
+    assert np.allclose(gf_iv, gf_ft_lin, atol=2e-4)
+
+
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_ft_lin_single_pole(pole):
     """Low accurcy test of `tau2iw_ft_lin` on a single pole."""

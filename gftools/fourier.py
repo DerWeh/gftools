@@ -200,6 +200,182 @@ def iw2tau_dft_soft(gf_iw, beta):
     return gf_tau
 
 
+def tau2iv_dft(gf_tau, beta):
+    r"""Discrete Fourier transform of the real Green's function `gf_tau`.
+
+    Fourier transformation of a bosonic imaginary-time Green's function to
+    Matsubara domain.
+    The Fourier integral is replaced by a Riemann sum giving a discrete
+    Fourier transform (DFT).
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.
+
+    Parameters
+    ----------
+    gf_tau : (..., N_tau) float np.ndarray
+        The Green's function at imaginary times :math:`τ \in [0, β]`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
+        frequencies :math:`iν_n`.
+
+    See Also
+    --------
+    tau2iv_ft_lin : Fourier integration using Filon's method
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
+    >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
+
+    >>> poles, weights = np.random.random(10), np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+    >>> gf_dft = gt.fourier.tau2iv_dft(gf_tau, beta=BETA)
+    >>> gf_tau.size, gf_dft.size
+    (2049, 1025)
+    >>> gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(gf_iv.imag, label='exact Im')
+    >>> __ = plt.plot(gf_dft.imag, '--', label='DFT Im')
+    >>> __ = plt.plot(gf_iv.real, label='exact Re')
+    >>> __ = plt.plot(gf_dft.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    >>> __ = plt.title('Error growing with frequency')
+    >>> __ = plt.plot(abs(gf_iv - gf_dft))
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-3
+    >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
+    >>> gf_dft_noisy = gt.fourier.tau2iv_dft(gf_tau + noise, beta=BETA)
+    >>> __ = plt.plot(abs(gf_iv - gf_dft_noisy), '--', label='noisy')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(abs(gf_iv - gf_dft), label='clean')
+    >>> __ = plt.legend()
+    >>> # plt.yscale('log')
+    >>> plt.show()
+
+    """
+    gf_mean = np.trapz(gf_tau, dx=beta/(gf_tau.shape[-1]-1), axis=-1)
+    gf_iv = beta * np.fft.ihfft(gf_tau[..., :-1] - gf_mean[..., np.newaxis])
+    gf_iv[..., 0] = gf_mean
+    # gives better results in practice but is wrong...
+    # gf_iv = beta * np.fft.ihfft(.5*(gf_tau[..., 1:] + gf_tau[..., :-1]))
+    return gf_iv
+
+
+def tau2iv_ft_lin(gf_tau, beta):
+    r"""Fourier integration of the real Green's function `gf_tau`.
+
+    Fourier transformation of a bosonic imaginary-time Green's function to
+    Matsubara domain.
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.
+    Filon's method is used to calculated the Fourier integral
+
+    .. math:: G^n = ∫_{0}^{β}dτ G(τ) e^{iν_n τ},
+
+    :math:`G(τ)` is approximated by a linear spline. A linear approximation was
+    chosen to be able to integrate noisy functions. Information on oscillatory
+    integrations can be found e.g. in [filon1928]_ and [iserles]_.
+
+    Parameters
+    ----------
+    gf_tau : (..., N_tau) float np.ndarray
+        The Green's function at imaginary times :math:`τ \in [0, β]`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
+        frequencies :math:`iν_n`.
+
+    See Also
+    --------
+    tau2iv_dft : Plain implementation using Riemann sum.
+
+    References
+    ----------
+    .. [filon1928] L.N. Filon, On a quadrature formula for trigonometric integrals,
+       Proc. Roy. Soc. Edinburgh 49 (1928) 38-47.
+    .. [iserles] A. Iserles, S.P. Nørsett, and S. Olver, Highly oscillatory
+       quadrature: The story so far,
+       http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
+    >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
+
+    >>> poles, weights = np.random.random(10), np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=BETA)
+    >>> gf_ft_lin = gt.fourier.tau2iv_ft_lin(gf_tau, beta=BETA)
+    >>> gf_tau.size, gf_ft_lin.size
+    (2049, 1025)
+    >>> gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(gf_iv.imag, label='exact Im')
+    >>> __ = plt.plot(gf_ft_lin.imag, '--', label='DFT Im')
+    >>> __ = plt.plot(gf_iv.real, label='exact Re')
+    >>> __ = plt.plot(gf_ft_lin.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    >>> __ = plt.title('Error decreasing with frequency')
+    >>> __ = plt.plot(abs(gf_iv - gf_ft_lin), label='FT_lin')
+    >>> gf_dft = gt.fourier.tau2iv_dft(gf_tau, beta=BETA)
+    >>> __ = plt.plot(abs(gf_iv - gf_dft), '--', label='DFT')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 5e-6
+    >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
+    >>> gf_ft_noisy = gt.fourier.tau2iv_ft_lin(gf_tau + noise, beta=BETA)
+    >>> __ = plt.plot(abs(gf_iv - gf_ft_noisy), '--', label='noisy')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(abs(gf_iv - gf_ft_lin), label='clean')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+    n_tau = gf_tau.shape[-1]
+    gf_dft = np.fft.ihfft(gf_tau[..., :-1])
+    d_gf_dft = np.fft.ihfft(gf_tau[..., 1:] - gf_tau[..., :-1])
+    d_tau_ivs = 2j*np.pi/(n_tau - 1)*np.arange(gf_dft.shape[-1])
+    d_tau_ivs[..., 0] = np.nan  # avoid zero division, fix value by hand
+    expm1 = np.expm1(d_tau_ivs)
+    weight1 = expm1/d_tau_ivs
+    weight2 = (expm1 + 1 - weight1)/d_tau_ivs
+    weight1[0], weight2[0] = 1, .5  # special case n=0
+    gf_iv = weight1*gf_dft + weight2*d_gf_dft
+    gf_iv = beta*gf_iv
+    return gf_iv
+
+
 def tau2iw_dft(gf_tau, beta):
     r"""Discrete Fourier transform of the real Green's function `gf_tau`.
 
@@ -310,13 +486,6 @@ def tau2iw_ft_lin(gf_tau, beta):
     See Also
     --------
     tau2iw_dft : Plain implementation using Riemann sum.
-
-    Notes
-    -----
-    This function performs better than `bare_dft_tau2iw` for high frequencies,
-    for low frequencies `bare_dft_tau2iw` might perform better.
-    To my experience, `lin_ft_tau2iw` can be used for all frequencies if the
-    first two moments are stripped using `dft_tau2iw`.
 
     References
     ----------
