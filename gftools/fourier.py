@@ -1,5 +1,10 @@
 """Fourier transformations of Green's functions.
 
+Fourier transformation between imaginary time and Matsubara frequencies.
+The function in this module should be used after explicitly treating the
+high-frequency behavior.
+
+
 Glossary
 --------
 
@@ -13,7 +18,7 @@ Glossary
       Fourier integration of continous variables without discretization.
 
    iv
-      Bosonic Matsubara frequncies
+      <iν_n> Bosonic Matsubara frequncies
 
    iw
       <iω_n> Fermionic Matusbara frequncies
