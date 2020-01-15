@@ -468,7 +468,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
 
     >>> import matplotlib.pyplot as plt
     >>> __ = plt.plot(tau, gf_tau)
-    >>> plt.xlabel('τ')
+    >>> __ = plt.xlabel('τ')
     >>> plt.show()
 
     """
