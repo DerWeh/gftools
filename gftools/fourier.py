@@ -1,8 +1,31 @@
-"""Fourier transformations of Green's functions.
+r"""Fourier transformations of Green's functions.
 
 Fourier transformation between imaginary time and Matsubara frequencies.
 The function in this module should be used after explicitly treating the
-high-frequency behavior.
+high-frequency behavior, as this is not yet implemented.
+Typically, transformation from τ-space to Matsubara frequency are unproblematic.
+
+The Fourier transforms are defined in the following way:
+
+Definitions
+-----------
+
+imaginary time → Matsubara frequencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Fourier integral for the Matsubara Green's function is defined as:
+
+.. math:: G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n)
+
+with :math:`iw_n = iπn/β`. For fermionic Green's functions only odd frequencies
+are non-vanishing, for bosonic Green's functions only even.
+
+Matsubara frequencies → imaginary time
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Fourier sum for the imaginary time Green's function is defined as:
+
+.. math:: G(τ) = 1/β \sum_{-\infty}^{\infty} G(iw_n) \exp(-iw_n).
 
 
 Glossary
@@ -24,7 +47,7 @@ Glossary
       <iω_n> Fermionic Matusbara frequncies
 
    tau
-      Imaginary time points
+      <τ> Imaginary time points
 
 """
 import logging
