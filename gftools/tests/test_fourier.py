@@ -54,6 +54,24 @@ def test_tau2iv_ft_lin_single_pole(pole):
     assert np.allclose(gf_iv, gf_ft_lin, atol=2e-4)
 
 
+@given(pole=st.floats(min_value=1e-2, exclude_min=True, allow_infinity=False))
+def test_tau2iv_single_pole(pole):
+    """Test that `tau2iv` improves plain results on a single pole."""
+    BETA = 1.3
+    N_TAU = 4096 + 1
+    tau = np.linspace(0, BETA, num=N_TAU)
+    ivs = gt.matsubara_frequencies_b(range(N_TAU//2 + 1), beta=BETA)
+
+    gf_tau = gt.pole_gf_tau_b(tau, poles=[pole], weights=[1.], beta=BETA)
+    gf_dft = gt.fourier.tau2iv(gf_tau, beta=BETA, fourier=gt.fourier.tau2iv_dft)
+    gf_dft_bare = gt.fourier.tau2iv_dft(gf_tau, beta=BETA)
+    gf_iv = gt.pole_gf_z(ivs, poles=[pole], weights=[1.])
+
+    err = abs(gf_iv - gf_dft)
+    err_bare = abs(gf_iv - gf_dft_bare)
+    assert np.all((err <= err_bare) | np.isclose(err, err_bare, atol=1e-8))
+
+
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_ft_lin_single_pole(pole):
     """Low accuracy test of `tau2iw_ft_lin` on a single pole."""

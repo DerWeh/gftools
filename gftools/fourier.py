@@ -31,6 +31,8 @@ import logging
 
 import numpy as np
 
+import gftools as gt
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -378,6 +380,97 @@ def tau2iv_ft_lin(gf_tau, beta):
     weight1[0], weight2[0] = 1, .5  # special case n=0
     gf_iv = weight1*gf_dft + weight2*d_gf_dft
     gf_iv = beta*gf_iv
+    return gf_iv
+
+
+def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
+    r"""Fourier transformation of the real Green's function `gf_tau`.
+
+    Fourier transformation of a bosonic imaginary-time Green's function to
+    Matsubara domain.
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.
+    This function removes the discontinuity :math:`G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.
+
+    TODO: if high-frequency moments are know, they should be stripped for
+    increased accuracy.
+
+    Parameters
+    ----------
+    gf_tau : (..., N_tau) float np.ndarray
+        The Green's function at imaginary times :math:`τ \in [0, β]`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    fourier : {'tau2iv_ft_lin', 'tau2iv_dft'}, optional
+        Back-end to perform the actual Fourier transformation.
+
+    Returns
+    -------
+    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
+        frequencies :math:`iν_n`.
+
+    See Also
+    --------
+    tau2iv_dft : Back-end: plain implementation using Riemann sum.
+    tau2iv_ft_lin : Back-end: plain implementation using Riemann sum.
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
+    >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
+
+    >>> poles, weights = np.random.random(10), np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=BETA)
+    >>> gf_ft = gt.fourier.tau2iv(gf_tau, beta=BETA)
+    >>> gf_tau.size, gf_ft.size
+    (2049, 1025)
+    >>> gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(gf_iv.imag, label='exact Im')
+    >>> __ = plt.plot(gf_ft.imag, '--', label='DFT Im')
+    >>> __ = plt.plot(gf_iv.real, label='exact Re')
+    >>> __ = plt.plot(gf_ft.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    Accuracy of the different back-ends
+
+    >>> ft_lin, dft = gt.fourier.tau2iv_ft_lin, gt.fourier.tau2iv_dft
+    >>> gf_ft_lin = gt.fourier.tau2iv(gf_tau, beta=BETA, fourier=ft_lin)
+    >>> gf_dft = gt.fourier.tau2iv(gf_tau, beta=BETA, fourier=dft)
+    >>> __ = plt.plot(abs(gf_iv - gf_ft_lin), label='FT_lin')
+    >>> __ = plt.plot(abs(gf_iv - gf_dft), '--', label='DFT')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    The methods are resistant against noise:
+
+    >>> magnitude = 5e-6
+    >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
+    >>> gf_ft_lin_noisy = gt.fourier.tau2iv(gf_tau + noise, beta=BETA, fourier=ft_lin)
+    >>> gf_dft_noisy = gt.fourier.tau2iv(gf_tau + noise, beta=BETA, fourier=dft)
+    >>> __ = plt.plot(abs(gf_iv - gf_ft_lin_noisy), '--', label='FT_lin')
+    >>> __ = plt.plot(abs(gf_iv - gf_dft_noisy), '--', label='DFT')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+    g1 = gf_tau[..., -1] - gf_tau[..., 0]  # = 1/z moment = jump of Gf at 0^{±}
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    gf_tau = gf_tau - g1/beta*tau  # remove jump by linear shift
+    gf_iv = fourier(gf_tau, beta=beta)
+    ivs = gt.matsubara_frequencies_b(range(1, gf_iv.shape[-1]), beta=beta)
+    gf_iv[1:] += g1/ivs
+    gf_iv[0] += .5* g1 * beta  # `iv_{n=0}` = 0 has to be treated separately
     return gf_iv
 
 
