@@ -29,7 +29,7 @@ API
 
 
 .. autosummary::
-  :toctree: _autosummary
+  :toctree: generated
 
   gftools
   gftools.fourier
