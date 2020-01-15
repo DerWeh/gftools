@@ -15,7 +15,7 @@ imaginary time → Matsubara frequencies
 
 The Fourier integral for the Matsubara Green's function is defined as:
 
-.. math:: G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n)
+.. math:: G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n τ)
 
 with :math:`iw_n = iπn/β`. For fermionic Green's functions only odd frequencies
 are non-vanishing, for bosonic Green's functions only even.
@@ -25,7 +25,7 @@ Matsubara frequencies → imaginary time
 
 The Fourier sum for the imaginary time Green's function is defined as:
 
-.. math:: G(τ) = 1/β \sum_{-\infty}^{\infty} G(iw_n) \exp(-iw_n).
+.. math:: G(τ) = 1/β \sum_{n=-\infty}^{\infty} G(iw_n) \exp(-iw_n τ).
 
 
 Glossary
