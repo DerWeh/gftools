@@ -425,7 +425,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
         The Green's function at imaginary times :math:`τ \in [0, β]`.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
-    fourier : {'tau2iv_ft_lin', 'tau2iv_dft'}, optional
+    fourier : {`tau2iv_ft_lin`, `tau2iv_dft`}, optional
         Back-end to perform the actual Fourier transformation.
 
     Returns
@@ -437,7 +437,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
     See Also
     --------
     tau2iv_dft : Back-end: plain implementation using Riemann sum.
-    tau2iv_ft_lin : Back-end: plain implementation using Riemann sum.
+    tau2iv_ft_lin : Back-end: Fourier integration using Filon's method.
 
     Examples
     --------
