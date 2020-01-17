@@ -1,5 +1,5 @@
 # encoding: utf-8
-r"""Functions to work with Green's in matrix from.
+r"""Functions to work with Green's functions in matrix from.
 
 In the limit of infinite coordination number the self-energy becomes local,
 inverse Green's functions take the simple form:
@@ -11,27 +11,29 @@ inverse Green's functions take the simple form:
     (G^{-1}(iω))_{ij} &= t_{ij} \quad \text{for } i ≠ j
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from collections.abc import Sequence
 
 import numpy as np
 import scipy.linalg as la
 
 
-class Decomposition(object):
-    """Abstraction for matrix decomposition designed for green's functions.
+class Decomposition(Sequence):
+    """Decomposition of a Matrix into eigenvalues and eigenvectors.
 
-    This can be used as drop-in replacement for returning `rv, xi, rv_inv`.
-    Additionally it offers methods to reconstruct that matrix.
+    This class holds the eigenvalues and eigenvectors of the decomposition of a
+    matrix and offers methods to reconstruct it.
     The intended use case is to use the `Decomposition` for the inversion of
     the Green's function to calculate it from the resolvent.
+
+    The order of the attributes is always `rv, xi, rv_inv`, as this gives the
+    reconstruct of the matrix:  `mat = (rv * xi) @ rv_inv`
 
     Attributes
     ----------
     rv : (N, N) complex np.ndarray
         The matrix of right eigenvalues.
     xi : (N, ...) complex np.ndarray
-        The vector of eigenvalues
+        The vector of eigenvalues.
     rv_inv : (N, N) complex np.ndarray
         The inverse of `rv`.
 
@@ -45,7 +47,7 @@ class Decomposition(object):
         Parameters
         ----------
         rv : (N, N) complex np.ndarray
-            The matrix of right eigenvalues.
+            The matrix of right eigenvectors.
         xi : (N, ...) complex np.ndarray
             The vector of eigenvalues
         rv_inv : (N, N) complex np.ndarray
@@ -68,18 +70,18 @@ class Decomposition(object):
         ----------
         xi : (N, ...) ndarray, optional
             Alternative value used for `self.xi`. This argument can be used
-            instead of calling `self.apply` or modifying `self.xi`.
+            instead of modifying `self.xi`.
         kind : {'diag', 'full'} or str
             Defines how to reconstruct the matrix. If `kind` is 'diag',
             only the diagonal elements are returned, if it is 'full' the
-            complete matrix is returned. The start of the strings is also
-            sufficient (e.g. `kind` = 'f').
-            Alternatively as `str` used for `np.einsum` can be given.
+            complete matrix is returned.
+            Alternatively a `str` used for subscript of `np.einsum` can be given.
 
         Returns
         -------
         reconstruct : (N, N, ...) or (N, ...) ndarray
-            The reconstructed matrix.
+            The reconstructed matrix. If a subscript string is given as `kind`,
+            the shape of the output might differ.
 
         """
         xi = xi if xi is not None else self.xi
@@ -88,7 +90,7 @@ class Decomposition(object):
             return self._reconstruct_diag(xi)
         if 'full'.startswith(kind):
             return self._reconstruct_full(xi)
-        return self._reconstruct_einsum(xi, sum_str=kind)
+        return np.einsum(kind, self.rv, xi, self.rv_inv)
 
     def _reconstruct_diag(self, xi):
         if xi.ndim <= 2:  # simple matrix case
@@ -107,24 +109,15 @@ class Decomposition(object):
         else:
             raise ValueError("Shape of xi does not match:", xi.shape)
 
-    def _reconstruct_einsum(self, xi, sum_str):
-        return np.einsum(sum_str, self.rv, xi, self.rv_inv)
-
-    def apply(self, func, *args, **kwds):
-        """Modify `self.xi` according to `func`.
-
-        Simple wrapper to transform the eigenvalues `self.xi`.
-        """
-        self.xi = func(self.xi, *args, **kwds)
-
-    def __iter__(self):
-        """Allow unpacking of the attributes."""
-        for attr in self.__slots__:
-            yield getattr(self, attr)
-
     def __getitem__(self, key):
-        """Make `Decomposition` behave like the tuple `rv, xi, rv_inv`."""
+        """Make `Decomposition` behave like the tuple `(rv, xi, rv_inv)`."""
         return (self.rv, self.xi, self.rv_inv)[key]
+
+    def __len__(self):
+        return 3
+
+    def __str__(self):
+        return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
 
 
 def decompose_gf_omega(g_inv):
