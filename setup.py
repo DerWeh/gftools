@@ -35,5 +35,5 @@ setup(
         'mpmath'
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'hypothesis'],
+    tests_require=['pytest', 'hypothesis', 'hypothesis_gufunc'],
 )

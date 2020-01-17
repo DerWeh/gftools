@@ -12,9 +12,12 @@ inverse Green's functions take the simple form:
 
 """
 from collections.abc import Sequence
+from functools import partial
 
 import numpy as np
-import scipy.linalg as la
+
+
+transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 
 class Decomposition(Sequence):
@@ -30,11 +33,11 @@ class Decomposition(Sequence):
 
     Attributes
     ----------
-    rv : (N, N) complex np.ndarray
+    rv : (..., N, N) complex np.ndarray
         The matrix of right eigenvalues.
-    xi : (N, ...) complex np.ndarray
+    xi : (..., N) complex np.ndarray
         The vector of eigenvalues.
-    rv_inv : (N, N) complex np.ndarray
+    rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
 
     """
@@ -46,11 +49,11 @@ class Decomposition(Sequence):
 
         Parameters
         ----------
-        rv : (N, N) complex np.ndarray
+        rv : (..., N, N) complex np.ndarray
             The matrix of right eigenvectors.
-        xi : (N, ...) complex np.ndarray
+        xi : (..., N) complex np.ndarray
             The vector of eigenvalues
-        rv_inv : (N, N) complex np.ndarray
+        rv_inv : (..., N, N) complex np.ndarray
             The inverse of `rv`.
 
         """
@@ -63,23 +66,21 @@ class Decomposition(Sequence):
 
         If the reciprocal of `self.xi` was taken, this corresponds to the
         inverse of the original matrix.
-        New axises can be appended to `self.xi`, however the 0th axis has to
-        correspond to the matrix dimension.
 
         Parameters
         ----------
-        xi : (N, ...) ndarray, optional
+        xi : (..., N) np.ndarray, optional
             Alternative value used for `self.xi`. This argument can be used
             instead of modifying `self.xi`.
         kind : {'diag', 'full'} or str
             Defines how to reconstruct the matrix. If `kind` is 'diag',
-            only the diagonal elements are returned, if it is 'full' the
+            only the diagonal elements are computed, if it is 'full' the
             complete matrix is returned.
             Alternatively a `str` used for subscript of `np.einsum` can be given.
 
         Returns
         -------
-        reconstruct : (N, N, ...) or (N, ...) ndarray
+        reconstruct : (..., N, N) or (..., N) np.ndarray
             The reconstructed matrix. If a subscript string is given as `kind`,
             the shape of the output might differ.
 
@@ -87,27 +88,10 @@ class Decomposition(Sequence):
         xi = xi if xi is not None else self.xi
         kind = kind.lower()
         if 'diag'.startswith(kind):
-            return self._reconstruct_diag(xi)
+            return ((transpose(self.rv_inv)*self.rv) @ xi[..., np.newaxis])[..., 0]
         if 'full'.startswith(kind):
-            return self._reconstruct_full(xi)
+            return (self.rv * xi[..., np.newaxis, :]) @ self.rv_inv
         return np.einsum(kind, self.rv, xi, self.rv_inv)
-
-    def _reconstruct_diag(self, xi):
-        if xi.ndim <= 2:  # simple matrix case
-            # calculated with einsum_path
-            return np.matmul(self.rv_inv.T*self.rv, xi)
-        elif xi.shape[0] == self.rv.shape[0]:
-            return np.einsum('ij, j..., ji -> i...', self.rv, xi, self.rv_inv)
-        else:
-            raise ValueError("Shape of xi does not match:", xi.shape)
-
-    def _reconstruct_full(self, xi):
-        if xi.ndim == 1:  # simple matrix case
-            return np.matmul(self.rv*xi, self.rv_inv)
-        elif xi.shape[0] == self.rv.shape[0]:
-            return np.einsum('ij, j..., jk -> ik...', self.rv, xi, self.rv_inv)
-        else:
-            raise ValueError("Shape of xi does not match:", xi.shape)
 
     def __getitem__(self, key):
         """Make `Decomposition` behave like the tuple `(rv, xi, rv_inv)`."""
@@ -120,63 +104,61 @@ class Decomposition(Sequence):
         return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
 
 
-def decompose_gf_omega(g_inv):
+def decompose_gf_omega(g_inv) -> Decomposition:
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
     The similarity transformation:
 
-    .. math::
-        G^{-1} = P h P^{-1}, \quad h = diag(λ(G))
+    .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)
 
     Parameters
     ----------
-    g_inv : (N, N) complex ndarray
+    g_inv : (..., N, N) complex np.ndarray
         matrix to be decomposed
 
     Returns
     -------
-    Decomposition.rv_inv : (N, N) complex ndarray
-        The *inverse* of the right eigenvectors :math:`P`
-    Decomposition.h : (N) complex ndarray
-        The complex eigenvalues of `g_inv`
-    Decomposition.rv : (N, N) complex ndarray
+    Decomposition.rv : (..., N, N) complex np.ndarray
         The right eigenvectors :math:`P`
+    Decomposition.h : (..., N) complex np.ndarray
+        The complex eigenvalues of `g_inv`
+    Decomposition.rv_inv : (..., N, N) complex np.ndarray
+        The *inverse* of the right eigenvectors :math:`P`
 
     """
     if isinstance(g_inv, Decomposition):
         return g_inv
-    h, rv = la.eig(g_inv)
-    return Decomposition(rv=rv, xi=h, rv_inv=la.inv(rv))
+    h, rv = np.linalg.eig(g_inv)
+    return Decomposition(rv=rv, xi=h, rv_inv=np.linalg.inv(rv))
 
 
-def decompose_hamiltonian(hamilton):
+def decompose_hamiltonian(hamilton) -> Decomposition:
     r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
 
     The similarity transformation:
 
-    .. math::
-        H = U^\dagger h U^\dagger, \quad h = diag(λ(G))
+    .. math:: H = U h U^†, \quad h = diag(λ_l)
 
     Parameters
     ----------
-    hamilton : (N, N) complex ndarray
-        matrix to be decomposed
+    hamilton : (..., N, N) complex np.ndarray
+        Hermitian matrix to be decomposed
 
     Returns
     -------
-    Decomposition.rv_inv : (N, N) complex ndarray
+    Decomposition.rv : (..., N, N) complex np.ndarray
+        The right eigenvectors :math:`U`
+    Decomposition.h : (..., N) float np.ndarray
+        The eigenvalues of `hamilton`
+    Decomposition.rv_inv : (..., N, N) complex np.ndarray
         The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
-    Decomposition.h : (N) float ndarray
-        The eigenvalues of `hamilton`
-    Decomposition.rv : (N, N) complex ndarray
-        The right eigenvectors :math:`U`
 
     """
     if isinstance(hamilton, Decomposition):
         return hamilton
-    h, rv = la.eigh(hamilton)
-    return Decomposition(rv=rv, xi=h, rv_inv=rv.conj().T)
+    h, rv = np.linalg.eigh(hamilton)
+    return Decomposition(rv=rv, xi=h, rv_inv=np.swapaxes(rv.conj(), -2, -1))
 
 
 def construct_gf_omega(rv, diag_inv, rv_inv):
@@ -187,16 +169,16 @@ def construct_gf_omega(rv, diag_inv, rv_inv):
 
     Parameters
     ----------
-    rv_inv : (N, N) complex ndarray
+    rv_inv : (N, N) complex np.ndarray
         The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
     diag_inv : (N) array_like
         The eigenvalues (:math:`h`)
-    rv : (N, N) complex ndarray
+    rv : (N, N) complex np.ndarray
         The matrix of right eigenvectors (:math:`P`)
 
     Returns
     -------
-    gf_omega : (N, N) complex ndarray
+    gf_omega : (N, N) complex np.ndarray
         The Green's function
 
     """
