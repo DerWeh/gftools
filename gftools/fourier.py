@@ -137,7 +137,7 @@ def iw2tau_dft(gf_iw, beta):
     gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
     gf_tau = np.fft.hfft(1./beta * gf_iwall)
-    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
+    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]  #   # pylint: disable=unsubscriptable-object,C0301
     return gf_tau
 
 
@@ -663,7 +663,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     """
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
-    n_tau = gf_tau_full_range.shape[-1]
+    n_tau = gf_tau_full_range.shape[-1]  # pylint: disable=unsubscriptable-object
     gf_dft = np.fft.ihfft(gf_tau_full_range[..., :-1])
     d_gf_tau = gf_tau_full_range[..., 1:] - gf_tau_full_range[..., :-1]
     d_gf_dft = np.fft.ihfft(d_gf_tau)
