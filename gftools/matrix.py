@@ -61,6 +61,50 @@ class Decomposition(Sequence):
         self.xi = xi
         self.rv_inv = rv_inv
 
+    @classmethod
+    def from_hamiltonian(cls, hamilton):
+        r"""Decompose the Hamiltonian matrix.
+
+        The similarity transformation:
+
+        .. math:: H = U h U^†, \quad h = diag(λ_l)
+
+        Parameters
+        ----------
+        hamilton : (..., N, N) complex np.ndarray
+            Hermitian matrix to be decomposed
+
+        Returns
+        -------
+        Decomposition
+
+        """
+        if isinstance(hamilton, cls):
+            return hamilton
+        return decompose_hamiltonian(hamilton)
+
+    @classmethod
+    def from_gf(cls, gf):
+        r"""Decompose the inverse Green's function matrix.
+
+        The similarity transformation:
+
+        .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)
+
+        Parameters
+        ----------
+        g_inv : (..., N, N) complex np.ndarray
+            matrix to be decomposed
+
+        Returns
+        -------
+        Decomposition
+
+        """
+        if isinstance(gf, cls):
+            return gf
+        return decompose_gf(gf)
+
     def reconstruct(self, xi=None, kind='full'):
         """Get matrix back from `Decomposition`.
 
