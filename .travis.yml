@@ -4,7 +4,7 @@ python:
 sudo: false
 cache: pip
 before_install:
-  - pip install 'pytest>=3.6' hypothesis pytest-cov codecov pydocstyle pyflakes hypothesis_gufunc 'attrs>=19.2.0'
+  - pip install 'pytest>=3.6' 'hypothesis==4.24.5' pytest-cov codecov pydocstyle pyflakes hypothesis_gufunc 'attrs>=19.2.0'
   - pip install travis-sphinx numpydoc matplotlib sphinx_rtd_theme
 install:
   - pip install -r requirements.txt
