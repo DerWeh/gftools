@@ -7,13 +7,13 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
-from .context import gfmatrix
+from .context import gftools as gt
 
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 
 class TestDecompositionGeneral:
-    """Tests for the function `gftools.matrix.decompose_gf_omega`.
+    """Tests for the function `gftools.matrix.decompose_gf`.
 
     Main use for the function is to invert Green's functions,
     so we mainly test for that purpose.
@@ -32,7 +32,7 @@ class TestDecompositionGeneral:
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[1] = g0
-            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
+            rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
 
     @pytest.mark.parametrize("size", [4, 9, 20])
@@ -48,11 +48,11 @@ class TestDecompositionGeneral:
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
-            g0 = gfmatrix.construct_gf_omega(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
+            rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
+            g0 = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
             assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
             assert np.allclose(g0, la.inv(g0_inv_full))
-            g0_alt = gfmatrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
+            g0_alt = gt.matrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
             assert np.allclose(g0, g0_alt)
 
     @pytest.mark.parametrize("size", [4, 9, 20])
@@ -67,22 +67,22 @@ class TestDecompositionGeneral:
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            _, h, _ = gfmatrix.decompose_gf_omega(g0_inv_full)
+            _, h, _ = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))
 
 
 @given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
 def test_decomposition_reconsturction(args):
-    """Check if the reconstruction using `gfmatrix.Decomposition` is correct."""
+    """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
     mat, = args  # unpack
     if mat.shape[-1] > 0:
         assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))  # make sure matrix is diagonalizable
-    dec = gfmatrix.decompose_gf_omega(mat)
+    dec = gt.matrix.decompose_gf(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
     # Hermitian
-    mat = mat + gfmatrix.transpose(mat).conj()
-    dec = gfmatrix.decompose_hamiltonian(mat)
+    mat = mat + gt.matrix.transpose(mat).conj()
+    dec = gt.matrix.decompose_hamiltonian(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))

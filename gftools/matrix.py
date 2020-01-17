@@ -104,7 +104,7 @@ class Decomposition(Sequence):
         return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
 
 
-def decompose_gf_omega(g_inv) -> Decomposition:
+def decompose_gf(g_inv) -> Decomposition:
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
     The similarity transformation:
@@ -161,7 +161,7 @@ def decompose_hamiltonian(hamilton) -> Decomposition:
     return Decomposition(rv=rv, xi=h, rv_inv=np.swapaxes(rv.conj(), -2, -1))
 
 
-def construct_gf_omega(rv, diag_inv, rv_inv):
+def construct_gf(rv, diag_inv, rv_inv):
     r"""Construct Green's function from decomposition of its inverse.
 
     .. math::
@@ -178,7 +178,7 @@ def construct_gf_omega(rv, diag_inv, rv_inv):
 
     Returns
     -------
-    gf_omega : (N, N) complex np.ndarray
+    gf : (N, N) complex np.ndarray
         The Green's function
 
     """
