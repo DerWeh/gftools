@@ -76,13 +76,41 @@ class TestDecompositionGeneral:
 def test_decomposition_reconsturction(args):
     """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
     mat, = args  # unpack
-    if mat.shape[-1] > 0:
-        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))  # make sure matrix is diagonalizable
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
     dec = gt.matrix.decompose_gf(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+
     # Hermitian
     mat = mat + gt.matrix.transpose(mat).conj()
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
     dec = gt.matrix.decompose_hamiltonian(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+
+
+@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
+                   max_dims_extra=2, max_side=4),)
+def test_decomposition_inverse(args):
+    """Check if the inverse using `gt.matrix.Decomposition` is correct."""
+    mat, = args  # unpack
+    # make sure `mat` is reasonable
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    inverse = np.linalg.inv(mat)
+    dec = gt.matrix.Decomposition.from_gf(mat)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+                       np.diagonal(inverse, axis1=-2, axis2=-1))
+
+    # Hermitian
+    mat = mat + gt.matrix.transpose(mat).conj()
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    inverse = np.linalg.inv(mat)
+    dec = gt.matrix.Decomposition.from_hamiltonian(mat)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+                       np.diagonal(inverse, axis1=-2, axis2=-1))
