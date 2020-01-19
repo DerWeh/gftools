@@ -54,7 +54,6 @@ import logging
 from collections import namedtuple
 
 import numpy as np
-from scipy import optimize
 
 import gftools as gt
 
@@ -64,108 +63,46 @@ LOGGER = logging.getLogger(__name__)
 PoleGf = namedtuple('PoleGf', ['resids', 'poles'])
 
 
-def fit_moments(moments) -> PoleGf:
+def pole_gf_from_moments(moments) -> PoleGf:
     """Find pole Green's function matching given moments.
 
     Finds poles and weights for a pole Green's function matching the given
     high frequency `moments` for large `z`:
-    `G(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
+    `g(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
+
+    Note that for an odd number of moments, the central pole is at `z = 0`,
+    so `g(0)` diverges.
 
     Parameters
     ----------
-    moments : (N) float np.ndarray
+    moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
 
     Returns
     -------
-    weights, poles : (N) float np.ndarray
-        The weights and poles.
+    gf.resids : (..., N) float np.ndarray
+        Residues (or weight) of the poles.
+    gf.poles : (N) float np.ndarray
+        Position of the poles, these are the Chebyshev nodes for degree `N`.
 
-    Warnings
-    --------
-    The current implementation seems to become vastly inaccurate for more then
-    5 moments if used for Fourier transforms.
+    Notes
+    -----
+    We employ the similarity of the relation betweens the `moments` and
+    the poles and residues with polynomials and the Vandermond matrix.
+    The poles are chooses as Chebyshev nodes, the residues are calculated
+    accordingly.
 
     """
-    # try splitting up in even and odd moments
+    moments = np.asarray(moments)
     n_mom = moments.shape[-1]
-    n_prm = n_mom
-    # think about giving penalty to very small poles
-
-    # doesn't work
-    def root(residues_poles):
-        residues, poles = residues_poles[:n_prm], residues_poles[n_prm:]
-        order = np.arange(n_mom)[..., np.newaxis]
-        # root works only for square problems
-        res = np.zeros_like(residues_poles)
-        res[..., :n_mom] = np.sum(residues*np.power(poles, order), axis=-1) - moments
-        return res
-
-    # def jac(residues_poles):
-    #     residues, poles = np.split(residues_poles, [n_prm], axis=-1)
-    #     jac = np.zeros(residues_poles.shape + (residues_poles.shape[-1],))
-    #     order = np.arange(n_mom)[..., np.newaxis]
-    #     d_resid = np.power(poles, order)  # df_i/dr_j = p^(i)_j
-    #     # df_i/dp_j = i * r_j * p^(i-1)_j
-    #     d_poles = order * residues
-    #     d_poles[..., 1:, :] *= d_resid[..., 1:, :]
-    #     jac[..., :n_mom, :n_prm] = d_resid
-    #     jac[..., :n_mom, n_prm:] = d_poles
-    #     return jac
-
-    rp0 = np.zeros(moments.shape[:-1] + (2*n_prm,))
-    # choose right first moment as starting point
-    rp0[..., :n_prm] = moments[..., 0:1]/n_prm
-    rp0[..., 1:n_prm:2] *= -1
-    # choose poles of both sides, as root search can't cross zero
-    rp0[..., n_prm::2] = 1
-    rp0[..., n_prm+1::2] = -1
-    # residues_poles = optimize.root(root, x0=rp0, jac=jac, method='hybr')
-    opt = optimize.root(root, x0=rp0, method='hybr')
-    assert opt.success
-    residues, poles = opt.x[:n_prm], opt.x[n_prm:]
-    return PoleGf(resids=residues, poles=poles)
-
-
-def pole_gf_from_moments(moments) -> PoleGf:
-    """Pole Green's function matching the given moments.
-
-    Finds poles and weights for a pole Green's function matching the given
-    high frequency `moments` for large `z`:
-    `G(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
-
-    Parameters
-    ----------
-    moments : (N) float np.ndarray
-        Moments of the high-frequency expansion, where
-        `G(z) = moments / z**np.arange(N)` for large `z`.
-
-    Returns
-    -------
-    gf.resids, gf.poles : float np.ndarray
-        The weights and poles.
-
-    """
-    moments = np.atleast_1d(moments)
-    if moments.shape[-1] == 1:
-        return PoleGf(resids=moments, poles=np.zeros_like(moments))
-    if moments.shape[-1] == 2:
-        m1, m2 = moments[..., 0, np.newaxis], moments[..., 1, np.newaxis]
-        if np.all(m1 != 0.):
-            return PoleGf(resids=m1, poles=(m2/m1))
-        if np.all(m2 == 0.) and np.all(m1 == 0.):
-            return PoleGf(resids=m1, poles=m2)
-        resids = np.zeros_like(moments)
-        poles = np.zeros_like(moments)
-        m1is0 = m1 == 0
-        resids[~m1is0] = [m1[~m1is0], np.zeros_like(m1[~m1is0])]
-        poles[~m1is0] = [m2[~m1is0]/m1[~m1is0], np.zeros_like(m1[~m1is0])]
-        # cases where mom[0] == 0:
-        resids[m1is0] = [1, -1]
-        poles[m1is0] = [.5*m2[m1is0], -.5*m2[m1is0]]
-        return PoleGf(resids=resids, poles=poles)
-    return fit_moments(moments)
+    poles = np.cos(.5*np.pi/n_mom*np.arange(1, 2*n_mom, 2))
+    if n_mom % 2:
+        poles[n_mom//2] = 0.
+    mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
+    mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
+    resid = np.linalg.solve(mat, moments)
+    return PoleGf(resids=resid, poles=poles)
 
 
 def iw2tau_dft(gf_iw, beta):
@@ -410,8 +347,8 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     Results can be drastically improved giving high-frequency moments,
     this residues the truncation error.
 
-    >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(5), axis=0)
-    >>> for n in range(1, 5):
+    >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(8), axis=0)
+    >>> for n in range(1, 8):
     ...     gf = gt.fourier.iw2tau(gf_iw, moments=mom[:n], beta=BETA)
     ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), label=f'n_mom={n}')
     >>> __ = plt.legend()
@@ -426,7 +363,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
 
     >>> magnitude = 2e-7
     >>> noise = np.random.normal(scale=magnitude, size=gf_iw.size)
-    >>> for n in range(1, 5, 2):
+    >>> for n in range(1, 7, 2):
     ...     gf = gt.fourier.iw2tau(gf_iw+noise, moments=mom[:n], beta=BETA)
     ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), '--', label=f'n_mom={n}')
     >>> __ = plt.axhline(magnitude, color='black')
