@@ -828,3 +828,123 @@ def tau2iw_ft_lin(gf_tau, beta):
     gf_iw = weight1*gf_dft[..., 1::2] + weight2*d_gf_dft[..., 1::2]
     gf_iw = -beta*gf_iw
     return gf_iw
+
+
+def tau2iw(gf_tau, beta, moments=None, fourier=tau2iw_ft_lin):
+    r"""Fourier transform of the real Green's function `gf_tau`.
+
+    Fourier transformation of a fermionic imaginary-time Green's function to
+    Matsubara domain.
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.
+    If no explicit `moments` are given, this function removes
+    :math:`-G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.
+
+    Parameters
+    ----------
+    gf_tau : (..., N_tau) float np.ndarray
+        The Green's function at imaginary times :math:`τ \in [0, β]`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    moments : (..., m) float array_like, optional
+        High-frequency moments of `gf_iw`. If none are given, the first moment
+        is chosen the remove the discontinuity.
+    fourier : {`tau2iw_ft_lin`, `tau2iw_dft`}, optional
+        Back-end to perform the actual Fourier transformation.
+
+    Returns
+    -------
+    gf_iw : (..., {N_iv + 1}/2) complex np.ndarray
+        The Fourier transform of `gf_tau` for non-negative fermionic Matsubara
+        frequencies :math:`iω_n`.
+
+    See Also
+    --------
+    tau2iw_ft_lin : Back-end: Fourier integration using Filon's method
+    tau2iw_dft : Back-end: plain implementation using Riemann sum.
+
+    pole_gf_from_moments : Function handling the given `moments`
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
+    >>> iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+    >>> gf_ft = gt.fourier.tau2iw(gf_tau, beta=BETA)
+    >>> gf_tau.size, gf_ft.size
+    (2049, 1024)
+    >>> gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(gf_iw.imag, label='exact Im')
+    >>> __ = plt.plot(gf_ft.imag, '--', label='DFT Im')
+    >>> __ = plt.plot(gf_iw.real, label='exact Re')
+    >>> __ = plt.plot(gf_ft.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    Accuracy of the different back-ends
+
+    >>> ft_lin, dft = gt.fourier.tau2iw_ft_lin, gt.fourier.tau2iw_dft
+    >>> gf_ft_lin = gt.fourier.tau2iw(gf_tau, beta=BETA, fourier=ft_lin)
+    >>> gf_dft = gt.fourier.tau2iw(gf_tau, beta=BETA, fourier=dft)
+    >>> __ = plt.plot(abs(gf_iw - gf_ft_lin), label='FT_lin')
+    >>> __ = plt.plot(abs(gf_iw - gf_dft), '--', label='DFT')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    Results for DFT can be drastically improved giving high-frequency moments.
+    The reason is, that lower large frequencies, where FT_lin is superior, are
+    treated by the moments instead of the Fourier transform.
+
+    >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(8), axis=0)
+    >>> for n in range(1, 8):
+    ...     gf = gt.fourier.tau2iw(gf_tau, moments=mom[:n], beta=BETA, fourier=ft_lin)
+    ...     __ = plt.plot(abs(gf_iw - gf), label=f'n_mom={n}', color=f'C{n}')
+    ...     gf = gt.fourier.tau2iw(gf_tau, moments=mom[:n], beta=BETA, fourier=dft)
+    ...     __ = plt.plot(abs(gf_iw - gf), '--', color=f'C{n}')
+    >>> __ = plt.legend(loc='lower right')
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-7
+    >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
+    >>> __, axes = plt.subplots(ncols=2, sharey=True)
+    >>> for n in range(1, 7, 2):
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, moments=mom[:n], beta=BETA, fourier=ft_lin)
+    ...     __ = axes[0].plot(abs(gf_iw - gf), '--', label=f'n_mom={n}', color=f'C{n}')
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, moments=mom[:n], beta=BETA, fourier=dft)
+    ...     __ = axes[1].plot(abs(gf_iw - gf), '--', color=f'C{n}')
+    >>> for ax in axes:
+    ...     __ = ax.axhline(magnitude, color='black')
+    ...     __ = ax.plot(abs(gf_iw - gf_ft), label='clean')
+    >>> __ = axes[0].legend(loc='lower right')
+    >>> plt.yscale('log')
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    """
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    m1 = -gf_tau[..., -1] - gf_tau[..., 0]
+    if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
+        moments = m1[..., np.newaxis]
+    else:
+        if not np.allclose(m1, moments[..., 0]):
+            LOGGER.warning("Provided 1/z moment differs from jump."
+                           "\n mom: %s, jump: %s", moments[..., 0], m1)
+    pole_gf = pole_gf_from_moments(moments)
+    gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
+    gf_iw = fourier(gf_tau, beta=beta)
+    iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
+    gf_iw += gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
+    return gf_iw
