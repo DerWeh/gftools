@@ -51,12 +51,121 @@ Glossary
 
 """
 import logging
+from collections import namedtuple
 
 import numpy as np
+from scipy import optimize
 
 import gftools as gt
 
 LOGGER = logging.getLogger(__name__)
+
+
+PoleGf = namedtuple('PoleGf', ['resids', 'poles'])
+
+
+def fit_moments(moments) -> PoleGf:
+    """Find pole Green's function matching given moments.
+
+    Finds poles and weights for a pole Green's function matching the given
+    high frequency `moments` for large `z`:
+    `G(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
+
+    Parameters
+    ----------
+    moments : (N) float np.ndarray
+        Moments of the high-frequency expansion, where
+        `G(z) = moments / z**np.arange(N)` for large `z`.
+
+    Returns
+    -------
+    weights, poles : (N) float np.ndarray
+        The weights and poles.
+
+    Warnings
+    --------
+    The current implementation seems to become vastly inaccurate for more then
+    5 moments if used for Fourier transforms.
+
+    """
+    # try splitting up in even and odd moments
+    n_mom = moments.shape[-1]
+    n_prm = n_mom
+    # think about giving penalty to very small poles
+
+    # doesn't work
+    def root(residues_poles):
+        residues, poles = residues_poles[:n_prm], residues_poles[n_prm:]
+        order = np.arange(n_mom)[..., np.newaxis]
+        # root works only for square problems
+        res = np.zeros_like(residues_poles)
+        res[..., :n_mom] = np.sum(residues*np.power(poles, order), axis=-1) - moments
+        return res
+
+    # def jac(residues_poles):
+    #     residues, poles = np.split(residues_poles, [n_prm], axis=-1)
+    #     jac = np.zeros(residues_poles.shape + (residues_poles.shape[-1],))
+    #     order = np.arange(n_mom)[..., np.newaxis]
+    #     d_resid = np.power(poles, order)  # df_i/dr_j = p^(i)_j
+    #     # df_i/dp_j = i * r_j * p^(i-1)_j
+    #     d_poles = order * residues
+    #     d_poles[..., 1:, :] *= d_resid[..., 1:, :]
+    #     jac[..., :n_mom, :n_prm] = d_resid
+    #     jac[..., :n_mom, n_prm:] = d_poles
+    #     return jac
+
+    rp0 = np.zeros(moments.shape[:-1] + (2*n_prm,))
+    # choose right first moment as starting point
+    rp0[..., :n_prm] = moments[..., 0:1]/n_prm
+    rp0[..., 1:n_prm:2] *= -1
+    # choose poles of both sides, as root search can't cross zero
+    rp0[..., n_prm::2] = 1
+    rp0[..., n_prm+1::2] = -1
+    # residues_poles = optimize.root(root, x0=rp0, jac=jac, method='hybr')
+    opt = optimize.root(root, x0=rp0, method='hybr')
+    assert opt.success
+    residues, poles = opt.x[:n_prm], opt.x[n_prm:]
+    return PoleGf(resids=residues, poles=poles)
+
+
+def pole_gf_from_moments(moments) -> PoleGf:
+    """Pole Green's function matching the given moments.
+
+    Finds poles and weights for a pole Green's function matching the given
+    high frequency `moments` for large `z`:
+    `G(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
+
+    Parameters
+    ----------
+    moments : (N) float np.ndarray
+        Moments of the high-frequency expansion, where
+        `G(z) = moments / z**np.arange(N)` for large `z`.
+
+    Returns
+    -------
+    gf.resids, gf.poles : float np.ndarray
+        The weights and poles.
+
+    """
+    moments = np.atleast_1d(moments)
+    if moments.shape[-1] == 1:
+        return PoleGf(resids=moments, poles=np.zeros_like(moments))
+    if moments.shape[-1] == 2:
+        m1, m2 = moments[..., 0, np.newaxis], moments[..., 1, np.newaxis]
+        if np.all(m1 != 0.):
+            return PoleGf(resids=m1, poles=(m2/m1))
+        if np.all(m2 == 0.) and np.all(m1 == 0.):
+            return PoleGf(resids=m1, poles=m2)
+        resids = np.zeros_like(moments)
+        poles = np.zeros_like(moments)
+        m1is0 = m1 == 0
+        resids[~m1is0] = [m1[~m1is0], np.zeros_like(m1[~m1is0])]
+        poles[~m1is0] = [m2[~m1is0]/m1[~m1is0], np.zeros_like(m1[~m1is0])]
+        # cases where mom[0] == 0:
+        resids[m1is0] = [1, -1]
+        poles[m1is0] = [.5*m2[m1is0], -.5*m2[m1is0]]
+        return PoleGf(resids=resids, poles=poles)
+    return fit_moments(moments)
 
 
 def iw2tau_dft(gf_iw, beta):
@@ -137,7 +246,7 @@ def iw2tau_dft(gf_iw, beta):
     gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
     gf_tau = np.fft.hfft(1./beta * gf_iwall)
-    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]  #   # pylint: disable=unsubscriptable-object,C0301
+    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]  # pylint: disable=unsubscriptable-object,C0301
     return gf_tau
 
 
@@ -227,6 +336,112 @@ def iw2tau_dft_soft(gf_iw, beta):
     LOGGER.debug("Remaining tail approximated by 'cos': %s", gf_iw[..., -1:])
     gf_iw_extended = np.concatenate((gf_iw, tail*gf_iw[..., -1:]), axis=-1)
     gf_tau = iw2tau_dft(gf_iw_extended, beta=beta)[..., ::2]  # trim artificial resolution
+    return gf_tau
+
+
+def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
+    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+
+    Fourier transformation of a fermionic Matsubara Green's function to
+    imaginary-time domain.
+    We assume a Hermitian Green's function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,
+    which is the case for commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`
+    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.
+
+    Parameters
+    ----------
+    gf_iw : (N_iw) complex np.ndarray
+        The Green's function at positive **fermionic** Matsubara frequencies
+        :math:`iω_n`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    moments : (m) float array_like
+        High-frequency moments of `gf_iw`.
+        Currently not more then 5 moments should be used, as it becomes inaccurate.
+    fourier : {`iw2tau_dft`, `iw2tau_dft_soft`}, optional
+        Back-end to perform the actual Fourier transformation.
+
+    Returns
+    -------
+    gf_tau : (2*N_iw + 1) float np.ndarray
+        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
+
+    See Also
+    --------
+    iw2tau_dft : Back-end: plain implementation of fourier transform
+    iw2tau_dft_soft : Back-end: fourier transform with artificial softening of oszillations
+
+    pole_gf_from_moments : Function handling the given `moments`
+
+    Notes
+    -----
+    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
+    has already reached it's high-frequency behaviour, which need to be included
+    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    bandwidht!
+
+    Examples
+    --------
+    >>> import gftools.fourier
+    >>> BETA = 50
+    >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
+    >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)
+    >>> gf_dft = gt.fourier.iw2tau(gf_iw, beta=BETA)
+    >>> gf_iw.size, gf_dft.size
+    (1024, 2049)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(tau, gf_tau, label='exact')
+    >>> __ = plt.plot(tau, gf_dft, '--', label='FT')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    >>> __ = plt.title('Oscillations around boundaries 0, β')
+    >>> __ = plt.plot(tau/BETA, gf_tau - gf_dft)
+    >>> __ = plt.xlabel('τ/β')
+    >>> plt.show()
+
+    Results can be drastically improved giving high-frequency moments,
+    this residues the truncation error.
+
+    >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(5), axis=0)
+    >>> for n in range(1, 5):
+    ...     gf = gt.fourier.iw2tau(gf_iw, moments=mom[:n], beta=BETA)
+    ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), label=f'n_mom={n}')
+    >>> __ = plt.legend()
+    >>> __ = plt.xlabel('τ/β')
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    As we however see, our current pole fitting method breaks down when using
+    many poles.
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-7
+    >>> noise = np.random.normal(scale=magnitude, size=gf_iw.size)
+    >>> for n in range(1, 5, 2):
+    ...     gf = gt.fourier.iw2tau(gf_iw+noise, moments=mom[:n], beta=BETA)
+    ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), '--', label=f'n_mom={n}')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(tau/BETA, abs(gf_tau - gf_dft), label='clean')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+    iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
+    pole_gf = pole_gf_from_moments(moments)
+    gf_iw = gf_iw - gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
+    gf_tau = fourier(gf_iw, beta=beta)
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    gf_tau += gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
     return gf_tau
 
 
