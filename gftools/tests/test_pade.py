@@ -45,6 +45,31 @@ def test_coeff_type_reduction():
     assert coeff.dtype == np.dtype(np.complex256)
 
 
+def passing():  # compare calculation (masked) to exact result
+    import matplotlib.pyplot as plt
+
+    plt.figure('diff')
+    plt.plot(coeff_old.imag - coeff.imag)
+    plt.figure('coefficients')
+    plt.plot(coeff_old.imag, label='old')
+    plt.plot(coeff.imag, '--', label='new')
+    plt.legend()
+    # plt.plot(coeff_old.real)
+    # plt.plot(coeff.real, '--')
+
+    # show results
+    # omega = np.linspace(-D*2, D*2, num=1000) + 1e-6j
+    omega = np.linspace(-D*1.2, D*1.2, num=1000) + iws[0]/10
+    gf_bethe_w1 = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=iws.size)
+    gf_bethe_w2 = old_pade.pade_calc(iw=iws, a=coeff, w=omega, n_pade=iws.size)
+    plt.figure('compare')
+    plt.plot(omega.real, -gf_bethe_w1.imag, label='odl')
+    plt.plot(omega.real, -gf_bethe_w2.imag, '--', label='new')
+    plt.plot(omega.real, -gt.bethe_gf_omega(omega, half_bandwidth=D).imag, '-.', label='exact')
+    plt.legend()
+    plt.show()
+
+
 def test_stacked_pade():
     """Test results of calculating stacked Pades in parallel against single Pade."""
     # Test setup

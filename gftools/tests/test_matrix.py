@@ -1,17 +1,20 @@
 """Tests of functions for real-space Gf matrices for infinite coordination number."""
-from __future__ import absolute_import
-
 import pytest
-import scipy.linalg as la
-
 import numpy as np
+import scipy.linalg as la
+import hypothesis.strategies as st
 
-from .context import gfmatrix
+from hypothesis import given, assume
+from hypothesis_gufunc.gufunc import gufunc_args
+
+from .context import gftools as gt
+
+easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 
-class TestDecompositionGeneral(object):
-    """Tests for the function `gftools.matrix.decompose_gf_omega`.
-    
+class TestDecompositionGeneral:
+    """Tests for the function `gftools.matrix.decompose_gf`.
+
     Main use for the function is to invert Green's functions,
     so we mainly test for that purpose.
     """
@@ -29,13 +32,13 @@ class TestDecompositionGeneral(object):
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[1] = g0
-            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
+            rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
 
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
         r"""Decomposition we be used to calculate the inverse.
-        
+
         .. math::
             G^{-1} = P^{-1} h P \Rightarrow P^{-1} h^{-1} P = G
         """
@@ -45,17 +48,17 @@ class TestDecompositionGeneral(object):
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            rv, h, rv_inv = gfmatrix.decompose_gf_omega(g0_inv_full)
-            g0 = gfmatrix.construct_gf_omega(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
+            rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
+            g0 = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
             assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
             assert np.allclose(g0, la.inv(g0_inv_full))
-            g0_alt = gfmatrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
+            g0_alt = gt.matrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
             assert np.allclose(g0, g0_alt)
 
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_eigsum_non_interacting(self, size):
         """Trace of the matrix must be trace of eigenvalues *h*.
-        
+
         This is due to cyclic invariance under the trace.
         """
         t_nn = np.ones(size-1)
@@ -64,5 +67,50 @@ class TestDecompositionGeneral(object):
         g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
         for g0 in self.g0_loc_inv:
             g0_inv_full[np.arange(size), np.arange(size)] = g0
-            _, h, _ = gfmatrix.decompose_gf_omega(g0_inv_full)
+            _, h, _ = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))
+
+
+@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
+                   max_dims_extra=2, max_side=4),)
+def test_decomposition_reconsturction(args):
+    """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
+    mat, = args  # unpack
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    dec = gt.matrix.decompose_gf(mat)
+    assert np.allclose(dec.reconstruct(kind='full'), mat)
+    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+
+    # Hermitian
+    mat = mat + gt.matrix.transpose(mat).conj()
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    dec = gt.matrix.decompose_hamiltonian(mat)
+    assert np.allclose(dec.reconstruct(kind='full'), mat)
+    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+
+
+@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
+                   max_dims_extra=2, max_side=4),)
+def test_decomposition_inverse(args):
+    """Check if the inverse using `gt.matrix.Decomposition` is correct."""
+    mat, = args  # unpack
+    # make sure `mat` is reasonable
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    inverse = np.linalg.inv(mat)
+    dec = gt.matrix.Decomposition.from_gf(mat)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+                       np.diagonal(inverse, axis1=-2, axis2=-1))
+
+    # Hermitian
+    mat = mat + gt.matrix.transpose(mat).conj()
+    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+    inverse = np.linalg.inv(mat)
+    dec = gt.matrix.Decomposition.from_hamiltonian(mat)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+                       np.diagonal(inverse, axis1=-2, axis2=-1))
