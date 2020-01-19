@@ -4,8 +4,29 @@ import numpy as np
 import hypothesis.strategies as st
 
 from hypothesis import given
+from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftools as gt
+
+
+@given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
+                   elements=st.floats(min_value=-1e6, max_value=1e6),
+                   max_dims_extra=2, max_side=10),)
+def test_gf_form_moments(args):
+    """Check that the Gfs constructed from moments have the correct moment."""
+    mom, = args
+    gf = gt.fourier.pole_gf_from_moments(mom)
+    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.resids,
+                                order=np.arange(mom.shape[-1])+1)
+    assert np.allclose(mom, gf_mom, equal_nan=True)
+
+
+def test_gf_form_moments_nan():
+    """Check that the Gfs constructed from moments handle NaN."""
+    mom = [np.nan]
+    gf = gt.fourier.pole_gf_from_moments(mom)
+    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.resids, order=1)
+    assert np.allclose(mom, gf_mom, equal_nan=True)
 
 
 @given(pole=st.floats(-10, 10))  # necessary Matsubaras depend on Bandwidth!

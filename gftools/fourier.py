@@ -96,7 +96,9 @@ def pole_gf_from_moments(moments) -> PoleGf:
     """
     moments = np.asarray(moments)
     n_mom = moments.shape[-1]
-    poles = np.cos(.5*np.pi/n_mom*np.arange(1, 2*n_mom, 2))
+    if n_mom == 0:  # non-sense case, but return consistent behaviour
+        return PoleGf(resids=moments.copy(), poles=np.array([]))
+    poles = np.cos(.5*np.pi*np.arange(1, 2*n_mom, 2)/n_mom)
     if n_mom % 2:
         poles[n_mom//2] = 0.
     mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T

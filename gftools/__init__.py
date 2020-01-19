@@ -47,6 +47,7 @@ from collections import namedtuple
 import numpy as np
 
 from scipy.special import expit, logit
+from numpy import newaxis
 
 from . import lattice, matrix as gtmatrix
 from ._version import get_versions
@@ -478,6 +479,31 @@ def pole_gf_tau_b(tau, poles, weights, beta):
         raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
     return np.sum(weights*bose_fct(poles, -beta)*np.exp(np.multiply.outer(-tau, poles)), axis=-1)
+
+
+def pole_gf_moments(poles, weights, order):
+    r"""High-frequency moments of the pole Green's function.
+
+    Return the moments `mom` of the expansion :math:`g(z) = \sum_m mom_m/z^m`
+    For the pole Green's function we have the simple relation
+    :math:`1/(z - ϵ) = \sum_{m=1} ϵ^{m-1}/z^m`.
+
+    Parameters
+    ----------
+    poles, weights : (..., N) float np.ndarray
+        Position and weight of the poles.
+    order : (..., M) int array_like
+        Order (degree) of the moments.
+
+    Returns
+    -------
+    mom : (..., M) float np.ndarray
+        High-frequency moments.
+
+    """
+    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
+    order = np.asarray(order)[..., newaxis]
+    return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
 
 
 Result = namedtuple('Result', ['x', 'err'])
