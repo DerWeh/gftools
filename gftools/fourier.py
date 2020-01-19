@@ -20,6 +20,11 @@ The Fourier integral for the Matsubara Green's function is defined as:
 with :math:`iw_n = iπn/β`. For fermionic Green's functions only odd frequencies
 are non-vanishing, for bosonic Green's functions only even.
 
+The recommended high-level function to perform this Fourier transform is:
+
+* `tau2iw` for *fermionic* Green's functions
+* `tau2iv` for *bosonic* Green's functions
+
 Matsubara frequencies → imaginary time
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -27,6 +32,9 @@ The Fourier sum for the imaginary time Green's function is defined as:
 
 .. math:: G(τ) = 1/β \sum_{n=-\infty}^{\infty} G(iw_n) \exp(-iw_n τ).
 
+The recommended high-level function to perform this Fourier transform is:
+
+* `iw2tau` for *fermionic* Green's functions
 
 Glossary
 --------
@@ -217,7 +225,7 @@ def iw2tau_dft_soft(gf_iw, beta):
 
     See Also
     --------
-    iw2tau_dft : Plain implementation of fourier transform
+    iw2tau_dft : Plain implementation of Fourier transform
 
     Notes
     -----
@@ -296,7 +304,6 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
         The inverse temperature :math:`beta = 1/k_B T`.
     moments : (m) float array_like
         High-frequency moments of `gf_iw`.
-        Currently not more then 5 moments should be used, as it becomes inaccurate.
     fourier : {`iw2tau_dft`, `iw2tau_dft_soft`}, optional
         Back-end to perform the actual Fourier transformation.
 
@@ -307,8 +314,8 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
 
     See Also
     --------
-    iw2tau_dft : Back-end: plain implementation of fourier transform
-    iw2tau_dft_soft : Back-end: fourier transform with artificial softening of oszillations
+    iw2tau_dft : Back-end: plain implementation of Fourier transform
+    iw2tau_dft_soft : Back-end: Fourier transform with artificial softening of oszillations
 
     pole_gf_from_moments : Function handling the given `moments`
 
@@ -347,7 +354,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     >>> plt.show()
 
     Results can be drastically improved giving high-frequency moments,
-    this residues the truncation error.
+    this reduces the truncation error.
 
     >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(8), axis=0)
     >>> for n in range(1, 8):
@@ -357,9 +364,6 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     >>> __ = plt.xlabel('τ/β')
     >>> plt.yscale('log')
     >>> plt.show()
-
-    As we however see, our current pole fitting method breaks down when using
-    many poles.
 
     The method is resistant against noise:
 
@@ -584,7 +588,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
 
     Returns
     -------
-    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+    gf_iv : (..., {N_iv + 1}/2) complex np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
