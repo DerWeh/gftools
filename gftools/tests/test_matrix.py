@@ -77,7 +77,7 @@ def test_decomposition_reconsturction(args):
     """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
     mat, = args  # unpack
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+        assume(np.all(np.linalg.cond(mat) < 1e8))
     dec = gt.matrix.decompose_gf(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
@@ -85,7 +85,7 @@ def test_decomposition_reconsturction(args):
     # Hermitian
     mat = mat + gt.matrix.transpose(mat).conj()
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+        assume(np.all(np.linalg.cond(mat) < 1e8))
     dec = gt.matrix.decompose_hamiltonian(mat)
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
