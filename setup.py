@@ -9,7 +9,7 @@ def readme():
 
 
 setup(
-    name="gftools",
+    name="gftool",
     version=versioneer.get_version(),
     description="Collection of commonly used Green's functions and utilities",
     long_description=readme(),
