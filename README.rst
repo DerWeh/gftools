@@ -21,7 +21,7 @@ in particular using CT-QMC algorithms.
 Installation
 ------------
 
-Currently the packages is only vailable via GitHub. You can install it using
+Currently the packages is only available via GitHub. You can install it using
 
 .. code-block:: console
 
@@ -29,7 +29,7 @@ Currently the packages is only vailable via GitHub. You can install it using
 
 where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
 (As always, it is not advised to install it into your system Python,
-considere using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
+consider using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
 Of course you can also clone or fork the project.
 
 
@@ -43,7 +43,7 @@ There is now also documentation on ReadTheDocs:
 
 Currently the packages main content is
 
-gftools
+gftool
    * collection of non-interacting Green's functions and spectral functions
      see the `lattice` submodule
    * utility functions like Matsubara frequencies and Fermi functions.
@@ -60,7 +60,7 @@ matrix
    * helper for Green's functions in matrix form
 
 pade
-   * analytic continuation via the Pade algorithm
+   * analytic continuation via the Padé algorithm
 
 .. |build-status-master| image:: https://travis-ci.org/DerWeh/gftools.svg?branch=master
    :target: https://travis-ci.org/DerWeh/gftools
