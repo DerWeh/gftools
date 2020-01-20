@@ -13,7 +13,7 @@ setup(
     version=versioneer.get_version(),
     description="Collection of commonly used Green's functions and utilities",
     long_description=readme(),
-    keywords=r"Green's\ function physics",
+    keywords=["Green's function", "physics"],
     classifiers=[
         'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 3.6',
