@@ -25,7 +25,7 @@ The package is available on PyPi:
 
 .. code-block:: console
 
-   # pip install gftool
+   $ pip install gftool
 
 Alternatively, it can be installed via GitHub. You can install it using
 
