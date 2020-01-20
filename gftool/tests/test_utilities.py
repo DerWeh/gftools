@@ -13,7 +13,7 @@ import numpy as np
 import mpmath
 from mpmath import fp
 
-from .context import gftools as gt
+from .context import gftool as gt
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 

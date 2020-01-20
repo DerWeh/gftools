@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from . import old_pade
-from .context import gftools as gt, gt_pade
+from .context import gftool as gt, gt_pade
 
 logging.basicConfig(level=logging.DEBUG)
 

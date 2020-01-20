@@ -18,7 +18,7 @@ import scipy.integrate as integrate
 import mpmath
 from mpmath import fp
 
-from .context import gftools
+from .context import gftool as gt
 
 
 def method(func):
@@ -93,7 +93,7 @@ class TestBetheGf(GfProperties):
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    gf = method(gftools.bethe_gf_z)
+    gf = method(gt.bethe_gf_z)
 
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(self, request):
@@ -108,7 +108,7 @@ class TestSquareGf(GfProperties):
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    gf = method(gftools.square_gf_z)
+    gf = method(gt.square_gf_z)
 
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(self, request):
@@ -122,7 +122,7 @@ class TestSurfaceGf(GfProperties):
     z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    gf = method(gftools.surface_gf_zeps)
+    gf = method(gt.surface_gf_zeps)
 
     @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
     def params(self, request):
@@ -132,7 +132,7 @@ class TestSurfaceGf(GfProperties):
                     }
 
     def band_edges(self, params):
-        """Bandages are shifted ones of `gftools.bethe_gf_z`."""
+        """Bandages are shifted ones of `gt.bethe_gf_z`."""
         hopping_nn = params[1]['hopping_nn']
         eps = params[1]['eps']
         return -2*hopping_nn-abs(eps), 2*hopping_nn+abs(eps)
@@ -144,7 +144,7 @@ class TestHubbardDimer(GfProperties):
     z_mesh = np.mgrid[-2:2:5j, -2:2:4j]
     z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
 
-    gf = method(gftools.hubbard_dimer_gf_z)
+    gf = method(gt.hubbard_dimer_gf_z)
 
     @pytest.fixture(params=['+', '-'])
     def params(self, request):
@@ -176,9 +176,9 @@ def test_bethe_derivative_1(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
-        gf_d1 = fp.diff(partial(gftools.bethe_gf_z, half_bandwidth=D), z,
+        gf_d1 = fp.diff(partial(gt.bethe_gf_z, half_bandwidth=D), z,
                         method='quad', radius=z.imag/2)
-    assert np.allclose(gf_d1, gftools.bethe_gf_d1_z(z, half_bandwidth=D))
+    assert np.allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -186,8 +186,8 @@ def test_bethe_derivative_1(z, D):
 def test_bethe_derivative_2(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
-    fct = partial(gftools.bethe_gf_d1_z, half_bandwidth=D)
-    fct_d1 = partial(gftools.bethe_gf_d2_z, half_bandwidth=D)
+    fct = partial(gt.bethe_gf_d1_z, half_bandwidth=D)
+    fct_d1 = partial(gt.bethe_gf_d2_z, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(fct, z, method='quad', radius=z.imag/2)
     assert np.allclose(gf_d1, fct_d1(z))
@@ -196,22 +196,22 @@ def test_bethe_derivative_2(z, D):
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_unit(D):
     """Integral over the whole DOS should be 1."""
-    assert integrate.quad(gftools.bethe_dos, -D-.1, D+.1, args=(D,))[0] == pytest.approx(1.)
+    assert integrate.quad(gt.bethe_dos, -D-.1, D+.1, args=(D,))[0] == pytest.approx(1.)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_dos_half(D):
     """DOS should be symmetric -> integral over the half should yield 0.5."""
-    assert integrate.quad(gftools.bethe_dos, -D-.1, 0., args=(D,))[0] == pytest.approx(.5)
-    assert integrate.quad(gftools.bethe_dos, 0., D+.1, args=(D,))[0] == pytest.approx(.5)
+    assert integrate.quad(gt.bethe_dos, -D-.1, 0., args=(D,))[0] == pytest.approx(.5)
+    assert integrate.quad(gt.bethe_dos, 0., D+.1, args=(D,))[0] == pytest.approx(.5)
 
 
 def test_dos_support():
     """DOS should have no support for | eps | > D."""
     D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gftools.bethe_dos(eps, D) == 0
-        assert gftools.bethe_dos(-eps, D) == 0
+        assert gt.bethe_dos(eps, D) == 0
+        assert gt.bethe_dos(-eps, D) == 0
 
 
 def test_imag_gf_negative():
@@ -219,7 +219,7 @@ def test_imag_gf_negative():
     D = 1.2
     omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
     omega += 5j*omega_step
-    assert np.all(gftools.bethe_gf_z(omega, D).imag <= 0)
+    assert np.all(gt.bethe_gf_z(omega, D).imag <= 0)
 
 
 def test_imag_gf_equals_dos():
@@ -232,8 +232,8 @@ def test_imag_gf_equals_dos():
     num = int(1e6)
     omega = np.linspace(-D, D, dtype=np.complex, num=num)
     omega += 1j*1e-16
-    assert np.allclose(-gftools.bethe_gf_z(omega, D).imag/np.pi,
-                       gftools.bethe_dos(omega, D))
+    assert np.allclose(-gt.bethe_gf_z(omega, D).imag/np.pi,
+                       gt.bethe_dos(omega, D))
 
 
 def test_hilbert_equals_integral():
@@ -248,7 +248,7 @@ def test_hilbert_equals_integral():
 
     def kernel(eps, xi):
         """Integrand for the Hilbert transform."""
-        return gftools.bethe_dos(eps, half_bandwidth=D)/(xi - eps)
+        return gt.bethe_dos(eps, half_bandwidth=D)/(xi - eps)
 
     def kernel_real(eps, xi):
         """Real part of the integrand."""
@@ -262,32 +262,32 @@ def test_hilbert_equals_integral():
         compare = 0
         compare += integrate.quad(kernel_real, -D, D, args=(xi,))[0]
         compare += 1j*integrate.quad(kernel_imag, -D, D, args=(xi,))[0]
-        assert gftools.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
+        assert gt.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
 
 
 @pytest.mark.parametrize("D", [0.5, 1.7, 2.])
 def test_bethe_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
-    m2 = fp.quad(lambda eps: eps**2 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m3 = fp.quad(lambda eps: eps**3 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m4 = fp.quad(lambda eps: eps**4 * gftools.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
-    assert gftools.bethe_dos.m2(D) == pytest.approx(m2)
-    assert gftools.bethe_dos.m3(half_bandwidth=D) == pytest.approx(m3)
-    assert gftools.bethe_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+    m2 = fp.quad(lambda eps: eps**2 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m3 = fp.quad(lambda eps: eps**3 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m4 = fp.quad(lambda eps: eps**4 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
+    assert gt.bethe_dos.m2(D) == pytest.approx(m2)
+    assert gt.bethe_dos.m3(half_bandwidth=D) == pytest.approx(m3)
+    assert gt.bethe_dos.m4(half_bandwidth=D) == pytest.approx(m4)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_square_dos_unit(D):
     """Integral over the whole DOS should be 1."""
-    dos = partial(gftools.square_dos, half_bandwidth=D)
+    dos = partial(gt.square_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, 0., D]) == pytest.approx(1.)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_square_dos_half(D):
     """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gftools.square_dos, half_bandwidth=D)
+    dos = partial(gt.square_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
     assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
 
@@ -296,17 +296,17 @@ def test_square_dos_support():
     """DOS should have no support for | eps | > D."""
     D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gftools.square_dos(eps, D) == 0
-        assert gftools.square_dos(-eps, D) == 0
+        assert gt.square_dos(eps, D) == 0
+        assert gt.square_dos(-eps, D) == 0
 
 
 @pytest.mark.parametrize("D", [0.5, 1.7, 2.])
 def test_square_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
-    m2 = fp.quad(lambda eps: eps**2 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m3 = fp.quad(lambda eps: eps**3 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m4 = fp.quad(lambda eps: eps**4 * gftools.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    assert gftools.square_dos.m2(D) == pytest.approx(m2)
-    assert gftools.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
-    assert gftools.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+    m2 = fp.quad(lambda eps: eps**2 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m3 = fp.quad(lambda eps: eps**3 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    m4 = fp.quad(lambda eps: eps**4 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
+    assert gt.square_dos.m2(D) == pytest.approx(m2)
+    assert gt.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
+    assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)

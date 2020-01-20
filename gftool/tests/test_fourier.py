@@ -6,7 +6,7 @@ import hypothesis.strategies as st
 from hypothesis import given
 from hypothesis_gufunc.gufunc import gufunc_args
 
-from .context import gftools as gt
+from .context import gftool as gt
 
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float_,

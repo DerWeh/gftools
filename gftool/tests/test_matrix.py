@@ -7,13 +7,13 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
-from .context import gftools as gt
+from .context import gftool as gt
 
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 
 class TestDecompositionGeneral:
-    """Tests for the function `gftools.matrix.decompose_gf`.
+    """Tests for the function `gftool.matrix.decompose_gf`.
 
     Main use for the function is to invert Green's functions,
     so we mainly test for that purpose.

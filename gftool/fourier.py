@@ -63,7 +63,7 @@ from collections import namedtuple
 
 import numpy as np
 
-import gftools as gt
+import gftool as gt
 
 LOGGER = logging.getLogger(__name__)
 
@@ -151,7 +151,7 @@ def iw2tau_dft(gf_iw, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
     >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
@@ -236,7 +236,7 @@ def iw2tau_dft_soft(gf_iw, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
     >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
@@ -328,7 +328,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> iws = gt.matsubara_frequencies(range(1024), beta=BETA)
     >>> tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)
@@ -418,7 +418,7 @@ def tau2iv_dft(gf_tau, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
@@ -508,7 +508,7 @@ def tau2iv_ft_lin(gf_tau, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
@@ -599,7 +599,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)
@@ -685,7 +685,7 @@ def tau2iw_dft(gf_tau, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)
@@ -776,7 +776,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)
@@ -872,7 +872,7 @@ def tau2iw(gf_tau, beta, moments=None, fourier=tau2iw_ft_lin):
 
     Examples
     --------
-    >>> import gftools.fourier
+    >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
     >>> iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)

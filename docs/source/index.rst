@@ -1,9 +1,9 @@
-.. GfTools documentation master file, created by
+.. GfTool documentation master file, created by
    sphinx-quickstart on Sat Nov 30 17:11:49 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GfTools's documentation!
+Welcome to GfTool's documentation!
 ===================================
 
 :Release: |version|
@@ -31,11 +31,11 @@ API
 .. autosummary::
   :toctree: generated
 
-  gftools
-  gftools.fourier
-  gftools.lattice
-  gftools.matrix
-  gftools.pade
+  gftool
+  gftool.fourier
+  gftool.lattice
+  gftool.matrix
+  gftool.pade
 
 
 

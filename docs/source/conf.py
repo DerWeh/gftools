@@ -15,12 +15,12 @@ import sys
 import shutil
 sys.path.insert(0, os.path.abspath('../..'))
 
-import gftools
-# from gftools import matrix, pade, lattice
+import gftool
+# from gftool import matrix, pade, lattice
 
 # -- Project information -----------------------------------------------------
 
-project = 'GfTools'
+project = 'Gftool'
 copyright = '2019, Weh Andreas'
 author = 'Weh Andreas'
 today_fmt = '%Y-%m-%d'
@@ -32,9 +32,9 @@ master_doc = 'index'
 # built documents.
 #
 # The short X.Y version.
-version = gftools.__version__
+version = gftool.__version__
 # The full version, including alpha/beta/rc tags.
-release = gftools.__version__
+release = gftool.__version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -101,7 +101,7 @@ numpydoc_show_class_members = False
 # -----------------------------------------------------------------------------
 plot_pre_code = """
 import numpy as np
-import gftools as gt
+import gftool as gt
 np.random.seed(0)
 """
 doctest_global_setup = plot_pre_code  # make doctests consistent
