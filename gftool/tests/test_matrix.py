@@ -98,7 +98,7 @@ def test_decomposition_inverse(args):
     mat, = args  # unpack
     # make sure `mat` is reasonable
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+        assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_gf(mat)
     assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
@@ -108,7 +108,7 @@ def test_decomposition_inverse(args):
     # Hermitian
     mat = mat + gt.matrix.transpose(mat).conj()
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1/np.finfo(mat.dtype).eps))
+        assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_hamiltonian(mat)
     assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
