@@ -21,7 +21,13 @@ in particular using CT-QMC algorithms.
 Installation
 ------------
 
-Currently the packages is only available via GitHub. You can install it using
+The package is available on PyPi:
+
+.. code-block:: console
+
+   # pip install gftool
+
+Alternatively, it can be installed via GitHub. You can install it using
 
 .. code-block:: console
 
