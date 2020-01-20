@@ -16,6 +16,7 @@ setup(
     keywords=["Green's function", "physics"],
     classifiers=[
         'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Physics',
     ],
