@@ -11,6 +11,7 @@ from functools import wraps, partial
 
 import pytest
 from hypothesis import assume, given, strategies as st
+from hypothesis_gufunc.gufunc import gufunc_args
 
 import numpy as np
 import scipy.integrate as integrate
@@ -19,6 +20,9 @@ import mpmath
 from mpmath import fp
 
 from .context import gftool as gt
+
+
+nonneg_float = st.floats(min_value=0.)
 
 
 def method(func):
@@ -310,3 +314,49 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m2(D) == pytest.approx(m2)
     assert gt.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+
+
+@pytest.mark.filterwarnings("ignore:invalid value:RuntimeWarning")
+@given(gufunc_args('(),(N),(N)->()',
+                   dtype=[np.complex_, np.float_, np.float_],
+                   elements=[st.complex_numbers(), st.floats(), st.floats()],
+                   max_dims_extra=3)
+       )
+def test_pole_gf_z_gu(args):
+    """Check that `gt.pole_gf_z` is a proper gu-function and ensure symmetry."""
+    z, poles, weights = args
+    assert np.allclose(np.conjugate(gt.pole_gf_z(z, poles=poles, weights=weights)),
+                       gt.pole_gf_z(np.conjugate(z), poles=poles, weights=weights),
+                       equal_nan=True)
+
+
+@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow):RuntimeWarning")
+@given(gufunc_args('(),(N),(N),()->()',
+                   dtype=[np.float_, np.float_, np.float_, np.float_],
+                   elements=[st.floats(min_value=0., max_value=1.), st.floats(), nonneg_float, nonneg_float],
+                   max_dims_extra=3)
+       )
+def test_pole_gf_tau_gu(args):
+    """Check that `gt.pole_gf_tau` is a proper gu-function and ensure negativity."""
+    tau, poles, weights, beta = args
+    tau = tau * beta
+    assume(not np.any(np.isnan(tau)))
+    gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=beta)
+    gf_tau = np.nan_to_num(gf_tau, -1)  # nan is valid result
+    assert np.all(-1*weights.sum() <= gf_tau) and np.all(gf_tau <= 0)
+
+
+@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
+@given(gufunc_args('(),(N),(N),()->()',
+                   dtype=[np.float_, np.float_, np.float_, np.float_],
+                   elements=[st.floats(min_value=0., max_value=1.), nonneg_float, nonneg_float, nonneg_float],
+                   max_dims_extra=3)
+       )
+def test_pole_gf_tau_b_gu(args):
+    """Check that `gt.pole_gf_tau_b` is a proper gu-function and ensure negativity."""
+    tau, poles, weights, beta = args
+    tau = tau * beta
+    assume(not np.any(np.isnan(tau)))
+    gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=beta)
+    gf_tau = np.nan_to_num(gf_tau, -1)  # nan is valid result
+    assert np.all(gf_tau <= 0)

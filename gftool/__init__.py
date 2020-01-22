@@ -373,15 +373,15 @@ def pole_gf_z(z, poles, weights):
 
     Parameters
     ----------
-    z : (...) complex np.ndarray
+    z : (...) complex array_like
         Green's function is evaluated at complex frequency `z`.
-    poles, weights : (N, ) float np.ndarray
+    poles, weights : (..., N) float array_like or float
         The position and weight of the poles.
 
     Returns
     -------
     pole_gf_z : (...) complex np.ndarray
-        Green's function shaped like `z`.
+        Green's function.
 
     See Also
     --------
@@ -389,7 +389,9 @@ def pole_gf_z(z, poles, weights):
     pole_gf_tau_b : corresponding bosonic imaginary time Green's function
 
     """
-    return np.sum(weights/(np.subtract.outer(z, poles)), axis=-1)
+    poles = np.atleast_1d(poles)
+    z = np.asanyarray(z)[..., newaxis]
+    return np.sum(weights/(z-poles), axis=-1)
 
 
 def pole_gf_tau(tau, poles, weights, beta):
@@ -397,10 +399,10 @@ def pole_gf_tau(tau, poles, weights, beta):
 
     Parameters
     ----------
-    tau : (...) float np.ndarray
+    tau : (...) float array_like
         Green's function is evaluated at imaginary times `tau`.
         Only implemented for :math:`τ ∈ [0, β]`.
-    poles, weights : (N,) float np.ndarray
+    poles, weights : (..., N) float array_like or float
         Position and weight of the poles.
     beta : float
         Inverse temperature
@@ -408,7 +410,7 @@ def pole_gf_tau(tau, poles, weights, beta):
     Returns
     -------
     pole_gf_tau : (...) float np.ndarray
-        Imaginary time Green's function shaped like `tau`.
+        Imaginary time Green's function.
 
     See Also
     --------
@@ -416,11 +418,12 @@ def pole_gf_tau(tau, poles, weights, beta):
 
     """
     assert np.all((tau >= 0.) & (tau <= beta))
-    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
-    tau = np.asanyarray(tau)
-    tau = tau.reshape(tau.shape + (1,)*poles.ndim)
+    poles = np.atleast_1d(poles)
+    tau = np.asanyarray(tau)[..., newaxis]
+    beta = np.asanyarray(beta)[..., newaxis]
     # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
-    exponent = np.where(poles.real >= 0, -tau, beta-tau) * poles
+    exponent = np.where(poles.real >= 0, -tau, beta - tau) * poles
+    # -(1-gt.fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
     single_pole_tau = np.exp(exponent) * fermi_fct(-np.sign(poles.real)*poles, beta)
     return -np.sum(weights*single_pole_tau, axis=-1)
 
@@ -433,10 +436,10 @@ def pole_gf_tau_b(tau, poles, weights, beta):
 
     Parameters
     ----------
-    tau : (...) float np.ndarray
+    tau : (...) float array_like
         Green's function is evaluated at imaginary times `tau`.
         Only implemented for :math:`τ ∈ [0, β]`.
-    poles, weights : (N,) float np.ndarray
+    poles, weights : (..., N) float array_like
         Position and weight of the poles. The real part of the poles needs to
         be positive `poles.real > 0`.
     beta : float
@@ -445,7 +448,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     Returns
     -------
     pole_gf_tau_b : (...) float np.ndarray
-        Imaginary time Green's function shaped like `tau`.
+        Imaginary time Green's function.
 
     See Also
     --------
@@ -474,11 +477,13 @@ def pole_gf_tau_b(tau, poles, weights, beta):
 
     """
     assert np.all((tau >= 0.) & (tau <= beta))
-    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
-    if np.any(poles.real <= 0):
+    poles = np.atleast_1d(poles)
+    tau = np.asanyarray(tau)[..., newaxis]
+    beta = np.asanyarray(beta)[..., newaxis]
+    if np.any(poles.real < 0):
         raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
-    return np.sum(weights*bose_fct(poles, -beta)*np.exp(np.multiply.outer(-tau, poles)), axis=-1)
+    return np.sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles), axis=-1)
 
 
 def pole_gf_moments(poles, weights, order):

@@ -62,6 +62,7 @@ import logging
 from collections import namedtuple
 
 import numpy as np
+from numpy import newaxis
 
 import gftool as gt
 
@@ -458,7 +459,7 @@ def tau2iv_dft(gf_tau, beta):
 
     """
     gf_mean = np.trapz(gf_tau, dx=beta/(gf_tau.shape[-1]-1), axis=-1)
-    gf_iv = beta * np.fft.ihfft(gf_tau[..., :-1] - gf_mean[..., np.newaxis])
+    gf_iv = beta * np.fft.ihfft(gf_tau[..., :-1] - gf_mean[..., newaxis])
     gf_iv[..., 0] = gf_mean
     # gives better results in practice but is wrong...
     # gf_iv = beta * np.fft.ihfft(.5*(gf_tau[..., 1:] + gf_tau[..., :-1]))
@@ -941,12 +942,13 @@ def tau2iw(gf_tau, beta, moments=None, fourier=tau2iw_ft_lin):
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     m1 = -gf_tau[..., -1] - gf_tau[..., 0]
     if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
-        moments = m1[..., np.newaxis]
+        moments = m1[..., newaxis]
     else:
+        moments = np.asanyarray(moments)
         if not np.allclose(m1, moments[..., 0]):
             LOGGER.warning("Provided 1/z moment differs from jump."
                            "\n mom: %s, jump: %s", moments[..., 0], m1)
-    pole_gf = pole_gf_from_moments(moments)
+    pole_gf = pole_gf_from_moments(moments[..., newaxis, :])
     gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
     gf_iw = fourier(gf_tau, beta=beta)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
