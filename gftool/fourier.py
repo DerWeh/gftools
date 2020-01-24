@@ -380,6 +380,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     >>> plt.show()
 
     """
+    moments = np.asarray(moments)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
     pole_gf = pole_gf_from_moments(moments[..., newaxis, :])
     gf_iw = gf_iw - gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
@@ -652,7 +653,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
     gf_iv = fourier(gf_tau, beta=beta)
     ivs = gt.matsubara_frequencies_b(range(1, gf_iv.shape[-1]), beta=beta)
     gf_iv[..., 1:] += g1[..., newaxis]/ivs
-    gf_iv[..., 0] += .5* g1 * beta  # `iv_{n=0}` = 0 has to be treated separately
+    gf_iv[..., 0] += .5 * g1 * beta  # `iv_{n=0}` = 0 has to be treated separately
     return gf_iv
 
 
