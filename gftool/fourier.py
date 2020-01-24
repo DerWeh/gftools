@@ -381,7 +381,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
 
     """
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
-    pole_gf = pole_gf_from_moments(moments)
+    pole_gf = pole_gf_from_moments(moments[..., newaxis, :])
     gf_iw = gf_iw - gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
     gf_tau = fourier(gf_iw, beta=beta)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
@@ -646,13 +646,13 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
     >>> plt.show()
 
     """
-    g1 = gf_tau[..., -1] - gf_tau[..., 0]  # = 1/z moment = jump of Gf at 0^{±}
+    g1 = (gf_tau[..., -1] - gf_tau[..., 0])  # = 1/z moment = jump of Gf at 0^{±}
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    gf_tau = gf_tau - g1/beta*tau  # remove jump by linear shift
+    gf_tau = gf_tau - g1[..., newaxis]/beta*tau  # remove jump by linear shift
     gf_iv = fourier(gf_tau, beta=beta)
     ivs = gt.matsubara_frequencies_b(range(1, gf_iv.shape[-1]), beta=beta)
-    gf_iv[1:] += g1/ivs
-    gf_iv[0] += .5* g1 * beta  # `iv_{n=0}` = 0 has to be treated separately
+    gf_iv[..., 1:] += g1[..., newaxis]/ivs
+    gf_iv[..., 0] += .5* g1 * beta  # `iv_{n=0}` = 0 has to be treated separately
     return gf_iv
 
 
