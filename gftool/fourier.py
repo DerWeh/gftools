@@ -65,6 +65,7 @@ import numpy as np
 from numpy import newaxis
 
 import gftool as gt
+from gftool import linalg
 
 LOGGER = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ PoleGf = namedtuple('PoleGf', ['resids', 'poles'])
 
 
 def pole_gf_from_moments(moments) -> PoleGf:
-    """Find pole Green's function matching given moments.
+    """Find pole Green's function matching given `moments`.
 
     Finds poles and weights for a pole Green's function matching the given
     high frequency `moments` for large `z`:
@@ -113,6 +114,57 @@ def pole_gf_from_moments(moments) -> PoleGf:
     mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
     mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
     resid = np.linalg.solve(mat, moments)
+    return PoleGf(resids=resid, poles=poles)
+
+
+def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
+    """Find pole Green's function fitting `gf_tau`.
+
+    Finds poles and weights for a pole Green's function matching the given
+    Green's function `gf_tau`.
+
+    Note that for an odd number of moments, the central pole is at `z = 0`,
+    so the causal Green's function `g(0)` diverges.
+
+    Parameters
+    ----------
+    gf_tau : (..., N_tau) float np.ndarray
+        Imaginary times Green's function which is fitted.
+    n_pole : int
+        Number of poles to fit.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    moments : (..., N) float array_like
+        Moments of the high-frequency expansion, where
+        `G(z) = moments / z**np.arange(N)` for large `z`.
+
+    Returns
+    -------
+    gf.resids : (..., N) float np.ndarray
+        Residues (or weight) of the poles.
+    gf.poles : (N) float np.ndarray
+        Position of the poles, these are the Chebyshev nodes for degree `N`.
+
+    Notes
+    -----
+    We employ the similarity of the relation betweens the `moments` and
+    the poles and residues with polynomials and the Vandermond matrix.
+    The poles are chooses as Chebyshev nodes, the residues are calculated
+    accordingly.
+
+    """
+    poles = np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    gf_sp_mat = gt.pole_gf_tau(tau[:, np.newaxis], poles[:, np.newaxis], weights=1, beta=beta)
+    moments = np.asarray(moments)
+    if moments.shape[-1] > 0:
+        if moments.shape[-1] > n_pole:
+            raise ValueError("Too many poles given, system is over constrained. "
+                             f"poles: {n_pole}, moments: {moments.shape[-1]}")
+        constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
+        resid = linalg.lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
+    else:
+        resid = np.linalg.lstsq(gf_sp_mat, gf_tau, rcond=None)[0]
     return PoleGf(resids=resid, poles=poles)
 
 
@@ -836,7 +888,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     return gf_iw
 
 
-def tau2iw(gf_tau, beta, moments=None, fourier=tau2iw_ft_lin):
+def tau2iw(gf_tau, beta, n_pole, moments=None, fourier=tau2iw_ft_lin):
     r"""Fourier transform of the real Green's function `gf_tau`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
@@ -949,7 +1001,7 @@ def tau2iw(gf_tau, beta, moments=None, fourier=tau2iw_ft_lin):
         if not np.allclose(m1, moments[..., 0]):
             LOGGER.warning("Provided 1/z moment differs from jump."
                            "\n mom: %s, jump: %s", moments[..., 0], m1)
-    pole_gf = pole_gf_from_moments(moments[..., newaxis, :])
+    pole_gf = pole_gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
     gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
     gf_iw = fourier(gf_tau, beta=beta)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
