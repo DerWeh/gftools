@@ -145,8 +145,8 @@ def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
     gf.poles : (N) float np.ndarray
         Position of the poles, these are the Chebyshev nodes for degree `N`.
 
-    Raise
-    -----
+    Raises
+    ------
     ValueError
         If more moments are given than poles are fitted (`len(moments) > n_pole`)
 
