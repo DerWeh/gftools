@@ -155,16 +155,20 @@ def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
     """
     poles = np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    gf_sp_mat = gt.pole_gf_tau(tau[:, np.newaxis], poles[:, np.newaxis], weights=1, beta=beta)
+    gf_sp_mat = gt.pole_gf_tau(tau[:, newaxis], poles[:, newaxis], weights=1, beta=beta)
     moments = np.asarray(moments)
     if moments.shape[-1] > 0:
         if moments.shape[-1] > n_pole:
             raise ValueError("Too many poles given, system is over constrained. "
                              f"poles: {n_pole}, moments: {moments.shape[-1]}")
         constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
-        resid = linalg.lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
+        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
+                                 excluded={'rcond'})
+        resid = _lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
     else:
-        resid = np.linalg.lstsq(gf_sp_mat, gf_tau, rcond=None)[0]
+        _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
+                              signature='(m,n),(m)->(n)')
+        resid = _lstsq(gf_sp_mat, gf_tau)
     return PoleGf(resids=resid, poles=poles)
 
 
