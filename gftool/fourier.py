@@ -145,6 +145,11 @@ def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
     gf.poles : (N) float np.ndarray
         Position of the poles, these are the Chebyshev nodes for degree `N`.
 
+    Raise
+    -----
+    ValueError
+        If more moments are given than poles are fitted (`len(moments) > n_pole`)
+
     Notes
     -----
     We employ the similarity of the relation betweens the `moments` and
@@ -909,9 +914,12 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
         The Green's function at imaginary times :math:`τ \in [0, β]`.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
+    n_pole : int, optional
+        Number of poles used to fit `gf_tau`. Needs to be at least as large as
+        the number of given moments `m`. (default: no fitting is performed)
     moments : (..., m) float array_like, optional
         High-frequency moments of `gf_iw`. If none are given, the first moment
-        is chosen the remove the discontinuity.
+        is chosen to remove the discontinuity at :math:`τ=0^{±}`.
     fourier : {`tau2iw_ft_lin`, `tau2iw_dft`}, optional
         Back-end to perform the actual Fourier transformation.
 
@@ -926,7 +934,7 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     tau2iw_ft_lin : Back-end: Fourier integration using Filon's method
     tau2iw_dft : Back-end: plain implementation using Riemann sum.
 
-    pole_gf_from_moments : Function handling the given `moments`
+    pole_gf_from_tau : Function handling the fitting of `gf_tau`
 
     Examples
     --------
@@ -963,6 +971,18 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     >>> plt.yscale('log')
     >>> plt.show()
 
+    The accuracy can be further improved by fitting as suitable pole Green's
+    function:
+
+    >>> for n, n_mom in enumerate(range(1, 30, 5)):
+    ...     gf = gt.fourier.tau2iw(gf_tau, n_pole=n_mom, moments=(1,), beta=BETA, fourier=ft_lin)
+    ...     __ = plt.plot(abs(gf_iw - gf), label=f'n_fit={n_mom}', color=f'C{n}')
+    ...     gf = gt.fourier.tau2iw(gf_tau, n_pole=n_mom, moments=(1,), beta=BETA, fourier=dft)
+    ...     __ = plt.plot(abs(gf_iw - gf), '--', color=f'C{n}')
+    >>> __ = plt.legend(loc='lower right')
+    >>> plt.yscale('log')
+    >>> plt.show()
+
     Results for DFT can be drastically improved giving high-frequency moments.
     The reason is, that lower large frequencies, where FT_lin is superior, are
     treated by the moments instead of the Fourier transform.
@@ -982,6 +1002,19 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     >>> magnitude = 2e-7
     >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
     >>> __, axes = plt.subplots(ncols=2, sharey=True)
+    >>> for n, n_mom in enumerate(range(1, 20, 5)):
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=ft_lin)
+    ...     __ = axes[0].plot(abs(gf_iw - gf), label=f'n_fit={n_mom}', color=f'C{n}')
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=dft)
+    ...     __ = axes[1].plot(abs(gf_iw - gf), '--', color=f'C{n}')
+    >>> for ax in axes:
+    ...     __ = ax.axhline(magnitude, color='black')
+    >>> __ = axes[0].legend()
+    >>> plt.yscale('log')
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    >>> __, axes = plt.subplots(ncols=2, sharey=True)
     >>> for n in range(1, 7, 2):
     ...     gf = gt.fourier.tau2iw(gf_tau + noise, moments=mom[:n], beta=BETA, fourier=ft_lin)
     ...     __ = axes[0].plot(abs(gf_iw - gf), '--', label=f'n_mom={n}', color=f'C{n}')
@@ -989,7 +1022,8 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     ...     __ = axes[1].plot(abs(gf_iw - gf), '--', color=f'C{n}')
     >>> for ax in axes:
     ...     __ = ax.axhline(magnitude, color='black')
-    ...     __ = ax.plot(abs(gf_iw - gf_ft), label='clean')
+    >>> __ = axes[0].plot(abs(gf_iw - gf_ft_lin), label='clean')
+    >>> __ = axes[1].plot(abs(gf_iw - gf_dft), '--', label='clean')
     >>> __ = axes[0].legend(loc='lower right')
     >>> plt.yscale('log')
     >>> plt.tight_layout()
