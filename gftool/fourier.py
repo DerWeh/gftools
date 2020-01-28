@@ -888,7 +888,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     return gf_iw
 
 
-def tau2iw(gf_tau, beta, n_pole, moments=None, fourier=tau2iw_ft_lin):
+def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     r"""Fourier transform of the real Green's function `gf_tau`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
@@ -1001,6 +1001,8 @@ def tau2iw(gf_tau, beta, n_pole, moments=None, fourier=tau2iw_ft_lin):
         if not np.allclose(m1, moments[..., 0]):
             LOGGER.warning("Provided 1/z moment differs from jump."
                            "\n mom: %s, jump: %s", moments[..., 0], m1)
+    if n_pole is None:
+        n_pole = moments.shape[-1]
     pole_gf = pole_gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
     gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
     gf_iw = fourier(gf_tau, beta=beta)
