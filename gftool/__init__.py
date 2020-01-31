@@ -338,9 +338,9 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
     U = interaction
     W = (0.25*U*U + 4*t*t)**0.5
     E_0 = 0.5*U - W
-    gf_omega  = (0.5 + s*t/W) / (z - (E_0 + s*t))
-    gf_omega += (0.5 - s*t/W) / (z - (U + s*t - E_0))
-    return gf_omega
+    gf_z  = (0.5 + s*t/W) / (z - (E_0 + s*t))
+    gf_z += (0.5 - s*t/W) / (z - (U + s*t - E_0))
+    return gf_z
 
 
 # FIXME: write tests for moments
