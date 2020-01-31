@@ -26,7 +26,7 @@ from itertools import islice
 
 import numpy as np
 
-from . import Result
+from gftool import Result
 from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 LOGGER = logging.getLogger(__name__)
