@@ -9,7 +9,7 @@ DOS.
 """
 import numpy as np
 
-_PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
+from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 
 def gf_z(z, half_bandwidth):
