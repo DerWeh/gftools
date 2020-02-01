@@ -316,7 +316,7 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
 
 
-@pytest.mark.filterwarnings("ignore:invalid value:RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N)->()',
                    dtype=[np.complex_, np.float_, np.float_],
                    elements=[st.complex_numbers(), st.floats(), st.floats()],

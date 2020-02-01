@@ -61,6 +61,7 @@ def test_iw2tau_dft_single_pole(pole):
 
 
 # TODO: check if there is a way to improve result for pole↘0
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(pole=st.floats(min_value=1e-12, exclude_min=True, allow_infinity=False))
 def test_tau2iv_ft_lin_single_pole(pole):
     """Low accuracy test of `tau2iv_ft_lin` on a single pole."""
@@ -76,6 +77,7 @@ def test_tau2iv_ft_lin_single_pole(pole):
     assert np.allclose(gf_iv, gf_ft_lin, atol=2e-4)
 
 
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(pole=st.floats(min_value=1e-2, exclude_min=True, allow_infinity=False))
 def test_tau2iv_single_pole(pole):
     """Test that `tau2iv` improves plain results on a single pole."""
@@ -94,6 +96,7 @@ def test_tau2iv_single_pole(pole):
     assert np.all((err <= err_bare) | np.isclose(err, err_bare, atol=1e-8))
 
 
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_ft_lin_single_pole(pole):
     """Low accuracy test of `tau2iw_ft_lin` on a single pole."""
@@ -109,6 +112,7 @@ def test_tau2iw_ft_lin_single_pole(pole):
     assert np.allclose(gf_iw, gf_ft_lin, atol=2e-4)
 
 
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(pole=st.floats(allow_nan=False, allow_infinity=False))
 def test_tau2iw_dft_single_pole(pole):
     """Low accuracy test of `tau2iw_dft` on a single pole."""

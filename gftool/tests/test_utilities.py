@@ -46,6 +46,7 @@ def test_fermi(z, beta):
     assert approx(gt.fermi_fct(z, beta=beta), fermi_comp)
 
 
+@pytest.mark.filterwarnings("ignore:(overflow)|(invalid value):RuntimeWarning")
 @given(z=st.floats(), n=st.integers(min_value=-100, max_value=100))
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_complex_fermi(z, n, beta):
