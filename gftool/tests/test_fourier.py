@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import hypothesis.strategies as st
 
-from hypothesis import given
+from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
@@ -122,10 +122,61 @@ def test_tau2iw_dft_single_pole(pole):
     iws = gt.matsubara_frequencies(range(N_TAU//2), beta=BETA)
 
     gf_tau = gt.pole_gf_tau(tau, poles=[pole], weights=[1.], beta=BETA)
-    gf_ft_lin = gt.fourier.tau2iw_dft(gf_tau + .5, beta=BETA) + 1/iws
+    gf_dft = gt.fourier.tau2iw_dft(gf_tau + .5, beta=BETA) + 1/iws
     gf_iw = gt.pole_gf_z(iws, poles=[pole], weights=[1.])
 
-    assert np.allclose(gf_iw, gf_ft_lin, atol=1e-4)
+    assert np.allclose(gf_iw, gf_dft, atol=1e-4)
+
+
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+                   elements=st.floats(min_value=-10, max_value=10),
+                   max_dims_extra=1, max_side=5),)
+def test_tau2iw_mulity_pole(args):
+    """Test `tau2iw_dft` for a multi-pole Green's function."""
+    poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    m0 = resids.sum(axis=-1, keepdims=True)
+    BETA = 1.3
+    N_TAU = 2048 + 1
+    tau = np.linspace(0, BETA, num=N_TAU)
+    iws = gt.matsubara_frequencies(range(N_TAU//2), beta=BETA)
+
+    gf_tau = gt.pole_gf_tau(tau, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :], beta=BETA)
+    gf_ft = gt.fourier.tau2iw(gf_tau, beta=BETA)
+
+    gf_ft_lin = gt.fourier.tau2iw_ft_lin(gf_tau + m0*.5, beta=BETA) + m0/iws
+    # without additional information tau2iw should match back-end
+    assert np.allclose(gf_ft, gf_ft_lin)
+    gf_iw = gt.pole_gf_z(iws, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
+
+    # fitting many poles it should get very good
+    gf_ft = gt.fourier.tau2iw(gf_tau, n_pole=25, beta=BETA)
+    assert np.allclose(gf_iw, gf_ft, rtol=1e-4)
+
+
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+                   elements=st.floats(min_value=-10, max_value=10),
+                   max_dims_extra=1, max_side=5),)
+def test_tau2iw_mulity_pole_hfm(args):
+    """Test `tau2iw_dft` for a multi-pole Green's function."""
+    poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    m0 = resids.sum(axis=-1, keepdims=True)
+    BETA = 1.3
+    N_TAU = 2048 + 1
+    tau = np.linspace(0, BETA, num=N_TAU)
+    iws = gt.matsubara_frequencies(range(N_TAU//2), beta=BETA)
+    gf_tau = gt.pole_gf_tau(tau, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :], beta=BETA)
+    # fitting a few high-frequency moments shouldn't hurt either
+    # -> actually it is rather bad...
+    mom = gt.pole_gf_moments(poles, resids, order=range(1, 3))
+    gf_ft = gt.fourier.tau2iw(gf_tau, n_pole=25, moments=mom, beta=BETA)
+    gf_iw = gt.pole_gf_z(iws, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
+    assert np.allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
 @given(gufunc_args('(n)->(n)', dtype=np.float_,

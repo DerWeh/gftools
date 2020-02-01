@@ -1048,8 +1048,10 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     if n_pole is None:
         n_pole = moments.shape[-1]
     pole_gf = pole_gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
-    gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
+    gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles[..., newaxis, :],
+                                     weights=pole_gf.resids[..., newaxis, :], beta=beta)
     gf_iw = fourier(gf_tau, beta=beta)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
-    gf_iw += gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
+    gf_iw += gt.pole_gf_z(iws, poles=pole_gf.poles[..., newaxis, :],
+                          weights=pole_gf.resids[..., newaxis, :])
     return gf_iw
