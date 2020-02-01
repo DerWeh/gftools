@@ -73,6 +73,11 @@ LOGGER = logging.getLogger(__name__)
 PoleGf = namedtuple('PoleGf', ['resids', 'poles'])
 
 
+def _get_otype(*args):
+    """Determine the resulting type if arrays are broadcasted."""
+    return sum(np.asarray(arg).reshape(-1)[:1] for arg in args).dtype
+
+
 def pole_gf_from_moments(moments) -> PoleGf:
     """Find pole Green's function matching given `moments`.
 
@@ -162,17 +167,18 @@ def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     gf_sp_mat = gt.pole_gf_tau(tau[:, newaxis], poles[:, newaxis], weights=1, beta=beta)
     moments = np.asarray(moments)
+    otype = _get_otype(gf_tau, moments, poles)
     if moments.shape[-1] > 0:
         if moments.shape[-1] > n_pole:
             raise ValueError("Too many poles given, system is over constrained. "
                              f"poles: {n_pole}, moments: {moments.shape[-1]}")
         constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
         _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
-                                 excluded={'rcond'})
+                                 otypes=[otype], excluded={'rcond'})
         resid = _lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
     else:
         _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
-                              signature='(m,n),(m)->(n)')
+                              signature='(m,n),(m)->(n)', otypes=[otype])
         resid = _lstsq(gf_sp_mat, gf_tau)
     return PoleGf(resids=resid, poles=poles)
 

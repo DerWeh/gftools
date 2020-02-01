@@ -1,6 +1,7 @@
 # coding: utf8
 """Test the Fourier transformation of Green's functions."""
 import numpy as np
+import pytest
 import hypothesis.strategies as st
 
 from hypothesis import given
@@ -121,3 +122,23 @@ def test_tau2iw_dft_single_pole(pole):
     gf_iw = gt.pole_gf_z(iws, poles=[pole], weights=[1.])
 
     assert np.allclose(gf_iw, gf_ft_lin, atol=1e-4)
+
+
+@given(gufunc_args('(n)->(n)', dtype=np.float_,
+                   elements=st.floats(min_value=-1e6, max_value=1e6),
+                   max_dims_extra=2, max_side=10),)
+def test_pole_from_gftau_exact(args):
+    """Recover exact residues from Pole Gf with Chebyshev poles."""
+    resids, = args
+    n_poles = resids.shape[-1]
+    poles = np.cos(.5*np.pi*np.arange(1, 2*n_poles, 2)/n_poles)
+    beta = 13.78
+    tau = np.linspace(0, beta, num=1024)
+    gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=resids[..., np.newaxis, :], beta=beta)
+    pole_gf = gt.fourier.pole_gf_from_tau(gf_tau, n_poles, beta=beta)
+    assert np.allclose(pole_gf.poles, poles)
+    try:
+        atol = max(1e-8, abs(resids).max())
+    except ValueError:
+        atol = 1e-8
+    assert np.allclose(pole_gf.resids, resids, atol=atol)
