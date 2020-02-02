@@ -60,6 +60,35 @@ def test_iw2tau_dft_single_pole(pole):
     assert np.allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
 
 
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+                   elements=st.floats(min_value=-10, max_value=10),
+                   max_dims_extra=1, max_side=5),)
+def test_iw2tau_mulity_pole(args):
+    """Test `iw2tau` for a multi-pole Green's function."""
+    poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)  # not really necessary...
+    m0 = resids.sum(axis=-1, keepdims=True)
+    BETA = 1.3
+    N_IWS = 1024
+    iws = gt.matsubara_frequencies(range(N_IWS), beta=BETA)
+    tau = np.linspace(0, BETA, num=2*N_IWS + 1)
+
+    gf_iw = gt.pole_gf_z(iws, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
+
+    gf_ft = gt.fourier.iw2tau(gf_iw, beta=BETA)
+    gf_dft = gt.fourier.iw2tau_dft(gf_iw - m0/iws, beta=BETA) - m0*.5
+    # without additional information tau2iw should match back-end
+    assert np.allclose(gf_ft, gf_dft)
+
+    gf_tau = gt.pole_gf_tau(tau, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :], beta=BETA)
+    # using many moments should give exact result
+    mom = gt.pole_gf_moments(poles, resids, order=range(1, 6))
+    gf_ft = gt.fourier.iw2tau(gf_iw, moments=mom, beta=BETA)
+    assert np.allclose(gf_tau, gf_ft)
+
+
 # TODO: check if there is a way to improve result for pole↘0
 @pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(pole=st.floats(min_value=1e-12, exclude_min=True, allow_infinity=False))
@@ -132,7 +161,7 @@ def test_tau2iw_dft_single_pole(pole):
                    elements=st.floats(min_value=-10, max_value=10),
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_mulity_pole(args):
-    """Test `tau2iw_dft` for a multi-pole Green's function."""
+    """Test `tau2iw` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
