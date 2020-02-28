@@ -240,6 +240,58 @@ def matsubara_frequencies_b(n_points, beta):
     return 2j * np.pi / beta * n_points
 
 
+def pade_frequencies(num: int, beta):
+    """Return `num` *fermionic* Padé frequencies :math:`iz_p`.
+
+    The Padé frequencies are the poles of the approximation of the Fermi
+    function with `2*num` poles [ozaki2007]_.
+    This gives an non-equidistant mesh on the imaginary axis.
+
+    Parameters
+    ----------
+    num : int
+        Number of positive Padé frequencies.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    izp : (num) complex np.ndarray
+        Positive Padé frequencies.
+    resids : (num) float np.ndarray
+        Residue of the Fermi function corresponding to `izp`. The residue is
+        given relative to true residue of the Fermi function corresponding to
+        the poles at Matsubara frequencies. This allows to use Padé frequencies
+        as drop-in replacement.
+        The actual residues would be `-resids/beta`.
+
+    References
+    ----------
+    .. [ozaki2007] Ozaki, Taisuke. Continued Fraction Representation of the
+       Fermi-Dirac Function for Large-Scale Electronic Structure Calculations.
+       Physical Review B 75, no. 3 (January 23, 2007): 035123.
+       https://doi.org/10.1103/PhysRevB.75.035123.
+
+    .. [hu2010] J. Hu, R.-X. Xu, and Y. Yan, “Communication: Padé spectrum
+       decomposition of Fermi function and Bose function,” J. Chem. Phys., vol.
+       133, no. 10, p.  101106, Sep. 2010, https://doi.org/10.1063/1.3484491
+
+    """
+    num = 2*num
+    a = -np.diagflat(range(1, 2*num, 2))
+    b = np.zeros_like(a, dtype=np.float_)
+    np.fill_diagonal(b[1:, :], 0.5)
+    np.fill_diagonal(b[:, 1:], 0.5)
+    eig, v = sp.linalg.eig(a, b=b, overwrite_a=True, overwrite_b=True)
+    sort = np.argsort(eig)
+    izp = 1j/beta * eig[sort]
+    resids = (0.25*v[0]*np.linalg.inv(v)[:, 0]*eig**2)[sort]
+    assert np.allclose(-izp[:num//2][::-1], izp[num//2:])
+    assert np.allclose(resids[:num//2][::-1], resids[num//2:])
+    assert np.all(~np.iscomplex(resids))
+    return izp[num//2:], resids.real[num//2:]
+
+
 # Bethe lattice
 bethe_gf_z = lattice.bethe.gf_z
 bethe_gf_d1_z = lattice.bethe.gf_d1_z
