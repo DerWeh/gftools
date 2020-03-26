@@ -227,3 +227,38 @@ def construct_gf(rv, diag_inv, rv_inv):
 
     """
     return rv.dot(np.diagflat(diag_inv)).dot(rv_inv)
+
+
+def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
+    """Calculate the diagonal Green's function elements for a 2x2 system.
+
+    Parameters
+    ----------
+    z : (...) complex array_like
+        Complex frequencies.
+    eps0, eps1 : (...) real or complex array_like
+        Onsite energy of element 0 and 1. For interacting systems this can be
+        replaced by onsite energy + self-energy.
+    hopping : (...) real or complex array_like
+        Hopping element between 0 and 1.
+    hilbert_trafo : Callable, optional
+        Hilbert transformation. If given, return the local Green's function.
+        Else the lattice dispersion :math:`ϵ_k` can be given via `z → z - ϵ_k`.
+
+    Returns
+    -------
+    gf_2x2_z : (..., 2) complex array_like
+        Diagonal elements of the Green's function of the 2x2 system.
+
+    """
+    # TODO: write unit test to compare against numerical Decomposition
+    mean_eps = np.mean([eps0, eps1], axis=0)
+    delta2 = hopping*hopping.conj() - eps0*eps1
+    sqrt_ = np.lib.scimath.sqrt(mean_eps**2 + delta2)
+    if hilbert_trafo is None:
+        gf_p, gf_m = 1./(z - mean_eps - sqrt_), 1./(z - mean_eps + sqrt_)
+    else:
+        gf_p, gf_m = hilbert_trafo(z - mean_eps - sqrt_), hilbert_trafo(z - mean_eps + sqrt_)
+    gf0 = 0.5 / sqrt_ * ((eps0 - mean_eps + sqrt_)*gf_p - (eps0 - mean_eps - sqrt_)*gf_m)
+    gf1 = 0.5 / sqrt_ * ((eps1 - mean_eps + sqrt_)*gf_p - (eps1 - mean_eps - sqrt_)*gf_m)
+    return np.stack([gf0, gf1], axis=-1)
