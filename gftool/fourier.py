@@ -212,7 +212,7 @@ def iw2tau_dft(gf_iw, beta):
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
     explicitly. Therefore, the accuracy of the FT depends implicitely on the
-    bandwidht!
+    bandwidth!
 
     Examples
     --------
@@ -297,7 +297,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
     explicitly. Therefore, the accuracy of the FT depends implicitely on the
-    bandwidht!
+    bandwidth!
 
     Examples
     --------
@@ -389,7 +389,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
     explicitly. Therefore, the accuracy of the FT depends implicitely on the
-    bandwidht!
+    bandwidth!
 
     Examples
     --------
