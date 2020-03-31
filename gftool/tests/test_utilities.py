@@ -96,6 +96,24 @@ def test_fermi_derivative_1(z):
                        gt.fermi_fct_d1(z, beta=1))
 
 
+@given(eps=st.floats(min_value=-1e4, max_value=1e4),
+       occ=st.floats(min_value=1e-4, max_value=1 - 1e-4))
+def test_chemical_potential_single_pole(eps, occ):
+    """Test chemical potential search for single pole Green's function."""
+    BETA = 25
+
+    # FIXME: Fermi function fails for:
+    #        test_chemical_potential_single_pole(eps=0.0, occ=5e-324)
+    #        test_chemical_potential_single_pole(eps=65535.0, occ=1e-06)
+    #        test_chemical_potential_single_pole(eps=1.2676506002282296e+24, occ=1e-06)
+
+    def occ_fct(mu):
+        return gt.fermi_fct(eps-mu, beta=BETA)
+
+    mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
+    assert np.allclose(occ_fct(mu), occ)
+
+
 def test_density():
     """Check density for simple Green's functions."""
     beta = 10.1

@@ -44,20 +44,27 @@ Glossary
       Complex frequency variable
 
 """
+import logging
 import warnings
 
+from typing import Callable
 from functools import partial
 from collections import namedtuple
 
 import numpy as np
+import scipy as sp
+import scipy.linalg
+import scipy.optimize
 
-from scipy.special import expit, logit
 from numpy import newaxis
+from scipy.special import expit, logit
 
 from . import lattice, matrix as gtmatrix
 from ._version import get_versions
 
 __version__ = get_versions()['version']
+
+LOGGER = logging.getLogger(__name__)
 
 
 def bose_fct(eps, beta):
@@ -516,6 +523,91 @@ def pole_gf_moments(poles, weights, order):
     return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
 
 
+def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, **kwds) -> float:
+    """Search chemical potential for a given occupation.
+
+    Parameters
+    ----------
+    occ_root : callable
+        Function `occ_root(mu_i) -> occ_i - occ`, which returns the difference
+        in occupation for a chemical potential `mu_i` to the given occupation
+        `occ`. The sign is important, that `occ_i - occ` is returned.
+        Note that the sign is important!
+    mu0 : float, optional
+        The starting guess for the chemical potential. (default: 0)
+    step0 : float, optional
+        Starting step-width for the bracket search. A reasonable guess is of
+        the order of the band-width. (default: 1)
+    kwds
+        Additional keyword arguments passed to `scipy.optimize.root_scalar`.
+        Common arguments might be `xtol` or `rtol` for absolute or relative
+        tolerance.
+
+    Returns
+    -------
+    mu : float
+
+    Raises
+    ------
+    RuntimeError
+        If either no bracket can be found (this should only happen for the
+        complete empty or completely filled case),
+        or if the scalar root search in the bracket fails.
+
+    Notes
+    -----
+    The search for a chemical potential is here a two-step procedure:
+    *First*, we search for a bracket `[mua, mub]` with
+    `occ_root(mua) < 0 < occ_root(mub)`. Here we use that the occupation is a
+    monotonous increasing function of the chemical potential `mu`.
+    *Second*, we perform a standard root-search in `[mua, mub]` which is done
+    using `scipy.optimize.root_scalar`, Brent's method is currently used as
+    default.
+
+    Examples
+    --------
+    We search for the occupation of a simple 3-level system, where the
+    occupation of each level is simply given by the Fermi function:
+
+    >>> occ = 1.67  # desired total occupation
+    >>> BETA = 100  # inverse temperature
+    >>> eps = np.random.random(3)
+    >>> def occ_fct(mu):
+    ...     return gt.fermi_fct(eps - mu, beta=BETA).sum()
+    >>> mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
+    >>> occ_fct(mu), occ
+    (1.67000..., 1.67)
+
+    """
+    # find a bracket
+    delta_occ0 = occ_root(mu0)
+    if delta_occ0 == 0:  # has already correct occupation
+        return mu0
+    sign0 = np.sign(delta_occ0)  # whether occupation is too large or too small
+    step = -step0 * delta_occ0
+
+    mu1 = mu0
+    loops = 0
+    while np.sign(occ_root(mu0 + step)) == sign0:
+        mu1 = mu0 + step
+        step *= 2  # increase step width exponentially till a bounds are found
+        loops += 1
+        if loops > 100:
+            raise RuntimeError("No bracket `occ_root(mua) < 0 < occ_root(mub)` could be found.")
+    bracket = list(sorted([mu1, mu0+step]))
+    LOGGER.debug("Bracket found after %s iterations.", loops)
+    root_res = sp.optimize.root_scalar(occ_root, bracket=bracket, **kwds)
+    if not root_res.converged:
+        runtime_err = RuntimeError(
+            f"Root-search for chemical potential failed after {root_res.iterations}.\n"
+            f"Cause of failure: {root_res.flag}"
+        )
+        runtime_err.mu = root_res.root
+        raise runtime_err
+    LOGGER.debug("Root found after %s additional evaluations.", root_res.function_calls)
+    return root_res.root
+
+
 Result = namedtuple('Result', ['x', 'err'])
 
 
@@ -673,6 +765,41 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
     else:
         delta_gf_iw = abs(delta_gf_iw.real)
         factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
+    estimate = factor * denominator
+    return estimate
+
+
+def density_error2(delta_gf_iw, iw_n):
+    """Return an estimate for the upper bound of the error in the density.
+
+    This estimate is based on the *integral test*. The crucial assumption is,
+    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^3` for all larger
+    :math:`n`.
+    If this criteria is not met, the error estimate is unreasonable and can
+    **not** be trusted. If the error is of the same magnitude as the density
+    itself, the behavior of the variable `factor` should be checked.
+
+    Parameters
+    ----------
+    delta_gf_iw : (..., N) ndarray
+        The difference between the Green's function :math:`Δ G(iω_n)`
+        and the non-interacting high-frequency estimate. Only it's real part is
+        needed.
+    iw_n : (N) complex ndarray
+        The Matsubara frequencies corresponding to `delta_gf_iw`.
+
+    Returns
+    -------
+    estimate : float
+        The estimate of the upper bound of the error. Reliable only for large
+        enough Matsubara frequencies.
+
+    """
+    delta_gf_iw = abs(delta_gf_iw.real)
+    part = slice(iw_n.size//10, None, None)  # only consider last 10, iw must be big
+    wn = iw_n[part].imag
+    denominator = 1./2.*np.pi/wn[-1]**2
+    factor = np.max(delta_gf_iw[..., part] * wn**3, axis=-1)
     estimate = factor * denominator
     return estimate
 
