@@ -361,21 +361,19 @@ def hubbard_I_self_z(z, U, occ):
     z : complex array_like
         The complex frequencies at which the self-energy is evaluated. `z`
         should be shifted by the onsite energy and the chemical potential.
-    U : float
+    U : float array_like
         The local Hubbard interaction `U`.
-    occ : float or float np.ndarray
+    occ : float array_like
         The occupation of the opposite spin as the spin of the self-energy.
 
     Returns
     -------
-    Σ_{Hub I} : (\*z.shape, \*occ.shape) complex np.ndarray
-        The self-energy in Hubbard I approximation, the shape is the sum of the
-        shape of `z` and `occ`.
+    Σ_{Hub I} : complex array_like
+        The self-energy in Hubbard I approximation.
 
     """
-    hartree = U*occ
-    U_1mocc = U*(1 - occ)
-    return hartree * (1 + U_1mocc / np.subtract.outer(z, U_1mocc))
+    hartree = U * occ
+    return hartree * z / (z - U + hartree)
 
 
 def pole_gf_z(z, poles, weights):
