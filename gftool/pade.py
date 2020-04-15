@@ -26,12 +26,11 @@ from itertools import islice
 
 import numpy as np
 
-from . import Result
+from gftool import Result
+from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
-
-_PRECISE_TYPES = {np.dtype(np.complex256), np.dtype(np.float128)}
 
 
 class KindSelector(ABC):
