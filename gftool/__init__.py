@@ -23,16 +23,21 @@ Glossary
       Density of States
 
    eps
-      <ϵ, epsilon> (real) energy variable. Typically used for for the :term:`DOS`
+   epsilon
+   ϵ
+      (Real) energy variable. Typically used for for the :term:`DOS`
       where it replaces the k-dependent Dispersion :math:`ϵ_k`.
 
    iv
+   iν_n
       Bosonic Matsubara frequncies
 
    iw
-      <iω_n> Fermionic Matusbara frequncies
+   iω_n
+      Fermionic Matusbara frequncies
 
    tau
+   τ
       Imaginary time points
 
    z

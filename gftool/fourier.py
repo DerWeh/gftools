@@ -48,14 +48,11 @@ Glossary
       <Fourier transformation> In contrast to :term:`dft`, this is used for
       Fourier integration of continous variables without discretization.
 
-   iv
-      <iν_n> Bosonic Matsubara frequncies
+Previously defined:
 
-   iw
-      <iω_n> Fermionic Matusbara frequncies
-
-   tau
-      <τ> Imaginary time points
+* :term:`iv`
+* :term:`iw`
+* :term:`tau`
 
 """
 import logging
