@@ -50,17 +50,16 @@ There is now also documentation on ReadTheDocs:
 Currently the packages main content is
 
 gftool
-   * collection of non-interacting Green's functions and spectral functions
-     see the `lattice` submodule
+   * collection of non-interacting Green's functions and spectral functions,
+     see also the `lattice` submodule.
    * utility functions like Matsubara frequencies and Fermi functions.
    * reliable calculation of particle numbers via Matsubara sums
-     (Needs a refactor and more accurate extrapolation)
+     (needs a refactor and more accurate extrapolation)
 
 fourier
-   * Fourier transforms from Matsubara frequencies to imaginary time and back
-     Handling of high-frequencies moments is not yet included and has to be
-     done by hand (especially import for transforms from Matsubara to imaginary
-     time)
+   * Fourier transforms from Matsubara frequencies to imaginary time and back,
+     including the handling of high-frequencies moments
+     (especially import for transforms from Matsubara to imaginary time)
 
 matrix
    * helper for Green's functions in matrix form
