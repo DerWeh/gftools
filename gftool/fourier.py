@@ -930,11 +930,11 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
                            "\n mom: %s, jump: %s", moments[..., 0], m1)
     if n_pole is None:
         n_pole = moments.shape[-1]
-    pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
-    gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles[..., newaxis, :],
-                                     weights=pole_gf.residues[..., newaxis, :], beta=beta)
+    # add additional axis for tau/iws for easy gu-function calling
+    pole_gf = PoleGf.from_tau(gf_tau[..., newaxis, :], n_pole=n_pole, beta=beta,
+                              moments=moments[..., newaxis, :])
+    gf_tau = gf_tau - pole_gf.eval_tau(tau, beta)
     gf_iw = fourier(gf_tau, beta=beta)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
-    gf_iw += gt.pole_gf_z(iws, poles=pole_gf.poles[..., newaxis, :],
-                          weights=pole_gf.residues[..., newaxis, :])
+    gf_iw += pole_gf.eval_z(iws)
     return gf_iw
