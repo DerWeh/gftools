@@ -60,6 +60,7 @@ from numpy import newaxis
 from scipy.special import expit, logit
 
 from . import lattice, matrix as gtmatrix
+from .basis import pole
 from ._version import get_versions
 
 __version__ = get_versions()['version']
@@ -376,66 +377,8 @@ def hubbard_I_self_z(z, U, occ):
     return hartree * z / (z - U + hartree)
 
 
-def pole_gf_z(z, poles, weights):
-    """Green's function given by a finite number of `poles`.
-
-    To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
-
-    Parameters
-    ----------
-    z : (...) complex array_like
-        Green's function is evaluated at complex frequency `z`.
-    poles, weights : (..., N) float array_like or float
-        The position and weight of the poles.
-
-    Returns
-    -------
-    pole_gf_z : (...) complex np.ndarray
-        Green's function.
-
-    See Also
-    --------
-    pole_gf_tau : corresponding fermionic imaginary time Green's function
-    pole_gf_tau_b : corresponding bosonic imaginary time Green's function
-
-    """
-    poles = np.atleast_1d(poles)
-    z = np.asanyarray(z)[..., newaxis]
-    return np.sum(weights/(z-poles), axis=-1)
-
-
-def pole_gf_tau(tau, poles, weights, beta):
-    """Imaginary time Green's function given by a finite number of `poles`.
-
-    Parameters
-    ----------
-    tau : (...) float array_like
-        Green's function is evaluated at imaginary times `tau`.
-        Only implemented for :math:`τ ∈ [0, β]`.
-    poles, weights : (..., N) float array_like or float
-        Position and weight of the poles.
-    beta : float
-        Inverse temperature
-
-    Returns
-    -------
-    pole_gf_tau : (...) float np.ndarray
-        Imaginary time Green's function.
-
-    See Also
-    --------
-    pole_gf_z : corresponding commutator Green's function
-
-    """
-    assert np.all((tau >= 0.) & (tau <= beta))
-    poles = np.atleast_1d(poles)
-    tau = np.asanyarray(tau)[..., newaxis]
-    beta = np.asanyarray(beta)[..., newaxis]
-    # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
-    exponent = np.where(poles.real >= 0, -tau, beta - tau) * poles
-    # -(1-gt.fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
-    single_pole_tau = np.exp(exponent) * fermi_fct(-np.sign(poles.real)*poles, beta)
-    return -np.sum(weights*single_pole_tau, axis=-1)
+pole_gf_z = pole.gf_z
+pole_gf_tau = pole.gf_tau
 
 
 def pole_gf_tau_b(tau, poles, weights, beta):
@@ -496,29 +439,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     return np.sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles), axis=-1)
 
 
-def pole_gf_moments(poles, weights, order):
-    r"""High-frequency moments of the pole Green's function.
-
-    Return the moments `mom` of the expansion :math:`g(z) = \sum_m mom_m/z^m`
-    For the pole Green's function we have the simple relation
-    :math:`1/(z - ϵ) = \sum_{m=1} ϵ^{m-1}/z^m`.
-
-    Parameters
-    ----------
-    poles, weights : (..., N) float np.ndarray
-        Position and weight of the poles.
-    order : (..., M) int array_like
-        Order (degree) of the moments.
-
-    Returns
-    -------
-    mom : (..., M) float np.ndarray
-        High-frequency moments.
-
-    """
-    poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
-    order = np.asarray(order)[..., newaxis]
-    return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
+pole_gf_moments = pole.moments
 
 
 def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, **kwds) -> float:

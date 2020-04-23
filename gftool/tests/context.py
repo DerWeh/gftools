@@ -13,3 +13,4 @@ import gftool.matrix
 import gftool.fourier
 import gftool.pade as gt_pade
 import gftool.linalg
+import gftool.basis.pole as pole

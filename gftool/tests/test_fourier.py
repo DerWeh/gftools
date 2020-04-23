@@ -8,6 +8,7 @@ from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+from .context import pole
 
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
@@ -16,8 +17,8 @@ from .context import gftool as gt
 def test_gf_form_moments(args):
     """Check that the Gfs constructed from moments have the correct moment."""
     mom, = args
-    gf = gt.fourier.pole_gf_from_moments(mom)
-    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.resids,
+    gf = pole.gf_from_moments(mom)
+    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.residues,
                                 order=np.arange(mom.shape[-1])+1)
     assert np.allclose(mom, gf_mom, equal_nan=True)
 
@@ -25,8 +26,8 @@ def test_gf_form_moments(args):
 def test_gf_form_moments_nan():
     """Check that the Gfs constructed from moments handle NaN."""
     mom = [np.nan]
-    gf = gt.fourier.pole_gf_from_moments(mom)
-    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.resids, order=1)
+    gf = pole.gf_from_moments(mom)
+    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.residues, order=1)
     assert np.allclose(mom, gf_mom, equal_nan=True)
 
 
@@ -219,10 +220,10 @@ def test_pole_from_gftau_exact(args):
     beta = 13.78
     tau = np.linspace(0, beta, num=1024)
     gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=resids[..., np.newaxis, :], beta=beta)
-    pole_gf = gt.fourier.pole_gf_from_tau(gf_tau, n_poles, beta=beta)
+    pole_gf = pole.gf_from_tau(gf_tau, n_poles, beta=beta)
     assert np.allclose(pole_gf.poles, poles)
     try:
         atol = max(1e-8, abs(resids).max())
     except ValueError:
         atol = 1e-8
-    assert np.allclose(pole_gf.resids, resids, atol=atol)
+    assert np.allclose(pole_gf.residues, resids, atol=atol)

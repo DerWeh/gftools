@@ -56,128 +56,14 @@ Previously defined:
 
 """
 import logging
-from collections import namedtuple
 
 import numpy as np
 from numpy import newaxis
 
 import gftool as gt
-from gftool import linalg
+from gftool.basis.pole import PoleGf
 
 LOGGER = logging.getLogger(__name__)
-
-
-PoleGf = namedtuple('PoleGf', ['resids', 'poles'])
-
-
-def _get_otype(*args):
-    """Determine the resulting type if arrays are broadcasted."""
-    return sum(np.asarray(arg).reshape(-1)[:1] for arg in args).dtype
-
-
-def pole_gf_from_moments(moments) -> PoleGf:
-    """Find pole Green's function matching given `moments`.
-
-    Finds poles and weights for a pole Green's function matching the given
-    high frequency `moments` for large `z`:
-    `g(z) = np.sum(weights / (z - poles)) = moments / z**np.arange(N)`
-
-    Note that for an odd number of moments, the central pole is at `z = 0`,
-    so `g(0)` diverges.
-
-    Parameters
-    ----------
-    moments : (..., N) float array_like
-        Moments of the high-frequency expansion, where
-        `G(z) = moments / z**np.arange(N)` for large `z`.
-
-    Returns
-    -------
-    gf.resids : (..., N) float np.ndarray
-        Residues (or weight) of the poles.
-    gf.poles : (N) float np.ndarray
-        Position of the poles, these are the Chebyshev nodes for degree `N`.
-
-    Notes
-    -----
-    We employ the similarity of the relation betweens the `moments` and
-    the poles and residues with polynomials and the Vandermond matrix.
-    The poles are chooses as Chebyshev nodes, the residues are calculated
-    accordingly.
-
-    """
-    moments = np.asarray(moments)
-    n_mom = moments.shape[-1]
-    if n_mom == 0:  # non-sense case, but return consistent behaviour
-        return PoleGf(resids=moments.copy(), poles=np.array([]))
-    poles = np.cos(.5*np.pi*np.arange(1, 2*n_mom, 2)/n_mom)
-    if n_mom % 2:
-        poles[n_mom//2] = 0.
-    mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
-    mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
-    resid = np.linalg.solve(mat, moments)
-    return PoleGf(resids=resid, poles=poles)
-
-
-def pole_gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
-    """Find pole Green's function fitting `gf_tau`.
-
-    Finds poles and weights for a pole Green's function matching the given
-    Green's function `gf_tau`.
-
-    Note that for an odd number of moments, the central pole is at `z = 0`,
-    so the causal Green's function `g(0)` diverges.
-
-    Parameters
-    ----------
-    gf_tau : (..., N_tau) float np.ndarray
-        Imaginary times Green's function which is fitted.
-    n_pole : int
-        Number of poles to fit.
-    beta : float
-        The inverse temperature :math:`beta = 1/k_B T`.
-    moments : (..., N) float array_like
-        Moments of the high-frequency expansion, where
-        `G(z) = moments / z**np.arange(N)` for large `z`.
-
-    Returns
-    -------
-    gf.resids : (..., N) float np.ndarray
-        Residues (or weight) of the poles.
-    gf.poles : (N) float np.ndarray
-        Position of the poles, these are the Chebyshev nodes for degree `N`.
-
-    Raises
-    ------
-    ValueError
-        If more moments are given than poles are fitted (`len(moments) > n_pole`)
-
-    Notes
-    -----
-    We employ the similarity of the relation betweens the `moments` and
-    the poles and residues with polynomials and the Vandermond matrix.
-    The poles are chooses as Chebyshev nodes, the residues are calculated
-    accordingly.
-
-    """
-    poles = np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
-    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    gf_sp_mat = gt.pole_gf_tau(tau[:, newaxis], poles[:, newaxis], weights=1, beta=beta)
-    moments = np.asarray(moments)
-    otype = _get_otype(gf_tau, moments, poles)
-    if moments.shape[-1] > 0:
-        if moments.shape[-1] > n_pole:
-            raise ValueError("Too many poles given, system is over constrained. "
-                             f"poles: {n_pole}, moments: {moments.shape[-1]}")
-        constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
-        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
-                                 otypes=[otype], excluded={'rcond'})
-        resid = _lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
-    else:
-        _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
-                              signature='(m,n),(m)->(n)', otypes=[otype])
-        resid = _lstsq(gf_sp_mat, gf_tau)
-    return PoleGf(resids=resid, poles=poles)
 
 
 def iw2tau_dft(gf_iw, beta):
@@ -446,11 +332,11 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     """
     moments = np.asarray(moments)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
-    pole_gf = pole_gf_from_moments(moments[..., newaxis, :])
-    gf_iw = gf_iw - gt.pole_gf_z(iws, poles=pole_gf.poles, weights=pole_gf.resids)
+    pole_gf = PoleGf.from_moments(moments[..., newaxis, :])
+    gf_iw = gf_iw - pole_gf.eval_z(iws)
     gf_tau = fourier(gf_iw, beta=beta)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    gf_tau += gt.pole_gf_tau(tau, poles=pole_gf.poles, weights=pole_gf.resids, beta=beta)
+    gf_tau += pole_gf.eval_tau(tau, beta=beta)
     return gf_tau
 
 
@@ -1044,11 +930,11 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
                            "\n mom: %s, jump: %s", moments[..., 0], m1)
     if n_pole is None:
         n_pole = moments.shape[-1]
-    pole_gf = pole_gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
+    pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments)
     gf_tau = gf_tau - gt.pole_gf_tau(tau, poles=pole_gf.poles[..., newaxis, :],
-                                     weights=pole_gf.resids[..., newaxis, :], beta=beta)
+                                     weights=pole_gf.residues[..., newaxis, :], beta=beta)
     gf_iw = fourier(gf_tau, beta=beta)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
     gf_iw += gt.pole_gf_z(iws, poles=pole_gf.poles[..., newaxis, :],
-                          weights=pole_gf.resids[..., newaxis, :])
+                          weights=pole_gf.residues[..., newaxis, :])
     return gf_iw
