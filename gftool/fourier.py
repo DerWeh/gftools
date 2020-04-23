@@ -237,7 +237,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     return gf_tau
 
 
-def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
+def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
     r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
 
     Fourier transformation of a fermionic Matsubara Green's function to
@@ -257,6 +257,9 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
         High-frequency moments of `gf_iw`.
     fourier : {`iw2tau_dft`, `iw2tau_dft_soft`}, optional
         Back-end to perform the actual Fourier transformation.
+    n_fit : int, optional
+        Number of additionally fitted moments (in fact, `gf_iw` is fitted, not
+        not directly moments).
 
     Returns
     -------
@@ -332,7 +335,13 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft):
     """
     moments = np.asarray(moments)
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
-    pole_gf = PoleGf.from_moments(moments[..., newaxis, :])
+    # newaxis in pole_gf inserts axis for iws/tau
+    if n_fit:
+        n_mom = moments.shape[-1]
+        pole_gf = PoleGf.from_z(iws, gf_iw[..., newaxis, :], n_pole=n_fit+n_mom,
+                                moments=moments[..., newaxis, :], weight=iws.imag**(n_mom+n_fit))
+    else:
+        pole_gf = PoleGf.from_moments(moments[..., newaxis, :])
     gf_iw = gf_iw - pole_gf.eval_z(iws)
     gf_tau = fourier(gf_iw, beta=beta)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
