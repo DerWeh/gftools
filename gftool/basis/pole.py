@@ -73,6 +73,11 @@ class PoleFct(NamedTuple):
         """
         return cls(*gf_from_moments(moments))
 
+    @classmethod
+    def from_z(cls, z, gf_z, n_pole, moments=(), width=1, weight=None):
+        return cls(*gf_from_z(z, gf_z, n_pole=n_pole, moments=moments,
+                              width=width, weight=weight))
+
 
 class PoleGf(PoleFct):
     """Fermionic Green's function given by finite number of `poles` and `residues`."""
@@ -213,6 +218,78 @@ def gf_from_moments(moments) -> PoleFct:
     mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
     mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
     resid = np.linalg.solve(mat, moments)
+    return PoleFct(poles=poles, residues=resid)
+
+
+def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
+    """Find pole causal Green's function fitting `gf_z`.
+
+    This function is only meaningful away from the real axis.
+    Finds poles and weights for a pole Green's function matching the given
+    Green's function `gf_z`.
+
+    Note that for an odd number of moments, the central pole is at `z = 0`,
+    so the causal Green's function `g(0)` diverges.
+
+    Parameters
+    ----------
+    z : (..., N_z) complex np.ndarray
+        Frequencies at which `gf_z` is given. Mind that the fit is only
+        meaningful away from the real axis.
+    gf_z : (..., N_z) complex np.ndarray
+        Causal Green's function which is fitted
+    n_pole : int
+        Number of poles to fit.
+    moments : (..., N) float array_like
+        Moments of the high-frequency expansion, where
+        `G(z) = moments / z**np.arange(N)` for large `z`.
+    weight : (..., N_z) float np.ndarray, optional
+        Weighting of the fit. If an error `σ` of the input `gf_z` is known,
+        this should be `weight=1/σ`. If high-frequency moments should be fitted
+        correctly, `width=abs(z)**(N+1)` is a good fit.
+
+    Returns
+    -------
+    gf.resids : (..., N) float np.ndarray
+        Residues (or weight) of the poles.
+    gf.poles : (N) float np.ndarray
+        Position of the poles, these are the Chebyshev nodes for degree `N`.
+
+    Raises
+    ------
+    ValueError
+        If more moments are given than poles are fitted (`len(moments) > n_pole`)
+
+    Notes
+    -----
+    We employ the similarity of the relation betweens the `moments` and
+    the poles and residues with polynomials and the Vandermond matrix.
+    The poles are chooses as Chebyshev nodes, the residues are calculated
+    accordingly.
+
+    """
+    poles = width*np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
+    gf_sp_mat = gt.pole_gf_z(z[:, newaxis], poles[:, newaxis], weights=1)
+    gf_sp_mat = np.concatenate([gf_sp_mat.real, gf_sp_mat.imag], axis=-2)
+    gf_z = np.concatenate([gf_z.real, gf_z.imag], axis=-1)
+    moments = np.asarray(moments)
+    otype = _get_otype(gf_z, moments, poles)
+    if weight is not None:
+        weight = np.concatenate([weight, weight], axis=-1)
+        gf_sp_mat *= weight[..., np.newaxis]
+        gf_z = gf_z * weight
+    if moments.shape[-1] > 0:
+        if moments.shape[-1] > n_pole:
+            raise ValueError("Too many poles given, system is over constrained. "
+                             f"poles: {n_pole}, moments: {moments.shape[-1]}")
+        constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
+        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
+                                 otypes=[otype], excluded={'rcond'})
+        resid = _lstsq_ec(gf_sp_mat, gf_z, constrain_mat, moments)
+    else:
+        _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
+                              signature='(m,n),(m)->(n)', otypes=[otype])
+        resid = _lstsq(gf_sp_mat, gf_z)
     return PoleFct(poles=poles, residues=resid)
 
 
