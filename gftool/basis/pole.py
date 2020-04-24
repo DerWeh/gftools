@@ -118,6 +118,33 @@ def gf_z(z, poles, weights):
     return np.sum(weights/(z-poles), axis=-1)
 
 
+def gf_d1_z(z, poles, weights):
+    """First derivative of Green's function given by a finite number of `poles`.
+
+    To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
+
+    Parameters
+    ----------
+    z : (...) complex array_like
+        Green's function is evaluated at complex frequency `z`.
+    poles, weights : (..., N) float array_like or float
+        The position and weight of the poles.
+
+    Returns
+    -------
+    gf_d1_z : (...) complex np.ndarray
+        Derivative of the Green's function.
+
+    See Also
+    --------
+    gf_z
+
+    """
+    poles = np.atleast_1d(poles)
+    z = np.asanyarray(z)[..., newaxis]
+    return -np.sum(weights * (z - poles)**-2, axis=-1)
+
+
 def gf_tau(tau, poles, weights, beta):
     """Imaginary time Green's function given by a finite number of `poles`.
 

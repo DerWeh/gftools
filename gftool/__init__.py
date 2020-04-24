@@ -378,6 +378,7 @@ def hubbard_I_self_z(z, U, occ):
 
 
 pole_gf_z = pole.gf_z
+pole_gf_d1_z = pole.gf_d1_z
 pole_gf_tau = pole.gf_tau
 
 
