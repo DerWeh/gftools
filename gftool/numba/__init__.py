@@ -12,9 +12,9 @@ are favorable.
 import numpy as np
 import numba
 
-from gftools._version import get_versions
+import gftool as gt
 
-__version__ = get_versions()['version']
+__version__ = gt.__version__
 
 
 def fermi_fct_(eps, beta):
