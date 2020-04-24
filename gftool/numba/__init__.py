@@ -84,6 +84,91 @@ def bethe_dos_(eps, half_bandwidth):
     return 0.  # outside of bandwidth
 
 
-bethe_dos = numba.vectorize(bethe_dos_)
+def bethe_gf_omega_(z, half_bandwidth):
+    """Local Green's function of Bethe lattice for infinite coordination number.
+
+    Parameters
+    ----------
+    z : complex ndarray or complex
+        Green's function is evaluated at complex frequency `z`
+    half_bandwidth : float
+        half-bandwidth of the DOS of the Bethe lattice
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    bethe_gf_omega : complex ndarray or complex
+        Value of the Green's function
+
+    TODO: source
+
+    """
+    z_rel = np.array(z / half_bandwidth, dtype=numba.complex128)
+    gf_z = 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
+    return gf_z
+
+
+def surface_gf_(z, eps, hopping_nn):
+    r"""Surface Green's function for stacked layers.
+
+    .. math::
+        \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
+
+    with :math:`g_{00} = (z-ϵ)^{-1}` [6]_. This is in principle the Green's function
+    for a semi-infinite chain.
+
+    TODO: source
+
+    Parameters
+    ----------
+    z : complex
+        Green's function is evaluated at complex frequency `z`.
+    eps : float
+        Eigenenergy (dispersion) for which the Green's function is evaluated.
+    hopping_nn : float
+        Nearest neighbor hopping `t` between neighboring layers.
+
+    Returns
+    -------
+    surface_gf : complex
+        Value of the surface Green's function
+
+    References
+    ----------
+    .. [6] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical
+    Introduction to Equilibrium Green's Functions: Condensed-Matter Examples
+    with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
+    no. 1 (September 22, 2016).
+    https://doi.org/10.1590/1806-9126-rbef-2016-0087.
+
+    """
+    return bethe_gf_omega(z-eps, 2.*hopping_nn)
+
+
+def surface_dos_(eps, hopping_nn):
+    r"""Surface DOS for non-interacting stacked layers.
+
+    Parameters
+    ----------
+    z : complex
+        Green's function is evaluated at complex frequency `z`.
+    eps : float
+        Eigenenergy (dispersion) for which the Green's function is evaluated.
+    hopping_nn : float
+        Nearest neighbor hopping `t` between neighboring layers.
+
+    Returns
+    -------
+    surface_dos : float
+        Value of the surface Green's function
+
+    """
+    return bethe_dos(eps, 2.*hopping_nn)
+
+
+bethe_dos = numba.vectorize(nopython=True)(bethe_dos_)
 fermi_fct = numba.vectorize(fermi_fct_)
 fermi_fct_d1 = numba.vectorize(fermi_fct_d1_)
+bethe_gf_omega = numba.vectorize(nopython=True)(bethe_gf_omega_)
+surface_gf = numba.vectorize(nopython=True)(surface_gf_)
+surface_dos = numba.vectorize(nopython=True)(surface_dos_)
