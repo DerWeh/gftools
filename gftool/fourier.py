@@ -61,7 +61,7 @@ import numpy as np
 from numpy import newaxis
 
 import gftool as gt
-from gftool.basis.pole import PoleGf
+from gftool.basis.pole import PoleFct, PoleGf
 
 LOGGER = logging.getLogger(__name__)
 
@@ -949,6 +949,31 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     return gf_iw
 
 
+def _tau2polegf(gf_tau, beta, n_pole, moments=None) -> PoleGf:
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    m1 = -gf_tau[..., -1] - gf_tau[..., 0]
+    if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
+        moments = m1[..., newaxis]
+    else:
+        moments = np.asanyarray(moments)
+        if not np.allclose(m1, moments[..., 0]):
+            LOGGER.warning("Provided 1/z moment differs from jump."
+                           "\n mom: %s, jump: %s", moments[..., 0], m1)
+
+    def error_(width):
+        pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta,
+                                  # if width is 0, no higher moments exist
+                                  moments=moments if width else m1[..., newaxis], width=width)
+        gf_fit = pole_gf.eval_tau(tau, beta=beta)
+        return np.linalg.norm(gf_tau - gf_fit)
+
+    from scipy.optimize import minimize_scalar
+    opt = minimize_scalar(error_)
+    LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
+    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments, width=opt.x)
+    return opt_pole_gf
+
+
 def tau2izp(gf_tau, beta, izp, moments=None):
     r"""Fourier transform of the real Green's function `gf_tau` to `izp`.
 
@@ -1045,25 +1070,5 @@ def tau2izp(gf_tau, beta, izp, moments=None):
     >>> plt.show()
 
     """
-    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    m1 = -gf_tau[..., -1] - gf_tau[..., 0]
-    if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
-        moments = m1[..., newaxis]
-    else:
-        moments = np.asanyarray(moments)
-        if not np.allclose(m1, moments[..., 0]):
-            LOGGER.warning("Provided 1/z moment differs from jump."
-                           "\n mom: %s, jump: %s", moments[..., 0], m1)
-
-    def error_(width):
-        pole_gf = PoleGf.from_tau(gf_tau, n_pole=izp.size, beta=beta,
-                                  # if width is 0, no higher moments exist
-                                  moments=moments if width else m1[..., newaxis], width=width)
-        gf_fit = pole_gf.eval_tau(tau, beta)
-        return np.linalg.norm(gf_tau - gf_fit)
-
-    from scipy.optimize import minimize_scalar
-    opt = minimize_scalar(error_)
-    LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
-    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=izp.size, beta=beta, moments=moments, width=opt.x)
-    return opt_pole_gf.eval_z(izp)
+    pole_gf = _tau2polegf(gf_tau, beta, n_pole=izp.size, moments=moments)
+    return pole_gf.eval_z(izp)
