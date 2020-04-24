@@ -715,6 +715,37 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     return density
 
 
+def density_izp(izp, gf_izp, weights, beta, moments=(1.,)):
+    r"""Calculate the number density of the Green's function `gf_izp` at finite temperature `beta`.
+
+    Parameters
+    ----------
+    izp, gf_izp : (..., N_iz) complex np.ndarray
+        Positive Padé frequencies :math:`iz_p` and the Green's function at
+        these frequencies.
+    weights : (..., N_iz) complex np.ndarray
+        Weights corresponding to frequencies `izp`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    moments : (..., M) float array_like
+        Moments of the high-frequency expansion, where
+        `G(z) = moments / z**np.arange(N)` for large `z`.
+
+    Returns
+    -------
+    occ : float
+        The number density of the given Green's function `gf_izp`.
+
+    See Also
+    --------
+    pade_frequencies : Method generating `izp` and `weights`.
+
+    """
+    moment_gf = pole.PoleGf.from_moments(moments)
+    delta_gf_izp = gf_izp.real - moment_gf.eval_z(izp).real
+    return 2. / beta * np.sum(weights * delta_gf_izp.real, axis=-1) + moment_gf.occ(beta)
+
+
 def density_error(delta_gf_iw, iw_n, noisy=True):
     """Return an estimate for the upper bound of the error in the density.
 
