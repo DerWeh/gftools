@@ -34,7 +34,7 @@ from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
 
-_nan_std = partial(np.nanstd, ddof=1)
+_nan_std = partial(np.nanstd, ddof=1, axis=0)
 
 
 class KindSelector(ABC):
@@ -142,6 +142,7 @@ def FilterNegImag(threshold=1e-8):
         LOGGER.debug("Filter Pades with positive imaginary part (threshold: %s): %s",
                      threshold, np.count_nonzero(is_valid, axis=0))
         return is_valid
+
     return filter_neg_imag
 
 
@@ -154,10 +155,10 @@ def FilterNegImagNum(abs_num=None, rel_num=None):
     All continuations that are *valid* in this sense are kept, the worst invalid
     are dropped till only `abs_num` remain.
 
-
-    Warning
-    -------
+    Warnings
+    --------
     Only checked for flat inputs.
+
     """
     assert abs_num is None or rel_num is None
     assert abs_num is not None or rel_num is not None
@@ -478,7 +479,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
             pades[~valid_pades] = np.nan + 1j*np.nan
 
         pade_avg = np.nanmean(pades, axis=0)
-        std = _nan_std(pades.real, axis=0) + 1j*_nan_std(pades.imag, axis=0)
+        std = _nan_std(pades.real) + 1j*_nan_std(pades.imag)
 
         return Result(x=pade_avg, err=std)
     return average
@@ -593,9 +594,9 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         pade_avg = np.nanmean(mod_pade, axis=0)
         # define helper pade_std np.nanstd( ,axis=0, ddof=1) if complex...
         if np.iscomplexobj(mod_pade):
-            std = _nan_std(mod_pade.real, axis=0) + 1j*_nan_std(mod_pade.imag, axis=0)
+            std = _nan_std(mod_pade.real) + 1j*_nan_std(mod_pade.imag)
         else:
-            std = _nan_std(mod_pade, axis=0)
+            std = _nan_std(mod_pade)
 
         return Result(x=pade_avg, err=std)
     mod_average.__doc__ = mod_average.__doc__.format(mod_fct=mod_fct)
