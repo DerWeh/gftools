@@ -48,7 +48,25 @@ class PoleFct(NamedTuple):
         return gf_z(z, poles=self.poles, weights=self.residues)
 
     def moments(self, order):
-        """Calculate high-frequency moments of `order`."""
+        """Calculate high-frequency moments of `order`.
+
+        Parameters
+        ----------
+        order : (..., M) int array_like
+            Order (degree) of the moments. `order` needs to be a positive integer.
+            Leading all but the last dimension must be broadcastable with
+            `self.poles` and `self.residues`.
+
+        Returns
+        -------
+        mom : (..., M) float np.ndarray
+            High-frequency moments.
+
+        See Also
+        --------
+        moments
+
+        """
         return moments(poles=self.poles, weights=self.residues, order=order)
 
     @classmethod
@@ -64,7 +82,7 @@ class PoleFct(NamedTuple):
         Returns
         -------
         PoleFct
-            PoleFct with high-frequency `moments`
+            Pole function with high-frequency `moments`.
 
         See Also
         --------
@@ -74,7 +92,58 @@ class PoleFct(NamedTuple):
         return cls(*gf_from_moments(moments))
 
     @classmethod
-    def from_z(cls, z, gf_z, n_pole, moments=(), width=1, weight=None):
+    def from_z(cls, z, gf_z, n_pole, moments=(), width=1., weight=None):
+        """Generate instance fitting `gf_z`.
+
+        This function is only meaningful away from the real axis.
+        Finds poles and weights for a pole Green's function matching the given
+        Green's function `gf_z`.
+
+        Note that for an odd number of moments, the central pole is at `z = 0`,
+        so the causal Green's function `g(0)` diverges.
+
+        Parameters
+        ----------
+        z : (..., N_z) complex np.ndarray
+            Frequencies at which `gf_z` is given. Mind that the fit is only
+            meaningful away from the real axis.
+        gf_z : (..., N_z) complex np.ndarray
+            Causal Green's function which is fitted
+        n_pole : int
+            Number of poles to fit.
+        moments : (..., N) float array_like
+            Moments of the high-frequency expansion, where
+            `G(z) = moments / z**np.arange(N)` for large `z`.
+        width : float, optional
+            Distance of the largest pole to the origin. (default: 1.)
+        weight : (..., N_z) float np.ndarray, optional
+            Weighting of the fit. If an error `σ` of the input `gf_z` is known,
+            this should be `weight=1/σ`. If high-frequency moments should be fitted
+            correctly, `width=abs(z)**(N+1)` is a good fit.
+
+        Returns
+        -------
+        PoleFct
+            Instance with (N) poles at the Chebyshev nodes for degree `N` and
+            (..., N) residues such that the pole function fits `gf_z`
+
+        Raises
+        ------
+        ValueError
+            If more moments are given than poles are fitted (`len(moments) > n_pole`)
+
+        See Also
+        --------
+        gf_from_z
+
+        Notes
+        -----
+        We employ the similarity of the relation betweens the `moments` and
+        the poles and residues with polynomials and the Vandermond matrix.
+        The poles are chooses as Chebyshev nodes, the residues are calculated
+        accordingly.
+
+        """
         return cls(*gf_from_z(z, gf_z, n_pole=n_pole, moments=moments,
                               width=width, weight=weight))
 
@@ -83,17 +152,83 @@ class PoleGf(PoleFct):
     """Fermionic Green's function given by finite number of `poles` and `residues`."""
 
     def eval_tau(self, tau, beta):
+        """Evaluate the imaginary time Green's function.
+
+        Parameters
+        ----------
+        tau : (...) float array_like
+            Green's function is evaluated at imaginary times `tau`.
+            Only implemented for :math:`τ ∈ [0, β]`.
+        beta : float
+            Inverse temperature
+
+        Returns
+        -------
+        gf_tau : (...) float np.ndarray
+            Imaginary time Green's function.
+
+        See Also
+        --------
+        gf_tau
+
+        """
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
     @classmethod
     def from_tau(cls, gf_tau, n_pole, beta, moments=(), width=1.):
+        """Generate instance fitting `gf_tau`.
+
+        Finds poles and weights for a pole Green's function matching the given
+        Green's function `gf_tau`.
+
+        Note that for an odd number of moments, the central pole is at `z = 0`,
+        so the causal Green's function `g(0)` diverges.
+
+        Parameters
+        ----------
+        gf_tau : (..., N_tau) float np.ndarray
+            Imaginary times Green's function which is fitted.
+        n_pole : int
+            Number of poles to fit.
+        beta : float
+            The inverse temperature :math:`beta = 1/k_B T`.
+        moments : (..., N) float array_like
+            Moments of the high-frequency expansion, where
+            `G(z) = moments / z**np.arange(N)` for large `z`.
+        width : float, optional
+            Distance of the largest pole to the origin. (default: 1.)
+
+        Returns
+        -------
+        PoleFct
+            Instance with (N) poles at the Chebyshev nodes for degree `N` and
+            (..., N) residues such that the pole function fits `gf_z`
+
+        Raises
+        ------
+        ValueError
+            If more moments are given than poles are fitted (`len(moments) > n_pole`)
+
+        See Also
+        --------
+        gf_from_tau
+
+        Notes
+        -----
+        We employ the similarity of the relation betweens the `moments` and
+        the poles and residues with polynomials and the Vandermond matrix.
+        The poles are chooses as Chebyshev nodes, the residues are calculated
+        accordingly.
+
+        """
         return cls(*gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments, width=width))
 
 
 def gf_z(z, poles, weights):
     """Green's function given by a finite number of `poles`.
 
-    To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
+    To be a Green's function, `np.sum(weights)` has to be 1 for the `1/z` tail
+    or respectively the normalization.
 
     Parameters
     ----------
@@ -104,13 +239,14 @@ def gf_z(z, poles, weights):
 
     Returns
     -------
-    pole_gf_z : (...) complex np.ndarray
+    gf_z : (...) complex np.ndarray
         Green's function.
 
     See Also
     --------
-    pole_gf_tau : corresponding fermionic imaginary time Green's function
-    pole_gf_tau_b : corresponding bosonic imaginary time Green's function
+    gf_d1_z : First derivative of the Green's function
+    gf_tau : corresponding fermionic imaginary time Green's function
+    gt.pole_gf_tau_b : corresponding bosonic imaginary time Green's function
 
     """
     poles = np.atleast_1d(poles)
@@ -191,7 +327,7 @@ def moments(poles, weights, order):
     poles, weights : (..., N) float np.ndarray
         Position and weight of the poles.
     order : (..., M) int array_like
-        Order (degree) of the moments.
+        Order (degree) of the moments. `order` needs to be a positive integer.
 
     Returns
     -------
@@ -270,10 +406,12 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
+    width : float, optional
+        Distance of the largest pole to the origin. (default: 1.)
     weight : (..., N_z) float np.ndarray, optional
         Weighting of the fit. If an error `σ` of the input `gf_z` is known,
         this should be `weight=1/σ`. If high-frequency moments should be fitted
-        correctly, `width=abs(z)**(N+1)` is a good fit.
+        correctly, `weight=abs(z)**(N+1)` is a good fit.
 
     Returns
     -------
@@ -340,6 +478,8 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), width=1.) -> PoleGf:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
+    width : float, optional
+        Distance of the largest pole to the origin. (default: 1.)
 
     Returns
     -------
