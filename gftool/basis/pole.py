@@ -297,6 +297,14 @@ def gf_d1_z(z, poles, weights):
     return -np.sum(weights * (z - poles)**-2, axis=-1)
 
 
+def _single_pole_gf_tau(tau, pole, beta):
+    assert np.all((tau >= 0.) & (tau <= beta))
+    # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
+    exponent = np.where(pole.real >= 0, -tau, -tau + beta) * pole
+    # -(1-gt.fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
+    return -np.exp(exponent) * gt.fermi_fct(-np.sign(pole.real)*pole, beta)
+
+
 def gf_tau(tau, poles, weights, beta):
     """Imaginary time Green's function given by a finite number of `poles`.
 
@@ -324,11 +332,7 @@ def gf_tau(tau, poles, weights, beta):
     poles = np.atleast_1d(poles)
     tau = np.asanyarray(tau)[..., newaxis]
     beta = np.asanyarray(beta)[..., newaxis]
-    # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
-    exponent = np.where(poles.real >= 0, -tau, beta - tau) * poles
-    # -(1-gt.fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
-    single_pole_tau = np.exp(exponent) * gt.fermi_fct(-np.sign(poles.real)*poles, beta)
-    return -np.sum(weights*single_pole_tau, axis=-1)
+    return np.sum(weights*_single_pole_gf_tau(tau, poles, beta=beta), axis=-1)
 
 
 def moments(poles, weights, order):
@@ -519,7 +523,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), width=1.) -> PoleGf:
     """
     poles = width*np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
-    gf_sp_mat = gt.pole_gf_tau(tau[:, newaxis], poles[:, newaxis], weights=1, beta=beta)
+    gf_sp_mat = _single_pole_gf_tau(tau[..., newaxis], poles, beta=beta)
     moments = np.asarray(moments)
     otype = _get_otype(gf_tau, moments, poles)
     if moments.shape[-1] > 0:
