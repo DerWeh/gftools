@@ -174,6 +174,22 @@ class PoleGf(PoleFct):
         """
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
+    def occ(self, beta):
+        """Calculate the occupation number.
+        
+        Parameters
+        ----------
+        beta : float or (..., 1) float array_like
+            The inverse temperature :math:`beta = 1/k_B T`.
+
+        Returns
+        -------
+        occ : (...) float np.ndarray
+            Occupation number.
+
+        """
+        return np.sum(self.residues*gt.fermi_fct(self.poles, beta=beta), axis=-1)
+
     @classmethod
     def from_tau(cls, gf_tau, n_pole, beta, moments=(), width=1.):
         """Generate instance fitting `gf_tau`.
