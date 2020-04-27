@@ -223,7 +223,8 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         # iteratively remove Pades with larges deviation
         # why iterative?
         # Awful Pades might give wrong features in average, so it should be corrected
-        abs_num_ = int(rel_num*N_pades) if abs_num is None else abs_num
+        if abs_num is None:
+            abs_num_ = int(rel_num*N_pades)
         bad = []  # isin needs list not set
         for nn in range(N_pades, abs_num_, -1):
             diff = nn*pade - pade_sum  # 50% of time
@@ -334,6 +335,7 @@ def masked_coefficients(z, fct_z):
             last_coeff = mat_pi[ii]
         else:
             mask[ii] = False
+    # pylint: disable=invalid-unary-operand-type
     LOGGER.info("Number of eliminated coefficients: %s", np.count_nonzero(~mask))
     return mat.diagonal(axis1=0, axis2=-1)
 
@@ -623,7 +625,7 @@ def apply_filter(*filters, validity_iter):
         return filters[0](validity_iter)
     validity_iter = np.array(list(validity_iter))
     shape = validity_iter.shape
-    validity_iter = np.moveaxis(validity_iter, 0, -2).reshape(-1, shape[0], shape[-1])
+    validity_iter = np.moveaxis(validity_iter, 0, -2).reshape((-1, shape[0], shape[-1]))
     is_valid = np.ones(validity_iter.shape[0:2], dtype=bool)
     for i_valid, i_validity_iter in zip(is_valid, validity_iter):
         for filt in filters:
