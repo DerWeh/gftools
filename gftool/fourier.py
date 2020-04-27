@@ -947,3 +947,123 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     iws = gt.matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
     gf_iw += pole_gf.eval_z(iws)
     return gf_iw
+
+
+def tau2izp(gf_tau, beta, izp, moments=None):
+    r"""Fourier transform of the real Green's function `gf_tau` to `izp`.
+
+    Fourier transformation of a fermionic imaginary-time Green's function to
+    fermionic imaginary Padé frequencies `izp`.
+    We assume a real Green's function `gf_tau`, which is the case for
+    commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
+    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.
+    If no explicit `moments` are given, this function removes
+    :math:`-G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.
+
+    TODO: this function is not vectorized yet.
+
+    Parameters
+    ----------
+    gf_tau : (N_tau) float np.ndarray
+        The Green's function at imaginary times :math:`τ \in [0, β]`.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+    izp : (N_izp) complex np.ndarray
+        Complex Padé frequencies at which the Fourier transform is evaluated.
+    moments : (m) float array_like, optional
+        High-frequency moments of `gf_iw`. If none are given, the first moment
+        is chosen to remove the discontinuity at :math:`τ=0^{±}`.
+
+    Returns
+    -------
+    gf_izp : (N_izp) complex np.ndarray
+        The Fourier transform of `gf_tau` for given Padé frequencies `izp`.
+
+    See Also
+    --------
+    tau2iw : Fourier transform to fermionic Matsubara frequencies.
+
+    pole_gf_from_tau : Function handling the fitting of `gf_tau`
+
+    Notes
+    -----
+    The algorithm performs in fact an analytic continuation instead of a
+    Fourier integral. It is however only evaluated on the imaginary axis, so
+    far the algorithm was observed to be stable
+
+    Examples
+    --------
+    >>> import gftool.fourier
+    >>> BETA = 50
+    >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
+    >>> izp = gt.pade_frequencies(200, beta=BETA)[0]
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)
+    >>> gf_ft = gt.fourier.tau2izp(gf_tau, beta=BETA, izp=izp)
+    >>> gf_izp = gt.pole_gf_z(izp, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(gf_izp.imag, label='exact Im')
+    >>> __ = plt.plot(gf_ft.imag, '--', label='FT Im')
+    >>> __ = plt.plot(gf_izp.real, label='exact Re')
+    >>> __ = plt.plot(gf_ft.real, '--', label='FT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    Results of `tau2izp` can be improved giving high-frequency moments.
+
+    >>> mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(6), axis=0)
+    >>> for n in range(1, 6):
+    ...     gf = gt.fourier.tau2izp(gf_tau, izp=izp, moments=mom[:n], beta=BETA)
+    ...     __ = plt.plot(abs(gf_izp - gf), label=f'n_mom={n}', color=f'C{n}')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    The method is resistant against noise:
+
+    >>> magnitude = 2e-7
+    >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
+    >>> gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=(1,), beta=BETA)
+    >>> __ = plt.plot(abs(gf_izp - gf))
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> plt.yscale('log')
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    >>> for n in range(1, 7, 2):
+    ...     gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=mom[:n], beta=BETA)
+    ...     __ = plt.plot(abs(gf_izp - gf), '--', label=f'n_mom={n}', color=f'C{n}')
+    >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.plot(abs(gf_izp - gf_ft), label='clean')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    """
+    tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+    m1 = -gf_tau[..., -1] - gf_tau[..., 0]
+    if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
+        moments = m1[..., newaxis]
+    else:
+        moments = np.asanyarray(moments)
+        if not np.allclose(m1, moments[..., 0]):
+            LOGGER.warning("Provided 1/z moment differs from jump."
+                           "\n mom: %s, jump: %s", moments[..., 0], m1)
+
+    def error_(width):
+        pole_gf = PoleGf.from_tau(gf_tau, n_pole=izp.size, beta=beta,
+                                  # if width is 0, no higher moments exist
+                                  moments=moments if width else m1[..., newaxis], width=width)
+        gf_fit = pole_gf.eval_tau(tau, beta)
+        return np.linalg.norm(gf_tau - gf_fit)
+
+    from scipy.optimize import minimize_scalar
+    opt = minimize_scalar(error_)
+    LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
+    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=izp.size, beta=beta, moments=moments, width=opt.x)
+    return opt_pole_gf.eval_z(izp)
