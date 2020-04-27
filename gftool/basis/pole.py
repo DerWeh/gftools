@@ -81,8 +81,8 @@ class PoleGf(PoleFct):
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
     @classmethod
-    def from_tau(cls, gf_tau, n_pole, beta, moments=()):
-        return cls(*gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments))
+    def from_tau(cls, gf_tau, n_pole, beta, moments=(), width=1.):
+        return cls(*gf_from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments, width=width))
 
 
 def gf_z(z, poles, weights):
@@ -216,7 +216,7 @@ def gf_from_moments(moments) -> PoleFct:
     return PoleFct(poles=poles, residues=resid)
 
 
-def gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
+def gf_from_tau(gf_tau, n_pole, beta, moments=(), width=1.) -> PoleGf:
     """Find pole Green's function fitting `gf_tau`.
 
     Finds poles and weights for a pole Green's function matching the given
@@ -257,7 +257,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=()) -> PoleGf:
     accordingly.
 
     """
-    poles = np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
+    poles = width*np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     gf_sp_mat = gt.pole_gf_tau(tau[:, newaxis], poles[:, newaxis], weights=1, beta=beta)
     moments = np.asarray(moments)
