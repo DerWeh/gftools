@@ -626,7 +626,8 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     if matrix:
         dec = gtmatrix.decompose_hamiltonian(potential)
         xi = dec.xi
-        tail = dec.reconstruct(1./np.add.outer(xi, iw), kind='diag')
+        tail = dec.reconstruct(1./np.add.outer(iw, xi), kind='diag')
+        tail = np.moveaxis(tail, source=0, destination=-1)
         analytic = dec.reconstruct(fermi_fct(-xi, beta=beta), kind='diag')
     else:
         tail = 1/np.add.outer(potential, iw)
