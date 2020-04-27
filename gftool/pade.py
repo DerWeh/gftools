@@ -684,8 +684,9 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
 
     """
     assert fct_z is None or coeff is None
-    if fct_z is not None:
-        coeff = coefficients(z_in, fct_z=fct_z)
+    z_in = z_in[:kind.stop]
+    coeff = (coefficients(z_in, fct_z=fct_z[..., :kind.stop]) if coeff is None
+             else coeff[..., :kind.stop])
     if valid_z is None:
         valid_z = z_out
     valid_z = valid_z.reshape(-1)
