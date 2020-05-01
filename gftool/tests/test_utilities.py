@@ -8,12 +8,12 @@ import pytest
 import hypothesis.strategies as st
 
 from hypothesis import given, assume
+from hypothesis_gufunc.gufunc import gufunc_args
 
 import numpy as np
-import mpmath
 from mpmath import fp
 
-from .context import gftool as gt
+from .context import gftool as gt, pole
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 
@@ -139,3 +139,38 @@ def test_density():
     # single site
     #
     assert gt.density(iw_array, potential=0, beta=beta)[0] == pytest.approx(0.5)
+
+
+@pytest.fixture(scope="module")
+def pade_frequencies():
+    """Provide Padé frequency as they are slow to calculate."""
+    izp, rp = gt.pade_frequencies(100, beta=1)
+    izp.flags.writeable = False
+    rp.flags.writeable = False
+
+    def pade_frequencies_(beta):
+        return izp / beta, rp
+
+    return pade_frequencies_
+
+
+@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float_,
+                        elements=[st.floats(min_value=-10, max_value=10),
+                                  st.floats(min_value=0, max_value=10)]
+                        ),)
+def test_density_izp(args, pade_frequencies):
+    """Check `gt.density_izp` for multi pole Green's function."""
+    beta = 17
+    poles, residues = args
+    izp, rp = pade_frequencies(beta)
+    gf_izp = gt.pole_gf_z(izp, poles[..., np.newaxis, :], residues[..., np.newaxis, :])
+    gf_poles = pole.PoleGf(poles=poles, residues=residues)
+    occ_ref = gf_poles.occ(beta)
+    occ = gt.density_izp(izp, gf_izp, weights=rp, beta=beta,
+                         moments=residues.sum(axis=-1, keepdims=True))
+    assert np.allclose(occ, occ_ref)
+    # add moment
+    moments = gf_poles.moments([1, 2, 3])
+    occ = gt.density_izp(izp, gf_izp, weights=rp, beta=beta,
+                         moments=moments)
+    assert np.allclose(occ, occ_ref)

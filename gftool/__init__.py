@@ -741,9 +741,11 @@ def density_izp(izp, gf_izp, weights, beta, moments=(1.,)):
     pade_frequencies : Method generating `izp` and `weights`.
 
     """
+    # add axis for izp, remove it later at occupation
+    moments = np.asanyarray(moments)[..., np.newaxis, :]
     moment_gf = pole.PoleGf.from_moments(moments)
     delta_gf_izp = gf_izp.real - moment_gf.eval_z(izp).real
-    return 2. / beta * np.sum(weights * delta_gf_izp.real, axis=-1) + moment_gf.occ(beta)
+    return 2./beta*np.sum(weights * delta_gf_izp.real, axis=-1) + moment_gf.occ(beta)[..., 0]
 
 
 def density_error(delta_gf_iw, iw_n, noisy=True):
