@@ -61,6 +61,7 @@ We can also explicitly give the second moments:
 (3, 2049)
 
 
+
 .. _ufuncs: https://numpy.org/doc/stable/reference/ufuncs.html
 
 
@@ -70,6 +71,7 @@ We can also explicitly give the second moments:
    :hidden:
 
    gftool
+   generated/gftool.cpa
    generated/gftool.fourier
    generated/gftool.lattice
    generated/gftool.matrix
