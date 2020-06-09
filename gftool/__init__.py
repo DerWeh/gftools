@@ -67,6 +67,33 @@ __version__ = get_versions()['version']
 
 LOGGER = logging.getLogger(__name__)
 
+# Bethe lattice
+# pylint: disable=wrong-import-position
+from .lattice.bethe import (dos as bethe_dos,
+                            dos_moment as bethe_dos_moment,
+                            gf_d1_z as bethe_gf_d1_z,
+                            gf_d2_z as bethe_gf_d2_z,
+                            gf_z as bethe_gf_z,
+                            hilbert_transform as bethe_hilbert_transfrom)
+
+bethe_dos.m1 = partial(lattice.bethe.dos_moment, 1)
+bethe_dos.m2 = partial(lattice.bethe.dos_moment, 2)
+bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
+bethe_dos.m4 = partial(lattice.bethe.dos_moment, 4)
+bethe_dos.m5 = partial(lattice.bethe.dos_moment, 5)
+
+# Square lattice
+from .lattice.square import (dos as square_dos,
+                             dos_moment as square_dos_moment,
+                             gf_z as square_gf_z,
+                             hilbert_transform as square_hilbert_transfrom)
+
+square_dos.m1 = partial(lattice.square.dos_moment, 1)
+square_dos.m2 = partial(lattice.square.dos_moment, 2)
+square_dos.m3 = partial(lattice.square.dos_moment, 3)
+square_dos.m4 = partial(lattice.square.dos_moment, 4)
+square_dos.m5 = partial(lattice.square.dos_moment, 5)
+
 
 def bose_fct(eps, beta):
     r"""Return the Bose function `1/(exp(βϵ)-1)`.
@@ -290,29 +317,6 @@ def pade_frequencies(num: int, beta):
     assert np.allclose(resids[:num//2][::-1], resids[num//2:])
     assert np.all(~np.iscomplex(resids))
     return izp[num//2:], resids.real[num//2:]
-
-
-# Bethe lattice
-bethe_gf_z = lattice.bethe.gf_z
-bethe_gf_d1_z = lattice.bethe.gf_d1_z
-bethe_gf_d2_z = lattice.bethe.gf_d2_z
-bethe_hilbert_transfrom = lattice.bethe.hilbert_transform
-bethe_dos = lattice.bethe.dos
-bethe_dos.m1 = partial(lattice.bethe.dos_moment, 1)
-bethe_dos.m2 = partial(lattice.bethe.dos_moment, 2)
-bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
-bethe_dos.m4 = partial(lattice.bethe.dos_moment, 4)
-bethe_dos.m5 = partial(lattice.bethe.dos_moment, 5)
-
-# Square lattice
-square_gf_z = lattice.square.gf_z
-square_hilbert_transfrom = lattice.square.hilbert_transform
-square_dos = lattice.square.dos
-square_dos.m1 = partial(lattice.square.dos_moment, 1)
-square_dos.m2 = partial(lattice.square.dos_moment, 2)
-square_dos.m3 = partial(lattice.square.dos_moment, 3)
-square_dos.m4 = partial(lattice.square.dos_moment, 4)
-square_dos.m5 = partial(lattice.square.dos_moment, 5)
 
 
 def surface_gf_zeps(z, eps, hopping_nn):
