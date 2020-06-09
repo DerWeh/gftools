@@ -13,7 +13,7 @@ fixing the charge on the real axis directly.
 
 """
 from functools import partial
-from typing import Callable
+from typing import Callable, NamedTuple
 
 import numpy as np
 
@@ -243,16 +243,32 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     try:
         method = root_kwds.pop('method')
     except KeyError:
-        method = 'anderson' if restricted else 'broyden2'
+        method = 'df-sane' if restricted else 'broyden2'
     sol = optimize.root(root_eq, x0=self_cpa_z0, method=method, **root_kwds)
     if not sol.success:
         raise RuntimeError(sol.message)
     return sol.x
 
 
+class RootFxdocc(NamedTuple):
+    """CPA solution for the self-energy root-equation for fixed occupation.
+
+    Attributes
+    ----------
+    self_cpa : np.ndarray or complex
+        The CPA self-energy.
+    mu : float
+        Chemical potential.
+
+    """
+
+    self_cpa: np.ndarray
+    mu: float
+
+
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
                       beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
-                      restricted=True, **root_kwds):
+                      restricted=True, **root_kwds) -> RootFxdocc:
     """Determine the CPA self-energy by solving the root problem for fixed `occ`.
 
     Parameters
@@ -288,9 +304,9 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     Returns
     -------
-    self_cpa_iw : (..., N_iw) complex np.ndarray
+    root.self_cpa : (..., N_iw) complex np.ndarray
         The CPA self-energy as the root of `self_root_eq`.
-    mu : float
+    root.mu : float
         Chemical potential for the given occupation `occ`.
 
     Examples
@@ -346,4 +362,4 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         raise RuntimeError(sol.message)
     mu, self_cpa_re, self_cpa_im = _split(sol.x, shapes)
     self_cpa = self_cpa_re - mu + 1j*self_cpa_im
-    return self_cpa, mu
+    return RootFxdocc(self_cpa, mu=mu)
