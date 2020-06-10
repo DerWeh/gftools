@@ -243,7 +243,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     try:
         method = root_kwds.pop('method')
     except KeyError:
-        method = 'df-sane' if restricted else 'broyden2'
+        method = 'anderson' if restricted else 'broyden2'
     sol = optimize.root(root_eq, x0=self_cpa_z0, method=method, **root_kwds)
     if not sol.success:
         raise RuntimeError(sol.message)
