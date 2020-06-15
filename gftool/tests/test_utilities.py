@@ -118,27 +118,31 @@ def test_density():
     """Check density for simple Green's functions."""
     beta = 10.1
     D = 1.2
-    iw_array = gt.matsubara_frequencies(np.arange(int(2**14)), beta=beta)
+    iws = gt.matsubara_frequencies(np.arange(2**14), beta=beta)
 
     #
     # Bethe lattice Gf
     #
-    bethe_half = gt.bethe_gf_z(iw_array, half_bandwidth=D)
+    bethe_half = gt.bethe_gf_z(iws, half_bandwidth=D)
     assert gt.density(bethe_half, potential=0, beta=beta)[0] == 0.5
+    assert gt.density_iw(iws, bethe_half, moments=[1.], beta=beta) == 0.5
 
     large_shift = 10000*D
     # Bethe lattice almost filled (depends on small temperature)
-    bethe_full = gt.bethe_gf_z(iw_array+large_shift, half_bandwidth=D)
+    bethe_full = gt.bethe_gf_z(iws+large_shift, half_bandwidth=D)
     assert gt.density(bethe_full, potential=large_shift, beta=beta)[0] == pytest.approx(1.0)
+    assert np.allclose(gt.density_iw(iws, bethe_full, moments=[1., -large_shift], beta=beta), 1.)
     # Bethe lattice almost empty (depends on small temperature)
-    bethe_empty = gt.bethe_gf_z(iw_array-large_shift, half_bandwidth=D)
+    bethe_empty = gt.bethe_gf_z(iws-large_shift, half_bandwidth=D)
     assert gt.density(bethe_empty, potential=-large_shift, beta=beta)[0] \
         == pytest.approx(0.0, abs=1e-6)
+    assert np.allclose(gt.density_iw(iws, bethe_empty, moments=[1., +large_shift], beta=beta), 0.)
 
     #
     # single site
     #
-    assert gt.density(iw_array, potential=0, beta=beta)[0] == pytest.approx(0.5)
+    assert gt.density(1./iws, potential=0, beta=beta)[0] == pytest.approx(0.5)
+    assert np.allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
 @pytest.fixture(scope="module")
@@ -166,11 +170,11 @@ def test_density_izp(args, pade_frequencies):
     gf_izp = gt.pole_gf_z(izp, poles[..., np.newaxis, :], residues[..., np.newaxis, :])
     gf_poles = pole.PoleGf(poles=poles, residues=residues)
     occ_ref = gf_poles.occ(beta)
-    occ = gt.density_izp(izp, gf_izp, weights=rp, beta=beta,
-                         moments=residues.sum(axis=-1, keepdims=True))
+    occ = gt.density_iw(izp, gf_izp, weights=rp, beta=beta,
+                        moments=residues.sum(axis=-1, keepdims=True))
     assert np.allclose(occ, occ_ref)
     # add moment
     moments = gf_poles.moments([1, 2, 3])
-    occ = gt.density_izp(izp, gf_izp, weights=rp, beta=beta,
-                         moments=moments)
-    assert np.allclose(occ, occ_ref)
+    occ = gt.density_iw(izp, gf_izp, weights=rp, beta=beta,
+                        moments=moments)
+    assert np.allclose(occ, occ_ref, atol=1e-5)
