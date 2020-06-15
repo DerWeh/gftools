@@ -17,9 +17,8 @@ from .context import pole
 def test_gf_form_moments(args):
     """Check that the Gfs constructed from moments have the correct moment."""
     mom, = args
-    gf = pole.gf_from_moments(mom)
-    gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.residues,
-                                order=np.arange(mom.shape[-1])+1)
+    gf = pole.gf_from_moments(mom, width=1)
+    gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
     assert np.allclose(mom, gf_mom, equal_nan=True)
 
 
