@@ -78,7 +78,7 @@ class PoleFct(NamedTuple):
         return moments(poles=self.poles, weights=self.residues, order=order)
 
     @classmethod
-    def from_moments(cls, moments):
+    def from_moments(cls, moments, width=None):
         """Generate instance matching high-frequency `moments`.
 
         Parameters
@@ -97,7 +97,7 @@ class PoleFct(NamedTuple):
         gf_from_moments : contains the details how `PoleFct` is constructed.
 
         """
-        return cls(*gf_from_moments(moments))
+        return cls(*gf_from_moments(moments, width=None))
 
     @classmethod
     def from_z(cls, z, gf_z, n_pole, moments=(), width=1., weight=None):
@@ -369,7 +369,7 @@ def moments(poles, weights, order):
     return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
 
 
-def gf_from_moments(moments) -> PoleFct:
+def gf_from_moments(moments, width=None) -> PoleFct:
     """Find pole Green's function matching given `moments`.
 
     Finds poles and weights for a pole Green's function matching the given
@@ -384,12 +384,18 @@ def gf_from_moments(moments) -> PoleFct:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(1, N+1)` for large `z`.
+    width : float or (...) float array_like, optional
+        Spread of the poles; they are in the interval [-width, width].
+        `width=1` are the normal Chebyshev nodes in the interval [-1, 1].
+        The default is such, that if the second moment `moments[..., 1]` is
+        given, it will be chosen as the largest poles, unless it is small
+        (`abs(moments[..., 1]) < 0.1`), then we choose `width=1`.
 
     Returns
     -------
     gf.resids : (..., N) float np.ndarray
         Residues (or weight) of the poles.
-    gf.poles : (N) float np.ndarray
+    gf.poles : (N) or (..., N) float np.ndarray
         Position of the poles, these are the Chebyshev nodes for degree `N`.
 
     Notes
@@ -405,8 +411,15 @@ def gf_from_moments(moments) -> PoleFct:
     if n_mom == 0:  # non-sense case, but return consistent behavior
         return PoleFct(poles=np.array([]), residues=moments.copy())
     poles = _chebyshev_points(n_mom)
-    mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
-    mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
+    if width is None:
+        if n_mom <= 1:
+            width = 1
+        else:  # set width such that second moment is pole unless its very small
+            width = np.where(abs(moments[..., 1:2]) >= 0.1,  # arbitrarily chosen threshold
+                             abs(moments[..., 1:2])/max(poles), 1)
+    poles = width * poles
+    _poles, moments = np.broadcast_arrays(poles, moments)
+    mat = np.swapaxes(np.polynomial.polynomial.polyvander(_poles, deg=poles.size-1), -1, -2)
     resid = np.linalg.solve(mat, moments)
     return PoleFct(poles=poles, residues=resid)
 
