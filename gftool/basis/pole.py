@@ -25,6 +25,9 @@ import gftool as gt
 from gftool import linalg
 
 
+polyvander = np.polynomial.polynomial.polyvander
+
+
 def _get_otype(*args):
     """Determine the resulting type if arrays are broadcasted."""
     return sum(np.asarray(arg).reshape(-1)[:1] for arg in args).dtype
@@ -97,7 +100,7 @@ class PoleFct(NamedTuple):
         gf_from_moments : contains the details how `PoleFct` is constructed.
 
         """
-        return cls(*gf_from_moments(moments, width=None))
+        return cls(*gf_from_moments(moments, width=width))
 
     @classmethod
     def from_z(cls, z, gf_z, n_pole, moments=(), width=1., weight=None):
@@ -419,7 +422,7 @@ def gf_from_moments(moments, width=None) -> PoleFct:
                              abs(moments[..., 1:2])/max(poles), 1)
     poles = width * poles
     _poles, moments = np.broadcast_arrays(poles, moments)
-    mat = np.swapaxes(np.polynomial.polynomial.polyvander(_poles, deg=poles.size-1), -1, -2)
+    mat = np.swapaxes(np.polynomial.polynomial.polyvander(_poles, deg=poles.shape[-1]-1), -1, -2)
     resid = np.linalg.solve(mat, moments)
     return PoleFct(poles=poles, residues=resid)
 
@@ -446,8 +449,12 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
-    width : float, optional
-        Distance of the largest pole to the origin. (default: 1.)
+    width : float or None, optional
+        Spread of the poles; they are in the interval [-width, width]. (default: 1.)
+        `width=1` are the normal Chebyshev nodes in the interval [-1, 1].
+        If `width=None` and the second moment `moments[..., 1]` is given,
+        it will be chosen as the largest poles, unless it is small
+        (`abs(moments[..., 1]) < 0.1`), then we choose `width=1`.
     weight : (..., N_z) float np.ndarray, optional
         Weighting of the fit. If an error `σ` of the input `gf_z` is known,
         this should be `weight=1/σ`. If high-frequency moments should be fitted
@@ -457,7 +464,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     -------
     gf.resids : (..., N) float np.ndarray
         Residues (or weight) of the poles.
-    gf.poles : (N) float np.ndarray
+    gf.poles : (N) or (..., N) float np.ndarray
         Position of the poles, these are the Chebyshev nodes for degree `N`.
 
     Raises
@@ -473,11 +480,20 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     accordingly.
 
     """
-    poles = width * _chebyshev_points(n_pole)
-    gf_sp_mat = gt.pole_gf_z(z[:, newaxis], poles[:, newaxis], weights=1)
+    moments = np.asarray(moments)
+    poles = _chebyshev_points(n_pole)
+    if width is None:
+        if moments.shape[-1] <= 1:
+            width = 1
+        else:  # set width such that second moment is pole unless its very small
+            width = np.where(abs(moments[..., 1:2]) >= 0.1,  # arbitrarily chosen threshold
+                             abs(moments[..., 1:2])/max(poles), 1)
+    poles = width * poles
+    # z -> newaxis for poles, which are axis=-1
+    # poles -> newaxis for sum over axis=-1, newaxis for z which should be axis=-2
+    gf_sp_mat = gt.pole_gf_z(z[..., newaxis], poles[..., newaxis, :, newaxis], weights=1)
     gf_sp_mat = np.concatenate([gf_sp_mat.real, gf_sp_mat.imag], axis=-2)
     gf_z = np.concatenate([gf_z.real, gf_z.imag], axis=-1)
-    moments = np.asarray(moments)
     otype = _get_otype(gf_z, moments, poles)
     if weight is not None:
         weight = np.concatenate([weight, weight], axis=-1)
@@ -487,7 +503,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
         if moments.shape[-1] > n_pole:
             raise ValueError("Too many poles given, system is over constrained. "
                              f"poles: {n_pole}, moments: {moments.shape[-1]}")
-        constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
+        constrain_mat = np.swapaxes(polyvander(poles, deg=moments.shape[-1]-1), -1, -2)
         _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
                                  otypes=[otype], excluded={'rcond'})
         resid = _lstsq_ec(gf_sp_mat, gf_z, constrain_mat, moments)
