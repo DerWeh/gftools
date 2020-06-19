@@ -199,7 +199,7 @@ def dos(eps, half_bandwidth):
     """
     eps_rel = np.asarray(eps / half_bandwidth)
     dos = np.zeros_like(eps_rel)
-    nonzero = abs(eps_rel) < 1
+    nonzero = (abs(eps_rel) < 1) | np.iscomplex(eps)
     dos[nonzero] = 2. / (np.pi*half_bandwidth) * np.sqrt(1 - eps_rel[nonzero]**2)
     return dos
 
