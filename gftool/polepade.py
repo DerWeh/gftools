@@ -359,7 +359,7 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
 
 
 def continuation(z, fct_z, degree=-1, weight=None, vandermond=polynomial.polyvander,
-                 moments=(), rotate=None) -> PadeApprox:
+                 moments=(), rotate=None, real_asymp=True) -> PadeApprox:
     """Perform the Padé analytic continuation of `(z, fct_z)`.
 
     Parameters
@@ -405,6 +405,7 @@ def continuation(z, fct_z, degree=-1, weight=None, vandermond=polynomial.polyvan
 
     Compare the result on the real axis:
 
+    >>> import matplotlib.pyplot as plt
     >>> ww = np.linspace(-1.1, 1.1, num=5000)
     >>> __ = plt.plot(ww, gt.square_dos(ww, half_bandwidth=1))
     >>> __ = plt.plot(ww, -1. / np.pi * gf_pade.eval_zeropole(ww).imag)
@@ -431,6 +432,7 @@ def continuation(z, fct_z, degree=-1, weight=None, vandermond=polynomial.polyvan
         pls, zrs = 1j * pls, 1j * zrs
     asymp, std = asymptotic(z, fct_z, zeros=zrs, poles=pls, weight=weight)
     LOGGER.info("Asymptotic for z**%s: %s ± %s", degree, asymp, std)
+    asymp = asymp.real if real_asymp else asymp
     const = asymp if degree == 0 else 0
     fct_z_pole = fct_z - const  # constant has to be treated separately
     residues, err = residues_ols(z, fct_z_pole, pls, weight=weight, moments=moments)
