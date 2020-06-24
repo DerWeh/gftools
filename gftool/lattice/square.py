@@ -146,7 +146,7 @@ def dos(eps, half_bandwidth):
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
-# from: wolframalpha, to integral in python to assert accuracy
+# from: wolframalpha, do integral in python to assert accuracy
 dos_moment_coefficients = {
     2: 0.25,
     4: 0.140625,
