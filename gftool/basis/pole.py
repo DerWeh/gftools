@@ -561,12 +561,11 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     gf_sp_mat = _single_pole_gf_tau(tau[..., newaxis], poles, beta=beta)
     moments = np.asarray(moments)
-    constained = moments.shape[-1] > 0 or occ
     otype = _get_otype(gf_tau, moments, poles)
     if weight is not None:
         gf_sp_mat *= weight[..., np.newaxis]
         gf_tau = gf_tau * weight
-    if constained:
+    if moments.shape[-1] > 0 or occ:  # constrained
         if moments.shape[-1] + int(occ) > n_pole:
             raise ValueError("Too many poles given, system is over constrained. "
                              f"poles: {n_pole}, moments: {moments.shape[-1]}")

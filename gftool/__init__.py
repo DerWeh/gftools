@@ -76,6 +76,10 @@ from .lattice.bethe import (dos as bethe_dos,
                             gf_z as bethe_gf_z,
                             hilbert_transform as bethe_hilbert_transfrom)
 
+# silence warnings of unused imports
+assert (bethe_dos and bethe_dos_moment and bethe_gf_d1_z and bethe_gf_d2_z
+        and bethe_gf_z and bethe_hilbert_transfrom)
+
 bethe_dos.m1 = partial(lattice.bethe.dos_moment, 1)
 bethe_dos.m2 = partial(lattice.bethe.dos_moment, 2)
 bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
@@ -87,6 +91,9 @@ from .lattice.square import (dos as square_dos,
                              dos_moment as square_dos_moment,
                              gf_z as square_gf_z,
                              hilbert_transform as square_hilbert_transfrom)
+
+# silence warnings of unused imports
+assert (square_dos and square_dos_moment and square_gf_z and square_hilbert_transfrom)
 
 square_dos.m1 = partial(lattice.square.dos_moment, 1)
 square_dos.m2 = partial(lattice.square.dos_moment, 2)
