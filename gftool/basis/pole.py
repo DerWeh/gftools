@@ -176,7 +176,7 @@ class PoleGf(PoleFct):
 
     def occ(self, beta):
         """Calculate the occupation number.
-        
+
         Parameters
         ----------
         beta : float or (..., 1) float array_like

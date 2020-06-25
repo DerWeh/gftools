@@ -147,6 +147,7 @@ disable=print-statement,
         too-many-lines,
         line-too-long,
         bad-whitespace,
+        cyclic-import  # FIXME: remove cyclic import by moving statistics to own module
 
 
 # Enable the message, report, category or checker with the given id(s). You can
