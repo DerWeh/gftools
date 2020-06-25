@@ -30,6 +30,14 @@ def _get_otype(*args):
     return sum(np.asarray(arg).reshape(-1)[:1] for arg in args).dtype
 
 
+def _chebyshev_points(num: int) -> np.ndarray:
+    """Return `num` Chebyshev points."""
+    cheb_points = np.cos(0.5 * np.pi * np.arange(1, 2*num, 2) / num)
+    if num % 2:  # fix central moment to exactly 0
+        cheb_points[num//2] = 0.
+    return cheb_points
+
+
 class PoleFct(NamedTuple):
     """Function given by finite number of simple `poles` and `residues`.
 
@@ -396,9 +404,7 @@ def gf_from_moments(moments) -> PoleFct:
     n_mom = moments.shape[-1]
     if n_mom == 0:  # non-sense case, but return consistent behavior
         return PoleFct(poles=np.array([]), residues=moments.copy())
-    poles = np.cos(.5*np.pi*np.arange(1, 2*n_mom, 2)/n_mom)
-    if n_mom % 2:  # fix central moment to exactly 0
-        poles[n_mom//2] = 0.
+    poles = _chebyshev_points(n_mom)
     mat = np.polynomial.polynomial.polyvander(poles, deg=poles.size-1).T
     mat = mat.reshape((1,)*(moments.ndim - 1) + mat.shape)
     resid = np.linalg.solve(mat, moments)
@@ -454,7 +460,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     accordingly.
 
     """
-    poles = width*np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
+    poles = width * _chebyshev_points(n_pole)
     gf_sp_mat = gt.pole_gf_z(z[:, newaxis], poles[:, newaxis], weights=1)
     gf_sp_mat = np.concatenate([gf_sp_mat.real, gf_sp_mat.imag], axis=-2)
     gf_z = np.concatenate([gf_z.real, gf_z.imag], axis=-1)
@@ -522,7 +528,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     accordingly.
 
     """
-    poles = width*np.cos(.5*np.pi*np.arange(1, 2*n_pole, 2)/n_pole)
+    poles = width * _chebyshev_points(n_pole)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     gf_sp_mat = _single_pole_gf_tau(tau[..., newaxis], poles, beta=beta)
     moments = np.asarray(moments)
