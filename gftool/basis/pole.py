@@ -81,7 +81,7 @@ class PoleFct(NamedTuple):
         return moments(poles=self.poles, weights=self.residues, order=order)
 
     @classmethod
-    def from_moments(cls, moments, width=None):
+    def from_moments(cls, moments, width=1.):
         """Generate instance matching high-frequency `moments`.
 
         Parameters
@@ -372,7 +372,7 @@ def moments(poles, weights, order):
     return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
 
 
-def gf_from_moments(moments, width=None) -> PoleFct:
+def gf_from_moments(moments, width=1.) -> PoleFct:
     """Find pole Green's function matching given `moments`.
 
     Finds poles and weights for a pole Green's function matching the given
