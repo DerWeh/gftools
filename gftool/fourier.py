@@ -1067,7 +1067,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     return pole_gf.eval_tau(tau, beta)
 
 
-def _tau2polegf(gf_tau, beta, n_pole, moments=None) -> PoleGf:
+def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> PoleGf:
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     m1 = -gf_tau[..., -1] - gf_tau[..., 0]
     if moments is None:  # = 1/z moment = jump of Gf at 0^{±}
@@ -1081,18 +1081,20 @@ def _tau2polegf(gf_tau, beta, n_pole, moments=None) -> PoleGf:
     def error_(width):
         pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta,
                                   # if width is 0, no higher moments exist
-                                  moments=moments if width else m1[..., newaxis], width=width)
+                                  moments=moments if width else m1[..., newaxis],
+                                  occ=occ, width=width, weight=weight)
         gf_fit = pole_gf.eval_tau(tau, beta=beta)
         return np.linalg.norm(gf_tau - gf_fit)
 
     from scipy.optimize import minimize_scalar
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
-    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments, width=opt.x)
+    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments,
+                                  occ=occ, width=opt.x, weight=weight)
     return opt_pole_gf
 
 
-def tau2izp(gf_tau, beta, izp, moments=None):
+def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     r"""Fourier transform of the real Green's function `gf_tau` to `izp`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
@@ -1139,7 +1141,7 @@ def tau2izp(gf_tau, beta, izp, moments=None):
     >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
-    >>> izp = gt.pade_frequencies(200, beta=BETA)[0]
+    >>> izp, __ = gt.pade_frequencies(200, beta=BETA)
 
     >>> poles = 2*np.random.random(10) - 1  # partially filled
     >>> weights = np.random.random(10)
@@ -1166,13 +1168,18 @@ def tau2izp(gf_tau, beta, izp, moments=None):
     >>> plt.yscale('log')
     >>> plt.show()
 
-    The method is resistant against noise:
+    The method is resistant against noise,
+    especially if there is knowledge of the noise:
 
     >>> magnitude = 2e-7
     >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
     >>> gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=(1,), beta=BETA)
-    >>> __ = plt.plot(abs(gf_izp - gf))
+    >>> __ = plt.plot(abs(gf_izp - gf), label='bare')
+    >>> gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=(1,), beta=BETA,
+    ...                         weight=abs(noise)**-0.5)
+    >>> __ = plt.plot(abs(gf_izp - gf), label='weighted')
     >>> __ = plt.axhline(magnitude, color='black')
+    >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.tight_layout()
     >>> plt.show()
@@ -1188,5 +1195,5 @@ def tau2izp(gf_tau, beta, izp, moments=None):
     >>> plt.show()
 
     """
-    pole_gf = _tau2polegf(gf_tau, beta, n_pole=izp.size, moments=moments)
+    pole_gf = _tau2polegf(gf_tau, beta, n_pole=izp.size, moments=moments, occ=occ, weight=weight)
     return pole_gf.eval_z(izp)
