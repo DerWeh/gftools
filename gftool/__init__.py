@@ -788,7 +788,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
         mom_gf = pole.PoleGf.from_z(iws, gf_iw[..., newaxis, :], n_pole=n_fit+n_mom,
                                     moments=moments, width=None, weight=weight)
     else:
-        mom_gf = pole.PoleGf.from_moments(moments)
+        mom_gf = pole.PoleGf.from_moments(moments, width=None)
     delta_gf_iw = gf_iw.real - mom_gf.eval_z(iws).real
     return 2./beta*np.sum(weights * delta_gf_iw.real, axis=-1) + mom_gf.occ(beta)[..., 0]
 
