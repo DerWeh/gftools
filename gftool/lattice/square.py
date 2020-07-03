@@ -187,3 +187,32 @@ def dos_moment(m, half_bandwidth):
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError:
         raise NotImplementedError('Calculation of arbitrary moments not implemented.')
+
+
+def stress_trafo(xi, half_bandwidth):
+    r"""Single pole integration over the stress tensor function.
+
+    This is in analogy to the Hilbert transformation, we define the stress
+    tensor transformation as
+
+    .. math:: T(ξ) = ∫dϵ \tilde{Φ}_{xx}(ϵ)/(ξ - ϵ)
+
+    with the stress tensor function
+
+    .. math:: \tilde{Φ}_{xx}(ϵ) ≔ ∑_k 𝜕^2/𝜕k_x^2 δ(ϵ - ϵ_k) = -0.5 * ϵ * DOS(ϵ)
+
+    Parameters
+    ----------
+    xi : complex or complex array_like
+        Point of evaluation of the transformation
+    half_bandwidth : float
+        Half-bandwidth of the square lattice.
+
+    References
+    ----------
+    .. [arsenault2013] Arsenault, L.-F., Tremblay, A.-M.S., 2013. Transport
+       functions for hypercubic and Bethe lattices. Phys. Rev. B 88, 205109.
+       https://doi.org/10.1103/PhysRevB.88.205109
+
+    """
+    return -0.5 * (xi*gf_z(xi, half_bandwidth=half_bandwidth) - 1)

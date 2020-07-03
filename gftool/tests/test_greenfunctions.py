@@ -23,6 +23,7 @@ from .context import gftool as gt
 
 
 nonneg_float = st.floats(min_value=0.)
+pos_float = st.floats(min_value=0., exclude_min=True)
 
 
 def method(func):
@@ -399,7 +400,7 @@ def test_pole_gf_tau_gu(args):
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
                    dtype=[np.float_, np.float_, np.float_, np.float_],
-                   elements=[st.floats(min_value=0., max_value=1.), nonneg_float, nonneg_float, nonneg_float],
+                   elements=[st.floats(min_value=0., max_value=1.), pos_float, nonneg_float, pos_float],
                    max_dims_extra=3)
        )
 def test_pole_gf_tau_b_gu(args):
@@ -407,6 +408,27 @@ def test_pole_gf_tau_b_gu(args):
     tau, poles, weights, beta = args
     tau = tau * beta
     assume(not np.any(np.isnan(tau)))
+    assume(np.all(poles*np.asanyarray(beta)[..., np.newaxis] > 0))
     gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=beta)
     gf_tau = np.nan_to_num(gf_tau, -1)  # nan is valid result
     assert np.all(gf_tau <= 0)
+
+
+def test_square_stress_trafo():
+    """Compare `stress_trafo` against numerical integration for a selection of points."""
+    def stress_tensor(eps, half_bandwidth):
+        return -0.5 * eps * gt.square_dos(eps, half_bandwidth=half_bandwidth)
+
+    zz_points = [
+        0.371 + 0.1075j,
+        0.371 - 0.1075j,
+        3.1 + 1e-6j,
+        -3 + 1e-6j
+    ]
+    D = 1.17
+
+    for zz in zz_points:
+        # pylint: disable=cell-var-from-loop
+        with mpmath.workdps(30):
+            integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])
+        assert np.allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)
