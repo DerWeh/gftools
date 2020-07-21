@@ -87,7 +87,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     Returns
     -------
-    hilbert_transfrom : complex ndarray or complex
+    hilbert_transform : complex ndarray or complex
         Hilbert transform of `xi`.
 
     Notes

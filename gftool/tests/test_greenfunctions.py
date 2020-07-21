@@ -256,7 +256,7 @@ def test_imag_gf_equals_dos():
 
 
 def test_hilbert_equals_integral():
-    """Compare *bethe_hilbert_transfrom* with explicit calculation of integral.
+    """Compare *bethe_hilbert_transform* with explicit calculation of integral.
 
     The integral is singular for xi=0, actually the Cauchy principal value
     should be taken.
@@ -281,7 +281,7 @@ def test_hilbert_equals_integral():
         compare = 0
         compare += integrate.quad(kernel_real, -D, D, args=(xi,))[0]
         compare += 1j*integrate.quad(kernel_imag, -D, D, args=(xi,))[0]
-        assert gt.bethe_hilbert_transfrom(xi, D) == pytest.approx(compare)
+        assert gt.bethe_hilbert_transform(xi, D) == pytest.approx(compare)
 
 
 @pytest.mark.parametrize("D", [0.5, 1.7, 2.])
