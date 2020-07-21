@@ -170,7 +170,7 @@ def restrict_self_root_eq(self_cpa_z, *args, **kwds):
 
 def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
                self_cpa_z0=None, restricted=True, **root_kwds):
-    """Determine the CPA self-energy for solving the root problem.
+    """Determine the CPA self-energy by solving the root problem.
 
     Note that the result should be checked, whether the obtained solution is
     physical.
