@@ -94,9 +94,11 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping,
     qt, rt = np.linalg.qr(hopping)
     rt_inv = np.linalg.inv(rt)
     # [..., newaxis]*eye add matrix axis
-    z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
+    # matrix-products are faster if larger arrays are in Fortran order
+    z_m_self = np.asfortranarray(z[..., newaxis, newaxis]*eye - self_beb_z)
     eig, rv = np.linalg.eig(qt.T @ z_m_self @ rt_inv)
-    dec = matrix.Decomposition(qt@rv, eig, np.linalg.inv(rv)@rt)
+    rv = np.asfortranarray(rv)
+    dec = matrix.Decomposition(qt@rv, eig, np.asfortranarray(np.linalg.inv(rv))@rt)
 
     gf_loc_inv = dec.reconstruct(1./hilbert_trafo(dec.xi))
     gf_ii_avg_inv = (diagonal(gf_loc_inv) + diagonal(self_beb_z) - e_onsite) / concentration
