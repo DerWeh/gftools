@@ -16,12 +16,14 @@ References
 
 """
 import logging
-from functools import partial
+
 from typing import Callable
+from functools import partial
 
 import numpy as np
-from numpy import newaxis
+
 from scipy import optimize
+from numpy import newaxis
 
 from gftool import matrix
 
