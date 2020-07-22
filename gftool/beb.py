@@ -1,10 +1,10 @@
-"""Blackman, Esterling, and Berk (BEB) approach to off-diagnal disorder.
+"""Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.
 
 Extension to CPA allowing for random hopping amplitudes. [blackman1971]_
 
 The current implementation is based on QR decomposition instead of generalized
 eigendecomposition, as no vectorized version of the eigendecomposition exists.
-The eigendecomposition is extremely slow
+The eigendecomposition is extremely slow.
 
 
 References
@@ -153,7 +153,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     self_beb_z0 : (..., N_z, N_cmpt, N_cmpt) complex np.ndarray, optional
         Starting guess for the BEB self-energy.
     restricted : bool, optional
-        Wether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
+        Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
         Note, that even if `restricted=True`, the imaginary part can get negative
         within tolerance. This should be removed by hand if necessary.
     root_kwds
