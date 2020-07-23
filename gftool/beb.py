@@ -43,9 +43,9 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
 
     Parameters
     ----------
-    z : (..., N_z) complex np.ndarray
+    z : (...) complex np.ndarray
         Frequency points.
-    self_beb_z : (..., N_z, N_cmpt, N_cmpt) complex np.ndarray
+    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray
         BEB self-energy.
     hopping : (N_cmpt, N_cmpt) float array_like
         Hopping matrix in the components.
@@ -153,9 +153,10 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     self_beb_z0 : (..., N_cmpt, N_cmpt) complex np.ndarray, optional
         Starting guess for the BEB self-energy.
     restricted : bool, optional
-        Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
-        Note, that even if `restricted=True`, the imaginary part can get negative
-        within tolerance. This should be removed by hand if necessary.
+        Whether the diagonal of `self_beb_z` is restricted to `self_beb_z.imag <= 0`.
+        (default: True)
+        Note, that even if `restricted=True`, the imaginary part can get
+        negative within tolerance. This should be removed by hand if necessary.
     root_kwds
         Additional arguments passed to `optimize.root`.
         `method` can be used to choose a solver. `options=dict(fatol=tol)` can
@@ -194,9 +195,9 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     """
     if self_beb_z0 is None:
-        self_beb_z0 = np.zeros(z.shape + hopping.shape, dtype=complex)
+        self_beb_z0 = np.zeros(hopping.shape, dtype=complex)
         # experience shows that a single fixed_point is a good starting point
-        self_beb_z0 += self_root_eq(self_beb_z0, z, e_onsite, concentration, hopping, hilbert_trafo)
+        self_beb_z0 = self_root_eq(self_beb_z0, z, e_onsite, concentration, hopping, hilbert_trafo)
         if np.all(z.imag >= 0):  # make sure that we are in the retarded regime
             diag_idx = (..., np.eye(*hopping.shape, dtype=bool))
             self_beb_z0[diag_idx] = np.where(self_beb_z0[diag_idx].imag < 0,
