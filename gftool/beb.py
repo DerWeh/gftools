@@ -67,7 +67,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     eig, rv = np.linalg.eig(qt.T @ z_m_self @ rt_inv)
-    dec = matrix.Decomposition(qt@rv, eig, np.linalg.inv(rv)@rt)
+    dec = matrix.Decomposition(rt_inv@rv, eig, np.linalg.inv(rv)@qt.T)
 
     return dec.reconstruct(hilbert_trafo(dec.xi), kind='diag' if diagnal else 'full')
 
