@@ -195,9 +195,13 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     """
     if self_beb_z0 is None:
         self_beb_z0 = np.zeros(z.shape + hopping.shape, dtype=complex)
-        self_beb_z0 += np.sum(concentration*e_onsite, axis=-1)[..., newaxis]*np.eye(*hopping.shape)
-        # experience shows that a single fixed_point iteration speeds up considerably
+        # experience shows that a single fixed_point is a good starting point
         self_beb_z0 += self_root_eq(self_beb_z0, z, e_onsite, concentration, hopping, hilbert_trafo)
+        if np.all(z.imag >= 0):  # make sure that we are in the retarded regime
+            diag_idx = (..., np.eye(*hopping.shape, dtype=bool))
+            self_beb_z0[diag_idx] = np.where(self_beb_z0[diag_idx].imag < 0,
+                                             self_beb_z0[diag_idx], self_beb_z0[diag_idx].conj())
+            assert np.all(self_beb_z0[diag_idx].imag <= 0)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       z=z, e_onsite=e_onsite, concentration=concentration, hopping=hopping,
                       hilbert_trafo=hilbert_trafo)
