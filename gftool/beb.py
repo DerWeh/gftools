@@ -35,7 +35,7 @@ transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
 
 
 def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex],
-             diagnal=True):
+             diagonal=True):
     """Calculate average local Green's function matrix in components.
 
     For the self-consistent self-energy `self_beb_z` this it is diagonal in the
@@ -69,7 +69,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     eig, rv = np.linalg.eig(qt.T @ z_m_self @ rt_inv)
     dec = matrix.Decomposition(rt_inv@rv, eig, np.linalg.inv(rv)@qt.T)
 
-    return dec.reconstruct(hilbert_trafo(dec.xi), kind='diag' if diagnal else 'full')
+    return dec.reconstruct(hilbert_trafo(dec.xi), kind='diag' if diagonal else 'full')
 
 
 def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping,

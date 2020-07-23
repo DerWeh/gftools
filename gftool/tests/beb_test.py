@@ -29,7 +29,7 @@ def test_gf_loc(self_beb_z):
     D = 1.3
     hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
 
-    gf_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diagnal=False)
+    gf_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diagonal=False)
 
     # Gf loc using brute-force integration
     kernel = z[..., np.newaxis, np.newaxis]*np.eye(*t.shape) - self_beb_z
