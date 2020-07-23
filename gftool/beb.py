@@ -140,17 +140,17 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     Parameters
     ----------
-    z : (N_z) complex array_like
+    z : (...) complex np.ndarray
         Frequency points.
     e_onsite : (N_cmpt) float or complex np.ndarray
         On-site energy of the components.
-    concentration : (N_cmpt) float array_like
+    concentration : (N_cmpt) float np.ndarray
         Concentration of the different components.
     hopping : (N_cmpt, N_cmpt) float array_like
         Hopping matrix in the components.
     hilbert_trafo : Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the local Green's function.
-    self_beb_z0 : (..., N_z, N_cmpt, N_cmpt) complex np.ndarray, optional
+    self_beb_z0 : (..., N_cmpt, N_cmpt) complex np.ndarray, optional
         Starting guess for the BEB self-energy.
     restricted : bool, optional
         Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
@@ -175,7 +175,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     --------
     >>> from functools import partial
     >>> eps = np.array([-0.5, 0.5])
-    >>> c = [0.3, 0.7]
+    >>> c = np.array([0.3, 0.7])
     >>> t = np.array([[1.0, 0.3],
     ...               [0.3, 1.2]])
     >>> hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
