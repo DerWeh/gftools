@@ -105,6 +105,21 @@ class TestBetheGf(GfProperties):
         return (), {'half_bandwidth': request.param}
 
 
+class TestOnedimGf(GfProperties):
+    """Check properties of one-dimensional Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.onedim_gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+
 class TestSquareGf(GfProperties):
     """Check properties of Bethe Gf."""
 
@@ -279,6 +294,41 @@ def test_bethe_dos_moment(D):
     assert gt.bethe_dos.m2(D) == pytest.approx(m2)
     assert gt.bethe_dos.m3(half_bandwidth=D) == pytest.approx(m3)
     assert gt.bethe_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_onedim_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gt.onedim_dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, D]) == pytest.approx(1.)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_onedim_dos_half(D):
+    """DOS should be symmetric -> integral over the half should yield 0.5."""
+    dos = partial(gt.onedim_dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
+    assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
+
+
+def test_onedim_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.onedim_dos(eps, D) == 0
+        assert gt.onedim_dos(-eps, D) == 0
+
+
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_onedim_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    m2 = fp.quad(lambda eps: eps**2 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
+    m3 = fp.quad(lambda eps: eps**3 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
+    m4 = fp.quad(lambda eps: eps**4 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
+    assert gt.onedim_dos.m2(D) == pytest.approx(m2)
+    assert gt.onedim_dos.m3(half_bandwidth=D) == pytest.approx(m3)
+    assert gt.onedim_dos.m4(half_bandwidth=D) == pytest.approx(m4)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
