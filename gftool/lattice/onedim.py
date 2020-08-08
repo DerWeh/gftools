@@ -77,12 +77,11 @@ def hilbert_transform(xi, half_bandwidth):
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
-    .. math::
-        4t = D
+    .. math:: 2t = D
 
     See Also
     --------
-    gf_z
+    gftool.lattice.onedim.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -163,7 +162,7 @@ def dos_moment(m, half_bandwidth):
 
     See Also
     --------
-    dos
+    gftool.lattice.onedim.dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry

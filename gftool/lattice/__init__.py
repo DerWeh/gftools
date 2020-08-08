@@ -7,11 +7,13 @@ Submodules
     :toctree:
 
     bethe
+    onedim
     square
 
 """
-from . import bethe, square
+from . import bethe, onedim, square
 
 # silence warnings of unused imports
 assert bethe
+assert onedim
 assert square

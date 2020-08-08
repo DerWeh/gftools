@@ -86,6 +86,23 @@ bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
 bethe_dos.m4 = partial(lattice.bethe.dos_moment, 4)
 bethe_dos.m5 = partial(lattice.bethe.dos_moment, 5)
 
+
+# One-dimensional lattice
+from .lattice.onedim import (dos as onedim_dos,
+                             dos_moment as onedim_dos_moment,
+                             gf_z as onedim_gf_z,
+                             hilbert_transform as onedim_hilbert_transform)
+
+# silence warnings of unused imports
+assert (onedim_dos and onedim_dos_moment and onedim_gf_z and onedim_hilbert_transform)
+
+onedim_dos.m1 = partial(lattice.onedim.dos_moment, 1)
+onedim_dos.m2 = partial(lattice.onedim.dos_moment, 2)
+onedim_dos.m3 = partial(lattice.onedim.dos_moment, 3)
+onedim_dos.m4 = partial(lattice.onedim.dos_moment, 4)
+onedim_dos.m5 = partial(lattice.onedim.dos_moment, 5)
+
+
 # Square lattice
 from .lattice.square import (dos as square_dos,
                              dos_moment as square_dos_moment,
