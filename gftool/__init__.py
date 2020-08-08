@@ -782,9 +782,9 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> occ_m2 = gt.density_iw(iws, gf_iw, beta=BETA, moments=[1., m2])
     >>> occ_fit2 = gt.density_iw(iws, gf_iw, beta=BETA, n_fit=1)
     >>> exact, occ, occ_m2, occ_fit2
-    (0.17858151698239388, 0.1793443785417405, 0.17858150879572615, 0.17858198909064515)
+    (0.17858151..., 0.17934437..., 0.17858150..., 0.17858198...)
     >>> abs(occ - exact), abs(occ_m2 - exact), abs(occ_fit2 - exact)
-    (0.0007628615593466281, 8.186667732612563e-09, 4.7210825127042e-07)
+    (0.00076286..., 8.18...e-09, 4.72...e-07)
 
     using more accurate Padé frequencies
 
@@ -792,9 +792,9 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> gf_izp = pole_gf.eval_z(izp)
     >>> occ_izp = gt.density_iw(izp, gf_izp, beta=BETA, weights=rp)
     >>> occ_izp
-    0.17858151698239433
-    >>> abs(occ_izp - exact)
-    4.440892098500626e-16
+    0.17858151...
+    >>> abs(occ_izp - exact) < 1e-14
+    True
 
     """
     # add axis for iws, remove it later at occupation
