@@ -83,7 +83,7 @@ def hilbert_transform(xi, half_bandwidth):
     xi : complex ndarray or complex
         Point at which the Hilbert transform is evaluated
     half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
+        half-bandwidth of the DOS of the 2D square lattice
 
     Returns
     -------
@@ -99,7 +99,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     See Also
     --------
-    gf_z
+    gftool.lattice.square.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -164,12 +164,12 @@ def dos_moment(m, half_bandwidth):
     m : int
         The order of the moment.
     half_bandwidth : float
-        Half-bandwidth of the DOS of the Bethe lattice.
+        Half-bandwidth of the DOS of the 2D square lattice.
 
     Returns
     -------
     dos_moment : float
-        The `m` th moment of the Bethe DOS.
+        The `m` th moment of the 2D square DOS.
 
     Raises
     ------
@@ -178,7 +178,7 @@ def dos_moment(m, half_bandwidth):
 
     See Also
     --------
-    dos
+    gftool.lattice.square.dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry

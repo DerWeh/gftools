@@ -83,7 +83,7 @@ def gf_d1_z(z, half_bandwidth):
 
     See Also
     --------
-    gf_z
+    gftool.lattice.bethe.gf_z
 
     """
     z_rel_inv = np.array(half_bandwidth / z, dtype=np.complex256)
@@ -114,7 +114,7 @@ def gf_d2_z(z, half_bandwidth):
 
     See Also
     --------
-    gf_z
+    gftool.lattice.bethe.gf_z
 
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
@@ -159,7 +159,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     See Also
     --------
-    gf_z
+    gftool.lattice.bethe.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -212,7 +212,7 @@ dos_moment_coefficients = {
     4: 0.125,
     6: 0.078125,
     8: 0.0546875,
-    # not sure if results form wolframalpha are accurate enought, calculated them with mpmath
+    # not sure if results form wolframalpha are accurate enough, calculated them with mpmath
     # 10: 0.0410156,
     # 12: 0.0322266,
     # 14: 0.0261841,
@@ -246,7 +246,7 @@ def dos_moment(m, half_bandwidth):
 
     See Also
     --------
-    dos
+    gftool.lattice.bethe.dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry
