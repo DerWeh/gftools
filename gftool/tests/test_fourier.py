@@ -87,6 +87,8 @@ def test_iw2tau_mulity_pole(args):
     mom = gt.pole_gf_moments(poles, resids, order=range(1, 6))
     gf_ft = gt.fourier.iw2tau(gf_iw, moments=mom, beta=BETA)
     assert np.allclose(gf_tau, gf_ft)
+    gf_ft = gt.fourier.iw2tau(gf_iw, moments=mom[..., :2], beta=BETA, n_fit=2)
+    assert np.allclose(gf_tau, gf_ft)
 
 
 # TODO: check if there is a way to improve result for pole↘0
