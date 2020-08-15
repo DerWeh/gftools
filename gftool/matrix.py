@@ -134,7 +134,7 @@ class Decomposition(Sequence):
         if 'diag'.startswith(kind):
             return ((transpose(self.rv_inv)*self.rv) @ xi[..., np.newaxis])[..., 0]
         if 'full'.startswith(kind):
-            return (self.rv * xi[..., np.newaxis, :]) @ self.rv_inv
+            return np.asfortranarray((self.rv * xi[..., np.newaxis, :])) @ self.rv_inv
         return np.einsum(kind, self.rv, xi, self.rv_inv)
 
     def __getitem__(self, key):
