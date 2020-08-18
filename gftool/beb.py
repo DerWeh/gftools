@@ -17,7 +17,7 @@ References
 """
 import logging
 
-from typing import Callable
+from typing import Callable, NamedTuple
 from functools import partial
 
 import numpy as np
@@ -34,8 +34,39 @@ diagonal = partial(np.diagonal, axis1=-2, axis2=-1)
 transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
 
 
+class SVD(NamedTuple):
+    """Container for the singular value decomposition of a matrix."""
+
+    u: np.ndarray
+    s: np.ndarray
+    vh: np.ndarray
+
+    def truncate(self, rcond=None) -> "SVD":
+        """Return the truncated singular values decomposition.
+
+        Singular values smaller than `rcond` times the largest singular values
+        are discarded.
+
+        Parameters
+        ----------
+        rcond : float, rcond
+            Cut-off ratio for small singular values.
+
+        Returns
+        -------
+        truncated_svd : SVD
+            The truncates singular value decomposition.
+
+        """
+        if rcond is None:
+            rcond = np.finfo(self.s.dtype).eps * max(self.u.shape[-2:])
+        significant = self.s > self.s[..., 0]*rcond
+        return SVD(u=self.u[..., :, significant], s=self.s[..., significant],
+                   vh=self.vh[..., significant, :])
+
+
 def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex],
-             diagonal=True):
+             diag=True, rcond=None):
     """Calculate average local Green's function matrix in components.
 
     For the self-consistent self-energy `self_beb_z` this it is diagonal in the
@@ -51,58 +82,86 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
         Hopping matrix in the components.
     hilbert_trafo : Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the local Green's function.
-    diagnal : bool, optional
-        If `diagnal`, only the diagonal elements are calculated, else the full
-        matrix.
+    diag : bool, optional
+        If `diag`, only the diagonal elements are calculated, else the full
+        matrix. (default: True)
+    rcond : float, optional
+        Cut-off ratio for small singular values of `hopping`. For the purposes
+        of rank determination, singular values are treated as zero if they are
+        smaller than `rcond` times the largest singular value of `hopping`.
 
     Returns
     -------
-    gf_loc_z : (..., N_z, N_cmpt) or (..., N_z, N_cmpt, N_cmpt) complex np.ndarray
+    gf_loc_z : (..., N_cmpt) or (..., N_cmpt, N_cmpt) complex np.ndarray
         The average local Green's function matrix.
 
     """
+    hopping_svd = SVD(*np.linalg.svd(hopping, hermitian=True))
+    LOGGER.info('hopping singular values %s', hopping_svd.s)
+    hopping_svd = hopping_svd.truncate(rcond)
+    LOGGER.info('Keeping %s (out of %s)', hopping_svd.s.shape[-1], hopping_svd.vh.shape[-1])
+    kind = 'diag' if diag else 'full'
+
     eye = np.eye(*hopping.shape)
-    qt, rt = np.linalg.qr(hopping)
-    rt_inv = np.linalg.inv(rt)
+    u, s_vh = hopping_svd.u, hopping_svd.s[..., newaxis] * hopping_svd.vh
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
-    eig, rv = np.linalg.eig(qt.T @ z_m_self @ rt_inv)
-    dec = matrix.Decomposition(rt_inv@rv, eig, np.linalg.inv(rv)@qt.T)
+    z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
+    dec = matrix.Decomposition.from_gf(s_vh @ z_m_self_inv @ u)
+    diag_inv = 1. / dec.xi
+    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated
+        v_sinv = transpose(hopping_svd[2]).conj() / hopping_svd[1][..., newaxis, :]
+        dec.rv = v_sinv @ np.asfortranarray(dec.rv)
+        dec.rv_inv = np.asfortranarray(dec.rv_inv) @ transpose(u).conj()
+        return dec.reconstruct(hilbert_trafo(diag_inv), kind=kind)
 
-    return dec.reconstruct(hilbert_trafo(dec.xi), kind='diag' if diagonal else 'full')
+    dec.rv = z_m_self_inv @ u @ np.asfortranarray(dec.rv)
+    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ s_vh @ z_m_self_inv
+    correction = dec.reconstruct((diag_inv*hilbert_trafo(diag_inv) - 1) * diag_inv, kind=kind)
+    return (diagonal(z_m_self_inv) if diag else z_m_self_inv) + correction
 
 
-def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping,
+def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
                  hilbert_trafo: Callable[[complex], complex]):
     """Root equation r(Σ)=0 for BEB.
 
     Parameters
     ----------
-    self_beb_z : (..., N_z, N_cmpt, N_cmpt) complex np.ndarray
+    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray
         BEB self-energy.
-    z : (N_z) complex np.ndarray
+    z : (...) complex np.ndarray
         Frequency points.
-    e_onsite : (N_cmpt) float or complex array_like
+    e_onsite : (..., N_cmpt) float or complex array_like
         On-site energy of the components.
-    concentration : (N_cmpt) float array_like
+    concentration : (..., N_cmpt) float array_like
         Concentration of the different components.
-    hopping : (N_cmpt, N_cmpt) float array_like
-        Hopping matrix in the components.
+    hopping_svd : SVD
+        Compact SVD decomposition of the (N_cmpt, N_cmpt) hopping matrix in the
+        components.
     hilbert_trafo : Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the local Green's function.
 
-    """
-    eye = np.eye(*hopping.shape)
-    qt, rt = np.linalg.qr(hopping)
-    rt_inv = np.linalg.inv(rt)
-    # [..., newaxis]*eye add matrix axis
-    # matrix-products are faster if larger arrays are in Fortran order
-    z_m_self = np.asfortranarray(z[..., newaxis, newaxis]*eye - self_beb_z)
-    eig, rv = np.linalg.eig(qt.T @ z_m_self @ rt_inv)
-    rv = np.asfortranarray(rv)
-    dec = matrix.Decomposition(qt@rv, eig, np.asfortranarray(np.linalg.inv(rv))@rt)
+    Returns
+    -------
+    diff : (..., N_cmpt, N_cmpt)
+        Difference of the inverses of the local and the average Green's function.
+        If `diff = 0`, `self_beb_z` is the correct self-energy.
 
-    gf_loc_inv = dec.reconstruct(1./hilbert_trafo(dec.xi))
+    """
+    eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
+    u, s_vh = hopping_svd.u, hopping_svd.s[..., newaxis] * hopping_svd.vh
+    z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
+    # matrix-products are faster if larger arrays are in Fortran order
+    z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
+    dec = matrix.Decomposition.from_gf(s_vh @ z_m_self_inv @ u)
+    dec.rv = u @ np.asfortranarray(dec.rv)
+    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ s_vh
+    diag_inv = 1. / dec.xi
+    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated
+        gf_loc_inv = dec.reconstruct(1./hilbert_trafo(diag_inv), kind='full')
+    else:
+        gf_loc_inv = z_m_self + dec.reconstruct(1./hilbert_trafo(diag_inv) - diag_inv, kind='full')
+
     gf_ii_avg_inv = (diagonal(gf_loc_inv) + diagonal(self_beb_z) - e_onsite) / concentration
 
     return gf_loc_inv - gf_ii_avg_inv[..., newaxis]*eye
@@ -129,7 +188,7 @@ def restrict_self_root_eq(self_beb_z, *args, **kwds):
 
 
 def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[complex], complex],
-               self_beb_z0=None, restricted=True, **root_kwds):
+               self_beb_z0=None, restricted=True, rcond=None, **root_kwds):
     """Determine the BEB self-energy by solving the root problem.
 
     The current implementation doesn't work for rank-deficient problems,
@@ -157,6 +216,10 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         (default: True)
         Note, that even if `restricted=True`, the imaginary part can get
         negative within tolerance. This should be removed by hand if necessary.
+    rcond : float, optional
+        Cut-off ratio for small singular values of `hopping`. For the purposes
+        of rank determination, singular values are treated as zero if they are
+        smaller than `rcond` times the largest singular value of `hopping`.
     root_kwds
         Additional arguments passed to `optimize.root`.
         `method` can be used to choose a solver. `options=dict(fatol=tol)` can
@@ -164,7 +227,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     Returns
     -------
-    self_beb_z : (..., N_z, N_cmpt, N_cmpt) complex np.ndarray
+    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray
         The BEB self-energy as the root of `self_root_eq`
 
     Raises
@@ -194,18 +257,23 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     >>> plt.show()
 
     """
+    hopping_svd = SVD(*np.linalg.svd(hopping, hermitian=True))
+    LOGGER.info('hopping singular values %s', hopping_svd.s)
+    hopping_svd = hopping_svd.truncate(rcond)
+    LOGGER.info('Keeping %s (out of %s)', hopping_svd.s.shape[-1], hopping_svd.vh.shape[-1])
     if self_beb_z0 is None:
         self_beb_z0 = np.zeros(hopping.shape, dtype=complex)
         # experience shows that a single fixed_point is a good starting point
-        self_beb_z0 = self_root_eq(self_beb_z0, z, e_onsite, concentration, hopping, hilbert_trafo)
+        self_beb_z0 = self_root_eq(self_beb_z0, z, e_onsite, concentration,
+                                   hopping_svd, hilbert_trafo)
         if np.all(z.imag >= 0):  # make sure that we are in the retarded regime
             diag_idx = (..., np.eye(*hopping.shape, dtype=bool))
             self_beb_z0[diag_idx] = np.where(self_beb_z0[diag_idx].imag < 0,
                                              self_beb_z0[diag_idx], self_beb_z0[diag_idx].conj())
             assert np.all(self_beb_z0[diag_idx].imag <= 0)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
-                      z=z, e_onsite=e_onsite, concentration=concentration, hopping=hopping,
-                      hilbert_trafo=hilbert_trafo)
+                      z=z, e_onsite=e_onsite, concentration=concentration,
+                      hopping_svd=hopping_svd, hilbert_trafo=hilbert_trafo)
 
     method = root_kwds.pop('method', 'krylov')
     if 'callback' not in root_kwds:  # setup LOGGER if no 'callback' is provided
