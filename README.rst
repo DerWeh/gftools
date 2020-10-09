@@ -10,7 +10,7 @@ GfTools
 
 
 Collection of commonly used Green's functions and utilities.
-The main propose of this module is to have a tested and thus reliable basis
+The main purpose of this module is to have a tested and thus reliable basis
 to do numerics. It happened to me too often, that I just made a mistake copying 
 the Green's function and was then wondering what was wrong with my algorithm.
 The main use case of GfTools was DMFT and its real space generalization,
