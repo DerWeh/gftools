@@ -185,8 +185,8 @@ def dos_moment(m, half_bandwidth):
         return 0
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
-    except KeyError:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.')
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
 
 
 def stress_trafo(xi, half_bandwidth):
