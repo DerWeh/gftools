@@ -140,7 +140,7 @@ def dos(eps, half_bandwidth):
     eps_rel = np.asarray(eps / half_bandwidth)
     dos = np.zeros_like(eps_rel)
     nonzero = abs(eps_rel) <= 1
-    elliptic = ellipkm1(eps_rel[nonzero]**2)  # on the real axis we can use fast scipy Implementation
+    elliptic = ellipkm1(eps_rel[nonzero]**2)  # on real axis we can use fast scipy Implementation
     dos[nonzero] = 2 / np.pi**2 / half_bandwidth * elliptic
     return dos
 
@@ -192,7 +192,7 @@ def dos_moment(m, half_bandwidth):
 def stress_trafo(xi, half_bandwidth):
     r"""Single pole integration over the stress tensor function.
 
-    This is in analogy to the Hilbert transformation, we define the stress
+    In analogy to the Hilbert transformation, we define the stress
     tensor transformation as
 
     .. math:: T(ξ) = ∫dϵ \tilde{Φ}_{xx}(ϵ)/(ξ - ϵ)

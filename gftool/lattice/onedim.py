@@ -148,12 +148,12 @@ def dos_moment(m, half_bandwidth):
     m : int
         The order of the moment.
     half_bandwidth : float
-        Half-bandwidth of the DOS of the Bethe lattice.
+        Half-bandwidth of the DOS of the 1D lattice.
 
     Returns
     -------
     dos_moment : float
-        The `m` th moment of the Bethe DOS.
+        The `m` th moment of the 1D DOS.
 
     Raises
     ------
