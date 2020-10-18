@@ -782,7 +782,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     """
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
-    n_tau = gf_tau_full_range.shape[-1]  # pylint: disable=unsubscriptable-object
+    n_tau = gf_tau_full_range.shape[-1] - 1  # pylint: disable=unsubscriptable-object
     gf_dft = np.fft.ihfft(gf_tau_full_range[..., :-1])
     d_gf_tau = gf_tau_full_range[..., 1:] - gf_tau_full_range[..., :-1]
     d_gf_dft = np.fft.ihfft(d_gf_tau)
