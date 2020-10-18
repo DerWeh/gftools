@@ -61,7 +61,8 @@ def test_iw2tau_dft_single_pole(pole):
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
-                   elements=st.floats(min_value=-10, max_value=10),
+                   elements=[st.floats(min_value=-10, max_value=10),
+                             st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
 def test_iw2tau_mulity_pole(args):
     """Test `iw2tau` for a multi-pole Green's function."""
@@ -160,7 +161,8 @@ def test_tau2iw_dft_single_pole(pole):
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
-                   elements=st.floats(min_value=-10, max_value=10),
+                   elements=[st.floats(min_value=-10, max_value=10),
+                             st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_mulity_pole(args):
     """Test `tau2iw` for a multi-pole Green's function."""
@@ -188,7 +190,8 @@ def test_tau2iw_mulity_pole(args):
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
-                   elements=st.floats(min_value=-10, max_value=10),
+                   elements=[st.floats(min_value=-10, max_value=10),
+                             st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_mulity_pole_hfm(args):
     """Test `tau2iw_dft` for a multi-pole Green's function."""
