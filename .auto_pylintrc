@@ -147,7 +147,8 @@ disable=print-statement,
         too-many-lines,
         line-too-long,
         bad-whitespace,
-        cyclic-import  # FIXME: remove cyclic import by moving statistics to own module
+        cyclic-import,  # FIXME: remove cyclic import by moving statistics to own module
+        similarities,  # FIXME: there are duplicates in lattice which we want to ignore
 
 
 # Enable the message, report, category or checker with the given id(s). You can
