@@ -697,7 +697,7 @@ def tau2iw_dft(gf_tau, beta):
 def tau2iw_ft_lin(gf_tau, beta):
     r"""Fourier integration of the real Green's function `gf_tau`.
 
-    Fourier transformation of a fermionc imaginary-time Green's function to
+    Fourier transformation of a fermionic imaginary-time Green's function to
     Matsubara domain.
     We assume a real Green's function `gf_tau`, which is the case for
     commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with
