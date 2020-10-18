@@ -38,6 +38,13 @@ API
   gftool.pade
 
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Help
+
+   whats-new
+
+
 
 Indices and tables
 ==================
