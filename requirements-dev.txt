@@ -1,0 +1,9 @@
+pydocstyle
+pyflakes
+pylint
+pytest>=4.6
+hypothesis>=4.24.5
+hypothesis_gufunc
+pytest-cov
+codecov
+attrs>=19.2.0
