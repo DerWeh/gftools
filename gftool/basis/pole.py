@@ -21,8 +21,8 @@ from typing import NamedTuple
 import numpy as np
 from numpy import newaxis
 
-import gftool as gt
 from gftool import linalg
+from gftool.statistics import fermi_fct
 
 
 polyvander = np.polynomial.polynomial.polyvander
@@ -199,7 +199,7 @@ class PoleGf(PoleFct):
             Occupation number.
 
         """
-        return np.sum(self.residues*gt.fermi_fct(self.poles, beta=beta), axis=-1)
+        return np.sum(self.residues*fermi_fct(self.poles, beta=beta), axis=-1)
 
     @classmethod
     def from_tau(cls, gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=None):
@@ -282,6 +282,9 @@ def gf_z(z, poles, weights):
     return np.sum(weights/(z-poles), axis=-1)
 
 
+_gf_z = gf_z  # keep name, as gf_z is often locally overwritten
+
+
 def gf_d1_z(z, poles, weights):
     """First derivative of Green's function given by a finite number of `poles`.
 
@@ -313,8 +316,8 @@ def _single_pole_gf_tau(tau, pole, beta):
     assert np.all((tau >= 0.) & (tau <= beta))
     # exp(-tau*pole)*f(-pole, beta) = exp((beta-tau)*pole)*f(pole, beta)
     exponent = np.where(pole.real >= 0, -tau, -tau + beta) * pole
-    # -(1-gt.fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
-    return -np.exp(exponent) * gt.fermi_fct(-np.sign(pole.real)*pole, beta)
+    # -(1-fermi_fct(poles, beta=beta))*np.exp(-tau*poles)
+    return -np.exp(exponent) * fermi_fct(-np.sign(pole.real)*pole, beta)
 
 
 def gf_tau(tau, poles, weights, beta):
@@ -491,7 +494,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     poles = width * poles
     # z -> newaxis for poles, which are axis=-1
     # poles -> newaxis for sum over axis=-1, newaxis for z which should be axis=-2
-    gf_sp_mat = gt.pole_gf_z(z[..., newaxis], poles[..., newaxis, :, newaxis], weights=1)
+    gf_sp_mat = _gf_z(z[..., newaxis], poles[..., newaxis, :, newaxis], weights=1)
     gf_sp_mat = np.concatenate([gf_sp_mat.real, gf_sp_mat.imag], axis=-2)
     gf_z = np.concatenate([gf_z.real, gf_z.imag], axis=-1)
     otype = _get_otype(gf_z, moments, poles)
@@ -572,7 +575,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
         constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
         if occ:
             constrain_mat = np.concatenate(
-                np.broadcast_arrays(constrain_mat, gt.fermi_fct(poles, beta=beta)), axis=-2
+                np.broadcast_arrays(constrain_mat, fermi_fct(poles, beta=beta)), axis=-2
             )
             moments = np.concatenate(np.broadcast_arrays(moments, occ), axis=-1)
         _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',

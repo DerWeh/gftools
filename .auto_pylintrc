@@ -147,7 +147,6 @@ disable=print-statement,
         too-many-lines,
         line-too-long,
         bad-whitespace,
-        cyclic-import,  # FIXME: remove cyclic import by moving statistics to own module
         similarities,  # FIXME: there are duplicates in lattice which we want to ignore
 
 
