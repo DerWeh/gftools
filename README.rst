@@ -38,6 +38,13 @@ where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
 consider using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
 Of course you can also clone or fork the project.
 
+If you clone the project, you can locally build the documentation:
+
+.. code-block:: console
+
+   $ pip install -r requirements-doc.txt
+   $ python setup.py build_sphinx
+
 
 
 Documentation
