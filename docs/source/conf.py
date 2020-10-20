@@ -55,10 +55,19 @@ master_doc = 'index'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The short X.Y version.
-version = gftool.__version__
-# The full version, including alpha/beta/rc tags.
-release = gftool.__version__
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+if on_rtd:  # RTD modifies `conf.py` file resulting in dirty git
+    print("We are on RTD!")
+    dirty, gtver = '.dirty', gftool.__version__
+    clean_version = gtver[:-len(dirty)] if gtver.endswith(dirty) else gtver
+    gftool.__version__ = clean_version
+    version = clean_version
+    release = clean_version
+else:
+    # The short X.Y version.
+    version = gftool.__version__
+    # The full version, including alpha/beta/rc tags.
+    release = gftool.__version__
 
 # -- General configuration ---------------------------------------------------
 
