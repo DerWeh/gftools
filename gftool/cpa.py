@@ -235,7 +235,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     """
     if self_cpa_z0 is None:  # static average + 0j to make it complex array
         self_cpa_z0 = np.average(e_onsite, weights=concentration, axis=-1) + 0j
-        self_cpa_z0 = np.ones_like(z) * self_cpa_z0[..., np.newaxis]
+        self_cpa_z0, __ = np.broadcast_arrays(self_cpa_z0, z)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       z=z, e_onsite=e_onsite, concentration=concentration,
                       hilbert_trafo=hilbert_trafo)
@@ -342,7 +342,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     """
     if self_cpa_iw0 is None:  # static average + 0j to make it complex array
         self_cpa_iw0 = np.average(e_onsite, weights=concentration, axis=-1) - mu0 + 0j
-        self_cpa_iw0 = np.ones_like(iws) * self_cpa_iw0[..., np.newaxis]
+        self_cpa_iw0, __ = np.broadcast_arrays(self_cpa_iw0, iws)
     x0, shapes = _join([mu0], self_cpa_iw0.real, self_cpa_iw0.imag)
     self_root_eq_ = partial(restrict_self_root_eq if restricted else self_root_eq,
                             z=iws, concentration=concentration, hilbert_trafo=hilbert_trafo)
