@@ -23,7 +23,7 @@ def test_gf_loc(self_beb_z):
     This is a rather expensive test -> currently no hypothesis.
     """
     z = np.array([0])  # only `np.eye()*z - self_beb_z` is relevant
-    # symmetrise matrix
+    # symmetrize matrix
     self_beb_z[1, 0] = self_beb_z[0, 1] = 0.5*(self_beb_z[0, 1] + self_beb_z[1, 0])
     assert np.linalg.cond(self_beb_z) < 1e4   # reasonably well condition matrices only
     t = np.array([[1.0, 0.3],
@@ -31,7 +31,7 @@ def test_gf_loc(self_beb_z):
     D = 1.3
     hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
 
-    gf_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diagonal=False)
+    gf_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=False)
 
     # Gf loc using brute-force integration
     kernel = z[..., np.newaxis, np.newaxis]*np.eye(*t.shape) - self_beb_z
@@ -59,7 +59,7 @@ def test_selfconsistency(z):
     hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
     self_beb_z = gt.beb.solve_root(np.array(z), eps, concentration=c, hopping=t,
                                    hilbert_trafo=hilbert, restricted=False)
-    gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diagonal=False)
+    gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=False)
     assert np.allclose(gf_loc_z[..., 0, 1], 0)
     assert np.allclose(gf_loc_z[..., 1, 0], 0)
     # Gf_loc diagonal -> inverse is 1/diagonal
