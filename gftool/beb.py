@@ -191,9 +191,6 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
                self_beb_z0=None, restricted=True, rcond=None, **root_kwds):
     """Determine the BEB self-energy by solving the root problem.
 
-    The current implementation doesn't work for rank-deficient problems,
-    e.g. `hopping=np.ones(N_cmpt)`. Therefor you should only consider problems
-    where `hopping` is sufficiently well conditioned.
     Note that the result should be checked, whether the obtained solution is
     physical.
 
