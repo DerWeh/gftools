@@ -358,8 +358,8 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
     return resid, [np.linalg.norm(np.sum(polematrix*resid, axis=-1) - fct_z, ord=2)]
 
 
-def continuation(z, fct_z, degree=-1, weight=None, vandermond=polynomial.polyvander,
-                 moments=(), rotate=None, real_asymp=True) -> PadeApprox:
+def continuation(z, fct_z, degree=-1, weight=None, moments=(),
+                 vandermond=polynomial.polyvander, rotate=None, real_asymp=True) -> PadeApprox:
     """Perform the Padé analytic continuation of `(z, fct_z)`.
 
     Parameters
@@ -374,14 +374,14 @@ def continuation(z, fct_z, degree=-1, weight=None, vandermond=polynomial.polyvan
     weight : (N_z) float np.ndarray, optional
         Weighting of the data points, for a known error `σ` this should be
         `weight = 1./σ`.
-    vandermond : Callable, optional
-        Function giving the Vandermond matrix of the chosen polynomial basis.
-        Defaults to simple polynomials.
     moments : (N) float array_like
         Moments of the high-frequency expansion, where
         `f(z) = moments / z**np.arange(1, N+1)` for large `z`. This only
         affects the calculated `pade.residues`, and constrains them to fulfill
         the `moments`.
+    vandermond : Callable, optional
+        Function giving the Vandermond matrix of the chosen polynomial basis.
+        Defaults to simple polynomials.
 
     Returns
     -------
