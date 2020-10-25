@@ -9,6 +9,7 @@ Submodules
 .. autosummary::
   :toctree: generated
 
+   gftool.beb
    gftool.cpa
    gftool.fourier
    gftool.lattice
