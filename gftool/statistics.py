@@ -25,6 +25,24 @@ def bose_fct(eps, beta):
     bose_fct : complex of float np.ndarray
         The Bose function, same type as eps.
 
+    Examples
+    --------
+    >>> eps = np.linspace(-1.5, 1.5, num=501)
+    >>> bose = gt.bose_fct(eps, beta=1.0)
+
+    The Bose function diverges at `eps=0`:
+
+    >>> bose[eps==0]
+    array([inf])
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, bose)
+    >>> _ = plt.xlabel(r"$\epsilon/\beta$")
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
     """
     betaeps = np.asanyarray(beta*eps)
     res = np.empty_like(betaeps)
@@ -55,6 +73,19 @@ def fermi_fct(eps, beta):
     See Also
     --------
     fermi_fct_inv : The inverse of the Fermi function for real arguments
+
+    Examples
+    --------
+    >>> eps = np.linspace(-15, 15, num=501)
+    >>> fermi = gt.fermi_fct(eps, beta=1.0)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, fermi)
+    >>> _ = plt.xlabel(r"$\epsilon/\beta$")
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> _ = plt.ylim(bottom=0)
+    >>> plt.show()
 
     """
     z = eps*beta
@@ -92,6 +123,19 @@ def fermi_fct_d1(eps, beta):
     --------
     fermi_fct
 
+    Examples
+    --------
+    >>> eps = np.linspace(-15, 15, num=501)
+    >>> fermi_d1 = gt.fermi_fct_d1(eps, beta=1.0)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, fermi_d1)
+    >>> _ = plt.xlabel(r"$\epsilon/\beta$")
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> _ = plt.ylim(top=0)
+    >>> plt.show()
+
     """
     fermi = fermi_fct(eps, beta=beta)
     return -beta*fermi*(1-fermi)
@@ -117,6 +161,13 @@ def fermi_fct_inv(fermi, beta):
     See Also
     --------
     fermi_fct
+
+    Examples
+    --------
+    >>> eps = np.linspace(-15, 15, num=500)
+    >>> fermi = gt.fermi_fct(eps, beta=1)
+    >>> np.allclose(eps, gt.fermi_fct_inv(fermi, beta=1))
+    True
 
     """
     return -logit(fermi)/beta
@@ -209,6 +260,21 @@ def pade_frequencies(num: int, beta):
     .. [hu2010] J. Hu, R.-X. Xu, and Y. Yan, “Communication: Padé spectrum
        decomposition of Fermi function and Bose function,” J. Chem. Phys., vol.
        133, no. 10, p.  101106, Sep. 2010, https://doi.org/10.1063/1.3484491
+
+    Examples
+    --------
+    Comparing Padé frequency to Matsubara frequencies:
+
+    >>> izp, rp = gt.pade_frequencies(5, beta=1)
+    >>> izp.imag
+    array([ 3.14159265,  9.42478813, 15.76218003, 24.87650795, 70.52670981])
+    >>> gt.matsubara_frequencies(range(5), beta=1).imag
+    array([ 3.14159265,  9.42477796, 15.70796327, 21.99114858, 28.27433388])
+
+    Relative residue:
+
+    >>> rp
+    array([ 1.        ,  1.00002021,  1.04839303,  2.32178225, 22.12980451])
 
     """
     num = 2*num
