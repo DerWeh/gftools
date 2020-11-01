@@ -22,7 +22,7 @@ def bose_fct(eps, beta):
 
     Returns
     -------
-    bose_fct : complex of float np.ndarray
+    bose_fct : complex of float or np.ndarray
         The Bose function, same type as eps.
 
     Examples
@@ -60,14 +60,14 @@ def fermi_fct(eps, beta):
 
     Parameters
     ----------
-    eps : complex or float or ndarray
+    eps : complex or float or np.ndarray
         The energy at which the Fermi function is evaluated.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct : complex of float or ndarray
+    fermi_fct : complex of float or np.ndarray
         The Fermi function, same type as eps.
 
     See Also
@@ -105,18 +105,18 @@ def fermi_fct(eps, beta):
 def fermi_fct_d1(eps, beta):
     r"""Return the 1st derivative of the Fermi function.
 
-    .. math:: -β\exp(βϵ)/{(\exp(βϵ)+1)}^2
+    .. math:: f'(ϵ) = -β\exp(βϵ)/{[\exp(βϵ)+1]}^2 = -βf(ϵ)[1-f(ϵ)]
 
     Parameters
     ----------
-    eps : float or float ndarray
+    eps : float or float np.ndarray
         The energy at which the Fermi function is evaluated.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct_d1 : float or float ndarray
+    fermi_fct_d1 : float or float np.ndarray
         The Fermi function, same type as eps.
 
     See Also
@@ -148,14 +148,14 @@ def fermi_fct_inv(fermi, beta):
 
     Parameters
     ----------
-    fermi : float or float ndarray
+    fermi : float or float np.ndarray
         The values of the Fermi function
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    fermi_fct_inv : float or float ndarray
+    fermi_fct_inv : float or float np.ndarray
         The inverse of the Fermi function `fermi_fct(fermi_fct_inv, beta)=fermi`.
 
     See Also
@@ -185,7 +185,7 @@ def matsubara_frequencies(n_points, beta):
 
     Returns
     -------
-    matsubara_frequencies : complex ndarray
+    matsubara_frequencies : complex np.ndarray
         Array of the imaginary Matsubara frequencies
 
     Examples
@@ -204,14 +204,14 @@ def matsubara_frequencies_b(n_points, beta):
 
     Parameters
     ----------
-    n_points : int ndarray
+    n_points : int array_like
         Points for which the Matsubara frequencies :math:`iν_n` are returned.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
-    matsubara_frequencies : complex ndarray
+    matsubara_frequencies : complex np.ndarray
         Array of the imaginary Matsubara frequencies
 
     Examples
@@ -245,10 +245,10 @@ def pade_frequencies(num: int, beta):
         Positive Padé frequencies.
     resids : (num) float np.ndarray
         Residue of the Fermi function corresponding to `izp`. The residue is
-        given relative to true residue of the Fermi function corresponding to
-        the poles at Matsubara frequencies. This allows to use Padé frequencies
-        as drop-in replacement.
-        The actual residues would be `-resids/beta`.
+        given relative to the true residue of the Fermi function `-1/beta`
+        corresponding to the poles at Matsubara frequencies.
+        This allows to use Padé frequencies as drop-in replacement.
+        The actual residues are `-resids/beta`.
 
     References
     ----------
