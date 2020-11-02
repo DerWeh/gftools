@@ -50,6 +50,7 @@ in particular using CT-QMC algorithms.
    generated/gftool.lattice
    generated/gftool.matrix
    generated/gftool.pade
+   generated/gftool.polepade
    generated/gftool.siam
 
 

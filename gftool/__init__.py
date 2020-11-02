@@ -16,6 +16,7 @@ Submodules
    gftool.linearprediction
    gftool.matrix
    gftool.pade
+   gftool.polepade
    gftool.siam
 
 Glossary
