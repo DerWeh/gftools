@@ -328,9 +328,9 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
     ----------
     occ_root : callable
         Function `occ_root(mu_i) -> occ_i - occ`, which returns the difference
-        in occupation for a chemical potential `mu_i` to the given occupation
-        `occ`. The sign is important, that `occ_i - occ` is returned.
-        Note that the sign is important!
+        in occupation to the desired occupation `occ` for a chemical potential
+        `mu_i`.
+        Note that the sign is important, `occ_i - occ` has to be returned!
     mu0 : float, optional
         The starting guess for the chemical potential. (default: 0)
     step0 : float, optional
@@ -344,6 +344,7 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
     Returns
     -------
     mu : float
+        The chemical potential given the correct charge `occ_root(mu)=0`.
 
     Raises
     ------
@@ -354,9 +355,9 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
 
     Notes
     -----
-    The search for a chemical potential is here a two-step procedure:
+    The search for a chemical potential is a two-step procedure:
     *First*, we search for a bracket `[mua, mub]` with
-    `occ_root(mua) < 0 < occ_root(mub)`. Here we use that the occupation is a
+    `occ_root(mua) < 0 < occ_root(mub)`. We use that the occupation is a
     monotonous increasing function of the chemical potential `mu`.
     *Second*, we perform a standard root-search in `[mua, mub]` which is done
     using `scipy.optimize.root_scalar`, Brent's method is currently used as
@@ -549,7 +550,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
         For Padé frequencies this needs to be provided.
     moments : (..., M) float array_like, optional
         Moments of the high-frequency expansion, where
-        `G(z) = moments / z**np.arange(N)` for large `z`.
+        `G(z) = np.sum(moments / z**np.arange(N))` for large `z`.
     n_fit : int, optional
         Number of additionally to `moments` fitted moments. If Padé frequencies
         are used, this is typically not necessary. (default: 0)
