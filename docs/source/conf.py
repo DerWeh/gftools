@@ -78,12 +78,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'numpydoc',
     'sphinx.ext.autosummary',
-    'matplotlib.sphinxext.plot_directive',
-    'sphinx.ext.intersphinx',
+    'matplotlib.sphinxext.plot_directive',  # plots in examples
+    'sphinx.ext.intersphinx',  # links to numpy, scipy ... docs
     'sphinx.ext.viewcode',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
-    'sphinx_toggleprompt',
+    'sphinx_toggleprompt',  # toggle `>>>`
+    'sphinx.ext.extlinks',  # define roles for links
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -170,3 +171,8 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'np': ('http://docs.scipy.org/doc/numpy/', None),
                        }
+
+# -----------------------------------------------------------------------------
+# extlinks
+# -----------------------------------------------------------------------------
+extlinks = {'commit': ('https://github.com/DerWeh/gftools/commit/%s', '')}
