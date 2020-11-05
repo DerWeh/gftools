@@ -198,9 +198,9 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     ----------
     z : (...) complex np.ndarray
         Frequency points.
-    e_onsite : (N_cmpt) float or complex np.ndarray
+    e_onsite : (..., N_cmpt) float or complex np.ndarray
         On-site energy of the components.
-    concentration : (N_cmpt) float np.ndarray
+    concentration : (..., N_cmpt) float np.ndarray
         Concentration of the different components.
     hopping : (N_cmpt, N_cmpt) float array_like
         Hopping matrix in the components.
@@ -268,6 +268,11 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
             self_beb_z0[diag_idx] = np.where(self_beb_z0[diag_idx].imag < 0,
                                              self_beb_z0[diag_idx], self_beb_z0[diag_idx].conj())
             assert np.all(self_beb_z0[diag_idx].imag <= 0)
+    else:  # to use in root, self_beb_z0 has to have the correct shape
+        # dirty hack: do one iteration to get the correct shape
+        self_beb_z0 = (self_beb_z0
+                       + 0*self_root_eq(self_beb_z0, z, e_onsite, concentration,
+                                        hopping_svd, hilbert_trafo))
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       z=z, e_onsite=e_onsite, concentration=concentration,
                       hopping_svd=hopping_svd, hilbert_trafo=hilbert_trafo)
