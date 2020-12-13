@@ -26,7 +26,7 @@ Other New Features
 * add `gftool.density_iw` function as common interface to calculate occupation
   number from Matsubara or Padé frequencies
 * allow calculation of `gftool.lattice.bethe` for Bethe lattice at complex points
-  (not that this is probably not a physically meaningful quantity) (:commit:`ccbac7b`)
+  (note, that this is probably not a physically meaningful quantity) (:commit:`ccbac7b`)
 * add stress tensor transformation `gftool.lattice.square.stress_trafo` for 2D (:commit:`528fb21`)
 
 Bug fixes
