@@ -231,3 +231,18 @@ def test_pole_from_gftau_exact(args):
     except ValueError:
         atol = 1e-8
     assert np.allclose(pole_gf.residues, resids, atol=atol)
+
+
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+                   elements=[st.floats(min_value=-10, max_value=10),
+                             st.floats(min_value=0, max_value=10), ],
+                   max_dims_extra=2, max_side=5),)
+def test_tt2z_trapz_naive(args):
+    """Compare optimized to naive trapz rule."""
+    poles, resids = args
+    tt = np.linspace(0, 10, num=101)
+    ww = np.linspace(-5, 5, num=57) + 0.1j
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
+    gf_ft = gt.fourier.tt2z(tt, gf_t, ww)
+    naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
+    assert np.allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)

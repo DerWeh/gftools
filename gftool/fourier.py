@@ -10,6 +10,22 @@ The Fourier transforms are defined in the following way:
 Definitions
 -----------
 
+real time → complex frequencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Laplace integral for the Green's function is defined as
+
+.. math:: G(z) = \int_{-\infty}^{\infty} dt G(t) \exp(izt)
+
+This integral is only well defined
+
+* in the upper complex half-plane `z.imag>=0` for retarded Green's function :math:`∝θ(t)`
+* in the lower complex half-plane `z.imag<=0` for advanced Green's function :math:`∝θ(-t)`
+
+The recommended high-level function to perform this Laplace transform is:
+
+* `tt2z` for both retarded and advanced Green's function
+
 imaginary time → Matsubara frequencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -59,6 +75,13 @@ import logging
 
 import numpy as np
 from numpy import newaxis
+
+try:
+    import numexpr as ne
+except ImportError:
+    _HAS_NUMEXPR = False
+else:
+    _HAS_NUMEXPR = True
 
 import gftool as gt
 from gftool.basis.pole import PoleFct, PoleGf
@@ -1065,6 +1088,105 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     """
     pole_gf = PoleGf(*_z2polegf(izp, gf_izp, n_pole=izp.size, moments=moments))
     return pole_gf.eval_tau(tau, beta)
+
+
+def tt2z_trapez(tt, gf_t, z):
+    """Laplace transform of the real-time Green's function `gf_t`.
+
+    Approximate the Laplace integral by trapezoidal rule:
+
+    .. math::
+
+       G(z) = ∫dt G(t) exp(izt)
+            ≈ ∑_{k=1}^N [G(t_{k-1})exp(izt_{k-1}) + G(t_k)exp(izt_k)] Δt_k/2
+
+    The function can handle any input discretization `tt`.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function and time points `tt`.
+    z : (Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    Notes
+    -----
+    The function is equivalent to the one-liner
+    `np.trapz(np.exp(1j*z[:, None]*tt)*gf_t, x=tt)`.
+    Internally this function evaluates the sum as a matrix product to leverage
+    the speed-up of BLAS. If `numexpr` is available, it is used for the speed
+    up it provides for transcendental equations.
+
+    """
+    if _HAS_NUMEXPR:
+        phase = ne.evaluate('exp(1j*z*tt)', local_dict={'z': z[:, newaxis],
+                                                        'tt': tt[newaxis, :]})
+    else:
+        phase = np.exp(1j*z[:, newaxis]*tt[newaxis, :])
+
+    boundary = (phase[:, 0]*gf_t[..., :1]*(tt[1] - tt[0])
+                + phase[:, -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
+    d2tt = tt[2:] - tt[:-2]
+    trapez = (phase[..., 1:-1] @ (gf_t[..., 1:-1]*d2tt)[..., newaxis])[..., 0]
+    return 0.5*(boundary + trapez)
+
+
+def tt2z(tt, gf_t, z):
+    """Laplace transform of the real-time Green's function `gf_t`.
+
+    Calculate the Laplace transform
+
+    .. math:: G(z) = ∫dt G(t) exp(izt)
+
+    For the Laplace transform to be well defined,
+    it should either be `tt>=0 and z.imag>=0` for the retarded Green's function,
+    or `tt<=0 and z.imag<=0` for the advance Green's function.
+
+    The retarded (advanced) Green's function can in principle be evaluated for
+    any frequency point `z` in the upper (lower) complex half-plane.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function and time points `tt`.
+    z : (Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    See Also
+    --------
+    tt2z_trapez : Back-end: approximate integral by trapezoidal rule
+
+    Raises
+    ------
+    ValueError
+        If neither the condition for retarded or advanced Green's function is
+        fulfilled.
+
+    """
+    retarded = np.all(tt >= 0) and np.all(z.imag >= 0)
+    advanced = np.all(tt <= 0) and np.all(z.imag <= 0)
+    if not (retarded or advanced):
+        raise ValueError("Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
+                         " or `tt<=0 and z.imag<=0`")
+    if z.size == 0:  # consistent behavior for gufuncs
+        return np.array([], dtype=complex)
+    return tt2z_trapez(tt, gf_t, z)
 
 
 def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> PoleGf:
