@@ -186,6 +186,26 @@ class PoleGf(PoleFct):
         """
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
+    def eval_ret_t(self, tt):
+        """Evaluate the retarded time Green's function.
+
+        Parameters
+        ----------
+        tt : (...) float array_like
+            Green's function is evaluated at times `tt`, for `tt<0` it is 0.
+
+        Returns
+        -------
+        pole_gf_ret_t : (...) float np.ndarray
+            Retarded time Green's function.
+
+        See Also
+        --------
+        gf_ret_t
+
+        """
+        return gf_ret_t(tt, poles=self.poles, weights=self.residues)
+
     def occ(self, beta):
         """Calculate the occupation number.
 
@@ -349,6 +369,31 @@ def gf_tau(tau, poles, weights, beta):
     tau = np.asanyarray(tau)[..., newaxis]
     beta = np.asanyarray(beta)[..., newaxis]
     return _gu_sum(weights*_single_pole_gf_tau(tau, poles, beta=beta))
+
+
+def gf_ret_t(tt, poles, weights):
+    """Retarded time Green's function given by a finite number of `poles`.
+
+    Parameters
+    ----------
+    tt : (...) float array_like
+        Green's function is evaluated at times `tt`, for `tt<0` it is 0.
+    poles, weights : (..., N) float array_like or float
+        Position and weight of the poles.
+
+    Returns
+    -------
+    pole_gf_ret_t : (...) float np.ndarray
+        Retarded time Green's function.
+
+    See Also
+    --------
+    pole_gf_z : corresponding commutator Green's function
+
+    """
+    poles = np.atleast_1d(poles)
+    tt = np.asanyarray(tt)
+    return -1j*np.where(tt >= 0, _gu_sum(weights*np.exp(-1j*poles*tt[..., newaxis])), 0)
 
 
 def moments(poles, weights, order):
