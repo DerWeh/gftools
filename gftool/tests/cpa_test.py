@@ -3,6 +3,7 @@ from functools import partial
 
 import numpy as np
 import hypothesis.strategies as st
+import pytest
 
 from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
@@ -44,6 +45,7 @@ def test_average(z):
     assert np.allclose(np.average(gf_cmpt_z, weights=concentration, axis=-1), gf_coher_z)
 
 
+@pytest.mark.filterwarnings("ignore:Ill-conditioned matrix:scipy.linalg.LinAlgWarning")
 @given(z=st.complex_numbers(max_magnitude=1e-6))
 def test_restriction(z):
     """Check if restricted results yield physical results."""
