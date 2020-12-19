@@ -237,8 +237,8 @@ def test_pole_from_gftau_exact(args):
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=5),)
-def test_tt2z_trapz_naive(args):
-    """Compare optimized to naive trapz rule."""
+def test_tt2z_trapz_naive_gubehaviour(args):
+    """Compare optimized to naive trapezoidal rule."""
     poles, resids = args
     tt = np.linspace(0, 10, num=101)
     ww = np.linspace(-5, 5, num=57) + 0.1j
@@ -246,3 +246,16 @@ def test_tt2z_trapz_naive(args):
     gf_ft = gt.fourier.tt2z(tt, gf_t, ww)
     naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
     assert np.allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
+
+
+@given(pole=st.floats(-1, 1))  # escilation speed tepends on bandwidth
+def test_tt2z_trapz_single_pole(pole):
+    """Low accuracy test of `tt2z` on a single pole."""
+    tt = np.linspace(0, 50, 3001)
+    ww = np.linspace(-2, 2, num=101) + 2e-1j
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=[pole], weights=[1.])
+    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww)
+    gf_z = gt.pole_gf_z(ww, poles=[pole], weights=[1.])
+
+    assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
