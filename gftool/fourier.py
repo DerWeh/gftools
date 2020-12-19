@@ -1178,6 +1178,59 @@ def tt2z(tt, gf_t, z):
         If neither the condition for retarded or advanced Green's function is
         fulfilled.
 
+    Examples
+    --------
+    >>> import gftool.fourier
+    >>> tt = np.linspace(0, 150, num=1501)
+    >>> ww = np.linspace(-2, 2, num=501) + 1e-1j
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)
+    >>> gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
+    >>> gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(ww.real, gf_ww.imag, label='exact Im')
+    >>> __ = plt.plot(ww.real, gf_ft.imag, '--', label='DFT Im')
+    >>> __ = plt.plot(ww.real, gf_ww.real, label='exact Re')
+    >>> __ = plt.plot(ww.real, gf_ft.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    The function Laplace transform can be evaluated at abitrary contours,
+    e.g. for a semi-ceircle in the the upper half-plane.
+    Note, that close to the real axis the accuracy is bad, due to the
+    truncation at `max(tt)`
+
+    >>> z = np.exp(1j*np.pi*np.linspace(0, 1, num=51))
+    >>> gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=z)
+    >>> gf_z = gt.pole_gf_z(z, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(z.real, gf_z.imag, '+', label='exact Im')
+    >>> __ = plt.plot(z.real, gf_ft.imag, 'x', label='DFT Im')
+    >>> __ = plt.plot(z.real, gf_z.real, '+', label='exact Re')
+    >>> __ = plt.plot(z.real, gf_ft.real, 'x', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.show()
+
+    Accuracy
+
+    >>> poles = 2*np.random.random(10) - 1  # partially filled
+    >>> weights = np.random.random(10)
+    >>> weights = weights/np.sum(weights)
+    >>> gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)
+    >>> gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
+    >>> gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
+
+    >>> gf_trapez = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
+    >>> __ = plt.plot(ww.real, abs(gf_ww - gf_trapez), label='DFT_trapez')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
     """
     retarded = np.all(tt >= 0) and np.all(z.imag >= 0)
     advanced = np.all(tt <= 0) and np.all(z.imag <= 0)
