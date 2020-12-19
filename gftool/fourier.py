@@ -89,6 +89,14 @@ from gftool.basis.pole import PoleFct, PoleGf
 LOGGER = logging.getLogger(__name__)
 
 
+if _HAS_NUMEXPR:
+    def _phase(z, tt):
+        return ne.evaluate('exp(1j*z*tt)', local_dict={'z': z, 'tt': tt})
+else:
+    def _phase(z, tt):
+        return np.exp(1j*z*tt)
+
+
 def iw2tau_dft(gf_iw, beta):
     r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
 
@@ -1126,12 +1134,7 @@ def tt2z_trapez(tt, gf_t, z):
     up it provides for transcendental equations.
 
     """
-    if _HAS_NUMEXPR:
-        phase = ne.evaluate('exp(1j*z*tt)', local_dict={'z': z[:, newaxis],
-                                                        'tt': tt[newaxis, :]})
-    else:
-        phase = np.exp(1j*z[:, newaxis]*tt[newaxis, :])
-
+    phase = _phase(z[:, newaxis], tt[newaxis, :])
     boundary = (phase[:, 0]*gf_t[..., :1]*(tt[1] - tt[0])
                 + phase[:, -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
     d2tt = tt[2:] - tt[:-2]
