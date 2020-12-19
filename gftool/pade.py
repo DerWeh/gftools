@@ -30,6 +30,7 @@ import numpy as np
 
 from gftool import Result
 from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
+from gftool._util import _gu_sum
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
@@ -228,7 +229,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         bad = []  # isin needs list not set
         for nn in range(N_pades, abs_num_, -1):
             diff = nn*pade - pade_sum  # 50% of time
-            distance = np.sum(diff.real**2 + diff.imag**2, axis=-1)  # 40% of time
+            distance = _gu_sum(diff.real**2 + diff.imag**2)  # 40% of time
             badness = np.argsort(distance, axis=0)[::-1]  # truncate what is not needed
             newbad = badness[np.isin(badness, bad, invert=True)][0]
             bad.append(newbad)

@@ -23,6 +23,7 @@ from numpy import newaxis
 
 from gftool import linalg
 from gftool.statistics import fermi_fct
+from gftool._util import _gu_sum
 
 
 polyvander = np.polynomial.polynomial.polyvander
@@ -199,7 +200,7 @@ class PoleGf(PoleFct):
             Occupation number.
 
         """
-        return np.sum(self.residues*fermi_fct(self.poles, beta=beta), axis=-1)
+        return _gu_sum(self.residues*fermi_fct(self.poles, beta=beta))
 
     @classmethod
     def from_tau(cls, gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=None):
@@ -279,7 +280,7 @@ def gf_z(z, poles, weights):
     """
     poles = np.atleast_1d(poles)
     z = np.asanyarray(z)[..., newaxis]
-    return np.sum(weights/(z-poles), axis=-1)
+    return _gu_sum(weights / (z - poles))
 
 
 _gf_z = gf_z  # keep name, as gf_z is often locally overwritten
@@ -309,7 +310,7 @@ def gf_d1_z(z, poles, weights):
     """
     poles = np.atleast_1d(poles)
     z = np.asanyarray(z)[..., newaxis]
-    return -np.sum(weights * (z - poles)**-2, axis=-1)
+    return -_gu_sum(weights * (z - poles)**-2)
 
 
 def _single_pole_gf_tau(tau, pole, beta):
@@ -347,7 +348,7 @@ def gf_tau(tau, poles, weights, beta):
     poles = np.atleast_1d(poles)
     tau = np.asanyarray(tau)[..., newaxis]
     beta = np.asanyarray(beta)[..., newaxis]
-    return np.sum(weights*_single_pole_gf_tau(tau, poles, beta=beta), axis=-1)
+    return _gu_sum(weights*_single_pole_gf_tau(tau, poles, beta=beta))
 
 
 def moments(poles, weights, order):
@@ -372,7 +373,7 @@ def moments(poles, weights, order):
     """
     poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
     order = np.asarray(order)[..., newaxis]
-    return np.sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1), axis=-1)
+    return _gu_sum(weights[..., newaxis, :] * poles[..., newaxis, :]**(order-1))
 
 
 def gf_from_moments(moments, width=1.) -> PoleFct:

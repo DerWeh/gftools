@@ -1,8 +1,11 @@
 """Collection of linear algebra algorithms not contained in numpy or scipy."""
 from functools import partial
+
 import numpy as np
+
 from scipy import linalg as spla
 
+from gftool._util import _gu_sum
 
 transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
@@ -54,6 +57,6 @@ def lstsq_ec(a, b, c, d, rcond=None):
     r_ct = r_ct[..., :constrains, :]
     y = spla.solve_triangular(r_ct, d, trans='C')
     aq = a @ q_ct
-    z = np.linalg.lstsq(aq[:, constrains:], b - np.sum(aq[:, :constrains]*y, axis=-1),
+    z = np.linalg.lstsq(aq[:, constrains:], b - _gu_sum(aq[:, :constrains]*y),
                         rcond=rcond)[0]
-    return np.sum(q_ct*np.concatenate((y, z), axis=-1), axis=-1)
+    return _gu_sum(q_ct*np.concatenate((y, z), axis=-1))

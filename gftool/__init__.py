@@ -58,6 +58,7 @@ from scipy import optimize
 
 from . import lattice, matrix as gtmatrix
 from .basis import pole
+from ._util import _gu_sum
 from ._version import get_versions
 
 __version__ = get_versions()['version']
@@ -315,7 +316,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     if np.any(poles.real < 0):
         raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
-    return np.sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles), axis=-1)
+    return _gu_sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles))
 
 
 pole_gf_moments = pole.moments
@@ -614,7 +615,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     else:
         mom_gf = pole.PoleGf.from_moments(moments, width=None)
     delta_gf_iw = gf_iw.real - mom_gf.eval_z(iws).real
-    return 2./beta*np.sum(weights * delta_gf_iw.real, axis=-1) + mom_gf.occ(beta)[..., 0]
+    return 2./beta*_gu_sum(weights * delta_gf_iw.real) + mom_gf.occ(beta)[..., 0]
 
 
 def density_error(delta_gf_iw, iw_n, noisy=True):
