@@ -15,7 +15,7 @@ real time → complex frequencies
 
 The Laplace integral for the Green's function is defined as
 
-.. math:: G(z) = \int_{-\infty}^{\infty} dt G(t) \exp(izt)
+.. math:: G(z) = ∫_{-∞}^{∞} dt G(t) \exp(izt)
 
 This integral is only well defined
 
@@ -1091,14 +1091,14 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
 
 
 def tt2z_trapez(tt, gf_t, z):
-    """Laplace transform of the real-time Green's function `gf_t`.
+    r"""Laplace transform of the real-time Green's function `gf_t`.
 
     Approximate the Laplace integral by trapezoidal rule:
 
     .. math::
 
-       G(z) = ∫dt G(t) exp(izt)
-            ≈ ∑_{k=1}^N [G(t_{k-1})exp(izt_{k-1}) + G(t_k)exp(izt_k)] Δt_k/2
+       G(z) = ∫dt G(t) \exp(izt)
+            ≈ ∑_{k=1}^N [G(t_{k-1})\exp(izt_{k-1}) + G(t_k)\exp(izt_k)] Δt_k/2
 
     The function can handle any input discretization `tt`.
 
@@ -1140,11 +1140,11 @@ def tt2z_trapez(tt, gf_t, z):
 
 
 def tt2z(tt, gf_t, z):
-    """Laplace transform of the real-time Green's function `gf_t`.
+    r"""Laplace transform of the real-time Green's function `gf_t`.
 
     Calculate the Laplace transform
 
-    .. math:: G(z) = ∫dt G(t) exp(izt)
+    .. math:: G(z) = ∫dt G(t) \exp(izt)
 
     For the Laplace transform to be well defined,
     it should either be `tt>=0 and z.imag>=0` for the retarded Green's function,
