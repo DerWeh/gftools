@@ -26,6 +26,10 @@ The recommended high-level function to perform this Laplace transform is:
 
 * `tt2z` for both retarded and advanced Green's function
 
+Currently, to sub-functions can be used equivalently, the abstraction `tt2z` is
+mostly for consistency with the imaginary time ↔ Matsubara frequencies
+Fourier transformations.
+
 imaginary time → Matsubara frequencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1125,6 +1129,10 @@ def tt2z_trapez(tt, gf_t, z):
     gf_z : (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
+    See Also
+    --------
+    tt2z_lin : Laplace integration using Filon's method
+
     Notes
     -----
     The function is equivalent to the one-liner
@@ -1211,7 +1219,7 @@ def tt2z_lin(tt, gf_t, z):
     return gf_z
 
 
-def tt2z(tt, gf_t, z):
+def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
     Calculate the Laplace transform
@@ -1225,6 +1233,9 @@ def tt2z(tt, gf_t, z):
     The retarded (advanced) Green's function can in principle be evaluated for
     any frequency point `z` in the upper (lower) complex half-plane.
 
+    The accented contours for `tt` and `z` depend on the specific used back-end
+    `laplace`.
+
     Parameters
     ----------
     tt : (Nt) float np.ndarray
@@ -1234,6 +1245,8 @@ def tt2z(tt, gf_t, z):
     z : (Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
+    laplace : {`tt2z_lin`, `tt2z_trapez`}, optional
+        Back-end to perform the actual Fourier transformation.
 
     Returns
     -------
@@ -1243,6 +1256,7 @@ def tt2z(tt, gf_t, z):
     See Also
     --------
     tt2z_trapez : Back-end: approximate integral by trapezoidal rule
+    tt2z_lin : Back-end: approximate integral by Filon's method
 
     Raises
     ------
@@ -1288,18 +1302,25 @@ def tt2z(tt, gf_t, z):
     >>> __ = plt.legend()
     >>> plt.show()
 
-    Accuracy
+    Accuracy of the different back-ends:
 
-    >>> poles = 2*np.random.random(10) - 1  # partially filled
-    >>> weights = np.random.random(10)
-    >>> weights = weights/np.sum(weights)
-    >>> gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)
-    >>> gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
-    >>> gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
+     * For large `z.imag`, `tt2z_lin` performs better.
+     * For intermediate `z.imag`, the quality depends on the relevant `z.real`.
+       For small `z.real`, the error of `tt2z_trapez` is more uniform;
+       for big `z.real`, `tt2z_lin` is a good approximation.
+     * For small `z.imag`, the methods are almost identical,
+       the truncation of `tt` dominates the error.
 
-    >>> gf_trapez = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
-    >>> __ = plt.plot(ww.real, abs(gf_ww - gf_trapez), label='DFT_trapez')
-    >>> __ = plt.legend()
+    >>> import matplotlib.pyplot as plt
+    >>> for ii, eta in enumerate([1.0, 0.5, 0.1, 0.03]):
+    ...     ww.imag = eta
+    ...     gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
+    ...     gf_trapz = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_trapez)
+    ...     gf_lin = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_lin)
+    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_trapez)/gf_ww),
+    ...                   label=f"z.imag={eta}", color=f"C{ii}")
+    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_lin)/gf_ww), '--', color=f"C{ii}")
+    ...     __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
 
@@ -1311,7 +1332,7 @@ def tt2z(tt, gf_t, z):
                          " or `tt<=0 and z.imag<=0`")
     if z.size == 0:  # consistent behavior for gufuncs
         return np.array([], dtype=complex)
-    return tt2z_trapez(tt, gf_t, z)
+    return laplace(tt, gf_t, z)
 
 
 def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> PoleGf:
