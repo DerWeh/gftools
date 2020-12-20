@@ -3,6 +3,33 @@
 What's New
 ==========
 
+
+Not Released
+------------
+
+New Features
+~~~~~~~~~~~~
+
+* add Laplace transformation from real times to complex frequencies `gftool.fourier.tt2z`
+
+Other New Features
+~~~~~~~~~~~~~~~~~~
+
+* add retarded time Green's function give by its poles `gftool.pole_gf_ret_t`
+
+Documentation
+~~~~~~~~~~~~~
+
+* Button to toggle the prompt (>>>) was added (:commit:`46b6f39`)
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+
+* Ensure more accurate `numpy.sum` using partial pairwise summation for 
+  generalized ufuncs (:commit:`2d3baef`)
+
+
+
 0.7.0 (2020-10-18)
 ------------------
 
@@ -41,6 +68,8 @@ Documentation
 ~~~~~~~~~~~~~
 * Functions exposed at the top level (`gftool`) should now properly appear in
   the documentation.
+
+
 
 0.6.1
 -----
