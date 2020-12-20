@@ -1142,6 +1142,75 @@ def tt2z_trapez(tt, gf_t, z):
     return 0.5*(boundary + trapez)
 
 
+def tt2z_lin(tt, gf_t, z):
+    r"""Laplace transform of the real-time Green's function `gf_t`.
+
+    Filon's method is used to calculate the Laplace integral
+
+    .. math:: G(z) = ∫dt G(t) \exp(izt),
+
+    :math:`G(t)` is approximated by a linear spline.
+    The function currently requires an equidistant `tt`.
+    Information on oscillatory integrations can be found e.g. in [filon1928]_
+    and [iserles]_.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The equidistant points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function and time points `tt`.
+    z : (Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    Raises
+    ------
+    ValueError
+        If the time points `tt` are not equidistant.
+
+    See Also
+    --------
+    tt2z_trapez : Plain implementation using trapezoidal rule.
+
+    Notes
+    -----
+    Internally this function evaluates the sum as a matrix product to leverage
+    the speed-up of BLAS. If `numexpr` is available, it is used for the speed
+    up it provides for transcendental equations.
+
+    References
+    ----------
+    .. [filon1928] L.N. Filon, On a quadrature formula for trigonometric integrals,
+       Proc. Roy. Soc. Edinburgh 49 (1928) 38-47.
+    .. [iserles] A. Iserles, S.P. Nørsett, and S. Olver, Highly oscillatory
+       quadrature: The story so far,
+       http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
+
+    """
+    delta_tt = tt[1] - tt[0]
+    if not np.allclose(tt[1:] - tt[:-1], delta_tt):
+        raise ValueError("Equidistant `tt` required for current implementation.")
+    zero = z == 0  # special case `z=0` has to be handled separately (due: 1/z)
+    if np.any(zero):
+        z = np.where(zero, np.nan, z)
+    izdt = 1j*z*delta_tt
+    phase = _phase(z[:, newaxis], tt[newaxis, :-1])
+    g_dft = (phase @ gf_t[..., :-1, newaxis])[..., 0]
+    dg_dft = (phase @ (gf_t[..., 1:] - gf_t[..., :-1])[..., newaxis])[..., 0]
+    weight1 = np.expm1(izdt)/izdt
+    weight2 = (np.exp(izdt) - weight1)/izdt
+    gf_z = delta_tt * (weight1*g_dft + weight2*dg_dft)
+    if np.any(zero):
+        gf_z[..., zero] = np.trapz(gf_t, x=tt)[..., np.newaxis]
+    return gf_z
+
+
 def tt2z(tt, gf_t, z):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
