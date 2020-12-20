@@ -1047,7 +1047,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     --------
     >>> import gftool.fourier
     >>> BETA = 50
-    >>> izp, __ = gt.pade_frequencies(200, beta=BETA)
+    >>> izp, __ = gt.pade_frequencies(50, beta=BETA)
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
 
     >>> poles = 2*np.random.random(10) - 1  # partially filled
@@ -1411,7 +1411,7 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     >>> import gftool.fourier
     >>> BETA = 50
     >>> tau = np.linspace(0, BETA, num=2049, endpoint=True)
-    >>> izp, __ = gt.pade_frequencies(200, beta=BETA)
+    >>> izp, __ = gt.pade_frequencies(50, beta=BETA)
 
     >>> poles = 2*np.random.random(10) - 1  # partially filled
     >>> weights = np.random.random(10)
