@@ -84,6 +84,8 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
     ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
 
     dec = matrix.decompose_hamiltonian(ham)
+    # calculate only elements [..., 0] corresponding to the local impurity site
+    dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
     eig_exp = _single_pole_gf_ret_t(tt[..., np.newaxis], dec.xi)
     gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
     return gf0_t
