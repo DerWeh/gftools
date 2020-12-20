@@ -996,7 +996,7 @@ def _z2polegf(z, gf_z, n_pole, moments=(1.,)) -> PoleFct:
         gf_fit = pole_gf.eval_z(z)
         return np.linalg.norm(gf_z - gf_fit)
 
-    from scipy.optimize import minimize_scalar
+    from scipy.optimize import minimize_scalar  # pylint: disable=import-outside-toplevel
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
     opt_pole_gf = PoleFct.from_z(z, gf_z, n_pole=n_pole, moments=moments, width=opt.x)
@@ -1356,7 +1356,7 @@ def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> P
         gf_fit = pole_gf.eval_tau(tau, beta=beta)
         return np.linalg.norm(gf_tau - gf_fit)
 
-    from scipy.optimize import minimize_scalar
+    from scipy.optimize import minimize_scalar  # pylint: disable=import-outside-toplevel
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
     opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments,
