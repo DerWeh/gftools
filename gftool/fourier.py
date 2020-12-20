@@ -80,6 +80,8 @@ import logging
 import numpy as np
 from numpy import newaxis
 
+from gftool._util import _gu_matvec
+
 try:
     import numexpr as ne
 except ImportError:
@@ -1146,7 +1148,7 @@ def tt2z_trapez(tt, gf_t, z):
     boundary = (phase[:, 0]*gf_t[..., :1]*(tt[1] - tt[0])
                 + phase[:, -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
     d2tt = tt[2:] - tt[:-2]
-    trapez = (phase[..., 1:-1] @ (gf_t[..., 1:-1]*d2tt)[..., newaxis])[..., 0]
+    trapez = _gu_matvec(phase[..., 1:-1], gf_t[..., 1:-1]*d2tt)
     return 0.5*(boundary + trapez)
 
 
@@ -1209,8 +1211,8 @@ def tt2z_lin(tt, gf_t, z):
         z = np.where(zero, np.nan, z)
     izdt = 1j*z*delta_tt
     phase = _phase(z[:, newaxis], tt[newaxis, :-1])
-    g_dft = (phase @ gf_t[..., :-1, newaxis])[..., 0]
-    dg_dft = (phase @ (gf_t[..., 1:] - gf_t[..., :-1])[..., newaxis])[..., 0]
+    g_dft = _gu_matvec(phase, gf_t[..., :-1])
+    dg_dft = _gu_matvec(phase, gf_t[..., 1:] - gf_t[..., :-1])
     weight1 = np.expm1(izdt)/izdt
     weight2 = (np.exp(izdt) - weight1)/izdt
     gf_z = delta_tt * (weight1*g_dft + weight2*dg_dft)

@@ -9,3 +9,22 @@ def _gu_sum(a, **kwds):
     so we ensure the array to be c-contiguous.
     """
     return np.sum(np.ascontiguousarray(a), axis=-1, **kwds)
+
+
+def _gu_matvec(x1, x2):
+    """Matrix-vector product for the use in generalized ufuncs.
+
+    Parameters
+    ----------
+    x1 : (..., N, M) np.ndarray
+        The matrix.
+    x2 : (..., M) np.ndarray
+        The vector.
+
+    Returns
+    -------
+    (..., N) np.ndarray
+        The resulting vector.
+
+    """
+    return (x1 @ x2[..., np.newaxis])[..., 0]
