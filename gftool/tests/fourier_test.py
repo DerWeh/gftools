@@ -243,19 +243,51 @@ def test_tt2z_trapz_naive_gubehaviour(args):
     tt = np.linspace(0, 10, num=101)
     ww = np.linspace(-5, 5, num=57) + 0.1j
     gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
-    gf_ft = gt.fourier.tt2z(tt, gf_t, ww)
+    gf_ft = gt.fourier.tt2z_trapez(tt, gf_t, ww)
     naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
     assert np.allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
 
 
-@given(pole=st.floats(-1, 1))  # escilation speed tepends on bandwidth
-def test_tt2z_trapz_single_pole(pole):
+@given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
+def test_tt2z_single_pole(spole):
     """Low accuracy test of `tt2z` on a single pole."""
     tt = np.linspace(0, 50, 3001)
     ww = np.linspace(-2, 2, num=101) + 2e-1j
 
-    gf_t = gt.pole_gf_ret_t(tt, poles=[pole], weights=[1.])
-    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww)
-    gf_z = gt.pole_gf_z(ww, poles=[pole], weights=[1.])
+    gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
+    gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
+    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapez)
     assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
+    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
+    assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
+
+
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+                   elements=[st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=0, max_value=10),],
+                   max_dims_extra=2, max_side=5),)
+def test_tt2z_mulity_pole(args):
+    """Test `tau2iw_dft` for a multi-pole Green's function."""
+    poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    tt = np.linspace(0, 50, 3001)
+    ww = np.linspace(-2, 2, num=101) + 2e-1j
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :])
+    gf_z = gt.pole_gf_z(ww, poles=poles[..., np.newaxis, :],
+                        weights=resids[..., np.newaxis, :])
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_lin)
+    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_trapez)
+    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+
+    # test if zero handles gu-structure correctly
+    ww[ww.size//2] = 0
+    gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
+    ww[0] = ww[-1] = 0
+    gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
