@@ -36,6 +36,7 @@ API
   gftool.lattice
   gftool.matrix
   gftool.pade
+  gftool.siam
 
 
 .. toctree::

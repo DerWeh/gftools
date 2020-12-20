@@ -13,6 +13,7 @@ Submodules
    gftool.lattice
    gftool.matrix
    gftool.pade
+   gftool.siam
 
 Glossary
 --------

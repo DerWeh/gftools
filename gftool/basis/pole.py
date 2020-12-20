@@ -371,6 +371,10 @@ def gf_tau(tau, poles, weights, beta):
     return _gu_sum(weights*_single_pole_gf_tau(tau, poles, beta=beta))
 
 
+def _single_pole_gf_ret_t(tt, pole):
+    return np.where(tt >= 0, -1j*np.exp(-1j*pole*tt, where=(tt >= 0)), 0)
+
+
 def gf_ret_t(tt, poles, weights):
     """Retarded time Green's function given by a finite number of `poles`.
 
@@ -393,7 +397,7 @@ def gf_ret_t(tt, poles, weights):
     """
     poles = np.atleast_1d(poles)
     tt = np.asanyarray(tt)
-    return -1j*np.where(tt >= 0, _gu_sum(weights*np.exp(-1j*poles*tt[..., newaxis])), 0)
+    return _gu_sum(weights*_single_pole_gf_ret_t(tt[..., newaxis], pole=poles))
 
 
 def moments(poles, weights, order):
