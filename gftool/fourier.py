@@ -1104,7 +1104,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     return pole_gf.eval_tau(tau, beta)
 
 
-def tt2z_trapez(tt, gf_t, z):
+def tt2z_trapz(tt, gf_t, z):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
     Approximate the Laplace integral by trapezoidal rule:
@@ -1148,8 +1148,8 @@ def tt2z_trapez(tt, gf_t, z):
     boundary = (phase[:, 0]*gf_t[..., :1]*(tt[1] - tt[0])
                 + phase[:, -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
     d2tt = tt[2:] - tt[:-2]
-    trapez = _gu_matvec(phase[..., 1:-1], gf_t[..., 1:-1]*d2tt)
-    return 0.5*(boundary + trapez)
+    trapz = _gu_matvec(phase[..., 1:-1], gf_t[..., 1:-1]*d2tt)
+    return 0.5*(boundary + trapz)
 
 
 def tt2z_lin(tt, gf_t, z):
@@ -1186,7 +1186,7 @@ def tt2z_lin(tt, gf_t, z):
 
     See Also
     --------
-    tt2z_trapez : Plain implementation using trapezoidal rule.
+    tt2z_trapz : Plain implementation using trapezoidal rule.
 
     Notes
     -----
@@ -1247,7 +1247,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     z : (Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
-    laplace : {`tt2z_lin`, `tt2z_trapez`}, optional
+    laplace : {`tt2z_lin`, `tt2z_trapz`}, optional
         Back-end to perform the actual Fourier transformation.
 
     Returns
@@ -1257,7 +1257,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
 
     See Also
     --------
-    tt2z_trapez : Back-end: approximate integral by trapezoidal rule
+    tt2z_trapz : Back-end: approximate integral by trapezoidal rule
     tt2z_lin : Back-end: approximate integral by Filon's method
 
     Raises
@@ -1308,7 +1308,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
 
      * For large `z.imag`, `tt2z_lin` performs better.
      * For intermediate `z.imag`, the quality depends on the relevant `z.real`.
-       For small `z.real`, the error of `tt2z_trapez` is more uniform;
+       For small `z.real`, the error of `tt2z_trapz` is more uniform;
        for big `z.real`, `tt2z_lin` is a good approximation.
      * For small `z.imag`, the methods are almost identical,
        the truncation of `tt` dominates the error.
@@ -1317,9 +1317,9 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     >>> for ii, eta in enumerate([1.0, 0.5, 0.1, 0.03]):
     ...     ww.imag = eta
     ...     gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
-    ...     gf_trapz = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_trapez)
+    ...     gf_trapz = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_trapz)
     ...     gf_lin = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_lin)
-    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_trapez)/gf_ww),
+    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_trapz)/gf_ww),
     ...                   label=f"z.imag={eta}", color=f"C{ii}")
     ...     __ = plt.plot(ww.real, abs((gf_ww - gf_lin)/gf_ww), '--', color=f"C{ii}")
     ...     __ = plt.legend()

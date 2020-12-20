@@ -243,7 +243,7 @@ def test_tt2z_trapz_naive_gubehaviour(args):
     tt = np.linspace(0, 10, num=101)
     ww = np.linspace(-5, 5, num=57) + 0.1j
     gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
-    gf_ft = gt.fourier.tt2z_trapez(tt, gf_t, ww)
+    gf_ft = gt.fourier.tt2z_trapz(tt, gf_t, ww)
     naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
     assert np.allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
 
@@ -257,7 +257,7 @@ def test_tt2z_single_pole(spole):
     gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
-    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapez)
+    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
     assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
     gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
     assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
@@ -283,7 +283,7 @@ def test_tt2z_mulity_pole(args):
     gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_lin)
     assert np.allclose(gf_z, gf_ft, rtol=1e-3)
 
-    gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_trapez)
+    gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_trapz)
     assert np.allclose(gf_z, gf_ft, rtol=1e-3)
 
     # test if zero handles gu-structure correctly
