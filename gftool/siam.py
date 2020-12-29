@@ -12,8 +12,8 @@ The first to terms describe the interacting single impurity,
 the thirds term is the hopping (or hybridization) between impurity and bath-sites,
 the last term is the on-site energy of the non-interacting bath sites.
 
-In the action formalism, the the bath degrees of freedom can be readily
-integreated out, as the action is quadratic in these degrees.
+In the action formalism, the bath degrees of freedom can be readily integrated out,
+as the action is quadratic in these degrees.
 The local action of the impurity reads
 
 .. math::
@@ -61,7 +61,7 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
     Parameters
     ----------
     tt : (...) float np.ndarray
-        Time variable. Note that the retarded Green's functin is `0` for `tt<0`.
+        Time variable. Note that the retarded Green's function is `0` for `tt<0`.
     e_onsite : (...) float np.ndarray
         On-site energy of the impurity site.
     e_bath : (..., Nb) float np.ndarray
