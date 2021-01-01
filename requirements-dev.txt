@@ -6,4 +6,5 @@ hypothesis>=4.24.5
 hypothesis_gufunc
 pytest-cov
 codecov
+numexpr  # fast `gt.fourier.tt2z`
 attrs>=19.2.0

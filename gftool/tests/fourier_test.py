@@ -263,6 +263,27 @@ def test_tt2z_single_pole(spole):
     assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
 
 
+@pytest.mark.skipif(not gt.fourier._HAS_NUMEXPR,
+                    reason="Only fall-back available, already tested.")
+@given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
+def test_tt2z_single_pole_nonumexpr(spole):
+    """Low accuracy test of `tt2z` on a single pole."""
+    tt = np.linspace(0, 50, 3001)
+    ww = np.linspace(-2, 2, num=101) + 2e-1j
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
+    gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
+
+    try:
+        gt.fourier._HAS_NUMEXPR = False
+        gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
+        assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
+        gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
+        assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
+    finally:
+        gt.fourier._HAS_NUMEXPR = True
+
+
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],
