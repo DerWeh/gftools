@@ -285,12 +285,12 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
 
     Parameters
     ----------
-    gf_iw : (N_iw) complex np.ndarray
+    gf_iw : (..., N_iw) complex np.ndarray
         The Green's function at positive **fermionic** Matsubara frequencies
         :math:`iω_n`.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
-    moments : (m) float array_like
+    moments : (..., m) float array_like
         High-frequency moments of `gf_iw`.
     fourier : {`iw2tau_dft`, `iw2tau_dft_soft`}, optional
         Back-end to perform the actual Fourier transformation.
@@ -300,7 +300,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
 
     Returns
     -------
-    gf_tau : (2*N_iw + 1) float np.ndarray
+    gf_tau : (..., 2*N_iw + 1) float np.ndarray
         The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
 
     See Also
@@ -406,7 +406,7 @@ def tau2iv_dft(gf_tau, beta):
 
     Returns
     -------
-    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+    gf_iv : (..., (N_iv + 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -488,7 +488,7 @@ def tau2iv_ft_lin(gf_tau, beta):
 
     Returns
     -------
-    gf_iv : (..., {N_iv + 1}/2) float np.ndarray
+    gf_iv : (..., (N_iv + 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -586,7 +586,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
 
     Returns
     -------
-    gf_iv : (..., {N_iv + 1}/2) complex np.ndarray
+    gf_iv : (..., (N_iv + 1)/2) complex np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -673,7 +673,7 @@ def tau2iw_dft(gf_tau, beta):
 
     Returns
     -------
-    gf_iw : (..., {N_iw - 1}/2) float np.ndarray
+    gf_iw : (..., (N_iw - 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for positive fermionic Matsubara
         frequencies :math:`iω_n`.
 
@@ -756,7 +756,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     Returns
     -------
-    gf_iw : (..., {N_iw - 1}/2) float np.ndarray
+    gf_iw : (..., (N_iw - 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for positive fermionic Matsubara
         frequencies :math:`iω_n`.
 
@@ -860,7 +860,7 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
 
     Returns
     -------
-    gf_iw : (..., {N_iv + 1}/2) complex np.ndarray
+    gf_iw : (..., (N_iv + 1)/2) complex np.ndarray
         The Fourier transform of `gf_tau` for non-negative fermionic Matsubara
         frequencies :math:`iω_n`.
 
