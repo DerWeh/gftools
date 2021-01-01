@@ -1122,7 +1122,7 @@ def tt2z_trapz(tt, gf_t, z):
         The points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
         Green's function and time points `tt`.
-    z : (Nz) complex np.ndarray
+    z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
 
@@ -1144,9 +1144,9 @@ def tt2z_trapz(tt, gf_t, z):
     up it provides for transcendental equations.
 
     """
-    phase = _phase(z[:, newaxis], tt[newaxis, :])
-    boundary = (phase[:, 0]*gf_t[..., :1]*(tt[1] - tt[0])
-                + phase[:, -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
+    phase = _phase(z[..., newaxis], tt[newaxis, :])
+    boundary = (phase[..., 0]*gf_t[..., :1]*(tt[1] - tt[0])
+                + phase[..., -1]*gf_t[..., -1:]*(tt[-1] - tt[-2]))
     d2tt = tt[2:] - tt[:-2]
     trapz = _gu_matvec(phase[..., 1:-1], gf_t[..., 1:-1]*d2tt)
     return 0.5*(boundary + trapz)
@@ -1170,7 +1170,7 @@ def tt2z_lin(tt, gf_t, z):
         The equidistant points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
         Green's function and time points `tt`.
-    z : (Nz) complex np.ndarray
+    z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
 
@@ -1210,7 +1210,7 @@ def tt2z_lin(tt, gf_t, z):
     if np.any(zero):
         z = np.where(zero, np.nan, z)
     izdt = 1j*z*delta_tt
-    phase = _phase(z[:, newaxis], tt[newaxis, :-1])
+    phase = _phase(z[..., newaxis], tt[newaxis, :-1])
     g_dft = _gu_matvec(phase, gf_t[..., :-1])
     dg_dft = _gu_matvec(phase, gf_t[..., 1:] - gf_t[..., :-1])
     weight1 = np.expm1(izdt)/izdt
@@ -1244,7 +1244,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
         The points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
         Green's function and time points `tt`.
-    z : (Nz) complex np.ndarray
+    z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
     laplace : {`tt2z_lin`, `tt2z_trapz`}, optional
@@ -1333,7 +1333,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
         raise ValueError("Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
                          " or `tt<=0 and z.imag<=0`")
     if z.size == 0:  # consistent behavior for gufuncs
-        return np.array([], dtype=complex)
+        return np.empty_like(z)
     return laplace(tt, gf_t, z)
 
 

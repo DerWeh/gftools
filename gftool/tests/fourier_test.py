@@ -265,10 +265,10 @@ def test_tt2z_single_pole(spole):
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=5),)
 def test_tt2z_mulity_pole(args):
-    """Test `tau2iw_dft` for a multi-pole Green's function."""
+    """Test `tt2z` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
@@ -291,3 +291,30 @@ def test_tt2z_mulity_pole(args):
     gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
     ww[0] = ww[-1] = 0
     gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
+
+
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+                   elements=[st.complex_numbers(max_magnitude=2),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=0, max_value=10), ],
+                   max_dims_extra=2, max_side=5),)
+def test_tt2z_gufuncz(args):
+    """Test `tt2z` for different shapes of `z`."""
+    z, poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    # ensure sufficient large imaginary part
+    z = np.where(z.imag < 0, z.conj(), z)
+    z += 2e-1j
+    tt = np.linspace(0, 50, 3001)
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :])
+    gf_z = gt.pole_gf_z(z, poles=poles[..., np.newaxis, :],
+                        weights=resids[..., np.newaxis, :])
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_lin)
+    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_trapz)
+    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
