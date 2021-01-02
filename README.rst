@@ -67,6 +67,7 @@ fourier
    * Fourier transforms from Matsubara frequencies to imaginary time and back,
      including the handling of high-frequencies moments
      (especially import for transforms from Matsubara to imaginary time)
+   * Laplace transform from real times to complex frequencies
 
 matrix
    * helper for Green's functions in matrix form
