@@ -95,12 +95,15 @@ from gftool.basis.pole import PoleFct, PoleGf
 LOGGER = logging.getLogger(__name__)
 
 
-if _HAS_NUMEXPR:
-    def _phase(z, tt):
-        return ne.evaluate('exp(1j*z*tt)', local_dict={'z': z, 'tt': tt})
-else:
-    def _phase(z, tt):
-        return np.exp(1j*z*tt)
+def _phase_numexpr(z, tt):
+    return ne.evaluate('exp(1j*z*tt)', local_dict={'z': z, 'tt': tt})
+
+
+def _phase_numpy(z, tt):
+    return np.exp(1j*z*tt)
+
+
+_phase = _phase_numexpr if _HAS_NUMEXPR else _phase_numpy
 
 
 def iw2tau_dft(gf_iw, beta):

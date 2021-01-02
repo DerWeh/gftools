@@ -275,13 +275,14 @@ def test_tt2z_single_pole_nonumexpr(spole):
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
     try:
+        gt.fourier._phase = gt.fourier._phase_numpy
         gt.fourier._HAS_NUMEXPR = False
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
         assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
         assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
     finally:
-        gt.fourier._HAS_NUMEXPR = True
+        gt.fourier._phase = gt.fourier._phase_numexpr
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
