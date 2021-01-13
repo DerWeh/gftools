@@ -7,6 +7,7 @@ Submodules
     :toctree:
 
     bethe
+    bethez
     onedim
     square
     rectangular
@@ -15,11 +16,12 @@ Submodules
     sc
 
 """
-from . import (bethe, honeycomb, onedim, rectangular, sc, square,
+from . import (bethe, bethez, honeycomb, onedim, rectangular, sc, square,
                triangular)
 
 # silence warnings of unused imports
 assert bethe
+assert bethez
 assert onedim
 assert square
 assert rectangular
