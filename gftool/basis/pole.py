@@ -36,10 +36,7 @@ def _get_otype(*args):
 
 def _chebyshev_points(num: int) -> np.ndarray:
     """Return `num` Chebyshev points."""
-    cheb_points = np.cos(0.5 * np.pi * np.arange(1, 2*num, 2) / num)
-    if num % 2:  # fix central moment to exactly 0
-        cheb_points[num//2] = 0.
-    return cheb_points
+    return np.sin(0.5 * np.pi / num * np.arange(-num+1, num+1, 2))
 
 
 class PoleFct(NamedTuple):
