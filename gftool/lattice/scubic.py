@@ -41,6 +41,15 @@ class _DOSContainer:
         dos : float ndarray or float
             The value of the DOS.
 
+        See Also
+        --------
+        gftool.lattice.scubic.dos_mp : Calculation of DOS using multi-precision integration
+
+        Notes
+        -----
+        This function is a spline for precomputed vales calculated by `dos_mp`.
+        The used data-points are available at `dos_container.data`
+
         Examples
         --------
         >>> eps = np.linspace(-1.1, 1.1, num=500)
@@ -156,6 +165,10 @@ def dos_mp(eps, half_bandwidth=1, maxdegree: int = None):
     maxdegree : int, optional
         Maximum degree of the quadrature rule to try before quitting.
         Passed to `mpmath.mp.quad`.
+
+    See Also
+    --------
+    gfool.lattice.scubic.dos : Spline for precomputed DOS for fast evaluation.
 
 
     Examples
