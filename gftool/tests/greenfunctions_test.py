@@ -367,6 +367,53 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
 
 
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_scubic_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    scubic = gt.lattice.scubic
+    dos = partial(scubic.dos, half_bandwidth=D)
+    van_hove = D*scubic.dos_container.van_hove
+    assert fp.quad(dos, [-D, -van_hove, van_hove, D]) == pytest.approx(1.)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_scubic_dos_half(D):
+    """DOS should be symmetric -> integral over the half should yield 0.5."""
+    scubic = gt.lattice.scubic
+    dos = partial(scubic.dos, half_bandwidth=D)
+    van_hove = D*scubic.dos_container.van_hove
+    assert fp.quad(dos, [-D, -van_hove, 0.]) == pytest.approx(.5)
+    assert fp.quad(dos, [0., van_hove, +D]) == pytest.approx(.5)
+
+
+def test_scubic_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.lattice.scubic.dos(eps, D) == 0
+        assert gt.lattice.scubic.dos(-eps, D) == 0
+        assert gt.lattice.scubic.dos_mp(eps, D) == 0
+        assert gt.lattice.scubic.dos_mp(-eps, D) == 0
+
+
+@given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
+def test_scubic_dos_vs_mp(eps, D):
+    """DOS should match the mp integral."""
+    assume(3*abs(eps) != D)
+    dos = gt.lattice.scubic.dos(eps, D)
+    dos_mp, err = gt.lattice.scubic.dos_mp(eps, D)
+    assert dos_mp == pytest.approx(dos)
+
+
+@given(eps=st.floats(min_value=-1, max_value=1))
+def test_scubic_dos_vs_mp_relevant(eps):
+    """DOS should match the mp integral on the interval [-1, 1]."""
+    assume(3*abs(eps) != 1)
+    dos = gt.lattice.scubic.dos(eps, 1)
+    dos_mp, err = gt.lattice.scubic.dos_mp(eps, 1)
+    assert dos_mp == pytest.approx(dos)
+
+
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N)->()',
                    dtype=[np.complex_, np.float_, np.float_],
