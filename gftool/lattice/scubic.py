@@ -69,6 +69,7 @@ class _DOSContainer:
 
     def fdos(self, eps: float, half_bandwidth):
         """Faster evaluation for `float` `eps`."""
+        # pylint: disable=protected-access
         eps_rel = abs(eps / half_bandwidth)
         if eps_rel <= self.van_hove:
             return self.interp_1._spline(eps_rel).item() / half_bandwidth
@@ -78,6 +79,19 @@ class _DOSContainer:
 
     @property
     def data(self) -> dict:
+        """Return data of the pre-computed dos.
+
+        It contains the following keys:
+
+        'x1', 'dos1'
+            Energy points and DOS at this energy points on the interval
+            `[0, self.van_hove]`.
+
+        'x2', 'dos2'
+            Energy points and DOS at this energy points on the interval
+            `[self.van_hove, 1]`.
+
+        """
         if self._data is None:
             with np.load(Path(__file__).parent / self.file_name) as data:
                 self._data = dict(data)
@@ -85,6 +99,7 @@ class _DOSContainer:
 
     @property
     def interp_1(self) -> Callable[[float], float]:
+        """Return cubic interpolation on the interval `[0, self.van_hove]`."""
         if self._interp_1 is None:
             self._interp_1 = interpolate.interp1d(
                 self.data['x1'], y=self.data['dos1'], kind='cubic',
@@ -95,6 +110,7 @@ class _DOSContainer:
 
     @property
     def interp_2(self) -> Callable[[float], float]:
+        """Return cubic interpolation on the interval `[self.van_hove, 1]`."""
         if self._interp_2 is None:
             self._interp_2 = interpolate.interp1d(
                 self.data['x2'], y=self.data['dos2'], kind='cubic',
@@ -120,7 +136,7 @@ def dos_mp(eps, half_bandwidth=1, maxdegree: int = None):
 
     >>> from mpmath import mp
     >>> with mp.workdps(30):
-    >>>     dos, err = dos_mp(mp.mpf('0.2'))
+    ...     dos, err = dos_mp(mp.mpf('0.2'))
 
     Parameters
     ----------
@@ -147,7 +163,7 @@ def dos_mp(eps, half_bandwidth=1, maxdegree: int = None):
     >>> from mpmath import mp
     >>> eps = np.linspace(-1.1, 1.1, num=101)
     >>> with mp.workdps(30):
-    >>>     dos = [gt.lattice.scubic.dos_mp(ee)[0] for ee in eps]
+    ...     dos = [gt.lattice.scubic.dos_mp(ee)[0] for ee in eps]
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.plot(eps, dos, 'x-')
