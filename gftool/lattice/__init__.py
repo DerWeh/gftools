@@ -8,12 +8,14 @@ Submodules
 
     bethe
     onedim
+    scubic
     square
 
 """
-from . import bethe, onedim, square
+from . import bethe, onedim, scubic, square
 
 # silence warnings of unused imports
 assert bethe
 assert onedim
+assert scubic
 assert square
