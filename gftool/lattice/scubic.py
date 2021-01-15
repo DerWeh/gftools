@@ -136,7 +136,7 @@ def dos_mp(eps, half_bandwidth=1, maxdegree: int = None):
 
     >>> from mpmath import mp
     >>> with mp.workdps(30):
-    ...     dos, err = dos_mp(mp.mpf('0.2'))
+    ...     dos, err = gt.lattice.scubic.dos_mp(mp.mpf('0.2'))
 
     Parameters
     ----------
