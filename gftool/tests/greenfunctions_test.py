@@ -21,6 +21,8 @@ from mpmath import fp
 
 from .context import gftool as gt
 
+scubic = gt.lattice.scubic
+
 
 nonneg_float = st.floats(min_value=0.)
 pos_float = st.floats(min_value=0., exclude_min=True)
@@ -370,7 +372,6 @@ def test_square_dos_moment(D):
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_scubic_dos_unit(D):
     """Integral over the whole DOS should be 1."""
-    scubic = gt.lattice.scubic
     dos = partial(scubic.dos, half_bandwidth=D)
     van_hove = D*scubic.dos_container.van_hove
     assert fp.quad(dos, [-D, -van_hove, van_hove, D]) == pytest.approx(1.)
@@ -379,7 +380,6 @@ def test_scubic_dos_unit(D):
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_scubic_dos_half(D):
     """DOS should be symmetric -> integral over the half should yield 0.5."""
-    scubic = gt.lattice.scubic
     dos = partial(scubic.dos, half_bandwidth=D)
     van_hove = D*scubic.dos_container.van_hove
     assert fp.quad(dos, [-D, -van_hove, 0.]) == pytest.approx(.5)
@@ -390,18 +390,18 @@ def test_scubic_dos_support():
     """DOS should have no support for | eps | > D."""
     D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.lattice.scubic.dos(eps, D) == 0
-        assert gt.lattice.scubic.dos(-eps, D) == 0
-        assert gt.lattice.scubic.dos_mp(eps, D)[0] == 0
-        assert gt.lattice.scubic.dos_mp(-eps, D)[0] == 0
+        assert scubic.dos(eps, D) == 0
+        assert scubic.dos(-eps, D) == 0
+        assert scubic.dos_mp(eps, D)[0] == 0
+        assert scubic.dos_mp(-eps, D)[0] == 0
 
 
 @given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
 def test_scubic_dos_vs_mp(eps, D):
     """DOS should match the mp integral."""
     assume(3*abs(eps) != D)
-    dos = gt.lattice.scubic.dos(eps, D)
-    dos_mp, err = gt.lattice.scubic.dos_mp(eps, D)
+    dos = scubic.dos(eps, D)
+    dos_mp, err = scubic.dos_mp(eps, D)
     assert dos_mp == pytest.approx(dos)
 
 
