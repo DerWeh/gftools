@@ -392,8 +392,8 @@ def test_scubic_dos_support():
     for eps in np.linspace(D + 1e-6, D*1e4):
         assert gt.lattice.scubic.dos(eps, D) == 0
         assert gt.lattice.scubic.dos(-eps, D) == 0
-        assert gt.lattice.scubic.dos_mp(eps, D) == 0
-        assert gt.lattice.scubic.dos_mp(-eps, D) == 0
+        assert gt.lattice.scubic.dos_mp(eps, D)[0] == 0
+        assert gt.lattice.scubic.dos_mp(-eps, D)[0] == 0
 
 
 @given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
