@@ -279,3 +279,56 @@ def gf_z(z, half_bandwidth):
     int1, err1 = integrate.quad_vec(integrand, a=0, b=dos_container.van_hove)
     int2, err2 = integrate.quad_vec(integrand, a=dos_container.van_hove, b=1)
     return 2*(int1 + int2)/half_bandwidth + correction, 2*(err1 + err2)/half_bandwidth
+
+
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
+# from: mp quad integeration
+# with mp.workdps(50):
+#     res = 2*mp.quad(lambda eps: eps**2*scubic.dos_mp(eps)[0], [0, mp.mpf(1/3), 1])
+dos_moment_coefficients = {
+    2: 1/6,  # identified by mp.identify
+    4: 5/72,  # identified by mp.identify
+    6: 0.03986625514403292181,
+    8: 0.02663108710562414266,
+    10: 0.01939193244170096022,
+    12: 0.01492852797570661654,
+    14: 0.01194895308081000525,
+    16: 0.009843770445314749191,
+    18: 0.008291560006168067136,
+    20: 0.007108354149086696661,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the simple cubic DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the simple cubic lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the simple cubic DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.scubic.dos
+
+    """
+    if m % 2:  # odd moments vanish due to symmetry
+        return 0
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr

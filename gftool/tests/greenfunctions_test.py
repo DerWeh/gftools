@@ -405,6 +405,17 @@ def test_scubic_dos_vs_mp(eps, D):
     assert dos_mp == pytest.approx(dos)
 
 
+@pytest.mark.parametrize("m", list(scubic.dos_moment_coefficients.keys()))
+@pytest.mark.parametrize("D", [0.57, 2.3])
+def test_scubic_dos_moment(D: float, m: int):
+    """Moment is integral over ϵ^m DOS."""
+    vh = scubic.dos_container.van_hove
+    bounds = [-D, -D*vh, D*vh, D]
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    m2 = fp.quad(lambda eps: eps**m * scubic.dos(eps, half_bandwidth=D), bounds)
+    assert scubic.dos_moment(m, half_bandwidth=D) == pytest.approx(m2)
+
+
 @given(eps=st.floats(min_value=-1, max_value=1))
 def test_scubic_dos_vs_mp_relevant(eps):
     """DOS should match the mp integral on the interval [-1, 1]."""
