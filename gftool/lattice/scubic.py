@@ -320,7 +320,8 @@ def gf_z(z, half_bandwidth, error="warn", **quad_kwds):
     epsrel = quad_kwds.get("epsrel", 1e-8)
     epsabs = quad_kwds.get("epsabs", 1e-16)
     converged = err < max(epsabs, epsrel*norm_func(gf))
-    (LOGGER.debug if converged else LOGGER.warn)("Integration error of Green's function: %s", err)
+    log = LOGGER.debug if converged else LOGGER.warning
+    log("Integration error of Green's function: %s", err)
 
     if error == "return":
         return gf, err
