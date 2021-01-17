@@ -449,7 +449,7 @@ def test_scubic_dos_vs_mp(eps, D):
 
 
 @given(eps=st.floats(min_value=-1, max_value=1))
-@settings(deadline=timedelta(microseconds=500))  # allow longer test
+@settings(deadline=timedelta(milliseconds=500))  # allow longer test
 def test_scubic_dos_vs_mp_relevant(eps):
     """DOS should match the mp integral on the interval [-1, 1]."""
     assume(3*abs(eps) != 1)
