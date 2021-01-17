@@ -76,6 +76,18 @@ class _DOSContainer:
         dos_[domain2] = self.interp_2(eps_rel[domain2])  # pylint: disable=not-callable
         return dos_ / half_bandwidth
 
+    def dos_d1(self, eps, half_bandwidth):
+        """1st derivative of DOS of non-interacting 3D simple cubic lattice."""
+        eps_rel = np.asanyarray(eps / half_bandwidth)
+        eps_rel = abs(eps_rel)
+        dos_ = np.zeros_like(eps_rel)
+        domain1 = eps_rel <= self.van_hove
+        # pylint: disable=not-callable,protected-access
+        dos_[domain1] = self.interp_1._spline.derivative()(eps_rel[domain1])[..., 0]
+        domain2 = (self.van_hove < eps_rel) & (eps_rel < 1)
+        dos_[domain2] = self.interp_2._spline.derivative()(eps_rel[domain2])[..., 0]
+        return np.sign(eps)*dos_ / half_bandwidth**2
+
     def fdos(self, eps: float, half_bandwidth):
         """Faster evaluation for `float` `eps`."""
         # pylint: disable=protected-access
@@ -234,6 +246,9 @@ def gf_z(z, half_bandwidth):
     where :math:`D` is the half-bandwidth and :math:`DOS` the density of states.
     Note that for `z.imag=0`, the integrand contains a singularity which is
     not explicitly treated here.
+    The required time depends strongly on the `z.imag`. Around `1e-3 < z.imag < 1e-5`,
+    the function becomes slow (slowest for 1e-5). For larger and smaller values,
+    the function is reasonable fast.
 
     Parameters
     ----------
@@ -266,23 +281,41 @@ def gf_z(z, half_bandwidth):
     >>> plt.show()
 
     """
-    z_rel = z / half_bandwidth
-    z_rel2 = z_rel**2
+    # TODO: Check shape of z
+    # TODO: Do not return error per default, warn about large error instead
+    gf, err = _gf_z(z/half_bandwidth)
+    gf /= half_bandwidth
+    err /= half_bandwidth
+    return gf, err
 
-    # we separate the diverging part ∫ dϵ DOS(z.real)/(z - ϵ) to speed up for small z.imag
-    dos_realz = dos(z_rel.real, half_bandwidth=1)
-    correction = dos_realz * np.log((z_rel + 1.0) / (z_rel - 1.0))
+
+def _gf_z(z):
+    """Perform actual calculation for `gf_z`."""
+    z2 = z**2
+
+    # ∫ dϵ DOS(z.real)/(z - ϵ)
+    # for small imaginary part, 1/(z - ϵ) becomes strongly peak
+    # to speed up integrals for small z.imag, we expand around this ϵ=z.real
+    dos_realz = dos(z.real, half_bandwidth=1)
+    log = np.log((z + 1.0) / (z - 1.0))
+    correction0 = dos_realz * log
+    factor = 0.5  # heuristically have of the first order correction is best
+    dos_d1_realz = factor*dos_container.dos_d1(z.real, half_bandwidth=1)
+    correction1 = dos_d1_realz * ((z - np.conj(z))*log - 2)
+    zabs2 = z * np.conj(z)
 
     def integrand(eps):
-        return (dos_container.fdos(eps, half_bandwidth=1) - dos_realz) * z_rel / (z_rel2 - eps**2)
+        numer = (dos_container.fdos(eps, half_bandwidth=1) - dos_realz) * z
+        numer -= dos_d1_realz * (eps**2 - zabs2)
+        return numer / (z2 - eps**2)
 
     int1, err1 = integrate.quad_vec(integrand, a=0, b=dos_container.van_hove)
     int2, err2 = integrate.quad_vec(integrand, a=dos_container.van_hove, b=1)
-    return 2*(int1 + int2)/half_bandwidth + correction, 2*(err1 + err2)/half_bandwidth
+    return 2*(int1 + int2) + correction0 + correction1, 2*(err1 + err2)
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
-# from: mp quad integeration
+# from: mp quad integration
 # with mp.workdps(50):
 #     res = 2*mp.quad(lambda eps: eps**2*scubic.dos_mp(eps)[0], [0, mp.mpf(1/3), 1])
 dos_moment_coefficients = {
