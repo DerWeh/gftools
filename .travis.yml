@@ -5,6 +5,7 @@ python:
 cache: pip
 before_install:
   - pip install -r requirements-dev.txt
+  - pip install gmpy2  # speeds up some test using mpmath
   - pip install -r requirements-doc.txt
 install:
   - pip install -r requirements.txt

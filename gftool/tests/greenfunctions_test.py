@@ -439,6 +439,7 @@ def test_scubic_dos_moment(D: float, m: int):
 
 
 @given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
+@settings(deadline=timedelta(milliseconds=500))  # allow longer test
 def test_scubic_dos_vs_mp(eps, D):
     """DOS should match the mp integral."""
     assume(3*abs(eps) != D)
