@@ -5,19 +5,16 @@ TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
 TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
-from __future__ import absolute_import, unicode_literals
+from functools import partial, wraps
 
-from functools import wraps, partial
-
+import mpmath
 import pytest
-from hypothesis import assume, given, strategies as st
-from hypothesis_gufunc.gufunc import gufunc_args
-
 import numpy as np
 import scipy.integrate as integrate
 
-import mpmath
 from mpmath import fp
+from hypothesis import assume, given, strategies as st
+from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
@@ -396,15 +393,6 @@ def test_scubic_dos_support():
         assert scubic.dos_mp(-eps, D)[0] == 0
 
 
-@given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
-def test_scubic_dos_vs_mp(eps, D):
-    """DOS should match the mp integral."""
-    assume(3*abs(eps) != D)
-    dos = scubic.dos(eps, D)
-    dos_mp, err = scubic.dos_mp(eps, D)
-    assert dos_mp == pytest.approx(dos)
-
-
 @pytest.mark.parametrize("m", list(scubic.dos_moment_coefficients.keys()))
 @pytest.mark.parametrize("D", [0.57, 2.3])
 def test_scubic_dos_moment(D: float, m: int):
@@ -416,12 +404,23 @@ def test_scubic_dos_moment(D: float, m: int):
     assert scubic.dos_moment(m, half_bandwidth=D) == pytest.approx(m2)
 
 
+@given(eps=st.floats(allow_nan=False), D=st.floats(min_value=1e-3, allow_infinity=False))
+def test_scubic_dos_vs_mp(eps, D):
+    """DOS should match the mp integral."""
+    assume(3*abs(eps) != D)
+    dos = scubic.dos(eps, D)
+    with mpmath.workdps(30):
+        dos_mp, err = scubic.dos_mp(eps, D)
+    assert dos_mp == pytest.approx(dos)
+
+
 @given(eps=st.floats(min_value=-1, max_value=1))
 def test_scubic_dos_vs_mp_relevant(eps):
     """DOS should match the mp integral on the interval [-1, 1]."""
     assume(3*abs(eps) != 1)
     dos = gt.lattice.scubic.dos(eps, 1)
-    dos_mp, err = gt.lattice.scubic.dos_mp(eps, 1)
+    with mpmath.workdps(30):
+        dos_mp, err = gt.lattice.scubic.dos_mp(eps, 1)
     assert dos_mp == pytest.approx(dos)
 
 
