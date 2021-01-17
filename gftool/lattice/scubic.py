@@ -4,6 +4,9 @@
                  of `t=D/6`
 
 """
+import logging
+import warnings
+
 from functools import partial
 from pathlib import Path
 from typing import Callable
@@ -12,6 +15,10 @@ import numpy as np
 
 from mpmath import mp
 from scipy import integrate, interpolate
+from scipy.integrate._quad_vec import _max_norm
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.addHandler(logging.NullHandler())
 
 
 class _DOSContainer:
@@ -236,7 +243,7 @@ def dos_mp(eps, half_bandwidth=1, maxdegree: int = None):
         return mp.mpf('0'), mp.mpf('0')
 
 
-def gf_z(z, half_bandwidth):
+def gf_z(z, half_bandwidth, error="warn", **quad_kwds):
     r"""Local Green's function of the 3D cubic lattice.
 
     It is calculate as the lattice Hilbert transform
@@ -257,18 +264,23 @@ def gf_z(z, half_bandwidth):
     half_bandwidth : float
         Half-bandwidth of the DOS of the cubic lattice.
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/6`
+    error : {"warn", "raise", "ignore", "return"}
+        How to preceded with integration error estimate (default: "warn").
+        If `err="return"` the error will be returned with the Green's function.
+    quad_kwds
+        Keyword arguments passed to `scipy.integrate.quad_vec`
 
     Returns
     -------
     gf_z : complex ndarray or complex
         Value of the cubic lattice Green's function
-    error : float
-        Estimate for the integration error.
+    err : float
+        Estimate for the integration error. Only given if `error="return"`.
 
     Examples
     --------
     >>> ww = np.linspace(-1.5, 1.5, num=500) + 1e-3j
-    >>> gf_ww, err = gt.lattice.scubic.gf_z(ww, half_bandwidth=1)
+    >>> gf_ww = gt.lattice.scubic.gf_z(ww, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color='black', linewidth=0.8)
@@ -281,15 +293,43 @@ def gf_z(z, half_bandwidth):
     >>> plt.show()
 
     """
-    # TODO: Check shape of z
-    # TODO: Do not return error per default, warn about large error instead
-    gf, err = _gf_z(z/half_bandwidth)
+    error = error.lower()
+    if error not in {"warn", "raise", "ignore", "return"}:
+        raise ValueError(f"Unknown argument 'error={error}'")
+
+    gf, err = _gf_z(z/half_bandwidth, **quad_kwds)
     gf /= half_bandwidth
     err /= half_bandwidth
-    return gf, err
+
+    # handle integration error
+    # BEGIN>: copied from scipy.integrate.quad_vec
+    norm = quad_kwds.get("norm", "2")
+    norm_funcs = {
+        None: lambda: _max_norm,
+        "max": _max_norm,
+        "2": np.linalg.norm
+    }
+    if callable(norm):
+        norm_func = norm
+    else:
+        norm_func = norm_funcs[norm]
+    # <END
+    epsrel = quad_kwds.get("epsrel", 1e-8)
+    epsabs = quad_kwds.get("epsabs", 1e-16)
+    converged = err < max(epsabs, epsrel*norm_func(gf))
+    (LOGGER.debug if converged else LOGGER.warn)("Integration error of Green's function: %s", err)
+
+    if error == "return":
+        return gf, err
+    if error == "warn" and not converged:
+        warnings.warn(f"Integration not sufficiently converged: err={err}.",
+                      category=RuntimeWarning)
+    if error == "raise" and not converged:
+        raise RuntimeError(f"Integration not sufficiently converged: err={err}.")
+    return gf
 
 
-def _gf_z(z):
+def _gf_z(z, **quad_kwds):
     """Perform actual calculation for `gf_z`."""
     z2 = z**2
 
@@ -309,8 +349,8 @@ def _gf_z(z):
         numer -= dos_d1_realz * (eps**2 - zabs2)
         return numer / (z2 - eps**2)
 
-    int1, err1 = integrate.quad_vec(integrand, a=0, b=dos_container.van_hove)
-    int2, err2 = integrate.quad_vec(integrand, a=dos_container.van_hove, b=1)
+    int1, err1 = integrate.quad_vec(integrand, a=0, b=dos_container.van_hove, **quad_kwds)
+    int2, err2 = integrate.quad_vec(integrand, a=dos_container.van_hove, b=1, **quad_kwds)
     return 2*(int1 + int2) + correction0 + correction1, 2*(err1 + err2)
 
 
