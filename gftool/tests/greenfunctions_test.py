@@ -64,6 +64,10 @@ class GfProperties(object):
         """
         return -np.infty, np.infty
 
+    def special_points(self, params):
+        """Special points included in quad integration."""
+        return None
+
     def test_complex(self, params):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
         assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
@@ -87,7 +91,8 @@ class GfProperties(object):
             return -self.gf(omega+1e-16j, *params[0], **params[1]).imag/np.pi
 
         lower, upper = self.band_edges(params)
-        assert pytest.approx(integrate.quad(dos, a=lower, b=upper)[0]) == 1.
+        integ_dos = integrate.quad(dos, a=lower, b=upper, points=self.special_points(params))
+        assert pytest.approx(integ_dos[0]) == 1.
 
 
 class TestBetheGf(GfProperties):
@@ -364,6 +369,33 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m2(D) == pytest.approx(m2)
     assert gt.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+
+
+class TestSCubicGf(GfProperties):
+    """Check properties of one-dimensional Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(scubic.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def special_points(self, params):
+        """Van Hove singularities at ± 1/3."""
+        vh = scubic.dos_container.van_hove
+        return -params[1]['half_bandwidth']*vh, params[1]['half_bandwidth']*vh
+
+    def band_edges(self, params):
+        """Return the support of the Green's function, by default (-∞, ∞).
+
+        Can be overwritten by subclasses using the `params`.
+        """
+        return -params[1]['half_bandwidth'], params[1]['half_bandwidth']
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
