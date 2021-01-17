@@ -99,10 +99,13 @@ class _DOSContainer:
         """Faster evaluation for `float` `eps`."""
         # pylint: disable=protected-access
         eps_rel = abs(eps / half_bandwidth)
+        output = np.empty((1, 1), dtype=np.float_)
         if eps_rel <= self.van_hove:
-            return self.interp_1._spline(eps_rel).item() / half_bandwidth
+            self.interp_1._spline._evaluate(np.array([eps_rel]), 0, False, out=output)
+            return output.item() / half_bandwidth
         if self.van_hove < eps_rel < 1:
-            return self.interp_2._spline(eps_rel).item() / half_bandwidth
+            self.interp_2._spline._evaluate(np.array([eps_rel]), 0, False, out=output)
+            return output.item() / half_bandwidth
         return 0
 
     @property
