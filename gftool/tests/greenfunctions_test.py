@@ -5,6 +5,7 @@ TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
 TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
+from datetime import timedelta
 from functools import partial, wraps
 
 import mpmath
@@ -13,7 +14,7 @@ import numpy as np
 import scipy.integrate as integrate
 
 from mpmath import fp
-from hypothesis import assume, given, strategies as st
+from hypothesis import assume, given, strategies as st, settings
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
@@ -448,6 +449,7 @@ def test_scubic_dos_vs_mp(eps, D):
 
 
 @given(eps=st.floats(min_value=-1, max_value=1))
+@settings(deadline=timedelta(microseconds=500))  # allow longer test
 def test_scubic_dos_vs_mp_relevant(eps):
     """DOS should match the mp integral on the interval [-1, 1]."""
     assume(3*abs(eps) != 1)
