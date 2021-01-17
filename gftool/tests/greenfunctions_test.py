@@ -371,6 +371,7 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
 
 
+@pytest.mark.filterwarnings("ignore:(Integration not sufficiently converged):RuntimeWarning")
 class TestSCubicGf(GfProperties):
     """Check properties of one-dimensional Gf."""
 
