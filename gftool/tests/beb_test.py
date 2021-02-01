@@ -65,3 +65,25 @@ def test_selfconsistency(z):
     # Gf_loc diagonal -> inverse is 1/diagonal
     gf_avg = c / (1./gt.beb.diagonal(gf_loc_z) + gt.beb.diagonal(self_beb_z) - eps)
     assert np.allclose(gt.beb.diagonal(gf_loc_z), gf_avg)
+
+
+@given(z=st.complex_numbers(max_magnitude=1e-6))
+def test_cpa_limit(z):
+    """Compare BEB Gf to CPA Gf in the CPA limit `t=1`."""
+    # randomly chosen example
+    assume(z.imag != 0)
+    z = np.array(z.conjugate() if z.imag < 0 else z)
+    eps = np.array([-0.137, 0.23])
+    c = np.array([0.137, 0.863])
+    D = 1.3
+    hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
+    # cpa limit -> t=1
+    t = np.array([[1.0, 1.0],
+                  [1.0, 1.0]])
+    self_beb_z = gt.beb.solve_root(z, eps, concentration=c, hopping=t,
+                                   hilbert_trafo=hilbert)
+    gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=True)
+    self_cpa_z = gt.cpa.solve_root(z, eps, concentration=c, hilbert_trafo=hilbert)
+    gf_cpa_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite=eps, hilbert_trafo=hilbert)
+    np.allclose(gf_loc_z, c*gf_cpa_z)
+    np.allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_beb_z))
