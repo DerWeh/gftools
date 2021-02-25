@@ -8,7 +8,7 @@ from mpmath import fp
 ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 
 
-def gf_z(z, gamma):
+def gf_z(z, half_bandwidth, scale):
     r"""Local Green's function of the 2D rectangular lattice.
 
     .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(t - γ \cos ϕ)^2 - 1}}
@@ -47,14 +47,16 @@ def gf_z(z, gamma):
     >>> plt.show()
 
     """
-    D = 1 / (1 + gamma)
+    D = half_bandwidth / (1 + scale)
     z = z / D
-    k1 = 4*gamma / (z**2 - (gamma - 1)**2)
+    sm1p2 = (scale - 1)**2
+    k1 = 4*scale / (z**2 - sm1p2)
     elliptic = ellipk_z(k1)
     try:
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
-    k1sqrt = 2 * gamma**0.5 / np.lib.scimath.sqrt(1 - (gamma - 1)**2/z**2) / z
-    gf_z = gamma**-0.5 / np.pi / D * k1sqrt * elliptic
+    z_inv = 1 / z
+    k1sqrt = 1 / np.lib.scimath.sqrt(1 - sm1p2*z_inv**2)
+    gf_z = 2 / np.pi / D * z_inv * k1sqrt * elliptic
     return gf_z
