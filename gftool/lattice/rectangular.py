@@ -1,4 +1,10 @@
-"""2D rectangular lattice."""
+"""2D rectangular lattice.
+
+:half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
+                 of `t=D/2/(scale + 1)`
+:scale: Relative scale of the different hopping `t_1 = scale*t_2`.
+
+"""
 from functools import partial
 
 import numpy as np
@@ -11,21 +17,36 @@ ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 def gf_z(z, half_bandwidth, scale):
     r"""Local Green's function of the 2D rectangular lattice.
 
-    .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(t - γ \cos ϕ)^2 - 1}}
+    .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(z - γ \cos ϕ)^2 - 1}}
 
-    where the integral is the complete elliptic integral of first kind.
+    where :math:`γ` is the scale, the hopping is choosen `t=1`, the
+    half-bandwidth :math:`D=2(1+γ)`.
+    The integral is the complete elliptic integral of first kind.
     See [morita1971]_.
 
     Parameters
     ----------
     z : complex np.ndarray or complex
         Green's function is evaluated at complex frequency `z`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the rectangular lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/2/(scale+1)`.
+    scale : float
+        Relative scale of the different hoppings :math:`t_1=scale*t_2`.
+        `scale=1` corresponds to the square lattice.
 
     Returns
     -------
     gf_z : complex ndarray or complex
-        Value of the square lattice Green's function
+        Value of the rectangular lattice Green's function
 
+    See Also
+    --------
+    gt.lattice.square.gf_z : Green's function in the limit `scale=1`
+
+    References
+    ----------
     .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
        Green’s Function for the bcc, fcc, and Rectangular Lattices.
        Journal of Mathematical Physics 12, 986–992.
@@ -34,7 +55,7 @@ def gf_z(z, half_bandwidth, scale):
     Examples
     --------
     >>> ww = np.linspace(-1.5, 1.5, num=500)
-    >>> gf_ww = gt.lattice.square.gf_z(ww, half_bandwidth=1)
+    >>> gf_ww = gt.lattice.rectangular.gf_z(ww, half_bandwidth=1, scale=2)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color='black', linewidth=0.8)
