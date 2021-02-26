@@ -1,4 +1,10 @@
-"""2D rectangular lattice.
+r"""2D rectangular lattice.
+
+The dispersion of the 2D rectangular lattice is given by
+
+.. math:: ϵ_{k_x, k_y} = 2t [\cos(k_x) + γ\cos(k_y)]
+
+where :math:`γ` is the `scale`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=D/2/(scale + 1)`
@@ -38,12 +44,12 @@ def gf_z(z, half_bandwidth, scale):
 
     Returns
     -------
-    gf_z : complex ndarray or complex
+    gf_z : complex np.ndarray or complex
         Value of the rectangular lattice Green's function
 
     See Also
     --------
-    gt.lattice.square.gf_z : Green's function in the limit `scale=1`
+    gftool.lattice.square.gf_z : Green's function in the limit `scale=1`
 
     References
     ----------
