@@ -25,8 +25,8 @@ def gf_z(z, half_bandwidth, scale):
 
     .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(z - γ \cos ϕ)^2 - 1}}
 
-    where :math:`γ` is the scale, the hopping is choosen `t=1`, the
-    half-bandwidth :math:`D=2(1+γ)`.
+    where :math:`γ` is the `scale`, the hopping is chosen `t=1`, the
+    `half_bandwidth` is :math:`D=2(1+γ)`.
     The integral is the complete elliptic integral of first kind.
     See [morita1971]_.
 
@@ -60,16 +60,16 @@ def gf_z(z, half_bandwidth, scale):
 
     Examples
     --------
-    >>> ww = np.linspace(-1.5, 1.5, num=500)
+    >>> ww = np.linspace(-1.5, 1.5, num=500, dtype=complex)
     >>> gf_ww = gt.lattice.rectangular.gf_z(ww, half_bandwidth=1, scale=2)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color='black', linewidth=0.8)
-    >>> _ = plt.plot(ww, gf_ww.real, label=r"$\Re G$")
-    >>> _ = plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> _ = plt.plot(ww.real, gf_ww.real, label=r"$\Re G$")
+    >>> _ = plt.plot(ww.real, gf_ww.imag, '--', label=r"$\Im G$")
     >>> _ = plt.ylabel(r"$G*D$")
     >>> _ = plt.xlabel(r"$\omega/D$")
-    >>> _ = plt.xlim(left=ww.min(), right=ww.max())
+    >>> _ = plt.xlim(left=ww.real.min(), right=ww.real.max())
     >>> _ = plt.legend()
     >>> plt.show()
 
