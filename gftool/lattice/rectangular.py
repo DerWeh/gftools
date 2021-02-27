@@ -87,3 +87,87 @@ def gf_z(z, half_bandwidth, scale):
     k1sqrt = 1 / np.lib.scimath.sqrt(1 - sm1p2*z_inv**2)
     gf_z = 2 / np.pi / D * z_inv * k1sqrt * elliptic
     return gf_z
+
+
+def hilbert_transform(xi, half_bandwidth, scale):
+    r"""Hilbert transform of non-interacting DOS of the rectangular lattice.
+
+    The Hilbert transform is defined
+
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+
+    The lattice Hilbert transform is the same as the non-interacting Green's
+    function.
+
+    Parameters
+    ----------
+    xi : complex np.ndarray or complex
+        Point at which the Hilbert transform is evaluated
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 2D rectangular lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/2/(scale+1)`.
+    scale : float
+        Relative scale of the different hoppings :math:`t_1=scale*t_2`.
+        `scale=1` corresponds to the square lattice.
+
+    Returns
+    -------
+    hilbert_transform : complex np.ndarray or complex
+        Hilbert transform at `xi`.
+
+    Notes
+    -----
+    Relation between nearest neighbor hopping `t`, scale `γ` and half-bandwidth `D`
+
+    .. math:: 2(γ+1)t = D
+
+    See Also
+    --------
+    gftool.lattice.rectangular.gf_z
+
+    """
+    return gf_z(xi, half_bandwidth, scale=scale)
+
+
+def dos(eps, half_bandwidth, scale):
+    r"""DOS of non-interacting 2D rectangular lattice.
+
+    Parameters
+    ----------
+    eps : float np.ndarray or float
+        DOS is evaluated at points `eps`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/2/(scale+1)`.
+    scale : float
+        Relative scale of the different hoppings :math:`t_1=scale*t_2`.
+        `scale=1` corresponds to the square lattice.
+
+    Returns
+    -------
+    dos : float np.ndarray or float
+        The value of the DOS.
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.1, 1.1, num=500)
+    >>> dos = gt.lattice.rectangular.dos(eps, half_bandwidth=1, scale=2)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, dos)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    eps_rel = np.asarray(abs(eps) / half_bandwidth)  # DOS is symmetric -> just consider positive
+    dos = np.zeros_like(eps_rel)
+    nonzero = eps_rel <= 1  # outside DOS is 0
+    dos[nonzero] = -1. / np.pi * gf_z(eps_rel[nonzero].astype(complex),
+                                      half_bandwidth, scale=scale).imag
+    return dos
