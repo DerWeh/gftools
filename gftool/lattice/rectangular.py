@@ -165,9 +165,16 @@ def dos(eps, half_bandwidth, scale):
     >>> plt.show()
 
     """
-    eps_rel = np.asarray(abs(eps) / half_bandwidth)  # DOS is symmetric -> just consider positive
-    dos = np.zeros_like(eps_rel)
-    nonzero = eps_rel <= 1  # outside DOS is 0
-    dos[nonzero] = -1. / np.pi * gf_z(eps_rel[nonzero].astype(complex),
-                                      half_bandwidth, scale=scale).imag
-    return dos
+    # almost same code as gf_z, modified to work on real axis
+    # we don't have to worry about the correct signs here, we just take the positive one
+    D = half_bandwidth / (1 + scale)
+    eps = eps / D
+    sm1p2 = (scale - 1)**2
+    k1 = 4*scale / (eps**2 - sm1p2)
+    elliptic = ellipk_z(k1)
+    try:
+        elliptic = elliptic.astype(np.complex)
+    except AttributeError:  # elliptic no array, thus no conversion necessary
+        pass
+    dos_ = 1.0 / np.pi**2 / scale**0.5 / D * np.lib.scimath.sqrt(k1) * elliptic
+    return abs(dos_.imag)
