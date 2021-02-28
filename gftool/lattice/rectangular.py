@@ -166,16 +166,21 @@ def dos(eps, half_bandwidth, scale):
     >>> plt.show()
 
     """
-    # almost same code as gf_z, modified to work on real axis
+    # same code as gf_z, using the itentity for the elliptic integral
+    # `K(m) = K(m/(m-1)).conj() / (1-m)**0.5` real `m`
     # we don't have to worry about the correct signs here, we just take the positive one
-    D = half_bandwidth / (1 + scale)
-    eps = eps / D
-    sm1p2 = (scale - 1)**2
-    k1 = 4*scale / (eps**2 - sm1p2)
-    elliptic = ellipk_z(k1)
+    eps = np.asarray(eps / half_bandwidth)
+    dos_ = np.zeros_like(eps)
+    # eps = 1 divergeces in the current formulation and has to be callculated as limit
+    eps[abs(eps) == 1] = 1 - np.finfo(float).eps  # avoid 1, inaccurate fix
+    nonzero = abs(eps) <= 1
+    eps = eps[nonzero]  # calculate only relevant region
+    kmod = 4*scale / (scale + 1)**2 / (1 - eps**2)
+    elliptic = ellipk_z(kmod)
     try:
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
-    dos_ = 1.0 / np.pi**2 / scale**0.5 / D * scimath.sqrt(k1) * elliptic
-    return abs(dos_.imag)
+    factor = 1.0 / np.pi**2 * (1 + scale) / scale**0.5 / half_bandwidth
+    dos_[nonzero] = factor * np.sqrt(kmod) * np.conj(elliptic).real
+    return abs(dos_)
