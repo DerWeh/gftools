@@ -9,11 +9,13 @@ Submodules
     bethe
     onedim
     square
+    rectangular
 
 """
-from . import bethe, onedim, square
+from . import bethe, onedim, square, rectangular
 
 # silence warnings of unused imports
 assert bethe
 assert onedim
 assert square
+assert rectangular
