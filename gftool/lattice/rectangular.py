@@ -5,6 +5,7 @@ The dispersion of the 2D rectangular lattice is given by
 .. math:: ϵ_{k_x, k_y} = 2t [\cos(k_x) + γ\cos(k_y)]
 
 where :math:`γ` is the `scale`.
+The DOS has a singularity at :math:`2t(γ-1)=D(γ-1)/(γ+1)`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=D/2/(scale + 1)`
