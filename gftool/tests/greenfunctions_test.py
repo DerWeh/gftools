@@ -5,20 +5,17 @@ TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
 TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
-from __future__ import absolute_import, unicode_literals
-
 from functools import partial, wraps
 from itertools import product
 
+import mpmath
 import pytest
-from hypothesis import assume, given, strategies as st
-from hypothesis_gufunc.gufunc import gufunc_args
-
 import numpy as np
 import scipy.integrate as integrate
 
-import mpmath
 from mpmath import fp
+from hypothesis import assume, given, strategies as st
+from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
@@ -35,13 +32,12 @@ def method(func):
     return wrapper
 
 
-class GfProperties(object):
+class GfProperties:
     r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
 
     Checks the analytical properties a one particle Gf of the structure
 
-    .. math::
-        G_{ii}(z) = -⟨c_i(z) c_i^†(z)⟩.
+    .. math:: G_{ii}(z) = -⟨c_i(z) c_i^†(z)⟩.
 
     Here `i` can be any quantum number.
     Look into https://gist.github.com/abele/ee049b1fdf7e4a1af71a
@@ -123,7 +119,7 @@ class TestOnedimGf(GfProperties):
 
 
 class TestSquareGf(GfProperties):
-    """Check properties of Bethe Gf."""
+    """Check properties of square Gf."""
 
     D = 1.2
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
