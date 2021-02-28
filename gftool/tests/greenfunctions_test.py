@@ -420,6 +420,13 @@ def test_rectangular_dos_support(gamma):
         assert gt.lattice.rectangular.dos(-eps, D, scale=gamma) == 0
 
 
+@given(z=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
+def test_rectangular_vs_square_gf(z):
+    """For `scale=1` the rectangular equals the square lattice."""
+    assume(abs(z.imag) > 1e-6)
+    assert gt.lattice.rectangular.gf_z(z, 1, 1) == pytest.approx(gt.square_gf_z(z, 1))
+
+
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N)->()',
                    dtype=[np.complex_, np.float_, np.float_],
