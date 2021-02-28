@@ -15,6 +15,7 @@ from functools import partial
 
 import numpy as np
 
+from numpy.lib import scimath
 from mpmath import fp
 
 ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
@@ -84,7 +85,7 @@ def gf_z(z, half_bandwidth, scale):
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
     z_inv = 1 / z
-    k1sqrt = 1 / np.lib.scimath.sqrt(1 - sm1p2*z_inv**2)
+    k1sqrt = 1 / scimath.sqrt(1 - sm1p2*z_inv**2)
     gf_z = 2 / np.pi / D * z_inv * k1sqrt * elliptic
     return gf_z
 
@@ -176,5 +177,5 @@ def dos(eps, half_bandwidth, scale):
         elliptic = elliptic.astype(np.complex)
     except AttributeError:  # elliptic no array, thus no conversion necessary
         pass
-    dos_ = 1.0 / np.pi**2 / scale**0.5 / D * np.lib.scimath.sqrt(k1) * elliptic
+    dos_ = 1.0 / np.pi**2 / scale**0.5 / D * scimath.sqrt(k1) * elliptic
     return abs(dos_.imag)
