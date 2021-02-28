@@ -12,14 +12,11 @@ The DOS has a singularity at :math:`2t(γ-1)=D(γ-1)/(γ+1)`.
 :scale: Relative scale of the different hopping `t_1 = scale*t_2`.
 
 """
-from functools import partial
-
 import numpy as np
 
 from numpy.lib import scimath
-from mpmath import fp
 
-ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
+from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth, scale):
@@ -80,11 +77,7 @@ def gf_z(z, half_bandwidth, scale):
     z = z / D
     sm1p2 = (scale - 1)**2
     k1 = 4*scale / (z**2 - sm1p2)
-    elliptic = ellipk_z(k1)
-    try:
-        elliptic = elliptic.astype(np.complex)
-    except AttributeError:  # elliptic no array, thus no conversion necessary
-        pass
+    elliptic = _u_ellipk(k1)
     z_inv = 1 / z
     k1sqrt = 1 / scimath.sqrt(1 - sm1p2*z_inv**2)
     gf_z = 2 / np.pi / D * z_inv * k1sqrt * elliptic
@@ -177,11 +170,7 @@ def dos(eps, half_bandwidth, scale):
     nonzero = abs(eps) <= 1
     eps = eps[nonzero]  # calculate only relevant region
     kmod = 4*scale / (scale + 1)**2 / (1 - eps**2)
-    elliptic = ellipk_z(kmod)
-    try:
-        elliptic = elliptic.astype(np.complex)
-    except AttributeError:  # elliptic no array, thus no conversion necessary
-        pass
+    elliptic = _u_ellipk(kmod)
     factor = 1.0 / np.pi**2 * (1 + scale) / scale**0.5 / half_bandwidth
     dos_[nonzero] = factor * np.sqrt(kmod) * np.conj(elliptic).real
     return abs(dos_)

@@ -4,13 +4,10 @@
                  of `t=D/4`
 
 """
-from functools import partial
-
 import numpy as np
 from scipy.special import ellipkm1
-from mpmath import fp
 
-ellipk_z = partial(fp.ellipf, np.pi/2)
+from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth):
@@ -57,11 +54,7 @@ def gf_z(z, half_bandwidth):
 
     """
     z_rel_inv = half_bandwidth/z
-    elliptic = np.frompyfunc(ellipk_z, 1, 1)(z_rel_inv**2)
-    try:
-        elliptic = elliptic.astype(np.complex)
-    except AttributeError:  # elliptic no array, thus no conversion necessary
-        pass
+    elliptic = _u_ellipk(z_rel_inv**2)
     gf_z = 2./np.pi/half_bandwidth*z_rel_inv*elliptic
     return gf_z
 
