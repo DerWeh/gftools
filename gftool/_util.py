@@ -1,5 +1,12 @@
 """Helper functions used throughout the code basis."""
+from functools import partial
+
 import numpy as np
+
+from mpmath import fp
+
+
+_ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 
 
 def _gu_sum(a, **kwds):
@@ -28,3 +35,27 @@ def _gu_matvec(x1, x2):
 
     """
     return (x1 @ x2[..., np.newaxis])[..., 0]
+
+
+def _u_ellipk(z):
+    """Complete elliptic integral of first kind `scipy.special.ellip` for complex arguments.
+
+    Wraps the `mpmath` implementation `mpmath.fp.ellipf` using `numpy.frompyfunc`.
+
+    Parameters
+    ----------
+    z : complex or complex array_like
+        Complex argument
+
+    Returns
+    -------
+    complex np.ndarray or complex
+        The complete elliptic integral.
+
+    """
+    ellipk = _ellipk_z(np.asarray(z, dtype=np.complex))
+    try:
+        ellipk = ellipk.astype(np.complex)
+    except AttributeError:  # complex not np.ndarray
+        pass
+    return ellipk

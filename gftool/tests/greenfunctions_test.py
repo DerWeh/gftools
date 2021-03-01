@@ -5,19 +5,17 @@ TODO: use accuracy of *integrate.quad* for *pytest.approx*
 TODO: explicit add imaginary axis to the mesh
 TODO: make use of the fact, that gf(w>0)=gf_ret(w), gf(w<0)=gf_adv(w)
 """
-from __future__ import absolute_import, unicode_literals
+from functools import partial, wraps
+from itertools import product
 
-from functools import wraps, partial
-
+import mpmath
 import pytest
-from hypothesis import assume, given, strategies as st
-from hypothesis_gufunc.gufunc import gufunc_args
-
 import numpy as np
 import scipy.integrate as integrate
 
-import mpmath
 from mpmath import fp
+from hypothesis import assume, given, strategies as st
+from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
@@ -34,13 +32,12 @@ def method(func):
     return wrapper
 
 
-class GfProperties(object):
+class GfProperties:
     r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
 
     Checks the analytical properties a one particle Gf of the structure
 
-    .. math::
-        G_{ii}(z) = -⟨c_i(z) c_i^†(z)⟩.
+    .. math:: G_{ii}(z) = -⟨c_i(z) c_i^†(z)⟩.
 
     Here `i` can be any quantum number.
     Look into https://gist.github.com/abele/ee049b1fdf7e4a1af71a
@@ -81,14 +78,14 @@ class GfProperties(object):
             rtol=1e-2
         )
 
-    def test_normalization(self, params):
+    def test_normalization(self, params, points=None):
         r""":math:`-∫dωℑG(ω+iϵ)/π = ∫dϵ ρ(ϵ) = 1`."""
         def dos(omega):
             r"""Wrap the DOS :math:`ρ(ω) = -ℑG(ω+iϵ)/π`."""
             return -self.gf(omega+1e-16j, *params[0], **params[1]).imag/np.pi
 
         lower, upper = self.band_edges(params)
-        assert pytest.approx(integrate.quad(dos, a=lower, b=upper)[0]) == 1.
+        assert pytest.approx(integrate.quad(dos, a=lower, b=upper, points=points)[0]) == 1.
 
 
 class TestBetheGf(GfProperties):
@@ -122,7 +119,7 @@ class TestOnedimGf(GfProperties):
 
 
 class TestSquareGf(GfProperties):
-    """Check properties of Bethe Gf."""
+    """Check properties of square Gf."""
 
     D = 1.2
     z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
@@ -134,6 +131,34 @@ class TestSquareGf(GfProperties):
     def params(self, request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
+
+
+class TestRectangularGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.rectangular.gf_z)
+
+    @pytest.fixture(params=[{'half_bandwidth': D, 'scale': gamma}
+                            for D, gamma in product([0.7, 1.2], [1.3, 2.0])])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), request.param
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -D, D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        D, gamma = params[1]['half_bandwidth'], params[1]['scale']
+        singularity = D * (gamma - 1) / (gamma + 1)
+        super().test_normalization(params, points=[-singularity, singularity])
 
 
 class TestSurfaceGf(GfProperties):
@@ -365,6 +390,41 @@ def test_square_dos_moment(D):
     assert gt.square_dos.m2(D) == pytest.approx(m2)
     assert gt.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
     assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+
+
+@pytest.mark.parametrize("gamma", [1.5, 2.])
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_rectangular_dos_unit(D, gamma):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gt.lattice.rectangular.dos, half_bandwidth=D, scale=gamma)
+    singularity = D * (gamma - 1) / (gamma + 1)
+    assert fp.quad(dos, [-D, -singularity, singularity, D]) == pytest.approx(1.)
+
+
+@pytest.mark.parametrize("gamma", [1.5, 2.])
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_rectangular_dos_half(D, gamma):
+    """DOS should be symmetric -> integral over the half should yield 0.5."""
+    dos = partial(gt.lattice.rectangular.dos, half_bandwidth=D, scale=gamma)
+    singularity = D * (gamma - 1) / (gamma + 1)
+    assert fp.quad(dos, [-D, -singularity, 0.]) == pytest.approx(.5)
+    assert fp.quad(dos, [0., +singularity, +D]) == pytest.approx(.5)
+
+
+@pytest.mark.parametrize("gamma", [1.5, 2.])
+def test_rectangular_dos_support(gamma):
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.lattice.rectangular.dos(eps, D, scale=gamma) == 0
+        assert gt.lattice.rectangular.dos(-eps, D, scale=gamma) == 0
+
+
+@given(z=st.complex_numbers(allow_infinity=False, max_magnitude=1e8))
+def test_rectangular_vs_square_gf(z):
+    """For `scale=1` the rectangular equals the square lattice."""
+    assume(abs(z.imag) > 1e-6)
+    assert gt.lattice.rectangular.gf_z(z, 1, 1) == pytest.approx(gt.square_gf_z(z, 1))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
