@@ -64,7 +64,7 @@ def test_iw2tau_dft_single_pole(pole):
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
-def test_iw2tau_mulity_pole(args):
+def test_iw2tau_multi_pole(args):
     """Test `iw2tau` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
@@ -164,7 +164,7 @@ def test_tau2iw_dft_single_pole(pole):
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
-def test_tau2iw_mulity_pole(args):
+def test_tau2iw_multi_pole(args):
     """Test `tau2iw` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
@@ -193,7 +193,7 @@ def test_tau2iw_mulity_pole(args):
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10),],
                    max_dims_extra=1, max_side=5),)
-def test_tau2iw_mulity_pole_hfm(args):
+def test_tau2iw_multi_pole_hfm(args):
     """Test `tau2iw_dft` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
@@ -289,7 +289,7 @@ def test_tt2z_single_pole_nonumexpr(spole):
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=5),)
-def test_tt2z_mulity_pole(args):
+def test_tt2z_multi_pole(args):
     """Test `tt2z` for a multi-pole Green's function."""
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
