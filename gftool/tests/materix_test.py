@@ -1,4 +1,6 @@
 """Tests of functions for real-space Gf matrices for infinite coordination number."""
+from functools import partial
+
 import pytest
 import numpy as np
 import scipy.linalg as la
@@ -114,3 +116,23 @@ def test_decomposition_inverse(args):
     assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
     assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
                        np.diagonal(inverse, axis1=-2, axis2=-1))
+
+
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
+@given(hopping=st.floats(min_value=-1e6, max_value=1e6),
+       eps1=st.floats(min_value=-1e6, max_value=1e6),
+       eps0=st.floats(min_value=-1e6, max_value=1e6),
+       z=st.complex_numbers(allow_nan=False, allow_infinity=False))
+def test_2x2_gf(z, eps0, eps1, hopping):
+    """Compare analytic 2x2 Gf vs numeric diagonalization."""
+    assume(abs(z.imag) > 1e-6)
+    assume((eps0 != eps1) or (hopping != 0))
+    ham = np.array([[eps0, hopping],
+                    [hopping, eps1]])
+    dec = gt.matrix.decompose_hamiltonian(ham)
+    gf_num = dec.reconstruct(1/(z - dec.xi), kind='diag')
+    assert np.allclose(gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping), gf_num)
+    g0 = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
+    gf_num = dec.reconstruct(g0(z - dec.xi), kind='diag')
+    gf_2x2 = gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping, hilbert_trafo=g0)
+    assert np.allclose(gf_2x2, gf_num)

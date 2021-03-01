@@ -236,11 +236,11 @@ def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
     ----------
     z : (...) complex array_like
         Complex frequencies.
-    eps0, eps1 : (...) real or complex array_like
-        Onsite energy of element 0 and 1. For interacting systems this can be
-        replaced by onsite energy + self-energy.
-    hopping : (...) real or complex array_like
-        Hopping element between 0 and 1.
+    eps0, eps1 : (...) float or complex array_like
+        On-site energy of element 0 and 1. For interacting systems this can be
+        replaced by on-site energy + self-energy.
+    hopping : (...) float or complex array_like
+        Hopping element between element 0 and 1.
     hilbert_trafo : Callable, optional
         Hilbert transformation. If given, return the local Green's function.
         Else the lattice dispersion :math:`ϵ_k` can be given via `z → z - ϵ_k`.
@@ -250,11 +250,13 @@ def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
     gf_2x2_z : (..., 2) complex array_like
         Diagonal elements of the Green's function of the 2x2 system.
 
+    Notes
+    -----
+    For the trivial case `eps0==eps1 and hopping==0`, this implementation fails.
+
     """
-    # TODO: write unit test to compare against numerical Decomposition
     mean_eps = np.mean([eps0, eps1], axis=0)
-    delta2 = hopping*hopping.conj() - eps0*eps1
-    sqrt_ = np.lib.scimath.sqrt(mean_eps**2 + delta2)
+    sqrt_ = np.lib.scimath.sqrt(0.25*(eps0 - eps1)**2 + hopping*np.conj(hopping))
     if hilbert_trafo is None:
         gf_p, gf_m = 1./(z - mean_eps - sqrt_), 1./(z - mean_eps + sqrt_)
     else:
