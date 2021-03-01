@@ -5,6 +5,7 @@ import pytest
 import hypothesis.strategies as st
 
 from hypothesis import given, assume
+from hypothesis.extra.numpy import arrays
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
@@ -231,6 +232,42 @@ def test_pole_from_gftau_exact(args):
     except ValueError:
         atol = 1e-8
     assert np.allclose(pole_gf.residues, resids, atol=atol)
+
+
+@pytest.fixture(scope="module")
+def pade_frequencies():
+    """Provide Padé frequency as they are slow to calculate."""
+    izp, rp = gt.pade_frequencies(20, beta=1)
+    izp.flags.writeable = False
+    rp.flags.writeable = False
+
+    def pade_frequencies_(beta):
+        return izp / beta, rp
+
+    return pade_frequencies_
+
+
+@given(poles=arrays(np.float, 10, elements=st.floats(-10, 10)),
+       resids=arrays(np.float, 10, elements=st.floats(0, 10)))
+def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
+    """Test `iz2tau` for a multi-pole Green's function."""
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)  # not really necessary...
+    BETA = 1.7
+    izp, __ = pade_frequencies(BETA)
+    tau = np.linspace(0, BETA, num=1025)
+
+    gf_pole = gt.basis.PoleGf(poles=poles, residues=resids)
+    gf_izp = gf_pole.eval_z(izp)
+
+    gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA)
+    gf_tau = gf_pole.eval_tau(tau, beta=BETA)
+    assert np.allclose(gf_tau, gf_ft)
+
+    # using many moments should give exact result
+    mom = gf_pole.moments(order=range(1, 4))
+    gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA, moments=mom)
+    assert np.allclose(gf_tau, gf_ft)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
