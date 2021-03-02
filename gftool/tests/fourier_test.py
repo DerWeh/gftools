@@ -250,7 +250,7 @@ def pade_frequencies():
 @given(poles=arrays(np.float, 10, elements=st.floats(-10, 10)),
        resids=arrays(np.float, 10, elements=st.floats(0, 10)))
 def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
-    """Test `iz2tau` for a multi-pole Green's function."""
+    """Test `izp2tau` for a multi-pole Green's function."""
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)  # not really necessary...
     BETA = 1.7
@@ -268,6 +268,30 @@ def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
     mom = gf_pole.moments(order=range(1, 4))
     gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA, moments=mom)
     assert np.allclose(gf_tau, gf_ft)
+
+
+@given(poles=arrays(np.float, 10, elements=st.floats(-10, 10)),
+       resids=arrays(np.float, 10, elements=st.floats(0, 10)))
+def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
+    """Test `tau2izp` for a multi-pole Green's function."""
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)  # not really necessary...
+    BETA = 1.7
+    izp, __ = pade_frequencies(BETA)  # should perform badly for few frequencies...
+    tau = np.linspace(0, BETA, num=129)
+
+    gf_pole = gt.basis.PoleGf(poles=poles, residues=resids)
+    gf_tau = gf_pole.eval_tau(tau, beta=BETA)
+
+    gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp)
+    gf_izp = gf_pole.eval_z(izp)
+    assert np.allclose(gf_izp, gf_ft)
+
+    # using many moments should give exact result
+    mom = gf_pole.moments(order=range(1, 4))
+    occ = gf_pole.occ(BETA)
+    gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp, moments=mom, occ=occ)
+    assert np.allclose(gf_izp, gf_ft)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
