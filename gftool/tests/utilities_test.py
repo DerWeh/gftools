@@ -145,6 +145,29 @@ def test_density():
     assert np.allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
+@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float_,
+                        elements=[st.floats(min_value=-10, max_value=10),
+                                  st.floats(min_value=0, max_value=10)]
+                        ),)
+def test_density_iw(args):
+    """Check `gt.density_iw` on Matsubara frequencies for multi pole Green's function."""
+    beta = 17
+    poles, residues = args
+    iw = gt.matsubara_frequencies(range(4096), beta=beta)
+    if np.any(residues.sum(axis=-1) > 10.):
+        # there are issues with moments with large residues, without moments it's fine
+        residues /= residues.sum(axis=-1, keepdims=True)
+    gf_poles = pole.PoleGf(poles=poles, residues=residues)
+    gf_iw = gf_poles.eval_z(iw)
+    moments = gf_poles.moments([1, 2, 3])
+    occ_ref = gf_poles.occ(beta)
+    occ = gt.density_iw(iw, gf_iw, beta=beta, moments=moments)
+    assert np.allclose(occ, occ_ref, atol=1e-5)
+    # add moment
+    occ = gt.density_iw(iw, gf_iw, beta=beta, moments=moments, n_fit=4)
+    assert np.allclose(occ, occ_ref, atol=1e-6)
+
+
 @pytest.fixture(scope="module")
 def pade_frequencies():
     """Provide Padé frequency as they are slow to calculate."""
@@ -163,7 +186,7 @@ def pade_frequencies():
                                   st.floats(min_value=0, max_value=10)]
                         ),)
 def test_density_izp(args, pade_frequencies):
-    """Check `gt.density_izp` for multi pole Green's function."""
+    """Check `gt.density_iw` on Padé frequencies for multi pole Green's function."""
     beta = 17
     poles, residues = args
     izp, rp = pade_frequencies(beta)
