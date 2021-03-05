@@ -7,7 +7,7 @@ The dispersion of the 2D triangular lattice is given by
 which can tack values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t]`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
-                 of `t=D/2.25`.
+                 of `t=4D/9`.
 
 """
 import numpy as np
@@ -22,6 +22,51 @@ def _signed_sqrt(z):
 
 
 def gf_z(z, half_bandwidth):
+    r"""Local Green's function of the 2D triangular lattice.
+
+    Note, that the spectrum is asymmetric and in :math:`[-2D/3, 4D/3]`,
+    where :math:`D` is the half-bandwidth.
+    The Green's function is evaluated as complete elliptic integral of first
+    kind, see [horiguchi1972]_.
+
+    Parameters
+    ----------
+    z : complex np.ndarray or complex
+        Green's function is evaluated at complex frequency `z`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the triangular lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=4D/9`.
+
+    Returns
+    -------
+    gf_z : complex np.ndarray or complex
+        Value of the triangular lattice Green's function
+
+    References
+    ----------
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+       Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
+       1411–1419. https://doi.org/10.1063/1.1666155
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.5, 1.5, num=500, dtype=complex) + 1e-64j
+    >>> gf_ww = gt.lattice.triangular.gf_z(ww, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-2/3, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(+4/3, color='black', linewidth=0.8)
+    >>> _ = plt.plot(ww.real, gf_ww.real, label=r"$\Re G$")
+    >>> _ = plt.plot(ww.real, gf_ww.imag, '--', label=r"$\Im G$")
+    >>> _ = plt.ylabel(r"$G*D$")
+    >>> _ = plt.xlabel(r"$\omega/D$")
+    >>> _ = plt.xlim(left=ww.real.min(), right=ww.real.max())
+    >>> _ = plt.legend()
+    >>> plt.show()
+
+    """
     D = half_bandwidth * 4 / 9
     z = 1.0 / D * np.asarray(z)
     shape = z.shape
