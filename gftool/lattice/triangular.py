@@ -90,16 +90,17 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    del half_bandwidth
+    D = half_bandwidth * 4 / 9
+    eps = 1.0 / D * eps
     dos = np.zeros_like(eps)
-    region1 = (-3 <= eps) & (eps <= -2)
-    rr = np.sqrt(3 + eps[region1])
+    region1 = (-1.5 <= eps) & (eps <= -1)
+    rr = np.sqrt(2*eps[region1] + 3)
     z0 = (rr + 1)**3 * (3 - rr) / 4
     z1 = 4 * rr
     dos[region1] = 1 / np.sqrt(z0) * ellipk(z1/z0)
-    region2 = (-2 <= eps) & (eps <= +6)
-    rr = np.sqrt(3 + eps[region2])
+    region2 = (-1 <= eps) & (eps <= +3)
+    rr = np.sqrt(2*eps[region2] + 3)
     z0 = 4 * rr
     z1 = (rr + 1)**3 * (3 - rr) / 4
     dos[region2] = 1 / np.sqrt(z0) * ellipk(z1/z0)
-    return 1 / np.pi**2 * dos
+    return 2 / np.pi**2 / D * dos
