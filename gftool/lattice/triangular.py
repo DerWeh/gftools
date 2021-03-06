@@ -4,7 +4,7 @@ The dispersion of the 2D triangular lattice is given by
 
 .. math:: ϵ_{k_x, k_y} = t [\cos(2k_x) + 2 \cos(k_x)\cos(k_y)]
 
-which can tack values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t]`.
+which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t]`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=4D/9`.
@@ -90,6 +90,49 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
+    r"""DOS of non-interacting 2D triangular lattice.
+
+    The DOS diverges at `-4/9*half_bandwidth`.
+    The DOS is evaluated as complete elliptic integral of first kind,
+    see [kogan2021]_.
+
+    Parameters
+    ----------
+    eps : float np.ndarray or float
+        DOS is evaluated at points `eps`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=4D/9`.
+
+    Returns
+    -------
+    dos : float np.ndarray or float
+        The value of the DOS.
+
+    References
+    ----------
+    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green’s Functions and DOS for
+       Some 2D Lattices. Graphene, 10, 1-12.
+       https://doi.org/10.4236/graphene.2021.101001.
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.5, 1.5, num=500)
+    >>> dos = gt.lattice.triangular.dos(eps, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, dos)
+    >>> _ = plt.axvline(-2/3, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(+4/3, color='black', linewidth=0.8)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
     D = half_bandwidth * 4 / 9
     eps = 1.0 / D * eps
     dos = np.zeros_like(eps)
