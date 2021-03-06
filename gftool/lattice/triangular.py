@@ -12,6 +12,8 @@ which can tack values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t]`.
 """
 import numpy as np
 
+from scipy.special import ellipk
+
 from gftool._util import _u_ellipk
 
 
@@ -85,3 +87,19 @@ def gf_z(z, half_bandwidth):
     gf_z = 1 / np.pi / D * gg * K  # eq (2.6)
     gf_z[singular] = 0 - 1j*np.infty
     return np.where(advanced, np.conj(gf_z), gf_z).reshape(shape)  # return to advanced by symmetry
+
+
+def dos(eps, half_bandwidth):
+    del half_bandwidth
+    dos = np.zeros_like(eps)
+    region1 = (-3 <= eps) & (eps <= -2)
+    rr = np.sqrt(3 + eps[region1])
+    z0 = (rr + 1)**3 * (3 - rr) / 4
+    z1 = 4 * rr
+    dos[region1] = 1 / np.sqrt(z0) * ellipk(z1/z0)
+    region2 = (-2 <= eps) & (eps <= +6)
+    rr = np.sqrt(3 + eps[region2])
+    z0 = 4 * rr
+    z1 = (rr + 1)**3 * (3 - rr) / 4
+    dos[region2] = 1 / np.sqrt(z0) * ellipk(z1/z0)
+    return 1 / np.pi**2 * dos
