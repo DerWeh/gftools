@@ -159,7 +159,7 @@ def test_density_iw(args):
         residues /= residues.sum(axis=-1, keepdims=True)
     gf_poles = pole.PoleGf(poles=poles, residues=residues)
     gf_iw = gf_poles.eval_z(iw)
-    moments = gf_poles.moments([1, 2, 3])
+    moments = gf_poles.moments([1, 2, 3, 4])
     occ_ref = gf_poles.occ(beta)
     occ = gt.density_iw(iw, gf_iw, beta=beta, moments=moments)
     assert np.allclose(occ, occ_ref, atol=1e-5)
