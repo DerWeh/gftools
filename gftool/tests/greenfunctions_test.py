@@ -187,6 +187,32 @@ class TestTriangularGf(GfProperties):
         super().test_normalization(params, points=[-4*D/9])
 
 
+class TestHoneycombGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.honeycomb.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for honeycomb Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -D, D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        D = params[1]['half_bandwidth']
+        super().test_normalization(params, points=[-D/3, +D/3])
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 
@@ -494,6 +520,49 @@ def test_triangular_imag_gf_equals_dos():
     omega += 1e-16j
     assert np.allclose(-gt.lattice.triangular.gf_z(omega, D).imag/np.pi,
                        gt.lattice.triangular.dos(omega.real, D))
+
+
+@pytest.mark.skip(reason="Cmp. triangular. Integrals fail due to singularity.")
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_honeycomb_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
+    # assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
+    assert integrate.quad(dos, -D, D, points=[-D/3, 0, D/3]) == pytest.approx(1.)
+
+
+def test_honeycomb_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.lattice.honeycomb.dos(+eps, D) == 0
+        assert gt.lattice.honeycomb.dos(-eps, D) == 0
+
+
+def test_honeycomb_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.2
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gt.lattice.honeycomb.gf_z(omega, D).imag <= 0)
+
+
+def test_honeycomb_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS.
+
+    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
+
+    """
+    D = 1.2
+    num = int(1e3)
+    # around singularity and band-edge, there are some issues
+    delta = 1e-4
+    omega = np.concatenate((np.linspace(-D+delta, -D/3-delta, num=num//3),
+                            np.linspace(-D/3+delta, +D/3-delta, num=num//3),
+                            np.linspace(+D/3+delta, +D-delta, num=num//3)))
+    omega = omega + 1e-16j
+    assert np.allclose(-gt.lattice.honeycomb.gf_z(omega, D).imag/np.pi,
+                       gt.lattice.honeycomb.dos(omega.real, D))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
