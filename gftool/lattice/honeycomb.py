@@ -14,7 +14,7 @@ def gf_z(z, half_bandwidth):
     of the 2D triangular lattice `gftool.lattice.triangular.gf_z`,
     see [horiguchi1972]_.
 
-    The Green's function has singularities at `z=±1/3`
+    The Green's function has singularities at `z=±half_bandwidth/3`.
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def gf_z(z, half_bandwidth):
 
     Examples
     --------
-    >>> ww = np.linspace(-1.5, 1.5, num=500, dtype=complex) + 1e-64j
+    >>> ww = np.linspace(-1.5, 1.5, num=501, dtype=complex) + 1e-64j
     >>> gf_ww = gt.lattice.honeycomb.gf_z(ww, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
@@ -95,13 +95,11 @@ def dos(eps, half_bandwidth):
 
     Examples
     --------
-    >>> eps = np.linspace(-1.5, 1.5, num=500)
+    >>> eps = np.linspace(-1.5, 1.5, num=501)
     >>> dos = gt.lattice.honeycomb.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.plot(eps, dos)
-    >>> _ = plt.axvline(-2/3, color='black', linewidth=0.8)
-    >>> _ = plt.axvline(+4/3, color='black', linewidth=0.8)
     >>> _ = plt.xlabel(r"$\epsilon/D$")
     >>> _ = plt.ylabel(r"DOS * $D$")
     >>> _ = plt.axvline(0, color='black', linewidth=0.8)
