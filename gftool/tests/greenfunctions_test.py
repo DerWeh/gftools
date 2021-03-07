@@ -161,6 +161,32 @@ class TestRectangularGf(GfProperties):
         super().test_normalization(params, points=[-singularity, singularity])
 
 
+class TestTriangularGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.triangular.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for Bethe Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -2*D/3, 4*D/3
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        D = params[1]['half_bandwidth']
+        super().test_normalization(params, points=[-4*D/9])
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 
@@ -425,6 +451,49 @@ def test_rectangular_vs_square_gf(z):
     """For `scale=1` the rectangular equals the square lattice."""
     assume(abs(z.imag) > 1e-6)
     assert gt.lattice.rectangular.gf_z(z, 1, 1) == pytest.approx(gt.square_gf_z(z, 1))
+
+
+@pytest.mark.skip(reason="Integrals fail due to singularity. Haven't found any fix yet.")
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_triangular_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gt.lattice.triangular.dos, half_bandwidth=D)
+    # assert fp.quad(dos, [-2*D/3, -4*D/9, 4*D/3]) == pytest.approx(1.)
+    assert integrate.quad(dos, -2*D/3, 4*D/3, points=[-4*D/9]) == pytest.approx(1.)
+
+
+def test_triangular_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    left = -2*D/3
+    right = 4*D/3
+    for eps in np.linspace(right + 1e-6, right*1e4):
+        assert gt.lattice.triangular.dos(eps, D) == 0
+    for eps in np.linspace(left*1e4, left - 1e-6):
+        assert gt.lattice.triangular.dos(eps, D) == 0
+
+
+def test_triangular_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.2
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gt.lattice.triangular.gf_z(omega, D).imag <= 0)
+
+
+def test_triangular_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS.
+
+    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
+
+    """
+    D = 1.2
+    num = int(1e3)
+    # lower band-edge 2/3*D is problematic
+    omega = np.linspace(-2/3*D+1e-6, 2*D, dtype=np.complex, num=num)
+    omega += 1e-16j
+    assert np.allclose(-gt.lattice.triangular.gf_z(omega, D).imag/np.pi,
+                       gt.lattice.triangular.dos(omega.real, D))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
