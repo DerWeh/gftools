@@ -4,7 +4,7 @@ The dispersion of the 2D triangular lattice is given by
 
 .. math:: ϵ_{k_x, k_y} = t [\cos(2k_x) + 2 \cos(k_x)\cos(k_y)]
 
-which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t]`.
+which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t] = [-2D/3, 4D/3]`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=4D/9`.
@@ -133,6 +133,8 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
+    # FIXME: DOS at lower band-edge is somewhat undetermined
+    # using gf_z(-1.5*4/9D, D) and gf_z(-1.5*4/9D-1e-100j, D) gives different results
     D = half_bandwidth * 4 / 9
     eps = np.asarray(1.0 / D * eps)
     dos = np.zeros_like(eps)
