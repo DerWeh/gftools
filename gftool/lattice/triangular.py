@@ -134,7 +134,7 @@ def dos(eps, half_bandwidth):
 
     """
     D = half_bandwidth * 4 / 9
-    eps = 1.0 / D * eps
+    eps = np.asarray(1.0 / D * eps)
     dos = np.zeros_like(eps)
     region1 = (-1.5 <= eps) & (eps <= -1)
     rr = np.sqrt(2*eps[region1] + 3)
