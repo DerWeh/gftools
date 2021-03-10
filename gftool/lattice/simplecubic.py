@@ -4,7 +4,69 @@
                  of `t=D/6`
 
 """
+import numpy as np
+
+from numpy.lib.scimath import sqrt
 from mpmath import mp
+
+from gftool._util import _u_ellipk
+
+
+def gf_z(z, half_bandwidth=1):
+    r"""Local Green's function of 3D simple cubic lattice.
+
+    Has a van Hove singularity (continuous but not differentiable) at
+    `abs(z) = D/3`.
+
+    Implements equations (1.24 - 1.26) from [delves2001]_.
+
+    Parameters
+    ----------
+    z : complex np.ndarray or complex
+        Green's function is evaluated at complex frequency `z`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the simple cubic lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/6`.
+
+    Returns
+    -------
+    gf_z : complex np.ndarray or complex
+        Value of the simple cubic Green's function at complex energy 'z'.
+
+    References
+    ----------
+    .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
+       Springer, 2006.
+    .. [delves2001] Delves, R. T. and Joyce, G. S., Ann. Phys. 291, 71 (2001).
+       https://doi.org/10.1006/aphy.2001.6148
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.1, 1.1, num=500)
+    >>> gf_ww = gt.lattice.simplecubic.gf_z(ww)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-1/3, color="black", linewidth=0.8)
+    >>> _ = plt.axvline(+1/3, color="black", linewidth=0.8)
+    >>> _ = plt.plot(ww.real, gf_ww.real, label=r"$\Re G$")
+    >>> _ = plt.plot(ww.real, gf_ww.imag, label=r"$\Im G$")
+    >>> _ = plt.ylabel(r"$G*D$")
+    >>> _ = plt.xlabel(r"$\omega/D$")
+    >>> _ = plt.xlim(left=ww.min(), right=ww.max())
+    >>> _ = plt.legend()
+    >>> plt.show()
+
+    """
+    D_inv = 3 / half_bandwidth
+    z = D_inv * z
+    z_sqr = z**-2
+    xi = sqrt(1 - sqrt(1 - z_sqr)) / sqrt(1 + sqrt(1 - 9*z_sqr))
+    denom_inv = 1 / ((1 - xi)**3 * (1 + 3*xi))
+    k2 = 16 * xi**3 * denom_inv
+    gf_z = (1 - 9*xi**4) * (2 / np.pi * _u_ellipk(k2))**2 * denom_inv / z
+    return D_inv * gf_z
 
 
 def dos_mp(eps, half_bandwidth=1):
