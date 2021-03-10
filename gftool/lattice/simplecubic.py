@@ -68,44 +68,45 @@ def gf_z_mp(z, half_bandwidth=1):
     Has a van Hove singularity (continuous but not differentiable) at
     `abs(z) = D/3`.
 
-    Implements equations (1.24 - 1.26) from [delves2001].
+    Implements equations (1.24 - 1.26) from [delves2001]_.
 
     Parameters
     ----------
-    z : mp.mpf or mpf_like
-        Energy point at which the DOS is evaluated.
-        Will be converted to a multi-precision float `mp.mpf`.
+    z : mpmath.mpc or mpc_like
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : mp.mpf or mpf_like
-        Half-bandwidth of the DOS.
+        Half-bandwidth of the DOS of the simple cubic lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/6`.
 
     Returns
     -------
-    gf_z : mp.mpf
+    gf_z : mpmath.mpc
         Value of the Green's function at complex energy 'z'.
-
-    Examples
-    --------
-    >>> eps = np.linspace(-1.1, 1.1, num=101) + 1j*1e-7
-    >>> with mp.workdps(15):
-    >>>     gf_ww = [gt.lattice.simplecubic.gf_z_mp(ee)[0] for ee in eps]
-
-    >>> import matplotlib.pyplot as plt
-    >>> _ = plt.plot(eps, -gf_ww.imag, 'x-')
-    >>> _ = plt.xlabel(r"$\epsilon/D$")
-    >>> _ = plt.ylabel(r"-Im(G) * $D$")
-    >>> _ = plt.axvline(1/3, color="black", linestyle="--")
-    >>> _ = plt.axvline(-1/3, color="black", linestyle="--")
-    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
-    >>> _ = plt.ylim(bottom=0)
-    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
-    >>> plt.show()
 
     References
     ----------
     .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
        Springer, 2006.
-
     .. [delves2001] Delves, R. T. and Joyce, G. S., Ann. Phys. 291, 71 (2001).
+       https://doi.org/10.1006/aphy.2001.6148
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.1, 1.1, num=500)
+    >>> gf_ww = np.array([gt.lattice.simplecubic.gf_z_mp(wi) for wi in ww])
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-1/3, color="black", linewidth=0.8)
+    >>> _ = plt.axvline(+1/3, color="black", linewidth=0.8)
+    >>> _ = plt.plot(ww.real, gf_ww.astype(complex).real, label=r"$\Re G$")
+    >>> _ = plt.plot(ww.real, gf_ww.astype(complex).imag, label=r"$\Im G$")
+    >>> _ = plt.ylabel(r"$G*D$")
+    >>> _ = plt.xlabel(r"$\omega/D$")
+    >>> _ = plt.xlim(left=ww.min(), right=ww.max())
+    >>> _ = plt.legend()
+    >>> plt.show()
 
     """
     z = 3 * mp.mpc(z) / half_bandwidth
