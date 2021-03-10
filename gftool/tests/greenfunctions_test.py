@@ -213,6 +213,32 @@ class TestHoneycombGf(GfProperties):
         super().test_normalization(params, points=[-D/3, +D/3])
 
 
+class TestSimplecubicGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.simplecubic.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for simple cubic Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -D, D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        D = params[1]['half_bandwidth']
+        super().test_normalization(params, points=[-D/3, D/3])
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 
@@ -563,6 +589,15 @@ def test_honeycomb_imag_gf_equals_dos():
     omega = omega + 1e-16j
     assert np.allclose(-gt.lattice.honeycomb.gf_z(omega, D).imag/np.pi,
                        gt.lattice.honeycomb.dos(omega.real, D))
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+@given(z=st.complex_numbers(max_magnitude=1e6))
+def test_simplecubic_gf_vs_gf_mp(z, D):
+    """Compare multi-precision and numpy implementation of GF."""
+    assume(abs(z.imag) > 1e-6)
+    assert np.allclose(gt.lattice.simplecubic.gf_z(z, half_bandwidth=D),
+                       complex(gt.lattice.simplecubic.gf_z_mp(z, half_bandwidth=D)))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")

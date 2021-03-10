@@ -12,9 +12,11 @@ Submodules
     rectangular
     triangular
     honeycomb
+    simplecubic
 
 """
-from . import bethe, onedim, square, rectangular, triangular, honeycomb
+from . import (bethe, honeycomb, onedim, rectangular, simplecubic, square,
+               triangular)
 
 # silence warnings of unused imports
 assert bethe
@@ -23,3 +25,4 @@ assert square
 assert rectangular
 assert triangular
 assert honeycomb
+assert simplecubic
