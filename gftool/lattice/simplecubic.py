@@ -6,6 +6,7 @@
 """
 from mpmath import mp
 
+
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 3D simple cubic lattice.
 
@@ -60,17 +61,18 @@ def dos_mp(eps, half_bandwidth=1):
     integ2 = mp.quad(integrand, [singularity+delta, endpoint]) / mp.pi**2
     return mp.re( 3 * (integ1+integ2) / half_bandwidth / mp.pi )
 
-def gf_z_mp(eps, half_bandwidth=1):
+
+def gf_z_mp(z, half_bandwidth=1):
     r"""Multi-precision Green's function of non-interacting 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
-    `abs(eps) = D/3`.
+    `abs(z) = D/3`.
 
     Implements equations (1.24 - 1.26) from [delves2001].
 
     Parameters
     ----------
-    eps : mp.mpf or mpf_like
+    z : mp.mpf or mpf_like
         Energy point at which the DOS is evaluated.
         Will be converted to a multi-precision float `mp.mpf`.
     half_bandwidth : mp.mpf or mpf_like
@@ -79,7 +81,7 @@ def gf_z_mp(eps, half_bandwidth=1):
     Returns
     -------
     gf_z : mp.mpf
-        Value of the Green's function at complex energy 'eps'.
+        Value of the Green's function at complex energy 'z'.
 
     Examples
     --------
@@ -106,10 +108,10 @@ def gf_z_mp(eps, half_bandwidth=1):
     .. [delves2001] Delves, R. T. and Joyce, G. S., Ann. Phys. 291, 71 (2001).
 
     """
-    eps = 3 * mp.mpc(eps) / half_bandwidth
-    z = 1 / eps**2
-    xi = mp.sqrt(1 - mp.sqrt(1 - z)) / mp.sqrt(1 + mp.sqrt(1 - 9*z))
+    z = 3 * mp.mpc(z) / half_bandwidth
+    z_sqr = 1 / z**2
+    xi = mp.sqrt(1 - mp.sqrt(1 - z_sqr)) / mp.sqrt(1 + mp.sqrt(1 - 9*z_sqr))
     k2 = 16 * xi**3 / ((1 - xi)**3 * (1 + 3*xi))
-    green = (1 - 9*xi**4) * (2 * mp.ellipk(k2) / mp.pi)**2 / ((1 - xi)**3 * (1 + 3*xi)) / eps
+    green = (1 - 9*xi**4) * (2 * mp.ellipk(k2) / mp.pi)**2 / ((1 - xi)**3 * (1 + 3*xi)) / z
 
     return 3 * green / half_bandwidth
