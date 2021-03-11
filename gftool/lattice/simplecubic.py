@@ -68,19 +68,18 @@ def gf_z(z, half_bandwidth=1):
     gf_z = (1 - 9*xi**4) * (2 / np.pi * _u_ellipk(k2))**2 * denom_inv / z
     return D_inv * gf_z
 
-
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `abs(t) = D/3`.
 
-    Implements equations (3.5 - 3.10) from [morita1970].
+    Implements Eq. 7.37 from [joyce1973] for the special case of eps == 0, otherwise calls gf_z_mp.
 
     Parameters
     ----------
-    t : float ndarray or float
-        DOS is evaluated at points `t`.
+    eps : float ndarray or float
+        DOS is evaluated at points `eps`.
 
     Returns
     -------
@@ -90,7 +89,9 @@ def dos_mp(eps, half_bandwidth=1):
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=500)
-    >>> dos = gt.lattice.simplecubic.dos(eps, half_bandwidth=1)
+    >>> with.workdps(15):
+    >>>     dos_mp = [gt.lattice.simplecubic.dos_mp(ee, half_bandwidth=1) for ee in eps]
+    >>> dos_mp = np.array(dos_mp, dtype=np.float64)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.plot(eps, dos_mp)
@@ -106,23 +107,16 @@ def dos_mp(eps, half_bandwidth=1):
     ----------
     .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
        Springer, 2006.
-
-    .. [morita1970] Morita, T. and Horiguchi, T. J., Math. Phys. 12, 981 (1970).
+    .. [joyce1973] G. S. Joyce, Phil. Trans. of the Royal Society of London A, 273, 583 (1973).
+    .. [katsura1971] S. Katsura et al., J. Math. Phys., 12, 895 (1971).
 
     """
-    eps = 3 * mp.fabs(eps) / half_bandwidth
-    delta = mp.eps**(1/mp.mpf(2))
-    integrand = lambda phi: mp.ellipk(1 - (eps - mp.cos(phi))**2 / 4)
-    if eps > 1:
-        endpoint = mp.acos(eps - 2)
-        integ1 = mp.quad(integrand, [0, endpoint]) / mp.pi**2
-        return mp.re( 3 * integ1 / half_bandwidth / mp.pi )
-    singularity = mp.acos(eps)
-    endpoint = mp.acos(eps - 2) if eps > 1 else mp.pi
-    integ1 = mp.quad(integrand, [0, singularity-delta]) / mp.pi**2
-    integ2 = mp.quad(integrand, [singularity+delta, endpoint]) / mp.pi**2
-    return mp.re( 3 * (integ1+integ2) / half_bandwidth / mp.pi )
-
+    D_inv = 3 / half_bandwidth
+    eps = mp.fabs(eps)
+    if eps == 0:
+        km2 = 0.25 * (2 - mp.sqrt(3))
+        return D_inv * (2 / mp.pi**2) * mp.ellipk(km2) * mp.ellipk(1 - km2) / mp.pi
+    return - mp.im( gf_z_mp(eps, half_bandwidth) ) / mp.pi
 
 def gf_z_mp(z, half_bandwidth=1):
     r"""Multi-precision Green's function of non-interacting 3D simple cubic lattice.
@@ -171,10 +165,11 @@ def gf_z_mp(z, half_bandwidth=1):
     >>> plt.show()
 
     """
-    z = 3 * mp.mpc(z) / half_bandwidth
+    D_inv = 3 / half_bandwidth
+    z = D_inv * mp.mpc(z)
     z_sqr = 1 / z**2
     xi = mp.sqrt(1 - mp.sqrt(1 - z_sqr)) / mp.sqrt(1 + mp.sqrt(1 - 9*z_sqr))
     k2 = 16 * xi**3 / ((1 - xi)**3 * (1 + 3*xi))
     green = (1 - 9*xi**4) * (2 * mp.ellipk(k2) / mp.pi)**2 / ((1 - xi)**3 * (1 + 3*xi)) / z
 
-    return 3 * green / half_bandwidth
+    return D_inv * green
