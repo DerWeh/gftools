@@ -592,12 +592,64 @@ def test_honeycomb_imag_gf_equals_dos():
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_simplecubic_dos_unit(D):
+    """Integral over the whole DOS should be 1."""
+    dos = partial(gt.lattice.simplecubic.dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_simplecubic_dos_half(D):
+    """DOS should be symmetric -> integral over the half should yield 0.5."""
+    dos = partial(gt.lattice.simplecubic.dos, half_bandwidth=D)
+    assert fp.quad(dos, [-D, -D/3, 0]) == pytest.approx(0.5)
+    assert fp.quad(dos, [0, +D/3, +D]) == pytest.approx(0.5)
+
+
+def test_simplecubic_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.lattice.simplecubic.dos(+eps, D) == 0
+        assert gt.lattice.simplecubic.dos(-eps, D) == 0
+
+
+def test_simplecubic_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.2
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gt.lattice.simplecubic.gf_z(omega, D).imag <= 0)
+
+
+def test_simplecubic_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS.
+
+    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
+
+    """
+    D = 1.2
+    num = int(1e3)
+    omega = np.linspace(-D, D, num=num) + 1e-16j
+    assert np.allclose(-gt.lattice.simplecubic.gf_z(omega, D).imag/np.pi,
+                       gt.lattice.simplecubic.dos(omega.real, D))
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
 @given(z=st.complex_numbers(max_magnitude=1e6))
 def test_simplecubic_gf_vs_gf_mp(z, D):
     """Compare multi-precision and numpy implementation of GF."""
     assume(abs(z.imag) > 1e-6)
     assert np.allclose(gt.lattice.simplecubic.gf_z(z, half_bandwidth=D),
                        complex(gt.lattice.simplecubic.gf_z_mp(z, half_bandwidth=D)))
+
+
+@given(eps=st.floats(-1.5, +1.5))
+def test_simplecubic_dos_vs_dos_mp(eps):
+    """Compare multi-precision and numpy implementation of GF."""
+    D = 1.3
+    assert np.allclose(gt.lattice.simplecubic.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.simplecubic.dos(eps, half_bandwidth=D)))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
