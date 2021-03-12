@@ -69,6 +69,72 @@ def gf_z(z, half_bandwidth=1):
     return D_inv * gf_z
 
 
+def dos(eps, half_bandwidth=1):
+    r"""Local Green's function of 3D simple cubic lattice.
+
+    Has a van Hove singularity (continuous but not differentiable) at
+    `abs(eps) = D/3`.
+
+    Implements Eq. 7.37 from [joyce1973]_ for the special case of `eps = 0`,
+    otherwise identical to `-gf_z_mp.imag/np.pi`.
+
+    Parameters
+    ----------
+    eps : float np.ndarray or float
+        DOS is evaluated at points `eps`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the simple cubic lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=D/6`.
+
+    Returns
+    -------
+    dos : float np.ndarray or float
+        The value of the DOS.
+
+    References
+    ----------
+    .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
+       Springer, 2006.
+    .. [joyce1973] G. S. Joyce, Phil. Trans. of the Royal Society of London A,
+       273, 583 (1973). https://www.jstor.org/stable/74037
+    .. [katsura1971] S. Katsura et al., J. Math. Phys., 12, 895 (1971).
+       https://doi.org/10.1063/1.1665663
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.1, 1.1, num=501)
+    >>> dos = gt.lattice.simplecubic.dos(eps)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-1/3, color="black", linewidth=0.8)
+    >>> _ = plt.axvline(+1/3, color="black", linewidth=0.8)
+    >>> _ = plt.plot(eps, dos)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    D_inv = 3 / half_bandwidth
+    eps = np.asarray(abs(D_inv * eps))
+    dos_ = np.zeros_like(eps)
+    finite = (eps > 0) & (eps < 3)  # 0 will be treated separately
+    # Green's function but avoid (1 ± 1/eps**2) for small eps
+    eps2 = eps[finite]**2
+    xi = sqrt(eps[finite] - sqrt(eps2 - 1)) / sqrt(eps[finite] + sqrt(eps2 - 9))
+    denom_inv = 1 / ((1 - xi)**3 * (1 + 3*xi))
+    k2 = 16 * xi**3 * denom_inv
+    gf_ = (1 - 9*xi**4) * (2 / np.pi * _u_ellipk(k2))**2 * denom_inv / eps[finite]
+    dos_[finite] = -1. / np.pi * gf_.imag
+    zero = eps == 0
+    if np.any(zero):
+        km2 = 0.25 * (2 - mp.sqrt(3))
+        dos_[zero] = (2 / mp.pi**2) * mp.ellipk(km2) * mp.ellipk(1 - km2) / mp.pi
+    return D_inv * dos_
+
+
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 3D simple cubic lattice.
 
