@@ -75,7 +75,7 @@ def gf_z(z, half_bandwidth=1):
     return D_inv * gf_z
 
 
-def hilbert_transform(xi, half_bandwidth):
+def hilbert_transform(xi, half_bandwidth=1):
     r"""Hilbert transform of non-interacting DOS of the simple cubic lattice.
 
     The Hilbert transform is defined
@@ -119,7 +119,7 @@ def dos(eps, half_bandwidth=1):
     `abs(eps) = D/3`.
 
     Implements Eq. 7.37 from [joyce1973]_ for the special case of `eps = 0`,
-    otherwise identical to `-gf_z_mp.imag/np.pi`.
+    otherwise identical to `-gf_z.imag/np.pi`.
 
     Parameters
     ----------
@@ -235,7 +235,7 @@ def gf_z_mp(z, half_bandwidth=1):
     r"""Multi-precision Green's function of non-interacting 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
-    `abs(z) = D/3`.
+    `z = ±D/3`.
 
     Implements equations (1.24 - 1.26) from [delves2001]_.
 
