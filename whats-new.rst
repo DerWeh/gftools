@@ -10,6 +10,7 @@ Not Released
 New Features
 ~~~~~~~~~~~~
 
+* gftool.lattice.sc for Green's function of simple cubic lattice (:commit:`4e3021`) by `Andreas Östlin <https://github.com/aostlin>`_
 * add Laplace transformation from real times to complex frequencies `gftool.fourier.tt2z`
 
 Other New Features
