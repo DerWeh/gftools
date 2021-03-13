@@ -1,4 +1,10 @@
-"""3D simple cubic lattice.
+r"""3D simple cubic lattice.
+
+The dispersion of the 3D simple cubic lattice is given by
+
+.. math:: ϵ_{k_x, k_y, k_z} = 2t [\cos(k_x) + \cos(k_y) + \cos(k_z)]
+
+which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-6t, +6t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/6`
