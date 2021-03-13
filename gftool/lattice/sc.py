@@ -50,7 +50,7 @@ def gf_z(z, half_bandwidth=1):
     Examples
     --------
     >>> ww = np.linspace(-1.1, 1.1, num=500)
-    >>> gf_ww = gt.lattice.simplecubic.gf_z(ww)
+    >>> gf_ww = gt.lattice.sc.gf_z(ww)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color="black", linewidth=0.8)
@@ -106,7 +106,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.simplecubic.gf_z
+    gftool.lattice.sc.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -147,7 +147,7 @@ def dos(eps, half_bandwidth=1):
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=501)
-    >>> dos = gt.lattice.simplecubic.dos(eps)
+    >>> dos = gt.lattice.sc.dos(eps)
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color="black", linewidth=0.8)
@@ -180,7 +180,7 @@ def dos(eps, half_bandwidth=1):
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
 # from: integral of dos_mp with mp.workdps(50)
-# `2*mp.quad(lambda eps: eps**4 * simplecubic.dos_mp(eps), [0, mp.mpf('1/3)])`
+# `2*mp.quad(lambda eps: eps**4 * gt.lattice.sc.dos_mp(eps), [0, mp.mpf('1/3)])`
 # rational numbers obtained by mp.identify
 dos_moment_coefficients = {
     2: 1/6,
@@ -220,7 +220,7 @@ def dos_moment(m, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.simplecubic.dos
+    gftool.lattice.sc.dos
 
     """
     if m % 2:  # odd moments vanish due to symmetry
@@ -263,7 +263,7 @@ def gf_z_mp(z, half_bandwidth=1):
     Examples
     --------
     >>> ww = np.linspace(-1.1, 1.1, num=500)
-    >>> gf_ww = np.array([gt.lattice.simplecubic.gf_z_mp(wi) for wi in ww])
+    >>> gf_ww = np.array([gt.lattice.sc.gf_z_mp(wi) for wi in ww])
 
     >>> import matplotlib.pyplot as plt
     >>> _ = plt.axhline(0, color="black", linewidth=0.8)
@@ -324,7 +324,7 @@ def dos_mp(eps, half_bandwidth=1):
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=501)
-    >>> dos_mp = [gt.lattice.simplecubic.dos_mp(ee, half_bandwidth=1) for ee in eps]
+    >>> dos_mp = [gt.lattice.sc.dos_mp(ee, half_bandwidth=1) for ee in eps]
     >>> dos_mp = np.array(dos_mp, dtype=np.float64)
 
     >>> import matplotlib.pyplot as plt
