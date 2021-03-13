@@ -659,7 +659,7 @@ def test_simplecubic_dos_vs_dos_mp(eps):
     """Compare multi-precision and numpy implementation of GF."""
     D = 1.3
     assert np.allclose(gt.lattice.sc.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.sc.dos(eps, half_bandwidth=D)))
+                       float(gt.lattice.sc.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
