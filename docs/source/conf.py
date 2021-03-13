@@ -170,6 +170,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'np': ('http://docs.scipy.org/doc/numpy/', None),
+                       'mpmath': ('https://mpmath.org/doc/current/', None)
                        }
 
 # -----------------------------------------------------------------------------
