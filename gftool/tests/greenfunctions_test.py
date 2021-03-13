@@ -635,6 +635,16 @@ def test_simplecubic_imag_gf_equals_dos():
                        gt.lattice.simplecubic.dos(omega.real, D))
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_simplecubic_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.simplecubic.dos, half_bandwidth=D)
+    for mm in gt.lattice.simplecubic.dos_moment_coefficients.keys():
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, D/3, D])
+        assert moment == pytest.approx(gt.lattice.simplecubic.dos_moment(mm, half_bandwidth=D))
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 @given(z=st.complex_numbers(max_magnitude=1e6))
 def test_simplecubic_gf_vs_gf_mp(z, D):
