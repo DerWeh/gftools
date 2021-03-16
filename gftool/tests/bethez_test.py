@@ -35,3 +35,26 @@ def test_coordination2(z, half_bandwidth):
         onedim.gf_z(z, half_bandwidth=half_bandwidth),
         bethez.gf_z(z, half_bandwidth=half_bandwidth, coordination=2)
     )
+
+
+@given(eps=st.floats(-1.0, 1.0),
+       half_bandwidth=st.floats(min_value=0.1, max_value=2))
+def test_inifinite_coordination_dos(eps, half_bandwidth):
+    """Compare `bethez` for large coordination with `bethe`."""
+    eps *= half_bandwidth
+    coordination = int(1e8)  # huge but finite value
+    assert np.allclose(
+        bethe.dos(eps, half_bandwidth=half_bandwidth),
+        bethez.dos(eps, half_bandwidth=half_bandwidth, coordination=coordination)
+    )
+
+
+@given(eps=st.floats(-1, 1, exclude_min=True, exclude_max=True),
+       half_bandwidth=st.floats(min_value=0.1, max_value=2))
+def test_coordination2_dos(eps, half_bandwidth):
+    """Compare `bethez` for `coordination=2` with `onedim`."""
+    eps *= half_bandwidth
+    assert np.allclose(
+        onedim.dos(eps, half_bandwidth=half_bandwidth),
+        bethez.dos(eps, half_bandwidth=half_bandwidth, coordination=2)
+    )
