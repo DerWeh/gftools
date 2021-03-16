@@ -57,21 +57,18 @@ def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], comple
 
     Parameters
     ----------
-    z, self_cp_z : (..., N_z) complex np.ndarray
+    z, self_cp_z : (...) complex np.ndarray
         Frequency points and corresponding CPA self-energy.
-    e_onsite : (N_cmpt) float or (..., N_z, N_cmpt) complex np.ndarray
+    e_onsite : (..., N_cmpt) float of complex np.ndarray
         On-site energy of the components. This can also include a local
         frequency dependent self-energy of the component sites.
-        If multiple non-frequency dependent on-site energies should be
-        considered simultaneously, pass an on-site energy with `N_z=1`:
-        `e_onsite[..., np.newaxis, :]`.
     hilbert_trafo : Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the coherent Green's
         function.
 
     Returns
     -------
-    gf_cmpt_z : (..., N_z, N_cmpt) complex np.ndarray
+    gf_cmpt_z : (..., N_cmpt) complex np.ndarray
         The Green's function of the components embedded in `self_cpa_z`.
 
     """
@@ -87,16 +84,13 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
 
     Parameters
     ----------
-    self_cp_z : (..., N_z) complex np.ndarray
+    self_cp_z : (...) complex np.ndarray
         CPA self-energy.
-    z : (N_z) complex array_like
+    z : (...) complex array_like
         Frequency points.
-    e_onsite : (N_cmpt) float or (..., N_z, N_cmpt) complex np.ndarray
+    e_onsite : (..., N_cmpt) float or complex np.ndarray
         On-site energy of the components. This can also include a local
         frequency dependent self-energy of the component sites.
-        If multiple non-frequency dependent on-site energies should be
-        considered simultaneously, pass an on-site energy with `N_z=1`:
-        `e_onsite[..., np.newaxis, :]`.
     concentration : (..., N_cmpt) float array_like
         Concentration of the different components used for the average.
     hilbert_trafo : Callable[[complex], complex]
@@ -105,7 +99,7 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
 
     Returns
     -------
-    remainder : (..., N_z) complex np.ndarray
+    remainder : (...) complex np.ndarray
         The result of r(Σ), if it is `0` and hence a root, `self_cp_z` is the
         correct CPA self-energy.
 
@@ -125,16 +119,13 @@ def self_fxdpnt_eq(self_cpa_z, z, e_onsite, concentration,
 
     Parameters
     ----------
-    self_cp_z : (..., N_z) complex np.ndarray
+    self_cp_z : (...) complex np.ndarray
         CPA self-energy.
-    z : (N_z) complex array_like
+    z : (...) complex array_like
         Frequency points.
-    e_onsite : (N_cmpt) float or (..., N_z, N_cmpt) complex np.ndarray
+    e_onsite : (..., N_cmpt) float complex np.ndarray
         On-site energy of the components. This can also include a local
         frequency dependent self-energy of the component sites.
-        If multiple non-frequency dependent on-site energies should be
-        considered simultaneously, pass an on-site energy with `N_z=1`:
-        `e_onsite[..., np.newaxis, :]`.
     concentration : (..., N_cmpt) float array_like
         Concentration of the different components used for the average.
     hilbert_trafo : Callable[[complex], complex]
