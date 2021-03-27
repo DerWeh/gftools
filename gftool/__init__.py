@@ -49,7 +49,6 @@ import logging
 import warnings
 
 from typing import Callable
-from functools import partial
 from collections import namedtuple
 
 import numpy as np
@@ -62,10 +61,6 @@ from .basis import pole
 from ._util import _gu_sum
 from ._version import get_versions
 
-__version__ = get_versions()['version']
-
-LOGGER = logging.getLogger(__name__)
-
 # Bethe lattice
 # pylint: disable=wrong-import-position
 from .lattice.bethe import (dos as bethe_dos, dos_moment as bethe_dos_moment,
@@ -73,47 +68,17 @@ from .lattice.bethe import (dos as bethe_dos, dos_moment as bethe_dos_moment,
                             gf_z as bethe_gf_z,
                             hilbert_transform as bethe_hilbert_transform)
 
-# silence warnings of unused imports
-assert (bethe_dos and bethe_dos_moment and bethe_gf_d1_z and bethe_gf_d2_z
-        and bethe_gf_z and bethe_hilbert_transform)
-
-bethe_dos.m1 = partial(lattice.bethe.dos_moment, 1)
-bethe_dos.m2 = partial(lattice.bethe.dos_moment, 2)
-bethe_dos.m3 = partial(lattice.bethe.dos_moment, 3)
-bethe_dos.m4 = partial(lattice.bethe.dos_moment, 4)
-bethe_dos.m5 = partial(lattice.bethe.dos_moment, 5)
-
-
 # One-dimensional lattice
 from .lattice.onedim import (dos as onedim_dos,
                              dos_moment as onedim_dos_moment,
                              gf_z as onedim_gf_z,
                              hilbert_transform as onedim_hilbert_transform)
 
-# silence warnings of unused imports
-assert (onedim_dos and onedim_dos_moment and onedim_gf_z and onedim_hilbert_transform)
-
-onedim_dos.m1 = partial(lattice.onedim.dos_moment, 1)
-onedim_dos.m2 = partial(lattice.onedim.dos_moment, 2)
-onedim_dos.m3 = partial(lattice.onedim.dos_moment, 3)
-onedim_dos.m4 = partial(lattice.onedim.dos_moment, 4)
-onedim_dos.m5 = partial(lattice.onedim.dos_moment, 5)
-
-
 # Square lattice
 from .lattice.square import (dos as square_dos,
                              dos_moment as square_dos_moment,
                              gf_z as square_gf_z,
                              hilbert_transform as square_hilbert_transform)
-
-# silence warnings of unused imports
-assert (square_dos and square_dos_moment and square_gf_z and square_hilbert_transform)
-
-square_dos.m1 = partial(lattice.square.dos_moment, 1)
-square_dos.m2 = partial(lattice.square.dos_moment, 2)
-square_dos.m3 = partial(lattice.square.dos_moment, 3)
-square_dos.m4 = partial(lattice.square.dos_moment, 4)
-square_dos.m5 = partial(lattice.square.dos_moment, 5)
 
 # Fermi statistics
 from .statistics import (fermi_fct, fermi_fct_d1, fermi_fct_inv,
@@ -122,7 +87,16 @@ from .statistics import (fermi_fct, fermi_fct_d1, fermi_fct_inv,
 # Bose statistics
 from .statistics import (bose_fct, matsubara_frequencies_b)
 
+__version__ = get_versions()['version']
+
+LOGGER = logging.getLogger(__name__)
+
 # silence warnings of unused imports
+assert lattice
+assert (bethe_dos and bethe_dos_moment and bethe_gf_d1_z and bethe_gf_d2_z
+        and bethe_gf_z and bethe_hilbert_transform)
+assert (onedim_dos and onedim_dos_moment and onedim_gf_z and onedim_hilbert_transform)
+assert (square_dos and square_dos_moment and square_gf_z and square_hilbert_transform)
 assert (fermi_fct and fermi_fct_d1 and fermi_fct_inv and matsubara_frequencies and pade_frequencies)
 assert (bose_fct and matsubara_frequencies_b)
 

@@ -395,9 +395,9 @@ def test_bethe_dos_moment(D):
     m2 = fp.quad(lambda eps: eps**2 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
     m3 = fp.quad(lambda eps: eps**3 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
     m4 = fp.quad(lambda eps: eps**4 * gt.bethe_dos(eps, half_bandwidth=D), [-D, 0, D])
-    assert gt.bethe_dos.m2(D) == pytest.approx(m2)
-    assert gt.bethe_dos.m3(half_bandwidth=D) == pytest.approx(m3)
-    assert gt.bethe_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+    assert gt.bethe_dos_moment(2, D) == pytest.approx(m2)
+    assert gt.bethe_dos_moment(3, half_bandwidth=D) == pytest.approx(m3)
+    assert gt.bethe_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -430,9 +430,9 @@ def test_onedim_dos_moment(D):
     m2 = fp.quad(lambda eps: eps**2 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
     m3 = fp.quad(lambda eps: eps**3 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
     m4 = fp.quad(lambda eps: eps**4 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
-    assert gt.onedim_dos.m2(D) == pytest.approx(m2)
-    assert gt.onedim_dos.m3(half_bandwidth=D) == pytest.approx(m3)
-    assert gt.onedim_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+    assert gt.onedim_dos_moment(2, D) == pytest.approx(m2)
+    assert gt.onedim_dos_moment(3, half_bandwidth=D) == pytest.approx(m3)
+    assert gt.onedim_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -465,9 +465,9 @@ def test_square_dos_moment(D):
     m2 = fp.quad(lambda eps: eps**2 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
     m3 = fp.quad(lambda eps: eps**3 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
     m4 = fp.quad(lambda eps: eps**4 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    assert gt.square_dos.m2(D) == pytest.approx(m2)
-    assert gt.square_dos.m3(half_bandwidth=D) == pytest.approx(m3)
-    assert gt.square_dos.m4(half_bandwidth=D) == pytest.approx(m4)
+    assert gt.square_dos_moment(2, D) == pytest.approx(m2)
+    assert gt.square_dos_moment(3, half_bandwidth=D) == pytest.approx(m3)
+    assert gt.square_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
 
 
 @pytest.mark.parametrize("gamma", [1.5, 2.])
