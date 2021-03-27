@@ -594,14 +594,14 @@ def test_honeycomb_imag_gf_equals_dos():
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_simplecubic_dos_unit(D):
     """Integral over the whole DOS should be 1."""
-    dos = partial(gt.lattice.sc.dos, half_bandwidth=D)
+    dos = partial(gt.sc_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_simplecubic_dos_half(D):
     """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gt.lattice.sc.dos, half_bandwidth=D)
+    dos = partial(gt.sc_dos, half_bandwidth=D)
     assert fp.quad(dos, [-D, -D/3, 0]) == pytest.approx(0.5)
     assert fp.quad(dos, [0, +D/3, +D]) == pytest.approx(0.5)
 
@@ -610,8 +610,8 @@ def test_simplecubic_dos_support():
     """DOS should have no support for | eps | > D."""
     D = 1.2
     for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.lattice.sc.dos(+eps, D) == 0
-        assert gt.lattice.sc.dos(-eps, D) == 0
+        assert gt.sc_dos(+eps, D) == 0
+        assert gt.sc_dos(-eps, D) == 0
 
 
 def test_simplecubic_imag_gf_negative():
@@ -619,7 +619,7 @@ def test_simplecubic_imag_gf_negative():
     D = 1.2
     omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
     omega += 5j*omega_step
-    assert np.all(gt.lattice.sc.gf_z(omega, D).imag <= 0)
+    assert np.all(gt.sc_gf_z(omega, D).imag <= 0)
 
 
 def test_simplecubic_imag_gf_equals_dos():
@@ -631,8 +631,8 @@ def test_simplecubic_imag_gf_equals_dos():
     D = 1.2
     num = int(1e3)
     omega = np.linspace(-D, D, num=num) + 1e-16j
-    assert np.allclose(-gt.lattice.sc.gf_z(omega, D).imag/np.pi,
-                       gt.lattice.sc.dos(omega.real, D))
+    assert np.allclose(-gt.sc_gf_z(omega, D).imag/np.pi,
+                       gt.sc_dos(omega.real, D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1.7, 2.])
@@ -642,7 +642,7 @@ def test_simplecubic_dos_moment(D):
     dos = partial(gt.lattice.sc.dos, half_bandwidth=D)
     for mm in gt.lattice.sc.dos_moment_coefficients.keys():
         moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, D/3, D])
-        assert moment == pytest.approx(gt.lattice.sc.dos_moment(mm, half_bandwidth=D))
+        assert moment == pytest.approx(gt.sc_dos_moment(mm, half_bandwidth=D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -650,7 +650,7 @@ def test_simplecubic_dos_moment(D):
 def test_simplecubic_gf_vs_gf_mp(z, D):
     """Compare multi-precision and numpy implementation of GF."""
     assume(abs(z.imag) > 1e-6)
-    assert np.allclose(gt.lattice.sc.gf_z(z, half_bandwidth=D),
+    assert np.allclose(gt.sc_gf_z(z, half_bandwidth=D),
                        complex(gt.lattice.sc.gf_z_mp(z, half_bandwidth=D)))
 
 
@@ -658,7 +658,7 @@ def test_simplecubic_gf_vs_gf_mp(z, D):
 def test_simplecubic_dos_vs_dos_mp(eps):
     """Compare multi-precision and numpy implementation of GF."""
     D = 1.3
-    assert np.allclose(gt.lattice.sc.dos(eps, half_bandwidth=D),
+    assert np.allclose(gt.sc_dos(eps, half_bandwidth=D),
                        float(gt.lattice.sc.dos_mp(eps, half_bandwidth=D)))
 
 
