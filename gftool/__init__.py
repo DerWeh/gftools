@@ -87,18 +87,26 @@ from .statistics import (fermi_fct, fermi_fct_d1, fermi_fct_inv,
 # Bose statistics
 from .statistics import (bose_fct, matsubara_frequencies_b)
 
+# Green's function give by finite number poles
+from .basis.pole import (gf_z as pole_gf_z,
+                         gf_d1_z as pole_gf_d1_z,
+                         gf_tau as pole_gf_tau,
+                         gf_ret_t as pole_gf_ret_t,
+                         moments as pole_gf_moments)
+
 __version__ = get_versions()['version']
 
 LOGGER = logging.getLogger(__name__)
 
 # silence warnings of unused imports
 assert lattice
-assert (bethe_dos and bethe_dos_moment and bethe_gf_d1_z and bethe_gf_d2_z
-        and bethe_gf_z and bethe_hilbert_transform)
-assert (onedim_dos and onedim_dos_moment and onedim_gf_z and onedim_hilbert_transform)
-assert (square_dos and square_dos_moment and square_gf_z and square_hilbert_transform)
-assert (fermi_fct and fermi_fct_d1 and fermi_fct_inv and matsubara_frequencies and pade_frequencies)
-assert (bose_fct and matsubara_frequencies_b)
+assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
+            bethe_gf_z, bethe_hilbert_transform))
+assert all((onedim_dos, onedim_dos_moment, onedim_gf_z, onedim_hilbert_transform))
+assert all((square_dos, square_dos_moment, square_gf_z, square_hilbert_transform))
+assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_frequencies))
+assert all((bose_fct, matsubara_frequencies_b))
+assert all((pole_gf_z, pole_gf_d1_z, pole_gf_tau, pole_gf_ret_t, pole_gf_moments))
 
 
 def surface_gf_zeps(z, eps, hopping_nn):
@@ -231,12 +239,6 @@ def hubbard_I_self_z(z, U, occ):
     return hartree * z / (z - U + hartree)
 
 
-pole_gf_z = pole.gf_z
-pole_gf_d1_z = pole.gf_d1_z
-pole_gf_tau = pole.gf_tau
-pole_gf_ret_t = pole.gf_ret_t
-
-
 def pole_gf_tau_b(tau, poles, weights, beta):
     """Bosonic imaginary time Green's function given by a finite number of `poles`.
 
@@ -293,9 +295,6 @@ def pole_gf_tau_b(tau, poles, weights, beta):
         raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
     return _gu_sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles))
-
-
-pole_gf_moments = pole.moments
 
 
 def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, **kwds) -> float:
