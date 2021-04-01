@@ -462,12 +462,10 @@ def test_square_dos_support():
 def test_square_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
-    m2 = fp.quad(lambda eps: eps**2 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m3 = fp.quad(lambda eps: eps**3 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    m4 = fp.quad(lambda eps: eps**4 * gt.square_dos(eps, half_bandwidth=D), [-D, 0, D])
-    assert gt.square_dos_moment(2, D) == pytest.approx(m2)
-    assert gt.square_dos_moment(3, half_bandwidth=D) == pytest.approx(m3)
-    assert gt.square_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
+    dos = partial(gt.lattice.square.dos, half_bandwidth=D)
+    for mm in gt.lattice.sc.dos_moment_coefficients:
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, 0, D])
+        assert moment == pytest.approx(gt.square_dos_moment(mm, half_bandwidth=D))
 
 
 @given(eps=st.floats(-1.5, +1.5))
@@ -648,7 +646,7 @@ def test_simplecubic_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
     dos = partial(gt.lattice.sc.dos, half_bandwidth=D)
-    for mm in gt.lattice.sc.dos_moment_coefficients.keys():
+    for mm in gt.lattice.sc.dos_moment_coefficients:
         moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, D/3, D])
         assert moment == pytest.approx(gt.sc_dos_moment(mm, half_bandwidth=D))
 
