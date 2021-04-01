@@ -1,4 +1,10 @@
-"""2D square lattice.
+r"""2D square lattice.
+
+The dispersion of the 2D square lattice is given by
+
+.. math:: ϵ_{k_x, k_y} = 2t [\cos(k_x) + \cos(k_y)]
+
+which takes values in :math:`ϵ_{k_x, k_y} ∈ [-4t, +4t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/4`
@@ -23,7 +29,7 @@ def gf_z(z, half_bandwidth):
 
     Parameters
     ----------
-    z : complex ndarray or complex
+    z : complex np.ndarray or complex
         Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the square lattice.
@@ -31,7 +37,7 @@ def gf_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_z : complex ndarray or complex
+    gf_z : complex np.ndarray or complex
         Value of the square lattice Green's function
 
     References
@@ -66,22 +72,21 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math::
-        \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
 
     Parameters
     ----------
-    xi : complex ndarray or complex
+    xi : complex np.ndarray or complex
         Point at which the Hilbert transform is evaluated
     half_bandwidth : float
         half-bandwidth of the DOS of the 2D square lattice
 
     Returns
     -------
-    hilbert_transform : complex ndarray or complex
+    hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
     Notes
@@ -102,9 +107,11 @@ def hilbert_transform(xi, half_bandwidth):
 def dos(eps, half_bandwidth):
     r"""DOS of non-interacting 2D square lattice.
 
+    Has a van Hove singularity (logarithmic divergence) at `eps = 0`.
+
     Parameters
     ----------
-    eps : float ndarray or float
+    eps : float np.ndarray or float
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
@@ -112,12 +119,17 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    dos : float ndarray or float
+    dos : float np.ndarray or float
         The value of the DOS.
 
     See Also
     --------
-    gt.lattice.square.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.square.dos_mp : multi-precision version suitable for integration
+
+    References
+    ----------
+    .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
+       Springer, 2006.
 
     Examples
     --------
@@ -221,7 +233,12 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gt.lattice.square.dos : vectorized version suitable for array evaluations
+    gftool.lattice.square.dos : vectorized version suitable for array evaluations
+
+    References
+    ----------
+    .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
+       Springer, 2006.
 
     Examples
     --------
