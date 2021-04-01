@@ -470,6 +470,14 @@ def test_square_dos_moment(D):
     assert gt.square_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
 
 
+@given(eps=st.floats(-1.5, +1.5))
+def test_square_dos_vs_dos_mp(eps):
+    """Compare multi-precision and `numpy` implementation of DOS."""
+    D = 1.3
+    assert np.allclose(gt.square_dos(eps, half_bandwidth=D),
+                       float(gt.lattice.square.dos_mp(eps, half_bandwidth=D)))
+
+
 @pytest.mark.parametrize("gamma", [1.5, 2.])
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_rectangular_dos_unit(D, gamma):
