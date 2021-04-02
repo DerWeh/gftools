@@ -469,7 +469,7 @@ def test_square_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
     dos = partial(gt.lattice.square.dos, half_bandwidth=D)
-    for mm in gt.lattice.sc.dos_moment_coefficients:
+    for mm in gt.lattice.square.dos_moment_coefficients:
         moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, 0, D])
         assert moment == pytest.approx(gt.square_dos_moment(mm, half_bandwidth=D))
 
