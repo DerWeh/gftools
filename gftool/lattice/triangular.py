@@ -12,7 +12,7 @@ which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t] = [-2D/3, 4D/3]`.
 """
 import numpy as np
 
-from scipy.special import ellipk
+from scipy.special import ellipkm1
 
 from gftool._util import _u_ellipk
 
@@ -133,19 +133,19 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
-    # FIXME: DOS at lower band-edge is somewhat undetermined
-    # using gf_z(-1.5*4/9D, D) and gf_z(-1.5*4/9D-1e-100j, D) gives different results
+    # FIXME: DOS/Gf at lower band-edge is somewhat undetermined
     D = half_bandwidth * 4 / 9
     eps = np.asarray(1.0 / D * eps)
     dos = np.zeros_like(eps)
+    # implementation differs slightly from [kogan2021], as evaluating `ellipk`
+    # is inaccurate around the singularity
     region1 = (-1.5 <= eps) & (eps <= -1)
     rr = np.sqrt(2*eps[region1] + 3)
-    z0 = (rr + 1)**3 * (3 - rr) / 4
-    z1 = 4 * rr
-    dos[region1] = 1 / np.sqrt(z0) * ellipk(z1/z0)
+    denom = (rr + 1)**3 * (3 - rr)
+    numer = (rr - 1)**3 * (3 + rr)
+    dos[region1] = 2 / np.sqrt(denom) * ellipkm1(-numer/denom)
     region2 = (-1 <= eps) & (eps <= +3)
     rr = np.sqrt(2*eps[region2] + 3)
-    z0 = 4 * rr
-    z1 = (rr + 1)**3 * (3 - rr) / 4
-    dos[region2] = 1 / np.sqrt(z0) * ellipk(z1/z0)
+    numer = (rr - 1)**3 * (3 + rr)
+    dos[region2] = 0.5 / np.sqrt(rr) * ellipkm1(1/16*numer/rr)
     return 2 / np.pi**2 / D * dos

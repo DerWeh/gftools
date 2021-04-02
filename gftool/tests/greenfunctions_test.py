@@ -517,13 +517,11 @@ def test_rectangular_vs_square_gf(z):
     assert gt.lattice.rectangular.gf_z(z, 1, 1) == pytest.approx(gt.square_gf_z(z, 1))
 
 
-@pytest.mark.skip(reason="Integrals fail due to singularity. Haven't found any fix yet.")
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_triangular_dos_unit(D):
     """Integral over the whole DOS should be 1."""
     dos = partial(gt.lattice.triangular.dos, half_bandwidth=D)
-    # assert fp.quad(dos, [-2*D/3, -4*D/9, 4*D/3]) == pytest.approx(1.)
-    assert integrate.quad(dos, -2*D/3, 4*D/3, points=[-4*D/9]) == pytest.approx(1.)
+    assert fp.quad(dos, [-2*D/3, -4*D/9, 4*D/3]) == pytest.approx(1.)
 
 
 def test_triangular_dos_support():
