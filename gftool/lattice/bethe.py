@@ -9,6 +9,8 @@ DOS.
 """
 import numpy as np
 
+from mpmath import mp
+
 from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 
@@ -218,6 +220,57 @@ dos_moment_coefficients = {
     # 18: 0.0185471,
     # 20: 0.0160179,
 }
+
+
+def dos_mp(eps, half_bandwidth=1):
+    r"""Multi-precision DOS of non-interacting Bethe lattice for infinite coordination number.
+
+    This function is particularly suited to calculate integrals of the form
+    :math:`∫dϵ DOS(ϵ)f(ϵ)`.
+
+    Parameters
+    ----------
+    eps : mpmath.mpf or mpf_like
+        DOS is evaluated at points `eps`.
+    half_bandwidth : mpmath.mpf or mpf_like
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    dos_mp : mpmath.mpf
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.bethe.dos : vectorized version suitable for array evaluations
+
+    Examples
+    --------
+    Calculate integrals:
+
+    >>> from mpmath import mp
+    >>> mp.quad(gt.lattice.bethe.dos_mp, [-1, 1])
+    mpf('1.0')
+
+    >>> eps = np.linspace(-1.1, 1.1, num=500)
+    >>> dos_mp = [gt.lattice.bethe.dos_mp(ee, half_bandwidth=1) for ee in eps]
+    >>> dos_mp = np.array(dos_mp, dtype=np.float64)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, dos_mp)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    eps, half_bandwidth = mp.mpf(eps), mp.mpf(half_bandwidth)
+    if mp.fabs(eps) > half_bandwidth:
+        return mp.mpf('0')
+    return 2 / (mp.pi * half_bandwidth) * mp.sqrt(-mp.powm1(eps / half_bandwidth, mp.mpf('2')))
 
 
 def dos_moment(m, half_bandwidth):
