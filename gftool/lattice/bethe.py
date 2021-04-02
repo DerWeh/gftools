@@ -205,20 +205,22 @@ def dos(eps, half_bandwidth):
 
 
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
-# from:
-# https://www.wolframalpha.com/input/?i=integrate+sqrt(1+-+x%5E2)%2F(.5*pi)+*x%5E%7B2*n%7Ddx+from+-1+to+1+assuming+n+is+integer
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(0, 22, 2):
+#     with mp.workdps(100):
+#         print(mp.quad(lambda eps: 2 * eps**m * dos_mp(eps), [0, 1]))
+# rational numbers obtained by mp.identify
 dos_moment_coefficients = {
     2: 0.25,
     4: 0.125,
-    6: 0.078125,
-    8: 0.0546875,
-    # not sure if results form wolframalpha are accurate enough, calculated them with mpmath
-    # 10: 0.0410156,
-    # 12: 0.0322266,
-    # 14: 0.0261841,
-    # 16: 0.0218201,
-    # 18: 0.0185471,
-    # 20: 0.0160179,
+    6: 5/64,
+    8: 7/128,
+    10: 21/512,
+    12: 0.0322265625,
+    14: 0.02618408203125,
+    16: 0.021820068359375,
+    18: 0.01854705810546875,
+    20: 0.016017913818359375,
 }
 
 
