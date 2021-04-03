@@ -102,7 +102,8 @@ def dos(eps, half_bandwidth):
     eps : float np.ndarray or float
         DOS is evaluated at points `eps`.
     half_bandwidth : float
-        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        Half-bandwidth of the DOS, DOS(`eps` < -2/3`half_bandwidth`) = 0,
+        DOS(4/3`half_bandwidth` < `eps`) = 0.
         The `half_bandwidth` corresponds to the nearest neighbor hopping
         :math:`t=4D/9`.
 
@@ -123,16 +124,15 @@ def dos(eps, half_bandwidth):
 
     Examples
     --------
-    >>> eps = np.linspace(-1.5, 1.5, num=500)
+    >>> eps = np.linspace(-1.5, 1.5, num=1000)
     >>> dos = gt.lattice.triangular.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axvline(-4/9, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
     >>> _ = plt.plot(eps, dos)
-    >>> _ = plt.axvline(-2/3, color='black', linewidth=0.8)
-    >>> _ = plt.axvline(+4/3, color='black', linewidth=0.8)
     >>> _ = plt.xlabel(r"$\epsilon/D$")
     >>> _ = plt.ylabel(r"DOS * $D$")
-    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
