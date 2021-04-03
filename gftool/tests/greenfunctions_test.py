@@ -441,6 +441,14 @@ def test_onedim_dos_moment(D):
     assert gt.onedim_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
 
 
+@given(eps=st.floats(-1.5, +1.5))
+def test_onedim_dos_vs_dos_mp(eps):
+    """Compare multi-precision and `numpy` implementation of DOS."""
+    D = 1.3
+    assert np.allclose(gt.lattice.onedim.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.onedim.dos_mp(eps, half_bandwidth=D)))
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_square_dos_unit(D):
     """Integral over the whole DOS should be 1."""
