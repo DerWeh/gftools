@@ -558,6 +558,19 @@ def test_triangular_imag_gf_equals_dos():
                        gt.lattice.triangular.dos(omega.real, D))
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_triangular_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.triangular.dos, half_bandwidth=D)
+    for mm in gt.lattice.triangular.dos_moment_coefficients:
+        # fp.quad fails for some values of D
+        # moment = fp.quad(lambda eps: eps**mm * dos(eps), [-2/3*D, -4/9*D, 4/3*D])
+        moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps),
+                                    -2/3*D, 4/3*D, points=[-4/9*D])
+        assert moment == pytest.approx(gt.lattice.triangular.dos_moment(mm, half_bandwidth=D))
+
+
 @given(eps=st.floats(-1.5, +1.5))
 def test_triangular_dos_vs_dos_mp(eps):
     """Compare multi-precision and `numpy` implementation of DOS."""

@@ -156,6 +156,70 @@ def dos(eps, half_bandwidth):
     return 2 / np.pi**2 / D * dos
 
 
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(0, 21, 1):
+#     with mp.workdps(100, normalize_output=True):
+#         res = mp.quad(lambda eps:  eps**m * dos_mp(eps), [-2/3, -4/9, +4/3])
+#     print(res)
+# rational numbers obtained by mp.identify
+dos_moment_coefficients = {
+    1: 0,
+    2: 8/27,
+    3: 32/243,
+    4: 160/729,
+    5: 0.19509221155311685,
+    6: 0.24567167380762861,
+    7: 0.26975713202406278,
+    8: 0.32595653452907584,
+    9: 0.38409863242932391,
+    10: 0.46646891718728872,
+    11: 0.5662391742471257,
+    12: 0.69580884826902741,
+    13: 0.85849121900290751,
+    14: 1.06625635837817,
+    15: 1.32983322599435,
+    16: 1.66594704229184,
+    17: 2.09437852592774,
+    18: 2.64177488421009,
+    19: 3.34185798350861,
+    20: 4.23865856734991,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the triangular DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 2D triangular lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the 2D triangular DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.triangular.dos
+
+    """
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+
+
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 2D triangular lattice.
 
