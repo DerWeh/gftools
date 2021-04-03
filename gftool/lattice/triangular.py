@@ -12,6 +12,7 @@ which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t] = [-2D/3, 4D/3]`.
 """
 import numpy as np
 
+from mpmath import mp
 from scipy.special import ellipkm1
 
 from gftool._util import _u_ellipk
@@ -110,6 +111,10 @@ def dos(eps, half_bandwidth):
     dos : float np.ndarray or float
         The value of the DOS.
 
+    See Also
+    --------
+    gftool.lattice.triangular.dos_mp : multi-precision version suitable for integration
+
     References
     ----------
     .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green’s Functions and DOS for
@@ -149,3 +154,80 @@ def dos(eps, half_bandwidth):
     numer = (rr - 1)**3 * (3 + rr)
     dos[region2] = 0.5 / np.sqrt(rr) * ellipkm1(1/16*numer/rr)
     return 2 / np.pi**2 / D * dos
+
+
+def dos_mp(eps, half_bandwidth=1):
+    r"""Multi-precision DOS of non-interacting 2D triangular lattice.
+
+    The DOS diverges at `-4/9*half_bandwidth`.
+
+    This function is particularity suited to calculate integrals of the form
+    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,
+    consider using :math:`∫dϵ DOS(ϵ)[f(ϵ)-f(-4/9)] + f(-4/9)` to avoid the
+    singularity.
+
+    Parameters
+    ----------
+    eps : mpmath.mpf or mpf_like
+        DOS is evaluated at points `eps`.
+    half_bandwidth : mpmath.mpf or mpf_like
+        Half-bandwidth of the DOS, DOS(`eps` < -2/3`half_bandwidth`) = 0,
+        DOS(4/3`half_bandwidth` < `eps`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=4D/9`.
+
+    Returns
+    -------
+    dos_mp : mpmath.mpf
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.triangular.dos : vectorized version suitable for array evaluations
+
+    References
+    ----------
+    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green’s Functions and DOS for
+       Some 2D Lattices. Graphene, 10, 1-12.
+       https://doi.org/10.4236/graphene.2021.101001.
+
+    Examples
+    --------
+    Calculate integrals:
+
+    >>> from mpmath import mp
+    >>> mp.quad(gt.lattice.triangular.dos_mp, [-2/3, -4/9, 4/3])
+    mpf('1.0')
+
+    >>> eps = np.linspace(-2/3 - 0.1, 4/3 + 0.1, num=1000)
+    >>> dos_mp = [gt.lattice.triangular.dos_mp(ee, half_bandwidth=1) for ee in eps]
+    >>> dos_mp = np.array(dos_mp, dtype=np.float64)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axvline(-4/9, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.plot(eps, dos_mp)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    D = mp.mpf(half_bandwidth) * mp.mpf('4/9')
+    eps = mp.mpf(eps) / D
+    if eps < mp.mpf('-1.5') or eps > +3:
+        return mp.mpf('0')
+    # higher precision around singularity is needed
+    with mp.workdps(mp.dps*3.5, normalize_output=True):
+        if mp.mpf('-1.5') <= eps <= -1:
+            rr = mp.sqrt(2*eps + 3)
+            z0 = (rr + 1)**3 * (3 - rr) / 4
+            z1 = 4 * rr
+            dos_ = 1 / mp.sqrt(z0) * mp.ellipk(z1/z0)
+        elif -1 <= eps <= +3:
+            rr = mp.sqrt(2*eps + 3)
+            z0 = 4 * rr
+            z1 = (rr + 1)**3 * (3 - rr) / 4
+            dos_ = 1 / mp.sqrt(z0) * mp.ellipk(z1/z0)
+        return 2 / np.pi**2 / D * dos_

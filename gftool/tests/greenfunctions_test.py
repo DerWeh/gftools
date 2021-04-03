@@ -558,6 +558,14 @@ def test_triangular_imag_gf_equals_dos():
                        gt.lattice.triangular.dos(omega.real, D))
 
 
+@given(eps=st.floats(-1.5, +1.5))
+def test_triangular_dos_vs_dos_mp(eps):
+    """Compare multi-precision and `numpy` implementation of DOS."""
+    D = 1.3
+    assert np.allclose(gt.lattice.triangular.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.triangular.dos_mp(eps, half_bandwidth=D)))
+
+
 @pytest.mark.skip(reason="Cmp. triangular. Integrals fail due to singularity.")
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_honeycomb_dos_unit(D):
