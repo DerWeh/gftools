@@ -433,12 +433,10 @@ def test_onedim_dos_support():
 def test_onedim_dos_moment(D):
     """Moment is integral over ϵ^m DOS."""
     # check influence of bandwidth, as they are calculated for D=1 and normalized
-    m2 = fp.quad(lambda eps: eps**2 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
-    m3 = fp.quad(lambda eps: eps**3 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
-    m4 = fp.quad(lambda eps: eps**4 * gt.onedim_dos(eps, half_bandwidth=D), [-D, D])
-    assert gt.onedim_dos_moment(2, D) == pytest.approx(m2)
-    assert gt.onedim_dos_moment(3, half_bandwidth=D) == pytest.approx(m3)
-    assert gt.onedim_dos_moment(4, half_bandwidth=D) == pytest.approx(m4)
+    dos = partial(gt.lattice.onedim.dos, half_bandwidth=D)
+    for mm in gt.lattice.onedim.dos_moment_coefficients:
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, +D])
+        assert moment == pytest.approx(gt.onedim_dos_moment(mm, half_bandwidth=D))
 
 
 @given(eps=st.floats(-1.5, +1.5))
