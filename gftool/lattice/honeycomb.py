@@ -4,6 +4,8 @@ r"""2D honeycomb lattice.
                  of `t=2D/3`.
 
 """
+from mpmath import mp
+
 from gftool.lattice import triangular
 
 
@@ -111,3 +113,74 @@ def dos(eps, half_bandwidth):
     D = half_bandwidth / 1.5
     eps_rel = eps / D
     return 2 / D * abs(eps_rel) * triangular.dos(2*eps_rel**2 - 1.5, half_bandwidth=9/4)
+
+
+def dos_mp(eps, half_bandwidth=1):
+    r"""Multi-precision DOS of non-interacting 2D honeycomb lattice.
+
+    The DOS diverges at `eps=±half_bandwidth/3`.
+
+    This function is particularity suited to calculate integrals of the form
+    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,
+    consider removing singularities, e.g. split the integral
+
+    .. math::
+       ∫^0 dϵ DOS(ϵ)[f(ϵ) - f(-D/3)] + ∫_0 dϵ DOS(ϵ)[f(ϵ) - f(+D/3)] + [f(-D/3) + f(+D/3)]/2
+
+    where :math:`D` is the `half_bandwidth`, or symmetrize the integral.
+
+    The Green's function and therefore the DOS of the 2D honeycomb lattice can
+    be expressed in terms of the 2D triangular lattice
+    `gftool.lattice.triangular.dos_mp`, see [horiguchi1972]_.
+
+    Parameters
+    ----------
+    eps : mpmath.mpf or mpf_like
+        DOS is evaluated at points `eps`.
+    half_bandwidth : mpmath.mpf or mpf_like
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping
+        :math:`t=4D/9`.
+
+    Returns
+    -------
+    dos_mp : mpmath.mpf
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.honeycomb.dos : vectorized version suitable for array evaluations
+    gftool.lattice.triangular.dos_mp
+
+    References
+    ----------
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+       Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
+       1411–1419. https://doi.org/10.1063/1.1666155
+
+    Examples
+    --------
+    Calculated integrals
+
+    >>> from mpmath import mp
+    >>> mp.quad(gt.lattice.honeycomb.dos_mp, [-1, -1/3, 0, +1/3, +1])
+    mpf('1.0')
+
+    >>> eps = np.linspace(-1.5, 1.5, num=501)
+    >>> dos_mp = [gt.lattice.honeycomb.dos_mp(ee, half_bandwidth=1) for ee in eps]
+
+    >>> import matplotlib.pyplot as plt
+    >>> for pos in (-1/3, 0, +1/3):
+    ...     _ = plt.axvline(pos, color='black', linewidth=0.8)
+    >>> _ = plt.plot(eps, dos_mp)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    D_inv = mp.mpf('1.5') / mp.mpf(half_bandwidth)
+    eps_rel = mp.mpf(eps) * D_inv
+    t_dos = triangular.dos_mp(2*eps_rel**2 - mp.mpf('1.5'), half_bandwidth=mp.mpf('9/4'))
+    return 2 * D_inv * mp.fabs(eps_rel) * t_dos

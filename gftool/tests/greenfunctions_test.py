@@ -623,6 +623,16 @@ def test_honeycomb_imag_gf_equals_dos():
                        gt.lattice.honeycomb.dos(omega.real, D))
 
 
+
+
+@given(eps=st.floats(-1.5, +1.5))
+def test_honeycomb_dos_vs_dos_mp(eps):
+    """Compare multi-precision and numpy implementation of GF."""
+    D = 1.3
+    assert np.allclose(gt.lattice.honeycomb.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.honeycomb.dos_mp(eps, half_bandwidth=D)))
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_simplecubic_dos_unit(D):
     """Integral over the whole DOS should be 1."""
