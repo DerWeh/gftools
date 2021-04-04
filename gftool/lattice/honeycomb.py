@@ -1,5 +1,8 @@
 r"""2D honeycomb lattice.
 
+The honeycomb lattice can be decomposed into `~gftool.lattice.triangular`
+sublattices.
+
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=2D/3`.
 
@@ -78,7 +81,7 @@ def dos(eps, half_bandwidth):
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
         The `half_bandwidth` corresponds to the nearest neighbor hopping
-        :math:`t=4D/9`.
+        :math:`t=2D/3`.
 
     Returns
     -------
@@ -87,6 +90,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
+    gftool.lattice.honeycomb.dos_mp : multi-precision version suitable for integration
     gftool.lattice.triangular.dos
 
     References
@@ -101,10 +105,11 @@ def dos(eps, half_bandwidth):
     >>> dos = gt.lattice.honeycomb.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
+    >>> for pos in (-1/3, 0, +1/3):
+    ...     _ = plt.axvline(pos, color='black', linewidth=0.8)
     >>> _ = plt.plot(eps, dos)
     >>> _ = plt.xlabel(r"$\epsilon/D$")
     >>> _ = plt.ylabel(r"DOS * $D$")
-    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
@@ -195,7 +200,7 @@ def dos_mp(eps, half_bandwidth=1):
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
         The `half_bandwidth` corresponds to the nearest neighbor hopping
-        :math:`t=4D/9`.
+        :math:`t=2D/3`.
 
     Returns
     -------
