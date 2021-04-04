@@ -93,8 +93,7 @@ def hilbert_transform(xi, half_bandwidth):
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
-    .. math::
-        4t = D
+    .. math:: 4t = D
 
     See Also
     --------

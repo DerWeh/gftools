@@ -1,4 +1,4 @@
-r"""3D simple cubic lattice.
+r"""3D simple cubic (sc) lattice.
 
 The dispersion of the 3D simple cubic lattice is given by
 
@@ -101,8 +101,7 @@ def hilbert_transform(xi, half_bandwidth=1):
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
-    .. math::
-        6t = D
+    .. math:: 6t = D
 
     See Also
     --------
