@@ -555,11 +555,11 @@ def tau2iv_ft_lin(gf_tau, beta):
     gf_dft = np.fft.ihfft(gf_tau[..., :-1])
     d_gf_dft = np.fft.ihfft(gf_tau[..., 1:] - gf_tau[..., :-1])
     d_tau_ivs = 2j*np.pi/(n_tau - 1)*np.arange(gf_dft.shape[-1])
-    d_tau_ivs[..., 0] = np.nan  # avoid zero division, fix value by hand
+    d_tau_ivs[..., 0] = 1  # avoid zero division, fix value by hand later
     expm1 = np.expm1(d_tau_ivs)
     weight1 = expm1/d_tau_ivs
     weight2 = (expm1 + 1 - weight1)/d_tau_ivs
-    weight1[0], weight2[0] = 1, .5  # special case n=0
+    weight1[..., 0], weight2[..., 0] = 1, .5  # special case n=0, fix from before
     gf_iv = weight1*gf_dft + weight2*d_gf_dft
     gf_iv = beta*gf_iv
     return gf_iv
