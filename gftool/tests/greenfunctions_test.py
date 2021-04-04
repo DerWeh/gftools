@@ -585,13 +585,12 @@ def test_triangular_dos_vs_dos_mp(eps):
                        float(gt.lattice.triangular.dos_mp(eps, half_bandwidth=D)))
 
 
-@pytest.mark.skip(reason="Cmp. triangular. Integrals fail due to singularity.")
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_honeycomb_dos_unit(D):
     """Integral over the whole DOS should be 1."""
     dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
-    # assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
-    assert integrate.quad(dos, -D, D, points=[-D/3, 0, D/3]) == pytest.approx(1.)
+    assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
+    assert integrate.quad(dos, -D, D, points=[-D/3, 0, D/3])[0] == pytest.approx(1.)
 
 
 def test_honeycomb_dos_support():
@@ -617,13 +616,9 @@ def test_honeycomb_imag_gf_equals_dos():
 
     """
     D = 1.2
-    num = int(1e3)
-    # around singularity and band-edge, there are some issues
+    # around band-edge, there are some issues, cmp. triangular lattice
     delta = 1e-4
-    omega = np.concatenate((np.linspace(-D+delta, -D/3-delta, num=num//3),
-                            np.linspace(-D/3+delta, +D/3-delta, num=num//3),
-                            np.linspace(+D/3+delta, +D-delta, num=num//3)))
-    omega = omega + 1e-16j
+    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
     assert np.allclose(-gt.lattice.honeycomb.gf_z(omega, D).imag/np.pi,
                        gt.lattice.honeycomb.dos(omega.real, D))
 
