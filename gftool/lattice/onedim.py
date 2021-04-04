@@ -38,7 +38,7 @@ def gf_z(z, half_bandwidth):
 
     Examples
     --------
-    >>> ww = np.linspace(-1.5, 1.5, num=501)
+    >>> ww = np.linspace(-1.5, 1.5, num=500)
     >>> gf_ww = gt.lattice.onedim.gf_z(ww, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt

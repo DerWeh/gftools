@@ -129,17 +129,32 @@ autosummary_generate = True
 # -----------------------------------------------------------------------------
 
 numpydoc_use_plots = True
+# numpydoc_xref_param_type = True
+# numpydoc_xref_ignore = "all"  # not working...
 numpydoc_show_class_members = False
 
 # -----------------------------------------------------------------------------
 # Plots
 # -----------------------------------------------------------------------------
 plot_pre_code = """
+import warnings
+
 import numpy as np
 import gftool as gt
+
 np.random.seed(0)
+warnings.filterwarnings(  # ignore warnings in doctest
+    action='ignore', category=UserWarning,
+    message='Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.'
+)
 """
 doctest_global_setup = plot_pre_code  # make doctests consistent
+doctest_global_cleanup = """
+try:
+    plt.close()  # close any open figures
+except:
+    pass
+"""
 plot_include_source = True
 plot_formats = [('png', 100), 'pdf']
 
