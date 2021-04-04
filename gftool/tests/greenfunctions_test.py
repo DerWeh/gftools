@@ -623,6 +623,14 @@ def test_honeycomb_imag_gf_equals_dos():
                        gt.lattice.honeycomb.dos(omega.real, D))
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_simplecubic_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
+    for mm in gt.lattice.honeycomb.dos_moment_coefficients:
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, 0, +D/3, +D])
+        assert moment == pytest.approx(gt.lattice.honeycomb.dos_moment(mm, half_bandwidth=D))
 
 
 @given(eps=st.floats(-1.5, +1.5))

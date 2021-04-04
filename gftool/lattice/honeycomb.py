@@ -115,6 +115,61 @@ def dos(eps, half_bandwidth):
     return 2 / D * abs(eps_rel) * triangular.dos(2*eps_rel**2 - 1.5, half_bandwidth=9/4)
 
 
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(0, 22, 2):
+#     with mp.workdps(100):
+#         print(mp.quad(lambda eps: 2 * eps**m * dos_mp(eps), [0, 1/3, 1])
+# rational numbers obtained by mp.identify
+dos_moment_coefficients = {
+    2: 1/3,
+    4: 5/27,
+    6: 31/243,
+    8: 71/729,
+    10: 0.0787989635726261,
+    12: 0.0661766781260761,
+    14: 0.0570430207680627,
+    16: 0.0501259782365305,
+    18: 0.0447055266609815,
+    20: 0.0403432070418971,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the honeycomb DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 2D honeycomb lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the 2D honeycomb DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.honeycomb.dos
+
+    """
+    if m % 2:  # odd moments vanish due to symmetry
+        return 0
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+
+
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 2D honeycomb lattice.
 
