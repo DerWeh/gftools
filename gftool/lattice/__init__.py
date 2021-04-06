@@ -13,18 +13,20 @@ Submodules
     rectangular
     triangular
     honeycomb
+    kagome
     sc
 
 """
-from . import (bethe, bethez, honeycomb, onedim, rectangular, sc, square,
-               triangular)
+from . import (bethe, bethez, honeycomb, kagome, onedim, rectangular, sc,
+               square, triangular)
 
 # silence warnings of unused imports
 assert bethe
 assert bethez
-assert onedim
-assert square
-assert rectangular
-assert triangular
 assert honeycomb
+assert kagome
+assert onedim
+assert rectangular
 assert sc
+assert square
+assert triangular
