@@ -213,6 +213,41 @@ class TestHoneycombGf(GfProperties):
         super().test_normalization(params, points=[-D/3, +D/3])
 
 
+class TestKagomeGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.kagome.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for kagome Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -2*D/3, 4*D/3
+
+    @pytest.mark.filterwarnings("ignore::UserWarning")  # ignores quad's IntegrationWarning
+    def test_normalization(self, params, points=None):
+        """Due to dealta-peak we have to go further into the imaginary plane."""
+        D = params[1]['half_bandwidth']
+
+        def dos(omega):
+            r"""Wrap the DOS :math:`ρ(ω) = -ℑG(ω+iϵ)/π`."""
+            omega = omega + 1e-3j
+            return -self.gf(omega, *params[0], **params[1]).imag/np.pi
+
+        lower, upper = self.band_edges(params)
+        points = np.array([2*lower, lower, 0, 1/3, 2/3, upper, 2*upper]) * D
+        assert (integrate.quad(dos, a=10*lower, b=10*upper, points=points)[0]
+                == pytest.approx(1, rel=1e-3))
+
+
 class TestSimpleCubicGf(GfProperties):
     """Check properties of rectangular Gf."""
 
@@ -621,6 +656,47 @@ def test_honeycomb_imag_gf_equals_dos():
     omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
     assert np.allclose(-gt.lattice.honeycomb.gf_z(omega, D).imag/np.pi,
                        gt.lattice.honeycomb.dos(omega.real, D))
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_kagome_dos_unit(D):
+    """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
+    dos = partial(gt.lattice.kagome.dos, half_bandwidth=D)
+    assert fp.quad(dos, [-2*D/3, 0, D/3, 2*D/3, 4*D/3]) == pytest.approx(2/3)
+    assert integrate.quad(dos, -2*D/3, 4*D/3, points=[0, D/3, 2*D/3])[0] == pytest.approx(2/3)
+
+
+def test_kagome_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    left = -2*D/3
+    right = 4*D/3
+    for eps in np.linspace(right + 1e-6, right*1e4):
+        assert gt.lattice.kagome.dos(eps, D) == 0
+    for eps in np.linspace(left*1e4, left - 1e-6):
+        assert gt.lattice.kagome.dos(eps, D) == 0
+
+
+def test_kagome_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.2
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gt.lattice.kagome.gf_z(omega, D).imag <= 0)
+
+
+def test_kagome_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS away from delta.
+
+    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
+
+    """
+    D = 1.2
+    # around band-edge, there are some issues, cmp. triangular lattice
+    delta = 1e-3
+    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
+    assert np.allclose(-gt.lattice.kagome.gf_z(omega, D).imag/np.pi,
+                       gt.lattice.kagome.dos(omega.real, D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1.7, 2.])
