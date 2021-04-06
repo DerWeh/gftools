@@ -658,6 +658,26 @@ def test_honeycomb_imag_gf_equals_dos():
                        gt.lattice.honeycomb.dos(omega.real, D))
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_honeycomb_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
+    for mm in gt.lattice.honeycomb.dos_moment_coefficients:
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, 0, +D/3, +D])
+        assert moment == pytest.approx(gt.lattice.honeycomb.dos_moment(mm, half_bandwidth=D))
+
+
+@given(eps=st.floats(-1.5, +1.5))
+def test_honeycomb_dos_vs_dos_mp(eps):
+    """Compare multi-precision and numpy implementation of GF."""
+    D = 1.3
+    assert np.allclose(gt.lattice.honeycomb.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.honeycomb.dos_mp(eps, half_bandwidth=D)))
+
+
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_kagome_dos_unit(D):
     """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
@@ -697,24 +717,6 @@ def test_kagome_imag_gf_equals_dos():
     omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
     assert np.allclose(-gt.lattice.kagome.gf_z(omega, D).imag/np.pi,
                        gt.lattice.kagome.dos(omega.real, D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_simplecubic_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
-    for mm in gt.lattice.honeycomb.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, 0, +D/3, +D])
-        assert moment == pytest.approx(gt.lattice.honeycomb.dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_honeycomb_dos_vs_dos_mp(eps):
-    """Compare multi-precision and numpy implementation of GF."""
-    D = 1.3
-    assert np.allclose(gt.lattice.honeycomb.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.honeycomb.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
