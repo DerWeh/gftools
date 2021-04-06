@@ -676,6 +676,15 @@ def test_honeycomb_dos_vs_dos_mp(eps):
                        float(gt.lattice.honeycomb.dos_mp(eps, half_bandwidth=D)))
 
 
+@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
+def test_kagome_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.kagome.dos, half_bandwidth=D)
+    for mm in gt.lattice.kagome.dos_moment_coefficients:
+        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-2*D/3, 0, D/3, 2*D/3, 4*D/3])
+        moment += (-2*D/3)**mm / 3  # add delta peak by hand
+        assert moment == pytest.approx(gt.lattice.kagome.dos_moment(mm, half_bandwidth=D))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -717,6 +726,14 @@ def test_kagome_imag_gf_equals_dos():
     omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
     assert np.allclose(-gt.lattice.kagome.gf_z(omega, D).imag/np.pi,
                        gt.lattice.kagome.dos(omega.real, D))
+
+
+@given(eps=st.floats(-1.5, +1.5))
+def test_kagome_dos_vs_dos_mp(eps):
+    """Compare multi-precision and numpy implementation of GF."""
+    D = 1.3
+    assert np.allclose(gt.lattice.kagome.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.kagome.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])

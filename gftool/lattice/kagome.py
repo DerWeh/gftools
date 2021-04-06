@@ -140,6 +140,72 @@ def dos(eps, half_bandwidth):
     return 2 / 3 * honeycomb.dos(eps - D/3, half_bandwidth=D)
 
 
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(0, 21, 1):
+#     with mp.workdps(100, normalize_output=True):
+#         res = mp.quad(lambda eps:  eps**m * dos_mp(eps), [-2/3, 0, +1/3, +2/3, +4/3])
+#         res += (-2 / 3)**m / 3  # add delta peak
+#     print(res)
+# rational numbers obtained by mp.identify
+dos_moment_coefficients = {
+    0: 1,
+    1: 0,
+    2: 4/9,
+    3: 4/27,
+    4: 28/81,
+    5: 20/81,
+    6: 88/243,
+    7: 0.358481938728852,
+    8: 0.457857033988721,
+    9: 0.518416907991668,
+    10: 0.640552761266067,
+    11: 0.766504654326632,
+    12: 0.946076798741534,
+    13: 1.16111979818393,
+    14: 1.44297318255669,
+    15: 1.79568687705621,
+    16: 2.248655455081,
+    17: 2.82371565536896,
+    18: 3.55975081121742,
+    19: 4.49985828877178,
+    20: 5.70448609391951,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the kagome DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 2D kagome lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the 2D kagome DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.kagome.dos
+
+    """
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+
+
 def dos_mp(eps, half_bandwidth=1):
     r"""Multi-precision DOS of non-interacting 2D kagome lattice.
 
