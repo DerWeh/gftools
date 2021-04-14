@@ -10,13 +10,28 @@ Not Released
 New Features
 ~~~~~~~~~~~~
 
-* `gftool.lattice.sc` for Green's function of simple cubic lattice (:commit:`4e3021`) by `Andreas Östlin <https://github.com/aostlin>`_
-* add Laplace transformation from real times to complex frequencies `gftool.fourier.tt2z`
+The `gftool.lattice` module was extended, especially regarding two-dimensional lattice.
+There where also some enhancements, given DOS moments are now up to order 20,
+and they should be accurate to machine precision.
+
+The following lattices where added with full interface:
+
+* Simple cubic: `gftool.lattice.sc` (:commit:`4e3021`) by `Andreas Östlin <https://github.com/aostlin>`_
+* Honeycomb: `gftool.lattice.honeycomb` (:commit:`7aa3133`)
+* Triangular: `gftool.lattice.triangular` (:commit:`c56f33e`)
+
+Local Green's function and DOS is now also available for the following lattices:
+
+* Lieb: `gftool.lattice.lieb` (:commit:`c76e948`)
+* Kagome: `gftool.lattice.kagome` (:commit:`28a41c0`)
+* Bethe lattice with general coordination: `gftool.lattice.bethez` (:commit:`2648cf4`)
+* Rectangular: `gftool.lattice.rectangular`
 
 Other New Features
 ~~~~~~~~~~~~~~~~~~
 
 * add retarded time Green's function give by its poles `gftool.pole_gf_ret_t`
+* added `gftool.siam` module with some basics for the non-interacting siam
 
 Documentation
 ~~~~~~~~~~~~~
