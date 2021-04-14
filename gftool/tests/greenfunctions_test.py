@@ -248,6 +248,40 @@ class TestKagomeGf(GfProperties):
                 == pytest.approx(1, rel=1e-3))
 
 
+class TestLiebGf(GfProperties):
+    """Check properties of rectangular Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.lieb.gf_z)
+
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(self, request):
+        """Parameters for Lieb Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    def band_edges(self, params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -D, D
+
+    @pytest.mark.filterwarnings("ignore::UserWarning")  # ignores quad's IntegrationWarning
+    def test_normalization(self, params, points=None):
+        """Due to delta-peak we get only small accuracy."""
+        D = params[1]['half_bandwidth']
+
+        def dos(omega):
+            r"""Wrap the DOS :math:`ρ(ω) = -ℑG(ω+iϵ)/π`."""
+            omega = omega + 1e-6j
+            return -self.gf(omega, *params[0], **params[1]).imag/np.pi
+
+        points = np.array([-2**-0.5, -1e-4, 0, +1e-4, +2**-0.5]) * D
+        assert (integrate.quad(dos, a=-D, b=+D, points=points)[0]
+                == pytest.approx(1, rel=1e-3))
+
+
 class TestSimpleCubicGf(GfProperties):
     """Check properties of rectangular Gf."""
 
@@ -734,6 +768,70 @@ def test_kagome_dos_vs_dos_mp(eps):
     D = 1.3
     assert np.allclose(gt.lattice.kagome.dos(eps, half_bandwidth=D),
                        float(gt.lattice.kagome.dos_mp(eps, half_bandwidth=D)))
+
+
+# test fails for large mm and small D, values become tiny...
+@pytest.mark.parametrize("D", [1.7, 2.])
+def test_lieb_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.lieb.dos, half_bandwidth=D)
+    interval = [-D, -D * 2**-0.5, +D * 2**-0.5, +D]
+    points = interval[1:-1]
+    for mm in gt.lattice.lieb.dos_moment_coefficients:
+        # fp.quad fails for some values of D
+        # moment = fp.quad(lambda eps: eps**mm * dos(eps), interval)
+        moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps), -D, +D, points=points)
+        if mm == 0:  # delta peak contributes
+            moment += 1/3
+        assert moment == pytest.approx(gt.lattice.lieb.dos_moment(mm, half_bandwidth=D))
+
+
+@pytest.mark.parametrize("D", [0.5, 1., 2.])
+def test_lieb_dos_unit(D):
+    """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
+    dos = partial(gt.lattice.lieb.dos, half_bandwidth=D)
+    singular = D * 2**-0.5
+    assert fp.quad(dos, [-D, -singular, 0, +singular, +D]) == pytest.approx(2/3)
+    assert integrate.quad(dos, -D, +D, points=[-singular, 0, +singular])[0] == pytest.approx(2/3)
+
+
+def test_lieb_dos_support():
+    """DOS should have no support for | eps | > D."""
+    D = 1.2
+    for eps in np.linspace(D + 1e-6, D*1e4):
+        assert gt.lattice.lieb.dos(+eps, D) == 0
+        assert gt.lattice.lieb.dos(-eps, D) == 0
+
+
+def test_lieb_imag_gf_negative():
+    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+    D = 1.2
+    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
+    omega += 5j*omega_step
+    assert np.all(gt.lattice.lieb.gf_z(omega, D).imag <= 0)
+
+
+def test_lieb_imag_gf_equals_dos():
+    r"""Imaginary part of the GF is proportional to the DOS away from delta.
+
+    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
+
+    """
+    D = 1.2
+    # around band-edge, there are some issues, cmp. triangular lattice
+    delta = 1e-3
+    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
+    assert np.allclose(-gt.lattice.lieb.gf_z(omega, D).imag/np.pi,
+                       gt.lattice.lieb.dos(omega.real, D))
+
+
+@given(eps=st.floats(-1.5, +1.5))
+def test_lieb_dos_vs_dos_mp(eps):
+    """Compare multi-precision and numpy implementation of GF."""
+    D = 1.3
+    assert np.allclose(gt.lattice.lieb.dos(eps, half_bandwidth=D),
+                       float(gt.lattice.lieb.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
