@@ -770,6 +770,23 @@ def test_kagome_dos_vs_dos_mp(eps):
                        float(gt.lattice.kagome.dos_mp(eps, half_bandwidth=D)))
 
 
+# test fails for large mm and small D, values become tiny...
+@pytest.mark.parametrize("D", [1.7, 2.])
+def test_lieb_dos_moment(D):
+    """Moment is integral over ϵ^m DOS."""
+    # check influence of bandwidth, as they are calculated for D=1 and normalized
+    dos = partial(gt.lattice.lieb.dos, half_bandwidth=D)
+    interval = [-D, -D * 2**-0.5, +D * 2**-0.5, +D]
+    points = interval[1:-1]
+    for mm in gt.lattice.lieb.dos_moment_coefficients:
+        # fp.quad fails for some values of D
+        # moment = fp.quad(lambda eps: eps**mm * dos(eps), interval)
+        moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps), -D, +D, points=points)
+        if mm == 0:  # delta peak contributes
+            moment += 1/3
+        assert moment == pytest.approx(gt.lattice.lieb.dos_moment(mm, half_bandwidth=D))
+
+
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
 def test_lieb_dos_unit(D):
     """Integral over the whole DOS should be 2/3, delta-peak is excluded."""

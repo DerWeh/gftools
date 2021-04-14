@@ -120,9 +120,66 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
-    D = half_bandwidth / 2**1.5
+    D = half_bandwidth
     eps_rel = eps / D
-    return 2 / (3 * D) * abs(eps_rel) * square.dos(eps_rel**2 - 4, half_bandwidth=4)
+    return 4 / (3 * D) * abs(eps_rel) * square.dos(2*eps_rel**2 - 1, half_bandwidth=1)
+
+
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1, the δ-peak does not contribute for m>0
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(2, 21, 2):
+#     with mp.workdps(100, normalize_output=True):
+#         res = 2*mp.quad(lambda eps:  eps**m * dos_mp(eps), [0, 2**0.5, 1])
+#     print(res)
+# rational numbers obtained by mp.identify
+dos_moment_coefficients = {
+    0: 1,
+    2: 1/3,
+    4: 5/24,
+    6: 7/48,
+    8: 0.110026041666667,
+    10: 0.0875651041666667,
+    12: 0.0724690755208333,
+    14: 0.0617472330729167,
+    16: 0.0537835756937663,
+    18: 0.0476494630177816,
+    20: 0.0427826742331187,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the Lieb DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 2D Lieb lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the 2D Lieb DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.lieb.dos
+
+    """
+    if m % 2:  # odd moments vanish due to symmetry
+        return 0
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
