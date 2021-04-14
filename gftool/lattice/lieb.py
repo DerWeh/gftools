@@ -7,6 +7,8 @@ dispersionless flat band.
                  of `t=D * 2**1.5`
 
 """
+from mpmath import mp
+
 from gftool.lattice import square
 
 
@@ -93,6 +95,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
+    gftool.lattice.lieb.dos_mp : multi-precision version suitable for integration
     gftool.lattice.square.dos
 
     References
@@ -117,6 +120,80 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
 
     """
-    D = half_bandwidth / (2 * 2**0.5)
+    D = half_bandwidth / 2**1.5
     eps_rel = eps / D
     return 2 / (3 * D) * abs(eps_rel) * square.dos(eps_rel**2 - 4, half_bandwidth=4)
+
+
+def dos_mp(eps, half_bandwidth=1):
+    r"""Multi-precision DOS of non-interacting 2D lieb lattice.
+
+    The delta-peak at `eps=0` is **ommited** and must be treated seperately!
+    Without it, the DOS integrates to `2/3`.
+
+    Besides the delta-peak, the DOS diverges at `eps=±half_bandwidth/2**0.5`.
+
+    This function is particularity suited to calculate integrals of the form
+    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,
+    consider removing singularities, e.g. split the integral
+
+    .. math::
+       ∫^0 dϵ DOS(ϵ)[f(ϵ) - f(-D/\sqrt{2})] + ∫_0 dϵ DOS(ϵ)[f(ϵ) - f(+D/\sqrt{3})] \\
+       + [f(-D/\sqrt{2}) + f(0) + f(+D/\sqrt{2})]/3
+
+    where :math:`D` is the `half_bandwidth`, or symmetrize the integral.
+
+    The Green's function and therefore the DOS of the 2D Lieb lattice can
+    be expressed in terms of the 2D square lattice `gftool.lattice.square.dos`,
+    see [kogan2021]_.
+
+    Parameters
+    ----------
+    eps : mpmath.mpf or mpf_like
+        DOS is evaluated at points `eps`.
+    half_bandwidth : mpmath.mpf or mpf_like
+        Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D * 2**1.5`
+
+    Returns
+    -------
+    dos_mp : mpmath.mpf
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.lieb.dos : vectorized version suitable for array evaluations
+    gftool.lattice.square.dos_mp
+
+    References
+    ----------
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1–12.
+       https://doi.org/10.4236/graphene.2021.101001
+
+    Examples
+    --------
+    Calculated integrals
+
+    >>> from mpmath import mp
+    >>> mp.identify(mp.quad(gt.lattice.lieb.dos_mp, [-1, -2**-0.5, 0, 2**-0.5, 1]))
+    '(2/3)'
+
+    >>> eps = np.linspace(-1.5, 1.5, num=501)
+    >>> dos_mp = [gt.lattice.lieb.dos_mp(ee, half_bandwidth=1) for ee in eps]
+
+    >>> import matplotlib.pyplot as plt
+    >>> for pos in (-2**-0.5, 0, +2**-0.5):
+    ...     _ = plt.axvline(pos, color='black', linewidth=0.8)
+    >>> _ = plt.plot(eps, dos_mp)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    D_inv = mp.mpf('2')**mp.mpf('1.5') / mp.mpf(half_bandwidth)
+    eps_rel = mp.mpf(eps) * D_inv
+    s_dos = square.dos_mp(eps_rel**mp.mpf('2') - mp.mpf('4'), half_bandwidth=mp.mpf('4'))
+    return mp.mpf('2/3') * D_inv * mp.fabs(eps_rel) * s_dos
