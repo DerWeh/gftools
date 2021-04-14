@@ -10,38 +10,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import functools
 import os
 import sys
-import types
 sys.path.insert(0, os.path.abspath('../..'))
 
 import gftool
-# from gftool import matrix, pade, lattice
-
-
-def copy_func(f):
-    """Based on http://stackoverflow.com/a/6528148/190597 (Glenn Maynard)."""
-    g = types.FunctionType(f.__code__, f.__globals__, name=f.__name__,
-                           argdefs=f.__defaults__,
-                           closure=f.__closure__)
-    g = functools.update_wrapper(g, f)
-    g.__kwdefaults__ = f.__kwdefaults__
-    return g
-
-
-# change `__module__` of imported submodule functions to include them in the documentation
-for key, val in gftool.__dict__.items():
-    if hasattr(val, '__module__') and val.__module__.startswith(gftool.__name__ + '.'):
-        try:
-            copy = val.copy()
-        except AttributeError:  # no copy method
-            # let's hope it's a function instead
-            copy = copy_func(val)  # currently only for functions, might need fixes for other types
-        copy.__module__ = gftool.__name__
-        gftool.__dict__[key] = copy
-
-
 # -- Project information -----------------------------------------------------
 
 project = 'Gftool'
@@ -140,6 +113,7 @@ plot_pre_code = """
 import warnings
 
 import numpy as np
+import matplotlib.pyplot as plt
 import gftool as gt
 
 np.random.seed(0)
@@ -156,6 +130,7 @@ except:
     pass
 """
 plot_include_source = True
+plot_html_show_source_link = False
 plot_formats = [('png', 100), 'pdf']
 
 import math
@@ -185,7 +160,8 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'np': ('http://docs.scipy.org/doc/numpy/', None),
-                       'mpmath': ('https://mpmath.org/doc/current/', None)
+                       'mpmath': ('https://mpmath.org/doc/current/', None),
+                       'matplotlib': ('https://matplotlib.org/', None),
                        }
 
 # -----------------------------------------------------------------------------

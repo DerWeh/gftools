@@ -13,8 +13,12 @@ This reference manual details functions, modules, and objects included in GfTool
 describing what they are and what they do.
 
 .. toctree::
-   :maxdepth: 2
+   :includehidden:
+   :maxdepth: 3
    :caption: Contents:
+
+   self
+   tutorial
 
 
 README
@@ -60,24 +64,23 @@ We can also explicitly give the second moments:
 .. _ufuncs: https://numpy.org/doc/stable/reference/ufuncs.html
 
 
-API
-===
+.. toctree::
+   :maxdepth: 2
+   :caption: API
+   :hidden:
 
-
-.. autosummary::
-  :toctree: generated
-
-  gftool
-  gftool.fourier
-  gftool.lattice
-  gftool.matrix
-  gftool.pade
-  gftool.siam
+   gftool
+   generated/gftool.fourier
+   generated/gftool.lattice
+   generated/gftool.matrix
+   generated/gftool.pade
+   generated/gftool.siam
 
 
 .. toctree::
    :maxdepth: 1
    :caption: Help
+   :hidden:
 
    whats-new
 

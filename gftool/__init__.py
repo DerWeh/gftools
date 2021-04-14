@@ -6,8 +6,8 @@ Main purpose is to have a tested base.
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 1
+.. autosummary::
+  :toctree: generated
 
    gftool.fourier
    gftool.lattice
@@ -80,6 +80,12 @@ from .lattice.square import (dos as square_dos,
                              gf_z as square_gf_z,
                              hilbert_transform as square_hilbert_transform)
 
+# Triangular lattice
+from .lattice.triangular import (dos as triangular_dos,
+                                 dos_moment as triangular_dos_moment,
+                                 gf_z as triangular_gf_z,
+                                 hilbert_transform as triangular_hilbert_transform)
+
 # Simple cubic lattice
 from .lattice.sc import (dos as sc_dos,
                          dos_moment as sc_dos_moment,
@@ -110,6 +116,7 @@ assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
             bethe_gf_z, bethe_hilbert_transform))
 assert all((onedim_dos, onedim_dos_moment, onedim_gf_z, onedim_hilbert_transform))
 assert all((square_dos, square_dos_moment, square_gf_z, square_hilbert_transform))
+assert all((triangular_dos, triangular_dos_moment, triangular_gf_z, triangular_hilbert_transform))
 assert all((sc_dos, sc_dos_moment, sc_gf_z, sc_hilbert_transform))
 assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_frequencies))
 assert all((bose_fct, matsubara_frequencies_b))
