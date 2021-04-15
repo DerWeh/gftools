@@ -1201,7 +1201,7 @@ def tt2z_lin(tt, gf_t, z):
         raise ValueError("Equidistant `tt` required for current implementation.")
     zero = z == 0  # special case `z=0` has to be handled separately (due: 1/z)
     if np.any(zero):
-        z = np.where(zero, np.nan, z)
+        z = np.where(zero, 1, z)
     izdt = 1j*z*delta_tt
     phase = _phase(z[..., newaxis], tt[newaxis, :-1])
     g_dft = _gu_matvec(phase, gf_t[..., :-1])
