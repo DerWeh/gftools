@@ -103,7 +103,6 @@ with the need for any loops.
    >>> gf_iw = gt.bethe_gf_z(iws + eps[:, np.newaxis], half_bandwidth=1)
    >>> gf_iw.shape
    (2, 1024)
-   >>> import gftool.fourier
    >>> gf_tau = gt.fourier.iw2tau(gf_iw, beta=beta)
 
 The Fourier transform generates the imaginary time Green's function on the interval
