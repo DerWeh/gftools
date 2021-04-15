@@ -406,6 +406,11 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
     :math:`Σ_{\text{static}}` is the ω-independent mean-field part of the self-energy.
 
+    .. deprecated:: 0.8.0
+       Mostly superseded by more flexible `density_iw`, thus this function will
+       likely be discontinued. Currently `density` is a little more accurate
+       for `matrix=True`, compared to `density_iw` without using fitting.
+
     Parameters
     ----------
     gf_iw : complex ndarray
@@ -487,6 +492,8 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
        1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.
 
     """
+    warnings.warn("`density` is deprecated; use `density_iw` instead.",
+                  category=DeprecationWarning)
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
     if total:
         assert gf_iw.ndim == 1
