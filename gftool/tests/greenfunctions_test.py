@@ -970,3 +970,19 @@ def test_square_stress_trafo():
         with mpmath.workdps(30):
             integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])
         assert np.allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)
+
+
+def test_hubbard_I_self_hfm():
+    """Check high-frequency moments of Hubbard-I self-energy."""
+    U, occ = 1.7, 0.3
+    hubbard_I = partial(gt.hubbard_I_self_z, U=U, occ=occ)
+    m0 = U*occ
+    limit_0p = fp.limit(hubbard_I, np.infty, exp=True)
+    assert limit_0p == pytest.approx(m0)
+
+    def hubbard_dyn(z):
+        return z*(hubbard_I(z) - m0)
+
+    m1 = occ * (1 - occ) * U**2
+    limit_1p = fp.limit(hubbard_dyn, np.infty, exp=True, steps=[25])
+    assert limit_1p == pytest.approx(m1)

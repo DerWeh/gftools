@@ -211,7 +211,6 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
     return gf_z
 
 
-# FIXME: write tests for moments
 def hubbard_I_self_z(z, U, occ):
     r"""Self-energy in Hubbard-I approximation (atomic solution).
 
