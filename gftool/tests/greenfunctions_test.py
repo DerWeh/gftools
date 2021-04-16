@@ -46,20 +46,23 @@ class GfProperties:
     z_mesh: np.ndarray  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
-    def gf(self, z, **kwargs):
-        """signature: gf(z: array(complex), ** kwargs) -> array(complex)."""
+    def gf(self, z, **kwds):
+        """Green's function."""
         raise NotImplementedError('This is just a placeholder')
 
+    @staticmethod
     @pytest.fixture
-    def params(self):
+    def params():
         """Contains possible parameters needed for the Green's function."""
         return (), {}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function, by default (-∞, ∞).
 
         Can be overwritten by subclasses using the `params`.
         """
+        del params
         return -np.infty, np.infty
 
     def test_complex(self, params):
@@ -203,8 +206,9 @@ class TestBetheGf(GfProperties):
 
     gf = method(gt.bethe_gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
 
@@ -234,8 +238,9 @@ class TestOnedimGf(GfProperties):
 
     gf = method(gt.onedim_gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2])
-    def params(self, request):
+    def params(request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
 
@@ -245,8 +250,9 @@ class TestOnedim(SymLattice):
 
     lattice = gt.lattice.onedim
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of Onedim lattice."""
         return {"half_bandwidth": request.param}
 
@@ -265,8 +271,9 @@ class TestSquareGf(GfProperties):
 
     gf = method(gt.square_gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
 
@@ -276,8 +283,9 @@ class TestSquare(SymLattice):
 
     lattice = gt.lattice.square
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of square lattice."""
         return {"half_bandwidth": request.param}
 
@@ -302,13 +310,15 @@ class TestRectangularGf(GfProperties):
 
     gf = method(gt.lattice.rectangular.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[{'half_bandwidth': D, 'scale': gamma}
                             for D, gamma in product([0.7, 1.2], [1.3, 2.0])])
-    def params(self, request):
+    def params(request):
         """Parameters for Bethe Green's function."""
         return (), request.param
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -D, D
@@ -330,12 +340,14 @@ class TestTriangularGf(GfProperties):
 
     gf = method(gt.lattice.triangular.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -2*D/3, 4*D/3
@@ -352,8 +364,9 @@ class TestTriangular(Lattice):
 
     lattice = gt.lattice.triangular
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of triangular lattice."""
         return {"half_bandwidth": request.param}
 
@@ -377,12 +390,14 @@ class TestHoneycombGf(GfProperties):
 
     gf = method(gt.lattice.honeycomb.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for honeycomb Green's function."""
         return (), {'half_bandwidth': request.param}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -D, D
@@ -399,8 +414,9 @@ class TestHoneycomb(SymLattice):
 
     lattice = gt.lattice.honeycomb
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of honeycomb lattice."""
         return {"half_bandwidth": request.param}
 
@@ -424,12 +440,14 @@ class TestKagomeGf(GfProperties):
 
     gf = method(gt.lattice.kagome.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for kagome Green's function."""
         return (), {'half_bandwidth': request.param}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -2*D/3, 4*D/3
@@ -455,8 +473,9 @@ class TestKagome(Lattice):
 
     lattice = gt.lattice.kagome
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of kagome lattice."""
         return {"half_bandwidth": request.param}
 
@@ -500,12 +519,14 @@ class TestLiebGf(GfProperties):
 
     gf = method(gt.lattice.lieb.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for Lieb Green's function."""
         return (), {'half_bandwidth': request.param}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -D, D
@@ -530,8 +551,9 @@ class TestLieb(Lattice):
 
     lattice = gt.lattice.lieb
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of lieb lattice."""
         return {"half_bandwidth": request.param}
 
@@ -582,12 +604,14 @@ class TestSimpleCubicGf(GfProperties):
 
     gf = method(gt.lattice.sc.gf_z)
 
+    @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
-    def params(self, request):
+    def params(request):
         """Parameters for simple cubic Green's function."""
         return (), {'half_bandwidth': request.param}
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Return the support of the Green's function."""
         D = params[1]['half_bandwidth']
         return -D, D
@@ -604,8 +628,9 @@ class TestSimpleCubic(SymLattice):
 
     lattice = gt.lattice.sc
 
+    @staticmethod
     @pytest.fixture(params=[0.5, 1., 2.], scope="class")
-    def kwds(self, request):
+    def kwds(request):
         """Half-bandwidth of simple cubic lattice."""
         return {"half_bandwidth": request.param}
 
@@ -628,14 +653,16 @@ class TestSurfaceGf(GfProperties):
 
     gf = method(gt.surface_gf_zeps)
 
+    @staticmethod
     @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
-    def params(self, request):
+    def params(request):
         """Parameters for the Surface Bethe Green's function."""
         return (), {'eps': request.param,
                     'hopping_nn': .2,
                     }
 
-    def band_edges(self, params):
+    @staticmethod
+    def band_edges(params):
         """Bandages are shifted ones of `gt.bethe_gf_z`."""
         hopping_nn = params[1]['hopping_nn']
         eps = params[1]['eps']
@@ -650,8 +677,9 @@ class TestHubbardDimer(GfProperties):
 
     gf = method(gt.hubbard_dimer_gf_z)
 
+    @staticmethod
     @pytest.fixture(params=['+', '-'])
-    def params(self, request):
+    def params(request):
         """Parameters for the Hubbard Dimer Green's function."""
         return (), {'kind': request.param,
                     'hopping': 1.1,
@@ -660,6 +688,7 @@ class TestHubbardDimer(GfProperties):
 
     @pytest.mark.skip(reason="Fixing integral: nearly Delta-functions, no band_edges!")
     def test_normalization(self, params):
+        """Atomic functions cannot be integrated numerically."""
         raise NotImplementedError
 
     def test_limit(self, params):
