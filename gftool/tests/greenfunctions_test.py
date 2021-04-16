@@ -87,6 +87,112 @@ class GfProperties:
         lower, upper = self.band_edges(params)
         assert pytest.approx(integrate.quad(dos, a=lower, b=upper, points=points)[0]) == 1.
 
+    def test_imag_gf_negative(self, params):
+        """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
+        omega, omega_step = np.linspace(-10, 10, dtype=complex, retstep=True)
+        omega += 5j*omega_step
+        assert np.all(self.gf(omega, *params[0], **params[1]).imag <= 0)
+
+
+class Lattice:
+    """Generic class to test basic properties of `gftool.lattice` modules.
+
+    Mostly checks the DOS and it's relation to other functions.
+
+    """
+
+    lattice = gt.lattice.bethe  # should be replaced!! Just available members
+
+    @staticmethod
+    @pytest.fixture(scope="class")
+    def kwds(request):
+        """Contains possible keyword parameters needed for the Green's function."""
+        del request
+        return {}
+
+    @staticmethod
+    def band_edges(**kwds):
+        """Return the support of the Green's function, by default (-∞, ∞).
+
+        Can be overwritten by subclasses using the `kwds`.
+        """
+        del kwds
+        return -np.infty, np.infty
+
+    @staticmethod
+    def singularities(**kwds):
+        """Return singularities for integrations."""
+        del kwds
+        return []
+
+    def test_dos_unit(self, kwds):
+        """Integral over the whole DOS should be 1."""
+        dos = partial(self.lattice.dos, **kwds)
+        points = self.singularities(**kwds)
+        assert integrate.quad(dos, *self.band_edges(**kwds), points=points)[0] == pytest.approx(1.0)
+
+    def test_imgf_eq_dos(self, kwds):
+        r"""Imaginary part of the GF is proportional to the DOS.
+
+        .. math:: DOS(ϵ) = -ℑG(ϵ+i0⁺)/π
+
+        """
+        omega = np.linspace(*self.band_edges(**kwds), dtype=complex, num=int(1e4)) + 1e-16j
+        omega = omega[1:-1]  # exclude endpoints...
+        notsingular = np.all(abs(omega.real[:, None] - self.singularities(**kwds)) > 1e-6, axis=-1)
+        omega = omega[notsingular]  # compare only away from singularities
+        assert np.allclose(-1/np.pi*self.lattice.gf_z(omega, **kwds).imag,
+                           self.lattice.dos(omega.real, **kwds), atol=1e-7)
+
+    def test_dos_moment(self, kwds):
+        """Moment is integral over ϵ^m DOS."""
+        # check influence of bandwidth, as they are calculated for D=1 and normalized
+        dos = partial(self.lattice.dos, **kwds)
+        dos_moment = partial(self.lattice.dos_moment, **kwds)
+        left, right = self.band_edges(**kwds)
+        points = [left, *self.singularities(**kwds), right]
+        for mm in self.lattice.dos_moment_coefficients:
+            # pytint: disable=cell-var-from-loop
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            assert moment == pytest.approx(dos_moment(mm))
+
+    @given(eps=st.floats(-1.5, +1.5))
+    def test_dos_vs_dos_mp(self, eps, kwds):
+        """Compare multi-precision and `numpy` implementation of DOS."""
+        assert np.allclose(self.lattice.dos(eps, **kwds),
+                           float(self.lattice.dos_mp(eps, **kwds)))
+
+    def test_dos_support(self, kwds):
+        """DOS should have no support for outside the band-edges."""
+        lower, upper = self.band_edges(**kwds)
+        assert upper > 0, "Else this test-case is ill-defined"
+        for eps in np.linspace(upper + 1e-6, upper*1e4):
+            assert self.lattice.dos(eps, **kwds) == 0
+        assert lower < 0, "Else this test-case is ill-defined"
+        for eps in np.linspace(lower - 1e-6, lower*1e4):
+            assert self.lattice.dos(eps, **kwds) == 0
+
+
+class SymLattice(Lattice):
+    """Generic class to test basic properties of symmetric `gftool.lattice` modules.
+
+    Mostly checks the DOS and it's relation to other functions.
+
+    """
+
+    def test_dos_half(self, kwds):
+        """DOS should be symmetric -> integral over the half should yield 0.5."""
+        dos = partial(self.lattice.dos, **kwds)
+        mD, D = self.band_edges(**kwds)
+        assert mD == -D
+        points = self.singularities(**kwds)
+        if points:
+            assert fp.quad(dos, [-D, *points[:(len(points)+1)//2], 0]) == pytest.approx(0.5)
+            assert fp.quad(dos, [0, *points[len(points)//2:], +D]) == pytest.approx(0.5)
+        else:
+            assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
+            assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
+
 
 class TestBetheGf(GfProperties):
     """Check properties of Bethe Gf."""
@@ -101,6 +207,22 @@ class TestBetheGf(GfProperties):
     def params(self, request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
+
+
+class TestBethe(SymLattice):
+    """Check basic properties of `gftool.bethe.lattice`."""
+
+    lattice = gt.lattice.bethe
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of Bethe lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
 
 
 class TestOnedimGf(GfProperties):
@@ -118,6 +240,22 @@ class TestOnedimGf(GfProperties):
         return (), {'half_bandwidth': request.param}
 
 
+class TestOnedim(SymLattice):
+    """Check basic properties of `gftool.lattice.onedim`."""
+
+    lattice = gt.lattice.onedim
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of Onedim lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+
 class TestSquareGf(GfProperties):
     """Check properties of square Gf."""
 
@@ -131,6 +269,28 @@ class TestSquareGf(GfProperties):
     def params(self, request):
         """Parameters for Bethe Green's function."""
         return (), {'half_bandwidth': request.param}
+
+
+class TestSquare(SymLattice):
+    """Check basic properties of `gftool.bethe.lattice`."""
+
+    lattice = gt.lattice.square
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of square lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        del half_bandwidth
+        return [0]
 
 
 class TestRectangularGf(GfProperties):
@@ -187,6 +347,27 @@ class TestTriangularGf(GfProperties):
         super().test_normalization(params, points=[-4*D/9])
 
 
+class TestTriangular(Lattice):
+    """Check basic properties of `gftool.lattice.triangular`."""
+
+    lattice = gt.lattice.triangular
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of triangular lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -2*half_bandwidth/3, 4*half_bandwidth/3
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        return [-4*half_bandwidth/9]
+
+
 class TestHoneycombGf(GfProperties):
     """Check properties of rectangular Gf."""
 
@@ -211,6 +392,27 @@ class TestHoneycombGf(GfProperties):
         del points  # was only give for subclasses
         D = params[1]['half_bandwidth']
         super().test_normalization(params, points=[-D/3, +D/3])
+
+
+class TestHoneycomb(SymLattice):
+    """Check basic properties of `gftool.lattice.honeycomb`."""
+
+    lattice = gt.lattice.honeycomb
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of honeycomb lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        return [-half_bandwidth/3, half_bandwidth/3]
 
 
 class TestKagomeGf(GfProperties):
@@ -248,6 +450,47 @@ class TestKagomeGf(GfProperties):
                 == pytest.approx(1, rel=1e-3))
 
 
+class TestKagome(Lattice):
+    """Check basic properties of `gftool.lattice.kagome`."""
+
+    lattice = gt.lattice.kagome
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of kagome lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -2*half_bandwidth/3, 4*half_bandwidth/3
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        return [0, half_bandwidth/3, 2*half_bandwidth/3, 2*half_bandwidth/3]
+
+    def test_dos_unit(self, kwds):
+        """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
+        dos = partial(self.lattice.dos, **kwds)
+        points = self.singularities(**kwds)
+        assert integrate.quad(dos, *self.band_edges(**kwds), points=points)[0] == pytest.approx(2/3)
+
+    def test_dos_moment(self, kwds):
+        """Moment is integral over ϵ^m DOS."""
+        # check influence of bandwidth, as they are calculated for D=1 and normalized
+        dos = partial(self.lattice.dos, **kwds)
+        dos_moment = partial(self.lattice.dos_moment, **kwds)
+        left, right = self.band_edges(**kwds)
+        points = [left, *self.singularities(**kwds), right]
+        D = kwds["half_bandwidth"]
+        for mm in self.lattice.dos_moment_coefficients:
+            # pytint: disable=cell-var-from-loop
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            moment += (-2*D/3)**mm / 3  # add delta peak by hand
+            assert moment == pytest.approx(dos_moment(mm))
+
+
 class TestLiebGf(GfProperties):
     """Check properties of rectangular Gf."""
 
@@ -282,6 +525,54 @@ class TestLiebGf(GfProperties):
                 == pytest.approx(1, rel=1e-3))
 
 
+class TestLieb(Lattice):
+    """Check basic properties of `gftool.lattice.lieb`."""
+
+    lattice = gt.lattice.lieb
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of lieb lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        singular = half_bandwidth * 2**-0.5
+        return [-singular, +singular]
+
+    def test_dos_unit(self, kwds):
+        """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
+        dos = partial(self.lattice.dos, **kwds)
+        points = self.singularities(**kwds)
+        assert integrate.quad(dos, *self.band_edges(**kwds), points=points)[0] == pytest.approx(2/3)
+
+    def test_dos_moment(self, kwds):
+        """Moment is integral over ϵ^m DOS."""
+        # check influence of bandwidth, as they are calculated for D=1 and normalized
+        dos = partial(self.lattice.dos, **kwds)
+        dos_moment = partial(self.lattice.dos_moment, **kwds)
+        left, right = self.band_edges(**kwds)
+        points = [left, *self.singularities(**kwds), right]
+        for mm in self.lattice.dos_moment_coefficients:
+            # pytint: disable=cell-var-from-loop
+            if kwds["half_bandwidth"] < 0.8 and mm > 10:
+                break  # small integrals are numerically inaccurate
+            # moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            # fp.quad fails for some values of D
+            # moment = fp.quad(lambda eps: eps**mm * dos(eps), interval)
+            moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps),
+                                        points[0], points[-1], points=points[1:-1])
+            if mm == 0:  # delta peak contributes
+                moment += 1/3
+            assert moment == pytest.approx(dos_moment(mm))
+
+
 class TestSimpleCubicGf(GfProperties):
     """Check properties of rectangular Gf."""
 
@@ -306,6 +597,27 @@ class TestSimpleCubicGf(GfProperties):
         del points  # was only give for subclasses
         D = params[1]['half_bandwidth']
         super().test_normalization(params, points=[-D/3, D/3])
+
+
+class TestSimpleCubic(SymLattice):
+    """Check basic properties of `gftool.lattice.sc`."""
+
+    lattice = gt.lattice.sc
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of simple cubic lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        return [-half_bandwidth/3, half_bandwidth/3]
 
 
 class TestSurfaceGf(GfProperties):
@@ -385,49 +697,6 @@ def test_bethe_derivative_2(z, D):
     assert np.allclose(gf_d1, fct_d1(z))
 
 
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    assert integrate.quad(gt.bethe_dos, -D-.1, D+.1, args=(D,))[0] == pytest.approx(1.)
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_dos_half(D):
-    """DOS should be symmetric -> integral over the half should yield 0.5."""
-    assert integrate.quad(gt.bethe_dos, -D-.1, 0., args=(D,))[0] == pytest.approx(.5)
-    assert integrate.quad(gt.bethe_dos, 0., D+.1, args=(D,))[0] == pytest.approx(.5)
-
-
-def test_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.bethe_dos(eps, D) == 0
-        assert gt.bethe_dos(-eps, D) == 0
-
-
-def test_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.bethe_gf_z(omega, D).imag <= 0)
-
-
-def test_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS.
-
-    .. math::
-        DOS(ϵ) = -ℑ(G(ϵ))/π
-    """
-    D = 1.2
-    num = int(1e6)
-    omega = np.linspace(-D, D, dtype=np.complex, num=num)
-    omega += 1j*1e-16
-    assert np.allclose(-gt.bethe_gf_z(omega, D).imag/np.pi,
-                       gt.bethe_dos(omega, D))
-
-
 def test_hilbert_equals_integral():
     """Compare *bethe_hilbert_transform* with explicit calculation of integral.
 
@@ -455,106 +724,6 @@ def test_hilbert_equals_integral():
         compare += integrate.quad(kernel_real, -D, D, args=(xi,))[0]
         compare += 1j*integrate.quad(kernel_imag, -D, D, args=(xi,))[0]
         assert gt.bethe_hilbert_transform(xi, D) == pytest.approx(compare)
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_bethe_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.bethe.dos, half_bandwidth=D)
-    for mm in gt.lattice.bethe.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, +D])
-        assert moment == pytest.approx(gt.bethe_dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_bethe_dos_vs_dos_mp(eps):
-    """Compare multi-precision and `numpy` implementation of DOS."""
-    D = 1.3
-    assert np.allclose(gt.bethe_dos(eps, half_bandwidth=D),
-                       float(gt.lattice.bethe.dos_mp(eps, half_bandwidth=D)))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_onedim_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    dos = partial(gt.onedim_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, D]) == pytest.approx(1.)
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_onedim_dos_half(D):
-    """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gt.onedim_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
-    assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
-
-
-def test_onedim_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.onedim_dos(eps, D) == 0
-        assert gt.onedim_dos(-eps, D) == 0
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_onedim_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.onedim.dos, half_bandwidth=D)
-    for mm in gt.lattice.onedim.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, +D])
-        assert moment == pytest.approx(gt.onedim_dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_onedim_dos_vs_dos_mp(eps):
-    """Compare multi-precision and `numpy` implementation of DOS."""
-    D = 1.3
-    assert np.allclose(gt.lattice.onedim.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.onedim.dos_mp(eps, half_bandwidth=D)))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_square_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    dos = partial(gt.square_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, 0., D]) == pytest.approx(1.)
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_square_dos_half(D):
-    """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gt.square_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
-    assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
-
-
-def test_square_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.square_dos(eps, D) == 0
-        assert gt.square_dos(-eps, D) == 0
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_square_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.square.dos, half_bandwidth=D)
-    for mm in gt.lattice.square.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, 0, D])
-        assert moment == pytest.approx(gt.square_dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_square_dos_vs_dos_mp(eps):
-    """Compare multi-precision and `numpy` implementation of DOS."""
-    D = 1.3
-    assert np.allclose(gt.square_dos(eps, half_bandwidth=D),
-                       float(gt.lattice.square.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.parametrize("gamma", [1.5, 2.])
@@ -593,316 +762,12 @@ def test_rectangular_vs_square_gf(z):
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_triangular_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    dos = partial(gt.lattice.triangular.dos, half_bandwidth=D)
-    assert fp.quad(dos, [-2*D/3, -4*D/9, 4*D/3]) == pytest.approx(1.)
-
-
-def test_triangular_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    left = -2*D/3
-    right = 4*D/3
-    for eps in np.linspace(right + 1e-6, right*1e4):
-        assert gt.lattice.triangular.dos(eps, D) == 0
-    for eps in np.linspace(left*1e4, left - 1e-6):
-        assert gt.lattice.triangular.dos(eps, D) == 0
-
-
-def test_triangular_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.lattice.triangular.gf_z(omega, D).imag <= 0)
-
-
-def test_triangular_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS.
-
-    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
-
-    """
-    D = 1.2
-    num = int(1e3)
-    # lower band-edge 2/3*D is problematic
-    omega = np.linspace(-2/3*D+1e-6, 2*D, dtype=np.complex, num=num)
-    omega += 1e-16j
-    assert np.allclose(-gt.lattice.triangular.gf_z(omega, D).imag/np.pi,
-                       gt.lattice.triangular.dos(omega.real, D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_triangular_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.triangular.dos, half_bandwidth=D)
-    for mm in gt.lattice.triangular.dos_moment_coefficients:
-        # fp.quad fails for some values of D
-        # moment = fp.quad(lambda eps: eps**mm * dos(eps), [-2/3*D, -4/9*D, 4/3*D])
-        moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps),
-                                    -2/3*D, 4/3*D, points=[-4/9*D])
-        assert moment == pytest.approx(gt.lattice.triangular.dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_triangular_dos_vs_dos_mp(eps):
-    """Compare multi-precision and `numpy` implementation of DOS."""
-    D = 1.3
-    assert np.allclose(gt.lattice.triangular.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.triangular.dos_mp(eps, half_bandwidth=D)))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_honeycomb_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
-    assert integrate.quad(dos, -D, D, points=[-D/3, 0, D/3])[0] == pytest.approx(1.)
-
-
-def test_honeycomb_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.lattice.honeycomb.dos(+eps, D) == 0
-        assert gt.lattice.honeycomb.dos(-eps, D) == 0
-
-
-def test_honeycomb_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.lattice.honeycomb.gf_z(omega, D).imag <= 0)
-
-
-def test_honeycomb_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS.
-
-    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
-
-    """
-    D = 1.2
-    # around band-edge, there are some issues, cmp. triangular lattice
-    delta = 1e-4
-    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
-    assert np.allclose(-gt.lattice.honeycomb.gf_z(omega, D).imag/np.pi,
-                       gt.lattice.honeycomb.dos(omega.real, D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_honeycomb_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.honeycomb.dos, half_bandwidth=D)
-    for mm in gt.lattice.honeycomb.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, 0, +D/3, +D])
-        assert moment == pytest.approx(gt.lattice.honeycomb.dos_moment(mm, half_bandwidth=D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_honeycomb_dos_vs_dos_mp(eps):
-    """Compare multi-precision and numpy implementation of GF."""
-    D = 1.3
-    assert np.allclose(gt.lattice.honeycomb.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.honeycomb.dos_mp(eps, half_bandwidth=D)))
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_kagome_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.kagome.dos, half_bandwidth=D)
-    for mm in gt.lattice.kagome.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-2*D/3, 0, D/3, 2*D/3, 4*D/3])
-        moment += (-2*D/3)**mm / 3  # add delta peak by hand
-        assert moment == pytest.approx(gt.lattice.kagome.dos_moment(mm, half_bandwidth=D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_kagome_dos_unit(D):
-    """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
-    dos = partial(gt.lattice.kagome.dos, half_bandwidth=D)
-    assert fp.quad(dos, [-2*D/3, 0, D/3, 2*D/3, 4*D/3]) == pytest.approx(2/3)
-    assert integrate.quad(dos, -2*D/3, 4*D/3, points=[0, D/3, 2*D/3])[0] == pytest.approx(2/3)
-
-
-def test_kagome_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    left = -2*D/3
-    right = 4*D/3
-    for eps in np.linspace(right + 1e-6, right*1e4):
-        assert gt.lattice.kagome.dos(eps, D) == 0
-    for eps in np.linspace(left*1e4, left - 1e-6):
-        assert gt.lattice.kagome.dos(eps, D) == 0
-
-
-def test_kagome_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.lattice.kagome.gf_z(omega, D).imag <= 0)
-
-
-def test_kagome_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS away from delta.
-
-    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
-
-    """
-    D = 1.2
-    # around band-edge, there are some issues, cmp. triangular lattice
-    delta = 1e-3
-    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
-    assert np.allclose(-gt.lattice.kagome.gf_z(omega, D).imag/np.pi,
-                       gt.lattice.kagome.dos(omega.real, D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_kagome_dos_vs_dos_mp(eps):
-    """Compare multi-precision and numpy implementation of GF."""
-    D = 1.3
-    assert np.allclose(gt.lattice.kagome.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.kagome.dos_mp(eps, half_bandwidth=D)))
-
-
-# test fails for large mm and small D, values become tiny...
-@pytest.mark.parametrize("D", [1.7, 2.])
-def test_lieb_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.lieb.dos, half_bandwidth=D)
-    interval = [-D, -D * 2**-0.5, +D * 2**-0.5, +D]
-    points = interval[1:-1]
-    for mm in gt.lattice.lieb.dos_moment_coefficients:
-        # fp.quad fails for some values of D
-        # moment = fp.quad(lambda eps: eps**mm * dos(eps), interval)
-        moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps), -D, +D, points=points)
-        if mm == 0:  # delta peak contributes
-            moment += 1/3
-        assert moment == pytest.approx(gt.lattice.lieb.dos_moment(mm, half_bandwidth=D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_lieb_dos_unit(D):
-    """Integral over the whole DOS should be 2/3, delta-peak is excluded."""
-    dos = partial(gt.lattice.lieb.dos, half_bandwidth=D)
-    singular = D * 2**-0.5
-    assert fp.quad(dos, [-D, -singular, 0, +singular, +D]) == pytest.approx(2/3)
-    assert integrate.quad(dos, -D, +D, points=[-singular, 0, +singular])[0] == pytest.approx(2/3)
-
-
-def test_lieb_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.lattice.lieb.dos(+eps, D) == 0
-        assert gt.lattice.lieb.dos(-eps, D) == 0
-
-
-def test_lieb_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.lattice.lieb.gf_z(omega, D).imag <= 0)
-
-
-def test_lieb_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS away from delta.
-
-    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
-
-    """
-    D = 1.2
-    # around band-edge, there are some issues, cmp. triangular lattice
-    delta = 1e-3
-    omega = np.linspace(-D+delta, +D+delta, num=int(1e3)) + 1e-16j
-    assert np.allclose(-gt.lattice.lieb.gf_z(omega, D).imag/np.pi,
-                       gt.lattice.lieb.dos(omega.real, D))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_lieb_dos_vs_dos_mp(eps):
-    """Compare multi-precision and numpy implementation of GF."""
-    D = 1.3
-    assert np.allclose(gt.lattice.lieb.dos(eps, half_bandwidth=D),
-                       float(gt.lattice.lieb.dos_mp(eps, half_bandwidth=D)))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_simplecubic_dos_unit(D):
-    """Integral over the whole DOS should be 1."""
-    dos = partial(gt.sc_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, -D/3, 0, D/3, D]) == pytest.approx(1.)
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
-def test_simplecubic_dos_half(D):
-    """DOS should be symmetric -> integral over the half should yield 0.5."""
-    dos = partial(gt.sc_dos, half_bandwidth=D)
-    assert fp.quad(dos, [-D, -D/3, 0]) == pytest.approx(0.5)
-    assert fp.quad(dos, [0, +D/3, +D]) == pytest.approx(0.5)
-
-
-def test_simplecubic_dos_support():
-    """DOS should have no support for | eps | > D."""
-    D = 1.2
-    for eps in np.linspace(D + 1e-6, D*1e4):
-        assert gt.sc_dos(+eps, D) == 0
-        assert gt.sc_dos(-eps, D) == 0
-
-
-def test_simplecubic_imag_gf_negative():
-    """Imaginary part of Gf must be smaller or equal 0 for real frequencies."""
-    D = 1.2
-    omega, omega_step = np.linspace(-D, D, dtype=np.complex, retstep=True)
-    omega += 5j*omega_step
-    assert np.all(gt.sc_gf_z(omega, D).imag <= 0)
-
-
-def test_simplecubic_imag_gf_equals_dos():
-    r"""Imaginary part of the GF is proportional to the DOS.
-
-    .. math:: DOS(ϵ) = -ℑ(G(ϵ))/π
-
-    """
-    D = 1.2
-    num = int(1e3)
-    omega = np.linspace(-D, D, num=num) + 1e-16j
-    assert np.allclose(-gt.sc_gf_z(omega, D).imag/np.pi,
-                       gt.sc_dos(omega.real, D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1.7, 2.])
-def test_simplecubic_dos_moment(D):
-    """Moment is integral over ϵ^m DOS."""
-    # check influence of bandwidth, as they are calculated for D=1 and normalized
-    dos = partial(gt.lattice.sc.dos, half_bandwidth=D)
-    for mm in gt.lattice.sc.dos_moment_coefficients:
-        moment = fp.quad(lambda eps: eps**mm * dos(eps), [-D, -D/3, D/3, D])
-        assert moment == pytest.approx(gt.sc_dos_moment(mm, half_bandwidth=D))
-
-
-@pytest.mark.parametrize("D", [0.5, 1., 2.])
 @given(z=st.complex_numbers(max_magnitude=1e6))
 def test_simplecubic_gf_vs_gf_mp(z, D):
     """Compare multi-precision and numpy implementation of GF."""
     assume(abs(z.imag) > 1e-6)
     assert np.allclose(gt.sc_gf_z(z, half_bandwidth=D),
                        complex(gt.lattice.sc.gf_z_mp(z, half_bandwidth=D)))
-
-
-@given(eps=st.floats(-1.5, +1.5))
-def test_simplecubic_dos_vs_dos_mp(eps):
-    """Compare multi-precision and numpy implementation of GF."""
-    D = 1.3
-    assert np.allclose(gt.sc_dos(eps, half_bandwidth=D),
-                       float(gt.lattice.sc.dos_mp(eps, half_bandwidth=D)))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
