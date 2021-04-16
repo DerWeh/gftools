@@ -33,6 +33,12 @@ Other New Features
 * add retarded time Green's function give by its poles `gftool.pole_gf_ret_t`
 * added `gftool.siam` module with some basics for the non-interacting siam
 
+Depreciations
+~~~~~~~~~~~~~
+
+* `gftool.density` is deprecated and will likely be discontinued.
+  Consider the more flexible `gftool.density_iw` instead.
+
 Documentation
 ~~~~~~~~~~~~~
 
