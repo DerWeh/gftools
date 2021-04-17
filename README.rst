@@ -62,7 +62,6 @@ gftool
      see also the `lattice` submodule.
    * utility functions like Matsubara frequencies and Fermi functions.
    * reliable calculation of particle numbers via Matsubara sums
-     (needs a refactor and more accurate extrapolation)
 
 fourier
    * Fourier transforms from Matsubara frequencies to imaginary time and back,
