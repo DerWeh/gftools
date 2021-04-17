@@ -50,9 +50,10 @@ If you clone the project, you can locally build the documentation:
 Documentation
 -------------
 
-The documentation and API can be found here: `documentation`_.
-There is now also documentation on ReadTheDocs:
-`master doc`_, `develop doc`_, `latest doc`_
+The documentation and API is on `ReadTheDocs`_.
+The documentation of specific branches can also be accessed:
+`master doc`_, `develop doc`_.
+There is also a GitHub page: `documentation`_.
 
 Currently the packages main content is
 
@@ -93,7 +94,7 @@ pade
    https://gftools.readthedocs.io/en/master/
 .. _develop doc:
    https://gftools.readthedocs.io/en/develop/
-.. _latest doc:
+.. _ReadTheDocs:
    https://gftools.readthedocs.io/en/latest/
 .. _pipenv:
    https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
