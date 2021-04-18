@@ -49,7 +49,7 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.plot(ww, gf_ww.real, label=r"$\Re G$")
     >>> _ = plt.plot(ww, gf_ww.imag, '--', label=r"$\Im G$")
     >>> _ = plt.xlabel(r"$\omega/D$")
-    >>> _ = plt.xlabel(r"$G*D$")
+    >>> _ = plt.ylabel(r"$G*D$")
     >>> _ = plt.axhline(0, color='black', linewidth=0.8)
     >>> _ = plt.xlim(left=ww.min(), right=ww.max())
     >>> _ = plt.legend()
