@@ -2,12 +2,12 @@ r"""3D body-centered cubic (bcc) lattice.
 
 The dispersion of the 3D simple cubic lattice is given by
 
-.. math:: ϵ_{k_x, k_y, k_z} = t \cos(k_x) \cos(k_y) \cos(k_z)
+.. math:: ϵ_{k_x, k_y, k_z} = 8t \cos(k_x) \cos(k_y) \cos(k_z)
 
-which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-t, +t] = [-D, +D]`.
+which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-8t, +8t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
-                 of `t=D/2`
+                 of `t=D/8`
 
 """
 import numpy as np
@@ -31,7 +31,7 @@ def gf_z(z, half_bandwidth):
         Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the body-centered cubic lattice.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
 
     Returns
     -------
@@ -77,7 +77,7 @@ def dos(eps, half_bandwidth):
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
 
     Returns
     -------
@@ -191,7 +191,7 @@ def dos_mp(eps, half_bandwidth=1):
         DOS is evaluated at points `eps`.
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
 
     Returns
     -------
