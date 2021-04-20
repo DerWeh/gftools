@@ -645,6 +645,56 @@ class TestSimpleCubic(SymLattice):
         return [-half_bandwidth/3, half_bandwidth/3]
 
 
+class TestBodyCenteredCubicGf(GfProperties):
+    """Check properties of bcc Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.bcc.gf_z)
+
+    @staticmethod
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(request):
+        """Parameters for simple cubic Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    @staticmethod
+    def band_edges(params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -D, D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        super().test_normalization(params, points=[0])
+
+
+class TestBodyCenteredCubic(SymLattice):
+    """Check basic properties of `gftool.lattice.bcc`."""
+
+    lattice = gt.lattice.bcc
+
+    @staticmethod
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(request):
+        """Half-bandwidth of simple cubic lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        del half_bandwidth
+        return [0]
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 
