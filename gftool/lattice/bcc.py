@@ -150,6 +150,7 @@ def dos(eps, half_bandwidth):
     dos_ = np.zeros_like(eps)
     singular = eps_rel == 0
     finite = (abs(eps_rel) <= 1) & ~singular
+    # identity `K(m) = (1/m) [K(m) + iK'(1/m)]` could be used to avoid 1/0
     m = 0.5 - 0.5j*np.sqrt(eps_rel[finite]**-2 - 1)
     Ksqr = _u_ellipk(m)**2
     dos_[finite] = -4 / (np.pi**3 * abs(eps[finite])) * Ksqr.imag
