@@ -695,6 +695,33 @@ class TestBodyCenteredCubic(SymLattice):
         return [0]
 
 
+class TestFaceCenteredCubicGf(GfProperties):
+    """Check properties of fcc Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.fcc.gf_z)
+
+    @staticmethod
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(request):
+        """Parameters for simple cubic Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    @staticmethod
+    def band_edges(params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -0.5*D, 1.5*D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        super().test_normalization(params, points=[0])
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 

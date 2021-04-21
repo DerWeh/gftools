@@ -17,15 +17,17 @@ Submodules
     kagome
     sc
     bcc
+    fcc
 
 """
-from . import (bcc, bethe, bethez, honeycomb, kagome, lieb, onedim,
+from . import (bcc, bethe, bethez, fcc, honeycomb, kagome, lieb, onedim,
                rectangular, sc, square, triangular)
 
 # silence warnings of unused imports
 assert bcc
 assert bethe
 assert bethez
+assert fcc
 assert honeycomb
 assert kagome
 assert lieb
