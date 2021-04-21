@@ -1,6 +1,6 @@
 r"""3D body-centered cubic (bcc) lattice.
 
-The dispersion of the 3D simple cubic lattice is given by
+The dispersion of the 3D body-centered cubic lattice is given by
 
 .. math:: ϵ_{k_x, k_y, k_z} = 8t \cos(k_x) \cos(k_y) \cos(k_z)
 
