@@ -87,3 +87,58 @@ def gf_z(z, half_bandwidth):
     kii[m_p.imag < 0] += 2j*_u_ellipk(1 - m_p[m_p.imag < 0])  # eq (2.17)
     gf = 4 / (np.pi**2 * D * zp1) * _u_ellipk(m_m) * kii  # eq (2.16)
     return np.where(retarded, np.conj(gf), gf)  # return to retarded by symmetry
+
+
+def dos(eps, half_bandwidth):
+    r"""DOS of non-interacting 3D face-centered cubic lattice.
+
+    Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at
+    `z=0` (continuous but not differentiable).
+
+    Parameters
+    ----------
+    eps : float np.ndarray or float
+        DOS is evaluated at points `eps`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS, DOS(`eps` < -0.5*`half_bandwidth`) = 0,
+        DOS(1.5*`half_bandwidth` < `eps`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+
+    Returns
+    -------
+    dos : float np.ndarray or float
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.fcc.dos_mp : multi-precision version suitable for integration
+
+    References
+    ----------
+    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
+       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
+       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693
+
+    Examples
+    --------
+    >>> eps = np.linspace(-1.6, 1.6, num=501)
+    >>> dos = gt.lattice.fcc.dos(eps, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.plot(eps, dos)
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-0.5, color='black', linewidth=0.8)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    eps = np.asarray(eps)
+    singular = eps == -0.5*half_bandwidth
+    finite = (-0.5*half_bandwidth < eps) & (eps < 1.5*half_bandwidth) & ~singular
+    dos_ = np.zeros_like(eps)
+    dos_[finite] = 1 / np.pi * gf_z(eps[finite], half_bandwidth=half_bandwidth).imag
+    dos_[singular] = np.infty
+    return dos_
