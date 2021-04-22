@@ -98,6 +98,12 @@ from .lattice.bcc import (dos as bcc_dos,
                           gf_z as bcc_gf_z,
                           hilbert_transform as bcc_hilbert_transform)
 
+# Body-centered cubic lattice
+from .lattice.fcc import (dos as fcc_dos,
+                          dos_moment as fcc_dos_moment,
+                          gf_z as fcc_gf_z,
+                          hilbert_transform as fcc_hilbert_transform)
+
 # Fermi statistics
 from .statistics import (fermi_fct, fermi_fct_d1, fermi_fct_inv,
                          matsubara_frequencies, pade_frequencies)
@@ -125,6 +131,7 @@ assert all((square_dos, square_dos_moment, square_gf_z, square_hilbert_transform
 assert all((triangular_dos, triangular_dos_moment, triangular_gf_z, triangular_hilbert_transform))
 assert all((sc_dos, sc_dos_moment, sc_gf_z, sc_hilbert_transform))
 assert all((bcc_dos, bcc_dos_moment, bcc_gf_z, bcc_hilbert_transform))
+assert all((fcc_dos, fcc_dos_moment, fcc_gf_z, fcc_hilbert_transform))
 assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_frequencies))
 assert all((bose_fct, matsubara_frequencies_b))
 assert all((pole_gf_z, pole_gf_d1_z, pole_gf_tau, pole_gf_ret_t, pole_gf_moments))

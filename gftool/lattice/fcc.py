@@ -91,6 +91,42 @@ def gf_z(z, half_bandwidth):
     return np.where(retarded, np.conj(gf), gf)  # return to retarded by symmetry
 
 
+def hilbert_transform(xi, half_bandwidth):
+    r"""Hilbert transform of non-interacting DOS of the face-centered cubic lattice.
+
+    The Hilbert transform is defined
+
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+
+    The lattice Hilbert transform is the same as the non-interacting Green's
+    function.
+
+    Parameters
+    ----------
+    xi : complex np.ndarray or complex
+        Point at which the Hilbert transform is evaluated
+    half_bandwidth : float
+        half-bandwidth of the DOS of the 3D face-centered cubic lattice
+
+    Returns
+    -------
+    hilbert_transform : complex np.ndarray or complex
+        Hilbert transform of `xi`.
+
+    Notes
+    -----
+    Relation between nearest neighbor hopping `t` and half-bandwidth `D`
+
+    .. math:: 8t = D
+
+    See Also
+    --------
+    gftool.lattice.fcc.gf_z
+
+    """
+    return gf_z(xi, half_bandwidth)
+
+
 def dos(eps, half_bandwidth):
     r"""DOS of non-interacting 3D face-centered cubic lattice.
 
