@@ -695,6 +695,71 @@ class TestBodyCenteredCubic(SymLattice):
         return [0]
 
 
+class TestFaceCenteredCubicGf(GfProperties):
+    """Check properties of fcc Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.fcc.gf_z)
+
+    @staticmethod
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(request):
+        """Parameters for simple cubic Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+    @staticmethod
+    def band_edges(params):
+        """Return the support of the Green's function."""
+        D = params[1]['half_bandwidth']
+        return -0.5*D, 1.5*D
+
+    def test_normalization(self, params, points=None):
+        """Singularities are needed for accurate integration."""
+        del points  # was only give for subclasses
+        super().test_normalization(params, points=[0])
+
+
+class TestFaceCenteredCubic(Lattice):
+    """Check basic properties of `gftool.lattice.fcc`."""
+
+    lattice = gt.lattice.fcc
+
+    @staticmethod
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(request):
+        """Half-bandwidth of simple cubic lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -0.5*half_bandwidth, 1.5*half_bandwidth
+
+    @staticmethod
+    def singularities(half_bandwidth):
+        """Return singularities."""
+        del half_bandwidth
+        return [0]
+
+    def test_dos_moment(self, kwds):
+        """Moment is integral over ϵ^m DOS.
+
+        Overwritten to soften the absolute tolerance for ``m1`` which 0.
+        """
+        # check influence of bandwidth, as they are calculated for D=1 and normalized
+        dos = partial(self.lattice.dos, **kwds)
+        dos_moment = partial(self.lattice.dos_moment, **kwds)
+        left, right = self.band_edges(**kwds)
+        points = [left, *self.singularities(**kwds), right]
+        for mm in self.lattice.dos_moment_coefficients:
+            # pytint: disable=cell-var-from-loop
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            assert moment == pytest.approx(dos_moment(mm), rel=1e-6, abs=1e-10)
+
+
 class TestSurfaceGf(GfProperties):
     """Check properties of surface Gf."""
 
