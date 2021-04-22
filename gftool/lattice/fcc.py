@@ -146,6 +146,70 @@ def dos(eps, half_bandwidth):
     return abs(dos_)  # at 0.5D wrong sign
 
 
+# ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
+# from: integral of dos_mp with mp.workdps(100)
+# for m in range(0, 21, 1):
+#     with mp.workdps(100):
+#         print(mp.quad(lambda eps: eps**m * dos_mp(eps), [mp.mpf('-0.5'), 0, 1])
+# rational numbers obtained by mp.identify
+dos_moment_coefficients = {
+    0: 1,
+    1: 0,
+    2: 3/16,
+    3: 3/32,
+    4: 135/1024,
+    5: 135/1024,
+    6: 0.1611328125,
+    7: 0.1922607421875,
+    8: 0.24070143699646,
+    9: 0.305163860321045,
+    10: 0.394462153315544,
+    11: 0.516299419105052,
+    12: 0.683690124191343,
+    13: 0.913928582333027,
+    14: 1.23181895411108,
+    15: 1.67210463207448,
+    16: 2.28395076888283,
+    17: 3.13686893977359,
+    18: 4.32941325997849,
+    19: 6.00152324929046,
+    20: 8.35226611969712,
+}
+
+
+def dos_moment(m, half_bandwidth):
+    """Calculate the `m` th moment of the face-centered cubic DOS.
+
+    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
+
+    Parameters
+    ----------
+    m : int
+        The order of the moment.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the 3D face-centered cubic lattice.
+
+    Returns
+    -------
+    dos_moment : float
+        The `m` th moment of the 3D face-centered cubic DOS.
+
+    Raises
+    ------
+    NotImplementedError
+        Currently only implemented for a few specific moments `m`.
+
+    See Also
+    --------
+    gftool.lattice.fcc.dos
+
+    """
+    try:
+        return dos_moment_coefficients[m] * half_bandwidth**m
+    except KeyError as keyerr:
+        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+
+
 def _signed_mp_sqrt(eps):
     """Square root with correct sign for fcc lattice."""
     if eps >= 0:
