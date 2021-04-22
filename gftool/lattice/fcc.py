@@ -14,6 +14,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-4t, +12t] = [-0.5D, +1.5D]
 """
 import numpy as np
 
+from mpmath import mp
+
 from gftool._util import _u_ellipk
 
 
@@ -125,9 +127,9 @@ def dos(eps, half_bandwidth):
     >>> dos = gt.lattice.fcc.dos(eps, half_bandwidth=1)
 
     >>> import matplotlib.pyplot as plt
-    >>> _ = plt.plot(eps, dos)
     >>> _ = plt.axvline(0, color='black', linewidth=0.8)
     >>> _ = plt.axvline(-0.5, color='black', linewidth=0.8)
+    >>> _ = plt.plot(eps, dos)
     >>> _ = plt.xlabel(r"$\epsilon/D$")
     >>> _ = plt.ylabel(r"DOS * $D$")
     >>> _ = plt.ylim(bottom=0)
@@ -141,4 +143,88 @@ def dos(eps, half_bandwidth):
     dos_ = np.zeros_like(eps)
     dos_[finite] = 1 / np.pi * gf_z(eps[finite], half_bandwidth=half_bandwidth).imag
     dos_[singular] = np.infty
-    return dos_
+    return abs(dos_)  # at 0.5D wrong sign
+
+
+def _signed_mp_sqrt(eps):
+    """Square root with correct sign for fcc lattice."""
+    if eps >= 0:
+        return mp.sqrt(eps)
+    return -1j*mp.sqrt(-eps)
+
+
+def dos_mp(eps, half_bandwidth=1):
+    r"""Multi-precision DOS of non-interacting 3D face-centered cubic lattice.
+
+    Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at
+    `z=0` (continuous but not differentiable).
+
+    This function is particularity suited to calculate integrals of the form
+    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,
+    consider using :math:`∫dϵ DOS(ϵ)[f(ϵ)-f(-1/2)] + f(-1/2)` to avoid the
+    singularity.
+
+    Parameters
+    ----------
+    eps : mpmath.mpf or mpf_like
+        DOS is evaluated at points `eps`.
+    half_bandwidth : mpmath.mpf or mpf_like
+        Half-bandwidth of the DOS, DOS(`eps` < -0.5*`half_bandwidth`) = 0,
+        DOS(1.5*`half_bandwidth` < `eps`) = 0.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+
+    Returns
+    -------
+    dos_mp : mpmath.mpf
+        The value of the DOS.
+
+    See Also
+    --------
+    gftool.lattice.fcc.dos : vectorized version suitable for array evaluations
+
+    References
+    ----------
+    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
+       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
+       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693
+
+    Examples
+    --------
+    Calculate integrals:
+
+    >>> from mpmath import mp
+    >>> unit = mp.quad(gt.lattice.fcc.dos_mp, [-0.5, 0, 1.5])
+    >>> mp.identify(unit)
+    '1'
+
+    >>> eps = np.linspace(-1.6, 1.6, num=501)
+    >>> dos_mp = [gt.lattice.fcc.dos_mp(ee, half_bandwidth=1) for ee in eps]
+    >>> dos_mp = np.array(dos_mp, dtype=np.float64)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axvline(0, color='black', linewidth=0.8)
+    >>> _ = plt.axvline(-0.5, color='black', linewidth=0.8)
+    >>> _ = plt.plot(eps, dos_mp)
+    >>> _ = plt.xlabel(r"$\epsilon/D$")
+    >>> _ = plt.ylabel(r"DOS * $D$")
+    >>> _ = plt.ylim(bottom=0)
+    >>> _ = plt.xlim(left=eps.min(), right=eps.max())
+    >>> plt.show()
+
+    """
+    D = mp.mpf(half_bandwidth) * mp.mpf('1/2')
+    eps = mp.mpf(eps) / D
+    if 3 < eps < -1:
+        return mp.mpf('0')
+    if eps == -1:
+        return mp.inf
+    epsp1 = eps + 1
+    epsp1_pow = _signed_mp_sqrt(epsp1)**-3
+    sum1 = 4 * _signed_mp_sqrt(eps) * epsp1_pow
+    sum2 = (eps - 1) * _signed_mp_sqrt(eps - 3) * epsp1_pow
+    m_p = mp.mpf('0.5')*(1 + sum1 - sum2)  # eq. (2.11)
+    m_m = mp.mpf('0.5')*(1 - sum1 - sum2)  # eq. (2.11)
+    kii = mp.ellipk(m_p)
+    if m_p.imag < 0:
+        kii += 2j * mp.ellipk(1 - m_p)  # eq (2.17)
+    return abs(4 / (mp.pi**3 * D * epsp1) * (_u_ellipk(m_m) * kii).imag)  # eq (2.16)
