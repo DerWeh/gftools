@@ -39,6 +39,14 @@ Green's functions and lattices
    sc_dos_moment
    sc_gf_z
    sc_hilbert_transform
+   bcc_dos
+   bcc_dos_moment
+   bcc_gf_z
+   bcc_hilbert_transform
+   fcc_dos
+   fcc_dos_moment
+   fcc_gf_z
+   fcc_hilbert_transform
    
 
 .. rubric:: Miscellaneous

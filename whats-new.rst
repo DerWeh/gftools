@@ -3,6 +3,17 @@
 What's New
 ==========
 
+Unreleased
+----------
+
+New Features
+~~~~~~~~~~~~
+
+The 3D cubic lattices were added:
+
+* body-centered cubic `gftool.lattice.bcc` (:commit:`406acef8`)
+* face-centered cubic `gftool.lattice.fcc` (:commit:`ddd559cb`)
+
 
 0.8.0 (2021-04-17)
 ------------------
