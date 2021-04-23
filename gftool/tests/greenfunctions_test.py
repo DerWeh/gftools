@@ -196,6 +196,12 @@ class SymLattice(Lattice):
             assert fp.quad(dos, [-D, 0.]) == pytest.approx(.5)
             assert fp.quad(dos, [0., +D]) == pytest.approx(.5)
 
+    @given(mm=st.integers(min_value=0))
+    def test_odd_dos_moments(self, mm, kwds):
+        """Odd moments vanish for even DOS."""
+        m_odd = 2*mm + 1
+        assert self.lattice.dos_moment(m_odd, **kwds) == 0.
+
 
 class TestBetheGf(GfProperties):
     """Check properties of Bethe Gf."""
