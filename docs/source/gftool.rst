@@ -29,6 +29,10 @@ Green's functions and lattices
    triangular_dos_moment
    triangular_gf_z
    triangular_hilbert_transform
+   honeycomb_dos
+   honeycomb_dos_moment
+   honeycomb_gf_z
+   honeycomb_hilbert_transform
 
 
 .. rubric:: 3D

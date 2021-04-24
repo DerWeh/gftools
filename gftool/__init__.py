@@ -86,6 +86,12 @@ from .lattice.triangular import (dos as triangular_dos,
                                  gf_z as triangular_gf_z,
                                  hilbert_transform as triangular_hilbert_transform)
 
+# Honeycomb lattice
+from .lattice.honeycomb import(dos as honeycomb_dos,
+                               dos_moment as honeycomb_dos_moment,
+                               gf_z as honeycomb_gf_z,
+                               hilbert_transform as honeycomb_hilbert_transform)
+
 # Simple cubic lattice
 from .lattice.sc import (dos as sc_dos,
                          dos_moment as sc_dos_moment,
@@ -129,6 +135,7 @@ assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
 assert all((onedim_dos, onedim_dos_moment, onedim_gf_z, onedim_hilbert_transform))
 assert all((square_dos, square_dos_moment, square_gf_z, square_hilbert_transform))
 assert all((triangular_dos, triangular_dos_moment, triangular_gf_z, triangular_hilbert_transform))
+assert all((honeycomb_dos, honeycomb_dos_moment, honeycomb_gf_z, honeycomb_hilbert_transform))
 assert all((sc_dos, sc_dos_moment, sc_gf_z, sc_hilbert_transform))
 assert all((bcc_dos, bcc_dos_moment, bcc_gf_z, bcc_hilbert_transform))
 assert all((fcc_dos, fcc_dos_moment, fcc_gf_z, fcc_hilbert_transform))
