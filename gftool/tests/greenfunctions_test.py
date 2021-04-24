@@ -175,6 +175,17 @@ class Lattice:
         for eps in np.linspace(lower - 1e-6, lower*1e4):
             assert self.lattice.dos(eps, **kwds) == 0
 
+    @given(z=st.complex_numbers(max_magnitude=1e6))
+    def test_hilbert_transform(self, z, kwds):
+        """Hilbert transform is same as non-interacting local Green's function.
+
+        Probably we should drop the Hilbert transform to avoid redundancy,
+        but as long as we have let's make sure it also is correct.
+        """
+        assume(abs(z.imag) > 1e-6)  # avoid singularities on real axis
+        assert (self.lattice.hilbert_transform(z, **kwds)
+                == pytest.approx(self.lattice.gf_z(z, **kwds)))
+
 
 class SymLattice(Lattice):
     """Generic class to test basic properties of symmetric `gftool.lattice` modules.

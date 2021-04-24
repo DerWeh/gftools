@@ -140,6 +140,42 @@ def dos(eps, half_bandwidth):
     return 2 / 3 * honeycomb.dos(eps - D/3, half_bandwidth=D)
 
 
+def hilbert_transform(xi, half_bandwidth):
+    r"""Hilbert transform of non-interacting DOS of the kagome lattice.
+
+    The Hilbert transform is defined
+
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+
+    The lattice Hilbert transform is the same as the non-interacting Green's
+    function.
+
+    Parameters
+    ----------
+    xi : complex np.ndarray or complex
+        Point at which the Hilbert transform is evaluated
+    half_bandwidth : float
+        half-bandwidth of the DOS of the 2D kagome lattice
+
+    Returns
+    -------
+    hilbert_transform : complex np.ndarray or complex
+        Hilbert transform of `xi`.
+
+    Notes
+    -----
+    Relation between nearest neighbor hopping `t` and half-bandwidth `D`
+
+    .. math:: 3t/2 = D
+
+    See Also
+    --------
+    gftool.lattice.kagome.gf_z
+
+    """
+    return gf_z(xi, half_bandwidth)
+
+
 # ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1
 # from: integral of dos_mp with mp.workdps(100)
 # for m in range(0, 21, 1):
