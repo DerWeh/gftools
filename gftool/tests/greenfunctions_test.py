@@ -858,6 +858,15 @@ def test_bethe_derivative_2(z, D):
     assert np.allclose(gf_d1, fct_d1(z))
 
 
+@given(z=st.complex_numbers(max_magnitude=1e4),
+       D=st.floats(min_value=1e-2, max_value=1e2))
+def test_bethe_inverse(z, D):
+    """Check inverse."""
+    assume(z.imag != 0)  # Gf have poles on real axis
+    gf = gt.lattice.bethe.gf_z(z, half_bandwidth=D)
+    assert gt.lattice.bethe.gf_z_inv(gf, half_bandwidth=D) == pytest.approx(z)
+
+
 def test_hilbert_equals_integral():
     """Compare *bethe_hilbert_transform* with explicit calculation of integral.
 

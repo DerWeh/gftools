@@ -127,6 +127,47 @@ def gf_d2_z(z, half_bandwidth):
     return gf_d2.astype(dtype=complex_pres, copy=False)
 
 
+def gf_z_inv(gf, half_bandwidth):
+    r"""Inverse of local Green's function of Bethe lattice for infinite coordination number.
+
+    .. math:: R(G) = (D/2)^2 G + 1/G
+
+    where :math:`R(z) = G^{-1}(z)` is the inverse of the Green's function.
+
+
+    Parameters
+    ----------
+    gf : complex array_like or complex
+        Value of the local Green's function.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the Bethe lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+
+    Returns
+    -------
+    z : complex np.ndarray or complex
+        The inverse of the Bethe Green's function `gf_z(gf_z_inv(g, D), D)=g`.
+
+    See Also
+    --------
+    gftool.lattice.bethe.gf_z
+
+    References
+    ----------
+    .. [georges1996] Georges et al., Rev. Mod. Phys. 68, 13 (1996)
+       https://doi.org/10.1103/RevModPhys.68.13
+
+    Examples
+    --------
+    >>> ww = np.linspace(-1.5, 1.5, num=500) + 1e-4j
+    >>> gf_ww = gt.lattice.bethe.gf_z(ww, half_bandwidth=1)
+    >>> np.allclose(ww, gt.lattice.bethe.gf_z_inv(gf_ww, half_bandwidth=1))
+    True
+
+    """
+    return (0.5 * half_bandwidth)**2 * gf + 1./gf
+
+
 def hilbert_transform(xi, half_bandwidth):
     r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
 
