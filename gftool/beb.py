@@ -103,20 +103,22 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     kind = 'diag' if diag else 'full'
 
     eye = np.eye(*hopping.shape)
-    u, s_vh = hopping_svd.u, hopping_svd.s[..., newaxis] * hopping_svd.vh
+    sqrt_s = np.sqrt(hopping_svd.s)
+    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * hopping_svd.vh
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
-    dec = matrix.Decomposition.from_gf(s_vh @ z_m_self_inv @ u)
+    dec = matrix.Decomposition.from_gf(svh @ z_m_self_inv @ us)
     diag_inv = 1. / dec.xi
-    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated (full rank)
-        v_sinv = transpose(hopping_svd.vh).conj() / hopping_svd.s[..., newaxis, :]
-        dec.rv = v_sinv @ np.asfortranarray(dec.rv)
-        dec.rv_inv = np.asfortranarray(dec.rv_inv) @ transpose(u).conj()
+    if us.shape[-2] == us.shape[-1]:  # square matrix -> not truncated (full rank)
+        svh_inv = transpose(hopping_svd.vh).conj() / sqrt_s[..., newaxis, :]
+        us_inv = transpose(hopping_svd.u).conj() / sqrt_s[..., :, newaxis]
+        dec.rv = svh_inv @ np.asfortranarray(dec.rv)
+        dec.rv_inv = np.asfortranarray(dec.rv_inv) @ us_inv
         return dec.reconstruct(hilbert_trafo(diag_inv), kind=kind)
 
-    dec.rv = z_m_self_inv @ u @ np.asfortranarray(dec.rv)
-    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ s_vh @ z_m_self_inv
+    dec.rv = z_m_self_inv @ us @ np.asfortranarray(dec.rv)
+    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ svh @ z_m_self_inv
     correction = dec.reconstruct((diag_inv*hilbert_trafo(diag_inv) - 1) * diag_inv, kind=kind)
     return (diagonal(z_m_self_inv) if diag else z_m_self_inv) + correction
 
@@ -149,15 +151,17 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
 
     """
     eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
-    u, s_vh = hopping_svd.u, hopping_svd.s[..., newaxis] * hopping_svd.vh
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
+    # split symmetrically
+    sqrt_s = np.sqrt(hopping_svd.s)
+    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * hopping_svd.vh
     # matrix-products are faster if larger arrays are in Fortran order
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
-    dec = matrix.Decomposition.from_gf(s_vh @ z_m_self_inv @ u)
-    dec.rv = u @ np.asfortranarray(dec.rv)
-    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ s_vh
+    dec = matrix.Decomposition.from_gf(svh @ z_m_self_inv @ us)
+    dec.rv = us @ np.asfortranarray(dec.rv)
+    dec.rv_inv = np.asfortranarray(dec.rv_inv) @ svh
     diag_inv = 1. / dec.xi
-    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated
+    if us.shape[-2] == us.shape[-1]:  # square matrix -> not truncated
         gf_loc_inv = dec.reconstruct(1./hilbert_trafo(diag_inv), kind='full')
     else:
         gf_loc_inv = z_m_self + dec.reconstruct(1./hilbert_trafo(diag_inv) - diag_inv, kind='full')
