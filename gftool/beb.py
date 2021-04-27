@@ -288,6 +288,15 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     sol = optimize.root(root_eq, x0=self_beb_z0, method=method, **root_kwds)
     LOGGER.debug("BEB self-energy root found after %s iterations.", sol.nit)
+
+    # check condition number in matrix diagonalization to make sure it is well defined
+    sqrt_s = np.sqrt(hopping_svd.s)
+    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., newaxis] * hopping_svd.vh
+    z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
+    dec = matrix.Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
+    LOGGER.info("Maximal coordination number for diagonalization: %s ",
+                np.max(np.linalg.cond(dec.rv)))
+
     if not sol.success:
         raise RuntimeError(sol.message)
     return sol.x
