@@ -109,8 +109,8 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
     dec = matrix.Decomposition.from_gf(s_vh @ z_m_self_inv @ u)
     diag_inv = 1. / dec.xi
-    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated
-        v_sinv = transpose(hopping_svd[2]).conj() / hopping_svd[1][..., newaxis, :]
+    if u.shape[-2] == u.shape[-1]:  # square matrix -> not truncated (full rank)
+        v_sinv = transpose(hopping_svd.vh).conj() / hopping_svd.s[..., newaxis, :]
         dec.rv = v_sinv @ np.asfortranarray(dec.rv)
         dec.rv_inv = np.asfortranarray(dec.rv_inv) @ transpose(u).conj()
         return dec.reconstruct(hilbert_trafo(diag_inv), kind=kind)
