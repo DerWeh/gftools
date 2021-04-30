@@ -8,6 +8,7 @@ GfTools
 | develop ||build-status-develop|||codecov-develop||
 +---------+----------------------+-----------------+
 
+|pypi| |lgtm|
 
 Collection of commonly used Green's functions and utilities.
 The main purpose of this module is to have a tested and thus reliable basis
@@ -21,7 +22,7 @@ in particular using CT-QMC algorithms.
 Installation
 ------------
 
-The package is available on PyPi:
+The package is available on PyPI:
 
 .. code-block:: console
 
@@ -87,6 +88,12 @@ pade
 .. |codecov-develop| image:: https://codecov.io/gh/DerWeh/gftools/branch/develop/graph/badge.svg
    :target: https://codecov.io/gh/DerWeh/gftools
    :alt: Coverage develop
+.. |pypi| image:: https://badge.fury.io/py/gftool.svg
+   :target: https://badge.fury.io/py/gftool
+   :alt: PyPI release
+.. |lgtm| image:: https://img.shields.io/lgtm/grade/python/g/DerWeh/gftools.svg?logo=lgtm&logoWidth=18
+   :target: https://lgtm.com/projects/g/DerWeh/gftools/context:python
+   :alt: Code quality
 .. _documentation:
    https://derweh.github.io/gftools/
 .. _master doc:
