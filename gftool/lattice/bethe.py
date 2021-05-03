@@ -58,9 +58,9 @@ def gf_z(z, half_bandwidth):
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
     except AttributeError:
-        complex_pres = np.complex
+        complex_pres = complex
     gf_z = 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
     return gf_z.astype(dtype=complex_pres, copy=False)
 
@@ -88,9 +88,9 @@ def gf_d1_z(z, half_bandwidth):
     """
     z_rel_inv = np.array(half_bandwidth / z, dtype=np.complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
     except AttributeError:
-        complex_pres = np.complex
+        complex_pres = complex
     sqrt = np.sqrt(1 - z_rel_inv**2)
     gf_d1 = 2. / half_bandwidth**2 * (1 - 1/sqrt)
     return gf_d1.astype(dtype=complex_pres, copy=False)
@@ -119,9 +119,9 @@ def gf_d2_z(z, half_bandwidth):
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else np.complex
+        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
     except AttributeError:
-        complex_pres = np.complex
+        complex_pres = complex
     sqrt = np.sqrt(1 - z_rel**-2)
     gf_d2 = 2. / half_bandwidth**3 * z_rel * sqrt / (1 - z_rel**2)**2
     return gf_d2.astype(dtype=complex_pres, copy=False)

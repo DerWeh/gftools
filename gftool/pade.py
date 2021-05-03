@@ -287,13 +287,13 @@ def coefficients(z, fct_z) -> np.ndarray:
     res = fct_z.astype(dtype=np.complex256, copy=True)
     for ii in range(z.size - 1):
         res[..., ii+1:] = (res[..., ii:ii+1]/res[..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
-    complex_pres = np.complex256 if fct_z.dtype in _PRECISE_TYPES else np.complex
+    complex_pres = np.complex256 if fct_z.dtype in _PRECISE_TYPES else complex
     LOGGER.debug("Input type %s precise: %s -> result type: %s",
                  fct_z.dtype, fct_z.dtype in _PRECISE_TYPES, complex_pres)
     return res.astype(complex_pres, copy=False)
 
 
-@partial(np.vectorize, otypes=[np.complex], signature='(n),(n)->(n)')
+@partial(np.vectorize, otypes=[complex], signature='(n),(n)->(n)')
 def masked_coefficients(z, fct_z):
     """Calculate coefficients but ignore extreme values.
 

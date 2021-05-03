@@ -53,9 +53,9 @@ def _u_ellipk(z):
         The complete elliptic integral.
 
     """
-    ellipk = _ellipk_z(np.asarray(z, dtype=np.complex))
+    ellipk = _ellipk_z(np.asarray(z, dtype=complex))
     try:
-        ellipk = ellipk.astype(np.complex)
+        ellipk = ellipk.astype(complex)
     except AttributeError:  # complex not np.ndarray
         pass
     return ellipk

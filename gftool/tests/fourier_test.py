@@ -247,8 +247,8 @@ def pade_frequencies():
     return pade_frequencies_
 
 
-@given(poles=arrays(np.float, 10, elements=st.floats(-10, 10)),
-       resids=arrays(np.float, 10, elements=st.floats(0, 10)))
+@given(poles=arrays(float, 10, elements=st.floats(-10, 10)),
+       resids=arrays(float, 10, elements=st.floats(0, 10)))
 def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
     """Test `izp2tau` for a multi-pole Green's function."""
     assume(np.all(resids.sum(axis=-1) > 1e-4))
@@ -270,8 +270,8 @@ def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
     assert np.allclose(gf_tau, gf_ft)
 
 
-@given(poles=arrays(np.float, 10, elements=st.floats(-10, 10)),
-       resids=arrays(np.float, 10, elements=st.floats(0, 10)))
+@given(poles=arrays(float, 10, elements=st.floats(-10, 10)),
+       resids=arrays(float, 10, elements=st.floats(0, 10)))
 def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
     """Test `tau2izp` for a multi-pole Green's function."""
     assume(np.all(resids.sum(axis=-1) > 1e-4))
