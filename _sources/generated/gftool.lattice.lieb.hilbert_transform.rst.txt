@@ -1,0 +1,6 @@
+gftool.lattice.lieb.hilbert\_transform
+======================================
+
+.. currentmodule:: gftool.lattice.lieb
+
+.. autofunction:: hilbert_transform

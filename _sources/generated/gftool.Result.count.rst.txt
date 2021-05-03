@@ -1,0 +1,6 @@
+gftool.Result.count
+===================
+
+.. currentmodule:: gftool
+
+.. automethod:: Result.count

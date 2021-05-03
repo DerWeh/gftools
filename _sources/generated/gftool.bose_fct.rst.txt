@@ -1,0 +1,6 @@
+﻿gftool.bose\_fct
+================
+
+.. currentmodule:: gftool
+
+.. autofunction:: bose_fct

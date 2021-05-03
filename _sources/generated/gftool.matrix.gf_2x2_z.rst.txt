@@ -1,0 +1,6 @@
+gftool.matrix.gf\_2x2\_z
+========================
+
+.. currentmodule:: gftool.matrix
+
+.. autofunction:: gf_2x2_z

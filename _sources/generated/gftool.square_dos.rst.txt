@@ -1,0 +1,6 @@
+﻿gftool.square\_dos
+==================
+
+.. currentmodule:: gftool
+
+.. autofunction:: square_dos

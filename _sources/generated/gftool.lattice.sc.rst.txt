@@ -1,0 +1,36 @@
+gftool.lattice.sc
+=================
+
+.. module:: gftool.lattice.sc
+
+.. automodule:: gftool.lattice.sc
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  gf_z_mp
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

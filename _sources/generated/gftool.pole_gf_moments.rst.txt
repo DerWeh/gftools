@@ -1,0 +1,6 @@
+﻿gftool.pole\_gf\_moments
+========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: pole_gf_moments

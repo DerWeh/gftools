@@ -1,0 +1,33 @@
+﻿gftool.siam
+===========
+
+.. module:: gftool.siam
+
+.. automodule:: gftool.siam
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  gf0_loc_ret_t
+  gf0_loc_z
+  hybrid_z
+
+
+
+
+
+
+
+
+
+

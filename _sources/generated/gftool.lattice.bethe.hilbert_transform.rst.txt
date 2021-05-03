@@ -1,0 +1,6 @@
+gftool.lattice.bethe.hilbert\_transform
+=======================================
+
+.. currentmodule:: gftool.lattice.bethe
+
+.. autofunction:: hilbert_transform

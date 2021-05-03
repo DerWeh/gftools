@@ -1,0 +1,34 @@
+﻿gftool.Result
+=============
+
+.. currentmodule:: gftool
+
+.. autoclass:: Result
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~Result.__init__
+      ~Result.count
+      ~Result.index
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~Result.err
+      ~Result.x
+   
+   

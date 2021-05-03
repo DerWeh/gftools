@@ -1,0 +1,6 @@
+﻿gftool.square\_gf\_z
+====================
+
+.. currentmodule:: gftool
+
+.. autofunction:: square_gf_z

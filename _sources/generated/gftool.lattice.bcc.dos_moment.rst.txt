@@ -1,0 +1,6 @@
+gftool.lattice.bcc.dos\_moment
+==============================
+
+.. currentmodule:: gftool.lattice.bcc
+
+.. autofunction:: dos_moment

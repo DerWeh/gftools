@@ -1,0 +1,6 @@
+gftool.pade.coefficients
+========================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: coefficients

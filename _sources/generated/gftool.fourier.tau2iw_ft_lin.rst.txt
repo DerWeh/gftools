@@ -1,0 +1,6 @@
+gftool.fourier.tau2iw\_ft\_lin
+==============================
+
+.. currentmodule:: gftool.fourier
+
+.. autofunction:: tau2iw_ft_lin

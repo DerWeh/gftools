@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>gftool.matrix &mdash; Gftool 0.8.1+3.g97ce9fc documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Gftool
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.8.1+3.g97ce9fc
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Welcome to GfTool’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gftool</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+        
+      <li>gftool.matrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gftool.matrix</h1><div class="highlight"><pre>
+<span></span><span class="c1"># encoding: utf-8</span>
+<span class="sa">r</span><span class="sd">&quot;&quot;&quot;Functions to work with Green&#39;s functions in matrix from.</span>
+
+<span class="sd">In the limit of infinite coordination number the self-energy becomes local,</span>
+<span class="sd">inverse Green&#39;s functions take the simple form:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    (G^{-1}(iω))_{ii} &amp;= iω - μ_i - t_{ii} - Σ_i(iω)</span>
+
+<span class="sd">    (G^{-1}(iω))_{ij} &amp;= t_{ij} \quad \text{for } i ≠ j</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">transpose</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Decomposition"><a class="viewcode-back" href="../../generated/gftool.matrix.Decomposition.html#gftool.matrix.Decomposition">[docs]</a><span class="k">class</span> <span class="nc">Decomposition</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decomposition of a Matrix into eigenvalues and eigenvectors.</span>
+
+<span class="sd">    This class holds the eigenvalues and eigenvectors of the decomposition of a</span>
+<span class="sd">    matrix and offers methods to reconstruct it.</span>
+<span class="sd">    The intended use case is to use the `Decomposition` for the inversion of</span>
+<span class="sd">    the Green&#39;s function to calculate it from the resolvent.</span>
+
+<span class="sd">    The order of the attributes is always `rv, xi, rv_inv`, as this gives the</span>
+<span class="sd">    reconstruct of the matrix:  `mat = (rv * xi) @ rv_inv`</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The matrix of right eigenvalues.</span>
+<span class="sd">    xi : (..., N) complex np.ndarray</span>
+<span class="sd">        The vector of eigenvalues.</span>
+<span class="sd">    rv_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The inverse of `rv`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;rv&#39;</span><span class="p">,</span> <span class="s1">&#39;xi&#39;</span><span class="p">,</span> <span class="s1">&#39;rv_inv&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Decomposition.__init__"><a class="viewcode-back" href="../../generated/gftool.matrix.Decomposition.__init__.html#gftool.matrix.Decomposition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rv</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">rv_inv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assign the attributes obtained from a matrix digitalization.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rv : (..., N, N) complex np.ndarray</span>
+<span class="sd">            The matrix of right eigenvectors.</span>
+<span class="sd">        xi : (..., N) complex np.ndarray</span>
+<span class="sd">            The vector of eigenvalues</span>
+<span class="sd">        rv_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">            The inverse of `rv`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">rv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xi</span> <span class="o">=</span> <span class="n">xi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span> <span class="o">=</span> <span class="n">rv_inv</span></div>
+
+<div class="viewcode-block" id="Decomposition.from_hamiltonian"><a class="viewcode-back" href="../../generated/gftool.matrix.Decomposition.from_hamiltonian.html#gftool.matrix.Decomposition.from_hamiltonian">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_hamiltonian</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hamilton</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Decompose the Hamiltonian matrix.</span>
+
+<span class="sd">        The similarity transformation:</span>
+
+<span class="sd">        .. math:: H = U h U^†, \quad h = diag(λ_l)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        hamilton : (..., N, N) complex np.ndarray</span>
+<span class="sd">            Hermitian matrix to be decomposed</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Decomposition</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hamilton</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">hamilton</span>
+        <span class="k">return</span> <span class="n">decompose_hamiltonian</span><span class="p">(</span><span class="n">hamilton</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Decomposition.from_gf"><a class="viewcode-back" href="../../generated/gftool.matrix.Decomposition.from_gf.html#gftool.matrix.Decomposition.from_gf">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_gf</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">gf</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Decompose the inverse Green&#39;s function matrix.</span>
+
+<span class="sd">        The similarity transformation:</span>
+
+<span class="sd">        .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        g_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">            matrix to be decomposed</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Decomposition</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gf</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">gf</span>
+        <span class="k">return</span> <span class="n">decompose_gf</span><span class="p">(</span><span class="n">gf</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Decomposition.reconstruct"><a class="viewcode-back" href="../../generated/gftool.matrix.Decomposition.reconstruct.html#gftool.matrix.Decomposition.reconstruct">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get matrix back from `Decomposition`.</span>
+
+<span class="sd">        If the reciprocal of `self.xi` was taken, this corresponds to the</span>
+<span class="sd">        inverse of the original matrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        xi : (..., N) np.ndarray, optional</span>
+<span class="sd">            Alternative value used for `self.xi`. This argument can be used</span>
+<span class="sd">            instead of modifying `self.xi`.</span>
+<span class="sd">        kind : {&#39;diag&#39;, &#39;full&#39;} or str</span>
+<span class="sd">            Defines how to reconstruct the matrix. If `kind` is &#39;diag&#39;,</span>
+<span class="sd">            only the diagonal elements are computed, if it is &#39;full&#39; the</span>
+<span class="sd">            complete matrix is returned.</span>
+<span class="sd">            Alternatively a `str` used for subscript of `np.einsum` can be given.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reconstruct : (..., N, N) or (..., N) np.ndarray</span>
+<span class="sd">            The reconstructed matrix. If a subscript string is given as `kind`,</span>
+<span class="sd">            the shape of the output might differ.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="n">xi</span> <span class="k">if</span> <span class="n">xi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">xi</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;diag&#39;</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rv</span><span class="p">)</span> <span class="o">@</span> <span class="n">xi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;full&#39;</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">kind</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">rv</span> <span class="o">*</span> <span class="n">xi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]))</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make `Decomposition` behave like the tuple `(rv, xi, rv_inv)`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">3</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Decomposition(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rv</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">xi</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+<div class="viewcode-block" id="decompose_gf"><a class="viewcode-back" href="../../generated/gftool.matrix.decompose_gf.html#gftool.matrix.decompose_gf">[docs]</a><span class="k">def</span> <span class="nf">decompose_gf</span><span class="p">(</span><span class="n">g_inv</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decomposition</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Decompose the inverse Green&#39;s function into eigenvalues and eigenvectors.</span>
+
+<span class="sd">    The similarity transformation:</span>
+
+<span class="sd">    .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        matrix to be decomposed</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Decomposition.rv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The right eigenvectors :math:`P`</span>
+<span class="sd">    Decomposition.h : (..., N) complex np.ndarray</span>
+<span class="sd">        The complex eigenvalues of `g_inv`</span>
+<span class="sd">    Decomposition.rv_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The *inverse* of the right eigenvectors :math:`P`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g_inv</span><span class="p">,</span> <span class="n">Decomposition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">g_inv</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">rv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">g_inv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Decomposition</span><span class="p">(</span><span class="n">rv</span><span class="o">=</span><span class="n">rv</span><span class="p">,</span> <span class="n">xi</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">rv_inv</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">rv</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="decompose_hamiltonian"><a class="viewcode-back" href="../../generated/gftool.matrix.decompose_hamiltonian.html#gftool.matrix.decompose_hamiltonian">[docs]</a><span class="k">def</span> <span class="nf">decompose_hamiltonian</span><span class="p">(</span><span class="n">hamilton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decomposition</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.</span>
+
+<span class="sd">    The similarity transformation:</span>
+
+<span class="sd">    .. math:: H = U h U^†, \quad h = diag(λ_l)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hamilton : (..., N, N) complex np.ndarray</span>
+<span class="sd">        Hermitian matrix to be decomposed</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Decomposition.rv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The right eigenvectors :math:`U`</span>
+<span class="sd">    Decomposition.h : (..., N) float np.ndarray</span>
+<span class="sd">        The eigenvalues of `hamilton`</span>
+<span class="sd">    Decomposition.rv_inv : (..., N, N) complex np.ndarray</span>
+<span class="sd">        The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is</span>
+<span class="sd">        hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hamilton</span><span class="p">,</span> <span class="n">Decomposition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">hamilton</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">rv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">hamilton</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Decomposition</span><span class="p">(</span><span class="n">rv</span><span class="o">=</span><span class="n">rv</span><span class="p">,</span> <span class="n">xi</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">rv_inv</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">rv</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="construct_gf"><a class="viewcode-back" href="../../generated/gftool.matrix.construct_gf.html#gftool.matrix.construct_gf">[docs]</a><span class="k">def</span> <span class="nf">construct_gf</span><span class="p">(</span><span class="n">rv</span><span class="p">,</span> <span class="n">diag_inv</span><span class="p">,</span> <span class="n">rv_inv</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Construct Green&#39;s function from decomposition of its inverse.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rv_inv : (N, N) complex np.ndarray</span>
+<span class="sd">        The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)</span>
+<span class="sd">    diag_inv : (N) array_like</span>
+<span class="sd">        The eigenvalues (:math:`h`)</span>
+<span class="sd">    rv : (N, N) complex np.ndarray</span>
+<span class="sd">        The matrix of right eigenvectors (:math:`P`)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf : (N, N) complex np.ndarray</span>
+<span class="sd">        The Green&#39;s function</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">rv</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span><span class="n">diag_inv</span><span class="p">))</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rv_inv</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="gf_2x2_z"><a class="viewcode-back" href="../../generated/gftool.matrix.gf_2x2_z.html#gftool.matrix.gf_2x2_z">[docs]</a><span class="k">def</span> <span class="nf">gf_2x2_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">eps0</span><span class="p">,</span> <span class="n">eps1</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the diagonal Green&#39;s function elements for a 2x2 system.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex array_like</span>
+<span class="sd">        Complex frequencies.</span>
+<span class="sd">    eps0, eps1 : (...) float or complex array_like</span>
+<span class="sd">        On-site energy of element 0 and 1. For interacting systems this can be</span>
+<span class="sd">        replaced by on-site energy + self-energy.</span>
+<span class="sd">    hopping : (...) float or complex array_like</span>
+<span class="sd">        Hopping element between element 0 and 1.</span>
+<span class="sd">    hilbert_trafo : Callable, optional</span>
+<span class="sd">        Hilbert transformation. If given, return the local Green&#39;s function.</span>
+<span class="sd">        Else the lattice dispersion :math:`ϵ_k` can be given via `z → z - ϵ_k`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_2x2_z : (..., 2) complex array_like</span>
+<span class="sd">        Diagonal elements of the Green&#39;s function of the 2x2 system.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For the trivial case `eps0==eps1 and hopping==0`, this implementation fails.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mean_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">eps0</span><span class="p">,</span> <span class="n">eps1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sqrt_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">scimath</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.25</span><span class="o">*</span><span class="p">(</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">eps1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">hopping</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">hopping</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">hilbert_trafo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gf_p</span><span class="p">,</span> <span class="n">gf_m</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">-</span> <span class="n">sqrt_</span><span class="p">),</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">+</span> <span class="n">sqrt_</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gf_p</span><span class="p">,</span> <span class="n">gf_m</span> <span class="o">=</span> <span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">-</span> <span class="n">sqrt_</span><span class="p">),</span> <span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">+</span> <span class="n">sqrt_</span><span class="p">)</span>
+    <span class="n">gf0</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">sqrt_</span> <span class="o">*</span> <span class="p">((</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">+</span> <span class="n">sqrt_</span><span class="p">)</span><span class="o">*</span><span class="n">gf_p</span> <span class="o">-</span> <span class="p">(</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">-</span> <span class="n">sqrt_</span><span class="p">)</span><span class="o">*</span><span class="n">gf_m</span><span class="p">)</span>
+    <span class="n">gf1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">sqrt_</span> <span class="o">*</span> <span class="p">((</span><span class="n">eps1</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">+</span> <span class="n">sqrt_</span><span class="p">)</span><span class="o">*</span><span class="n">gf_p</span> <span class="o">-</span> <span class="p">(</span><span class="n">eps1</span> <span class="o">-</span> <span class="n">mean_eps</span> <span class="o">-</span> <span class="n">sqrt_</span><span class="p">)</span><span class="o">*</span><span class="n">gf_m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">gf0</span><span class="p">,</span> <span class="n">gf1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">
+        Last updated on 2021-03-05.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

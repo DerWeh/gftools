@@ -1,0 +1,6 @@
+﻿gftool.triangular\_gf\_z
+========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: triangular_gf_z

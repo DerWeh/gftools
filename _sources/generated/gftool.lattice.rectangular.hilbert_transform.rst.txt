@@ -1,0 +1,6 @@
+gftool.lattice.rectangular.hilbert\_transform
+=============================================
+
+.. currentmodule:: gftool.lattice.rectangular
+
+.. autofunction:: hilbert_transform

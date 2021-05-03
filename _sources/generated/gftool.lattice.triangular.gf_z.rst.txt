@@ -1,0 +1,6 @@
+gftool.lattice.triangular.gf\_z
+===============================
+
+.. currentmodule:: gftool.lattice.triangular
+
+.. autofunction:: gf_z

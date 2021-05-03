@@ -1,0 +1,6 @@
+gftool.pade.KindSelector.slice
+==============================
+
+.. currentmodule:: gftool.pade
+
+.. autoproperty:: KindSelector.slice

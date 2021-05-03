@@ -1,0 +1,35 @@
+gftool.lattice.kagome
+=====================
+
+.. module:: gftool.lattice.kagome
+
+.. automodule:: gftool.lattice.kagome
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

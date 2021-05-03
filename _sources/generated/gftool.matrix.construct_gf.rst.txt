@@ -1,0 +1,6 @@
+gftool.matrix.construct\_gf
+===========================
+
+.. currentmodule:: gftool.matrix
+
+.. autofunction:: construct_gf

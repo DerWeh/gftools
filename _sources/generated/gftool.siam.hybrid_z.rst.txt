@@ -1,0 +1,6 @@
+gftool.siam.hybrid\_z
+=====================
+
+.. currentmodule:: gftool.siam
+
+.. autofunction:: hybrid_z

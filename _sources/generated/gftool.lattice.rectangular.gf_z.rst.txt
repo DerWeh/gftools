@@ -1,0 +1,6 @@
+gftool.lattice.rectangular.gf\_z
+================================
+
+.. currentmodule:: gftool.lattice.rectangular
+
+.. autofunction:: gf_z

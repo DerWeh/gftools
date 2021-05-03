@@ -1,0 +1,38 @@
+gftool.matrix.Decomposition
+===========================
+
+.. currentmodule:: gftool.matrix
+
+.. autoclass:: Decomposition
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~Decomposition.__init__
+      ~Decomposition.count
+      ~Decomposition.from_gf
+      ~Decomposition.from_hamiltonian
+      ~Decomposition.index
+      ~Decomposition.reconstruct
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~Decomposition.rv
+      ~Decomposition.rv_inv
+      ~Decomposition.xi
+   
+   

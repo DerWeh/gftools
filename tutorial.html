@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Tutorial &mdash; Gftool 0.8.1+3.g97ce9fc documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gftool" href="gftool.html" />
+    <link rel="prev" title="Welcome to GfTool’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Gftool
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.8.1+3.g97ce9fc
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to GfTool’s documentation!</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lattice-green-s-functions">Lattice Green’s functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#density">Density</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fourier-transform">Fourier transform</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s New</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Gftool</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lattice-green-s-functions">
+<h2>Lattice Green’s functions<a class="headerlink" href="#lattice-green-s-functions" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial explains some of the basic functionality.
+Throughout the tutorial we assume you have imported GfTool as</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gftool</span> <span class="k">as</span> <span class="nn">gt</span>
+</pre></div>
+</div>
+<p>and the typical packages <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy</span></code></a> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib</span></code> are made available</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>The package contains non-interacting Green’s functions for some tight-binding
+lattices. They can be found in <a class="reference internal" href="generated/gftool.lattice.html#module-gftool.lattice" title="gftool.lattice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice</span></code></a>.
+E.g. the <a class="reference internal" href="generated/gftool.lattice.bethe.dos.html#gftool.lattice.bethe.dos" title="gftool.lattice.bethe.dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dos</span></code></a> of the Bethe lattice <a class="reference internal" href="generated/gftool.lattice.bethe.html#module-gftool.lattice.bethe" title="gftool.lattice.bethe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dos_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">bethe</span><span class="o">.</span><span class="n">dos</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">dos_ww</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//tutorial-1.png">png</a>, <a class="reference external" href=".//tutorial-1.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/tutorial-1.png" class="plot-directive" src="_images/tutorial-1.png" />
+</div>
+<p>Typically, a shorthand for these functions exist in the top-level module e.g.
+<a class="reference internal" href="generated/gftool.bethe_dos.html#gftool.bethe_dos" title="gftool.bethe_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.bethe_dos</span></code></a></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gt</span><span class="o">.</span><span class="n">bethe_dos</span> <span class="ow">is</span> <span class="n">gt</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">bethe</span><span class="o">.</span><span class="n">dos</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="density">
+<h2>Density<a class="headerlink" href="#density" title="Permalink to this headline">¶</a></h2>
+<p>We can also calculate the density (occupation number) from the imaginary axis
+for local Green’s function. We have the relation</p>
+<div class="math notranslate nohighlight">
+\[⟨n⟩ = T \sum_{\{iω_n\}} \Re G(iω_n)\]</div>
+<p>to calculate the density for a given temperature from <em class="xref py py-obj">1024</em> (fermionic)
+Matsubara frequencies we use <a class="reference internal" href="generated/gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">density_iw</span></code></a>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">temperature</span> <span class="o">=</span> <span class="mf">0.02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">iws</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_iw</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">occ</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">occ</span>
+<span class="go">0.5</span>
+</pre></div>
+</div>
+<p>We can also search the chemical potential <span class="math notranslate nohighlight">\(μ\)</span> for a given occupation <a class="reference internal" href="generated/gftool.chemical_potential.html#gftool.chemical_potential" title="gftool.chemical_potential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chemical_potential</span></code></a>.
+If we want e.g. the Bethe lattice at quarter filling</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">occ_quarter</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">bethe_occ_diff</span><span class="p">(</span><span class="n">mu</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="sd">&quot;&quot;&quot;Calculate the difference to the desired occupation, note the sign.&quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="n">gf_iw</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">iws</span> <span class="o">+</span> <span class="n">mu</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">gt</span><span class="o">.</span><span class="n">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span> <span class="o">-</span> <span class="n">occ_quarter</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mu</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">chemical_potential</span><span class="p">(</span><span class="n">bethe_occ_diff</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mu</span>
+<span class="go">-0.406018...</span>
+</pre></div>
+</div>
+<p>Validate the result:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_quarter_iw</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">iws</span> <span class="o">+</span> <span class="n">mu</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt</span><span class="o">.</span><span class="n">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_quarter_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span>
+<span class="go">0.249999...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fourier-transform">
+<h2>Fourier transform<a class="headerlink" href="#fourier-transform" title="Permalink to this headline">¶</a></h2>
+<p>GfTool offers also accurate Fourier transformations between Matsubara frequencies
+and imaginary time for local Green’s functions, see <a class="reference internal" href="generated/gftool.fourier.html#module-gftool.fourier" title="gftool.fourier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.fourier</span></code></a>.
+As a major part of the package, these functions are gu-functions.
+This is indicated in the docstrings via the shapes <em class="xref py py-obj">(…, N)</em>. The ellipsis
+stands for arbitrary leading dimensions. Let’s consider a simple example with magnetic splitting.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">beta</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># inverse temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># magnetic splitting</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">h</span><span class="p">])</span>  <span class="c1"># on-site energy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">iws</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can calculate the Fourier transform using broadcasting,
+with the need for any loops.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_iw</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">iws</span> <span class="o">+</span> <span class="n">eps</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 1024)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_tau</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">iw2tau</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Fourier transform generates the imaginary time Green’s function on the interval
+<span class="math notranslate nohighlight">\(τ ∈ [0^+, β^-]\)</span></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>  <span class="c1"># clear previous figure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">gf_tau</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\sigma=\uparrow$&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">gf_tau</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\sigma=\downarrow$&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\tau$&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//tutorial-4.png">png</a>, <a class="reference external" href=".//tutorial-4.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/tutorial-4.png" class="plot-directive" src="_images/tutorial-4.png" />
+</div>
+<p>We see the asymmetry due to the magnetic field. Let’s check the back transformation.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ft</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tau2iw</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">gf_ft</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">2e-6</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Up to a certain threshold the transforms agree, they are not exact inverse
+transformations here. Accuracy can be improved e.g. by providing (or fitting)
+high-frequency moments.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="gftool.html" class="btn btn-neutral float-right" title="gftool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to GfTool’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">
+        Last updated on 2021-03-05.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

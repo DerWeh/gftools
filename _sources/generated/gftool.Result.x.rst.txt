@@ -1,0 +1,6 @@
+gftool.Result.x
+===============
+
+.. currentmodule:: gftool
+
+.. autoattribute:: Result.x

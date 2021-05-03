@@ -1,0 +1,6 @@
+﻿gftool.honeycomb\_dos\_moment
+=============================
+
+.. currentmodule:: gftool
+
+.. autofunction:: honeycomb_dos_moment

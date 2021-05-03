@@ -1,0 +1,35 @@
+gftool.lattice.onedim
+=====================
+
+.. module:: gftool.lattice.onedim
+
+.. automodule:: gftool.lattice.onedim
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

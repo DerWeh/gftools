@@ -1,0 +1,6 @@
+gftool.lattice.triangular.dos
+=============================
+
+.. currentmodule:: gftool.lattice.triangular
+
+.. autofunction:: dos

@@ -1,0 +1,6 @@
+gftool.lattice.square.hilbert\_transform
+========================================
+
+.. currentmodule:: gftool.lattice.square
+
+.. autofunction:: hilbert_transform

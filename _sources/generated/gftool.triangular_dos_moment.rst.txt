@@ -1,0 +1,6 @@
+﻿gftool.triangular\_dos\_moment
+==============================
+
+.. currentmodule:: gftool
+
+.. autofunction:: triangular_dos_moment

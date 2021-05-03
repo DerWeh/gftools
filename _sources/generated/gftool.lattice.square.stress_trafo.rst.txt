@@ -1,0 +1,6 @@
+gftool.lattice.square.stress\_trafo
+===================================
+
+.. currentmodule:: gftool.lattice.square
+
+.. autofunction:: stress_trafo

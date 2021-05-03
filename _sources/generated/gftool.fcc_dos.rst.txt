@@ -1,0 +1,6 @@
+﻿gftool.fcc\_dos
+===============
+
+.. currentmodule:: gftool
+
+.. autofunction:: fcc_dos

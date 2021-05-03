@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.from\_gf
+====================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: Decomposition.from_gf

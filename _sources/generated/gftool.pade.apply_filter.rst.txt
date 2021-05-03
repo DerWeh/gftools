@@ -1,0 +1,6 @@
+gftool.pade.apply\_filter
+=========================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: apply_filter

@@ -1,0 +1,6 @@
+gftool.lattice.triangular.dos\_mp
+=================================
+
+.. currentmodule:: gftool.lattice.triangular
+
+.. autofunction:: dos_mp

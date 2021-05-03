@@ -1,0 +1,6 @@
+gftool.lattice.triangular.dos\_moment
+=====================================
+
+.. currentmodule:: gftool.lattice.triangular
+
+.. autofunction:: dos_moment

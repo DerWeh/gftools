@@ -1,0 +1,6 @@
+﻿gftool.square\_hilbert\_transform
+=================================
+
+.. currentmodule:: gftool
+
+.. autofunction:: square_hilbert_transform

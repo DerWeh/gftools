@@ -1,0 +1,6 @@
+gftool.lattice.honeycomb.hilbert\_transform
+===========================================
+
+.. currentmodule:: gftool.lattice.honeycomb
+
+.. autofunction:: hilbert_transform

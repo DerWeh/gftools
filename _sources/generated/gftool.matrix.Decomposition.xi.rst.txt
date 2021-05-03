@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.xi
+==============================
+
+.. currentmodule:: gftool.matrix
+
+.. autoattribute:: Decomposition.xi

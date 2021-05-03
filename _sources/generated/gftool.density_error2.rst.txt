@@ -1,0 +1,6 @@
+﻿gftool.density\_error2
+======================
+
+.. currentmodule:: gftool
+
+.. autofunction:: density_error2

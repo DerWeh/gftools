@@ -1,0 +1,6 @@
+gftool.pade.FilterHighVariance
+==============================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: FilterHighVariance

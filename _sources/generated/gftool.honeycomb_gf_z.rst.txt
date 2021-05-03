@@ -1,0 +1,6 @@
+﻿gftool.honeycomb\_gf\_z
+=======================
+
+.. currentmodule:: gftool
+
+.. autofunction:: honeycomb_gf_z

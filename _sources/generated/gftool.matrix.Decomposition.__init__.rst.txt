@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.\_\_init\_\_
+========================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: Decomposition.__init__

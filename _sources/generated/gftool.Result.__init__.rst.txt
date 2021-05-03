@@ -1,0 +1,6 @@
+gftool.Result.\_\_init\_\_
+==========================
+
+.. currentmodule:: gftool
+
+.. automethod:: Result.__init__

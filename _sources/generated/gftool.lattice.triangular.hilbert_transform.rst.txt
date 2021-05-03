@@ -1,0 +1,6 @@
+gftool.lattice.triangular.hilbert\_transform
+============================================
+
+.. currentmodule:: gftool.lattice.triangular
+
+.. autofunction:: hilbert_transform

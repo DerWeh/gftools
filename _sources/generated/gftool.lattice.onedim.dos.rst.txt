@@ -1,0 +1,6 @@
+gftool.lattice.onedim.dos
+=========================
+
+.. currentmodule:: gftool.lattice.onedim
+
+.. autofunction:: dos

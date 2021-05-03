@@ -1,0 +1,6 @@
+gftool.pade.KindSelector.\_\_init\_\_
+=====================================
+
+.. currentmodule:: gftool.pade
+
+.. automethod:: KindSelector.__init__

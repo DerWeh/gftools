@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.rv\_inv
+===================================
+
+.. currentmodule:: gftool.matrix
+
+.. autoattribute:: Decomposition.rv_inv

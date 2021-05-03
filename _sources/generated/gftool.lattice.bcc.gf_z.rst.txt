@@ -1,0 +1,6 @@
+gftool.lattice.bcc.gf\_z
+========================
+
+.. currentmodule:: gftool.lattice.bcc
+
+.. autofunction:: gf_z

@@ -1,0 +1,4 @@
+ww = np.linspace(-1.1, 1.1, num=1000)
+dos_ww = gt.lattice.bethe.dos(ww, half_bandwidth=1.)
+__ = plt.plot(ww, dos_ww)
+plt.show()

@@ -1,0 +1,6 @@
+﻿gftool.triangular\_hilbert\_transform
+=====================================
+
+.. currentmodule:: gftool
+
+.. autofunction:: triangular_hilbert_transform

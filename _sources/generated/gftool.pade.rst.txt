@@ -1,0 +1,53 @@
+﻿gftool.pade
+===========
+
+.. module:: gftool.pade
+
+.. automodule:: gftool.pade
+   :noindex:
+
+API
+---
+
+.. 
+.. .. inheritance-diagram:: gftool.pade
+..    :parts: 1
+
+
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  Averager
+  FilterHighVariance
+  FilterNegImag
+  FilterNegImagNum
+  Mod_Averager
+  apply_filter
+  averaged
+  avg_no_neg_imag
+  calc_iterator
+  coefficients
+
+
+
+
+
+
+.. rubric:: Classes
+
+.. autosummary::
+  :toctree:
+
+  KindGf
+  KindSelector
+  KindSelf
+
+
+
+
+

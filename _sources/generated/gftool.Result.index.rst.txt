@@ -1,0 +1,6 @@
+gftool.Result.index
+===================
+
+.. currentmodule:: gftool
+
+.. automethod:: Result.index

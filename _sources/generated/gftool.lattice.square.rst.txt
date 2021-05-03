@@ -1,0 +1,36 @@
+gftool.lattice.square
+=====================
+
+.. module:: gftool.lattice.square
+
+.. automodule:: gftool.lattice.square
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  hilbert_transform
+  stress_trafo
+
+
+
+
+
+
+
+
+
+

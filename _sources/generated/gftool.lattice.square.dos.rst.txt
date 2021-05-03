@@ -1,0 +1,6 @@
+gftool.lattice.square.dos
+=========================
+
+.. currentmodule:: gftool.lattice.square
+
+.. autofunction:: dos

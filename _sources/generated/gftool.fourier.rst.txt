@@ -1,0 +1,44 @@
+﻿gftool.fourier
+==============
+
+.. module:: gftool.fourier
+
+.. automodule:: gftool.fourier
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  iw2tau
+  iw2tau_dft
+  iw2tau_dft_soft
+  izp2tau
+  tau2iv
+  tau2iv_dft
+  tau2iv_ft_lin
+  tau2iw
+  tau2iw_dft
+  tau2iw_ft_lin
+  tau2izp
+  tt2z
+  tt2z_lin
+  tt2z_trapz
+
+
+
+
+
+
+
+
+
+

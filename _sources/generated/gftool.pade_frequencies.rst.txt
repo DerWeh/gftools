@@ -1,0 +1,6 @@
+﻿gftool.pade\_frequencies
+========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: pade_frequencies
