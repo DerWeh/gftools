@@ -227,6 +227,9 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     if self_cpa_z0 is None:  # static average + 0j to make it complex array
         self_cpa_z0 = np.average(e_onsite, weights=concentration, axis=-1) + 0j
         self_cpa_z0, __ = np.broadcast_arrays(self_cpa_z0, z)
+    else:  # make sure that `self_cpa_z0` has right shape of output for root
+        output = np.broadcast(z, e_onsite[..., 0], concentration[..., 0], self_cpa_z0)
+        self_cpa_z0 = np.broadcast_to(self_cpa_z0, shape=output.shape)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       z=z, e_onsite=e_onsite, concentration=concentration,
                       hilbert_trafo=hilbert_trafo)
