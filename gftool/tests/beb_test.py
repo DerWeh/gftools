@@ -1,4 +1,6 @@
 """Test BEB."""
+import logging
+
 from functools import partial
 
 import pytest
@@ -87,3 +89,39 @@ def test_cpa_limit(z):
     gf_cpa_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite=eps, hilbert_trafo=hilbert)
     assert np.allclose(gf_loc_z, c*gf_cpa_z)
     assert np.allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z))
+
+
+@pytest.mark.filterwarnings("ignore:(invalid value encountered in double_scalars):RuntimeWarning")
+def test_resuming():
+    """Calculating the BEB effective medium twice should be no issue."""
+    # randomly chosen example
+    ww = np.linspace(-2, 2, num=100) + 1e-6j
+    ww = ww.reshape((5, 20))
+    eps = np.array([-0.37, 0.123])
+    c = np.array([0.137, 0.863])
+    D = 1.2
+    hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
+    t = np.array([[0.5, 1.2],
+                  [1.2, 1.0]])
+    solve_root = partial(gt.beb.solve_root, ww, eps, concentration=c, hopping=t,
+                         hilbert_trafo=hilbert, options=dict(fatol=1e-8))
+    self_beb_ww = solve_root()
+    self_beb_resume = solve_root(self_beb_z0=self_beb_ww)
+    assert np.allclose(self_beb_ww, self_beb_resume)
+    # too slow
+    # self_beb_0 = solve_root(self_beb_z0=self_beb_ww[0, 0])
+    # assert np.allclose(self_beb_ww, self_beb_0)
+
+
+def test_basic_logging(caplog):
+    """At least make sure nothing crashes if we log."""
+    caplog.set_level(logging.DEBUG, logger="gftool.beb")
+    # randomly chosen example
+    ww = np.linspace(-2, 2, num=50) + 1e-3j
+    eps = np.array([-0.37, 0.123])
+    c = np.array([0.137, 0.863])
+    D = 1.2
+    hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
+    t = np.array([[0.5, 1.2],
+                  [1.2, 1.0]])
+    gt.beb.solve_root(ww, eps, concentration=c, hopping=t, hilbert_trafo=hilbert)

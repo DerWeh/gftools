@@ -354,8 +354,8 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
                                              self_beb_z0[diag_idx], self_beb_z0[diag_idx].conj())
             assert np.all(self_beb_z0[diag_idx].imag <= 0)
     else:  # to use in root, self_beb_z0 has to have the correct shape
-        # dirty hack: do one iteration to get the correct shape
-        self_beb_z0 = (self_beb_z0 + 0*self_root_part(self_beb_z0))
+        output = np.broadcast(z, e_onsite[..., 0], concentration[..., 0], self_beb_z0[..., 0, 0])
+        self_beb_z0 = np.broadcast_to(self_beb_z0, shape=output.shape + np.asarray(hopping).shape)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       **self_root_part.keywords)  # pylint: disable=no-member
 
