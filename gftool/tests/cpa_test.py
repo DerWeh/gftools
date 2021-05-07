@@ -72,11 +72,11 @@ def test_cpa_occ():
                                            hilbert_trafo=hilbert, beta=beta, occ=occ,
                                            options=dict(fatol=1e-14))
     gf_coher_iw = hilbert(iws - self_iw)
-    pot = mu - np.average(e_onsite, weights=concentration)
-    occ_coher = gt.density(gf_coher_iw, potential=pot, beta=beta, return_err=False)
+    pot = np.average(e_onsite, weights=concentration) - mu
+    occ_coher = gt.density_iw(iws, gf_coher_iw, moments=[1.0, pot], beta=beta)
     assert np.allclose(occ_coher, occ)
     gf_cmpt_iw = gt.cpa.gf_cmpt_z(iws, self_iw, e_onsite-mu, hilbert_trafo=hilbert).T
-    occ_cmpt = gt.density(gf_cmpt_iw, potential=pot, beta=beta, return_err=False)
+    occ_cmpt = gt.density_iw(iws, gf_cmpt_iw, moments=[1.0, pot], beta=beta)
     assert np.allclose(np.average(occ_cmpt, weights=concentration), occ)
 
     self_iw_fxdmu = gt.cpa.solve_root(iws, e_onsite-mu, concentration, hilbert_trafo=hilbert,

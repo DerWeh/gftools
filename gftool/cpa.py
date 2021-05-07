@@ -324,7 +324,8 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     check occupation
 
-    >>> gt.density(hilbert(iws - self_cpa_iw), potential=-self_cpa_iw[-1].real, beta=beta).x
+    >>> gf_coher_iw = hilbert(iws - self_cpa_iw)
+    >>> gt.density_iw(iws, gf_coher_iw, beta=beta, moments=[1, self_cpa_iw[-1].real])
     0.5000...
 
     check CPA
@@ -340,14 +341,17 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     x0, shapes = _join([mu0], self_cpa_iw0.real, self_cpa_iw0.imag)
     self_root_eq_ = partial(restrict_self_root_eq if restricted else self_root_eq,
                             z=iws, concentration=concentration, hilbert_trafo=hilbert_trafo)
+    m1 = np.ones_like(self_cpa_iw0[..., -1].real)
+    # TODO: use on-site energy to estimate m2+mu, which only has to be adjusted by mu
 
     def root_eq(mu_selfcpa):
         mu, self_cpa_re, self_cpa_im = _split(mu_selfcpa, shapes)
         self_cpa = self_cpa_re + 1j*self_cpa_im - mu
         self_root = self_root_eq_(self_cpa, e_onsite=e_onsite - mu)
         gf_coher_iw = hilbert_trafo(iws - self_cpa)
-        occ_root = gt.density(gf_iw=gf_coher_iw, potential=-self_cpa[..., -1].real,
-                              beta=beta, return_err=False)
+        m2 = self_cpa[..., -1].real  # for large iws, real part should static part
+        occ_root = gt.density_iw(iws, gf_iw=gf_coher_iw, beta=beta,
+                                 moments=np.stack([m1, m2], axis=-1))
         return _join([occ_root - occ], self_root.real, self_root.imag)[0]
 
     method = root_kwds.pop('method', 'df-sane')
