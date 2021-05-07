@@ -79,7 +79,7 @@ import numpy as np
 from scipy import optimize
 from numpy import newaxis
 
-from gftool import matrix
+from gftool.matrix import Decomposition
 
 LOGGER = logging.getLogger(__name__)
 
@@ -166,7 +166,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
-    dec = matrix.Decomposition.from_gf(svh @ z_m_self_inv @ us)
+    dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
     diag_inv = 1. / dec.xi
     if us.shape[-2] == us.shape[-1]:  # square matrix -> not truncated (full rank)
         svh_inv = transpose(hopping_svd.vh).conj() / sqrt_s[..., newaxis, :]
@@ -219,7 +219,7 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
     us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * hopping_svd.vh
     # matrix-products are faster if larger arrays are in Fortran order
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
-    dec = matrix.Decomposition.from_gf(svh @ z_m_self_inv @ us)
+    dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
     dec.rv = us @ np.asfortranarray(dec.rv)
     dec.rv_inv = np.asfortranarray(dec.rv_inv) @ svh
     diag_inv = 1. / dec.xi
@@ -373,7 +373,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         sqrt_s = np.sqrt(hopping_svd.s)
         us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., newaxis] * hopping_svd.vh
         z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
-        dec = matrix.Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
+        dec = Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
         max_cond = np.max(np.linalg.cond(dec.rv))
         LOGGER.info("Maximal coordination number for diagonalization: %s", max_cond)
 
