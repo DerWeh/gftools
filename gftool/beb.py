@@ -1,10 +1,24 @@
 """Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.
 
-Extension to CPA allowing for random hopping amplitudes. [blackman1971]_
+It extends CPA allowing for random hopping amplitudes. [blackman1971]_
 
-The current implementation is based on QR decomposition instead of generalized
-eigendecomposition, as no vectorized version of the eigendecomposition exists.
-The eigendecomposition is extremely slow.
+The implementation is based on a SVD of the `hopping` matrix,
+which is the dimensionless scaling of the hopping of the components.
+
+Physical quantities
+-------------------
+The main quantity of interest is the average local Green's function `gf`.
+
+First the effective medium `self_beb_z` has to be calculated using `solve_root`.
+With this result the Green's function can be calculated by the function `gf_loc_z`.
+
+In the BEB formalism, the local Green's function `gf` is a matrix in the components.
+The self-consistent Green's function `gf` is diagonal, its trace is the average
+physical Green's function.
+If only the non-vanishing diagonal elements have been calculated `gf=gf_loc_z(..., diag=True)`,
+the average Green's function is `np.sum(gf, axis=-1)`.
+The diagonal elements of `gf` are the average for a specific component
+(conditional average) multiplied by the concentration of that component.
 
 
 References
@@ -13,6 +27,46 @@ References
    Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.
    Generalized Locator---Coherent-Potential Approach to Binary Alloys.
    Phys. Rev. B 4, 2412–2428. https://doi.org/10.1103/PhysRevB.4.2412
+
+
+Examples
+--------
+We consider a Bethe lattice with two components 'A' and 'B'.
+The have the on-site energies `-0.5` and `0.5` respectively,
+the concentrations `0.3` and `0.7`.
+Furthermore, we assume that the hopping amplitude between 'A' and 'B' is only
+`0.3` times the hopping between two 'A' sites,
+while the hopping between two 'B' sites is `1.2` times the hopping between two
+'A' sites.
+
+Then the following code calculates the local Green's function for component 'A'
+and 'B' (conditionally averaged) as well as the average Green's function of the
+system.
+
+.. plot::
+
+    from functools import partial
+
+    import gftool as gt
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    eps = np.array([-0.5, 0.5])
+    c = np.array([0.3, 0.7])
+    t = np.array([[1.0, 0.3],
+                  [0.3, 1.2]])
+    hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
+
+    ww = np.linspace(-1.6, 1.6, num=1000) + 1e-4j
+    self_beb_ww = gt.beb.solve_root(ww, e_onsite=eps, concentration=c, hopping=t,
+                                    hilbert_trafo=hilbert)
+    gf_loc_ww = gt.beb.gf_loc_z(ww, self_beb_ww, hopping=t, hilbert_trafo=hilbert)
+
+    __ = plt.plot(ww.real, -1./np.pi/c[0]*gf_loc_ww[:, 0].imag, label='A')
+    __ = plt.plot(ww.real, -1./np.pi/c[1]*gf_loc_ww[:, 1].imag, label='B')
+    __ = plt.plot(ww.real, -1./np.pi*np.sum(gf_loc_ww.imag, axis=-1), ':', label='avg')
+    __ = plt.legend()
+    plt.show()
 
 """
 import logging
@@ -69,8 +123,8 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
              diag=True, rcond=None):
     """Calculate average local Green's function matrix in components.
 
-    For the self-consistent self-energy `self_beb_z` this it is diagonal in the
-    components. Not that `gf_loc_z` implicitly contains the concentrations.
+    For the self-consistent self-energy `self_beb_z` it is diagonal in the
+    components. Note, that `gf_loc_z` contain the `concentration`.
 
     Parameters
     ----------
@@ -94,6 +148,10 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     -------
     gf_loc_z : (..., N_cmpt) or (..., N_cmpt, N_cmpt) complex np.ndarray
         The average local Green's function matrix.
+
+    See Also
+    --------
+    solve_root
 
     """
     hopping_svd = SVD(*np.linalg.svd(hopping, hermitian=True))
@@ -149,6 +207,10 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
         Difference of the inverses of the local and the average Green's function.
         If `diff = 0`, `self_beb_z` is the correct self-energy.
 
+    See Also
+    --------
+    solve_root
+
     """
     eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
@@ -172,7 +234,7 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
 
 
 def restrict_self_root_eq(self_beb_z, *args, **kwds):
-    """Wrap `self_root_eq` to restrict the solutions to `diagonal(self_cpa_z).imag > 0`."""
+    """Wrap `self_root_eq` to restrict the solutions to `diagonal(self_beb_z).imag > 0`."""
     diag_idx = (..., np.eye(*self_beb_z.shape[-2:], dtype=bool))
     self_diag = self_beb_z[diag_idx]
     unphysical = self_diag.imag > 0
@@ -195,7 +257,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
                self_beb_z0=None, restricted=True, rcond=None, **root_kwds):
     """Determine the BEB self-energy by solving the root problem.
 
-    Note that the result should be checked, whether the obtained solution is
+    Note, that the result should be checked, whether the obtained solution is
     physical.
 
     Parameters
@@ -213,8 +275,8 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     self_beb_z0 : (..., N_cmpt, N_cmpt) complex np.ndarray, optional
         Starting guess for the BEB self-energy.
     restricted : bool, optional
-        Whether the diagonal of `self_beb_z` is restricted to `self_beb_z.imag <= 0`.
-        (default: True)
+        Whether the diagonal of `self_beb_z` is restricted to `self_beb_z.imag <= 0`
+        (default: True).
         Note, that even if `restricted=True`, the imaginary part can get
         negative within tolerance. This should be removed by hand if necessary.
     rcond : float, optional
@@ -222,7 +284,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         of rank determination, singular values are treated as zero if they are
         smaller than `rcond` times the largest singular value of `hopping`.
     root_kwds
-        Additional arguments passed to `optimize.root`.
+        Additional arguments passed to `scipy.optimize.root`.
         `method` can be used to choose a solver. `options=dict(fatol=tol)` can
         be specified to set the desired tolerance `tol`.
 
@@ -235,6 +297,24 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     ------
     RuntimeError
         If the root problem cannot be solved.
+
+    See Also
+    --------
+    gf_loc_z
+
+    Notes
+    -----
+    The root problem is solved for the complete input simultaneously.
+    This provides a speed up as the code is vectorized, however, it comes
+    with the trade-off of complicating the root search.
+    So in some cases, it makes sense to split the input arrays, and calculate
+    the root separately.
+
+    The default method is 'krylov', which typically does a good job.
+    In some cases 'excitingmixing' was found to do a better job,
+    especially close to the CPA limit, where some singular values become small.
+
+    The progress of the root search is logged for the `logging.DEBUG` level.
 
     Examples
     --------
