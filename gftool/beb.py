@@ -262,11 +262,12 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     LOGGER.info('hopping singular values %s', hopping_svd.s)
     hopping_svd = hopping_svd.truncate(rcond)
     LOGGER.info('Keeping %s (out of %s)', hopping_svd.s.shape[-1], hopping_svd.vh.shape[-1])
+    self_root_part = partial(self_root_eq, z=z, e_onsite=e_onsite, concentration=concentration,
+                             hopping_svd=hopping_svd, hilbert_trafo=hilbert_trafo)
     if self_beb_z0 is None:
         self_beb_z0 = np.zeros(hopping.shape, dtype=complex)
         # experience shows that a single fixed_point is a good starting point
-        self_beb_z0 = self_root_eq(self_beb_z0, z, e_onsite, concentration,
-                                   hopping_svd, hilbert_trafo)
+        self_beb_z0 = self_root_part(self_beb_z0)
         if np.all(z.imag >= 0):  # make sure that we are in the retarded regime
             diag_idx = (..., np.eye(*hopping.shape, dtype=bool))
             self_beb_z0[diag_idx] = np.where(self_beb_z0[diag_idx].imag < 0,
@@ -274,12 +275,9 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
             assert np.all(self_beb_z0[diag_idx].imag <= 0)
     else:  # to use in root, self_beb_z0 has to have the correct shape
         # dirty hack: do one iteration to get the correct shape
-        self_beb_z0 = (self_beb_z0
-                       + 0*self_root_eq(self_beb_z0, z, e_onsite, concentration,
-                                        hopping_svd, hilbert_trafo))
+        self_beb_z0 = (self_beb_z0 + 0*self_root_part(self_beb_z0))
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
-                      z=z, e_onsite=e_onsite, concentration=concentration,
-                      hopping_svd=hopping_svd, hilbert_trafo=hilbert_trafo)
+                      **self_root_part.keywords)  # pylint: disable=no-member
 
     method = root_kwds.pop('method', 'krylov')
     if 'callback' not in root_kwds:  # setup LOGGER if no 'callback' is provided
