@@ -280,20 +280,22 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
                       **self_root_part.keywords)  # pylint: disable=no-member
 
     method = root_kwds.pop('method', 'krylov')
-    if 'callback' not in root_kwds:  # setup LOGGER if no 'callback' is provided
+    if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
+        # setup LOGGER if no 'callback' is provided
         LOGGER.debug('Search BEB self-energy root')
         root_kwds['callback'] = lambda x, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
 
     sol = optimize.root(root_eq, x0=self_beb_z0, method=method, **root_kwds)
     LOGGER.debug("BEB self-energy root found after %s iterations.", sol.nit)
 
-    # check condition number in matrix diagonalization to make sure it is well defined
-    sqrt_s = np.sqrt(hopping_svd.s)
-    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., newaxis] * hopping_svd.vh
-    z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
-    dec = matrix.Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
-    LOGGER.info("Maximal coordination number for diagonalization: %s ",
-                np.max(np.linalg.cond(dec.rv)))
+    if LOGGER.isEnabledFor(logging.INFO):
+        # check condition number in matrix diagonalization to make sure it is well defined
+        sqrt_s = np.sqrt(hopping_svd.s)
+        us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., newaxis] * hopping_svd.vh
+        z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
+        dec = matrix.Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
+        max_cond = np.max(np.linalg.cond(dec.rv))
+        LOGGER.info("Maximal coordination number for diagonalization: %s", max_cond)
 
     if not sol.success:
         raise RuntimeError(sol.message)
