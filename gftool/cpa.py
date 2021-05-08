@@ -234,11 +234,8 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
                       z=z, e_onsite=e_onsite, concentration=concentration,
                       hilbert_trafo=hilbert_trafo)
 
-    try:
-        method = root_kwds.pop('method')
-    except KeyError:
-        method = 'anderson' if restricted else 'broyden2'
-    sol = optimize.root(root_eq, x0=self_cpa_z0, method=method, **root_kwds)
+    root_kwds.setdefault("method", "anderson" if restricted else "broyden2")
+    sol = optimize.root(root_eq, x0=self_cpa_z0, **root_kwds)
     if not sol.success:
         raise RuntimeError(sol.message)
     return sol.x
@@ -354,8 +351,8 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
                               moments=np.stack([m1, m2], axis=-1))
         return _join([occ_root - occ], self_root.real, self_root.imag)[0]
 
-    method = root_kwds.pop('method', 'df-sane')
-    sol = optimize.root(root_eq, x0=x0, method=method, **root_kwds)
+    root_kwds.setdefault("method", "df-sane")
+    sol = optimize.root(root_eq, x0=x0, **root_kwds)
     if not sol.success:
         raise RuntimeError(sol.message)
     mu, self_cpa_re, self_cpa_im = _split(sol.x, shapes)

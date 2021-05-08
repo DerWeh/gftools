@@ -359,13 +359,13 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
                       **self_root_part.keywords)  # pylint: disable=no-member
 
-    method = root_kwds.pop('method', 'krylov')
+    root_kwds.setdefault("method", "krylov")
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
         LOGGER.debug('Search BEB self-energy root')
         root_kwds['callback'] = lambda x, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
 
-    sol = optimize.root(root_eq, x0=self_beb_z0, method=method, **root_kwds)
+    sol = optimize.root(root_eq, x0=self_beb_z0, **root_kwds)
     LOGGER.debug("BEB self-energy root found after %s iterations.", sol.nit)
 
     if LOGGER.isEnabledFor(logging.INFO):
