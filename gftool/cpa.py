@@ -19,7 +19,7 @@ import numpy as np
 
 from scipy import optimize
 
-import gftool as gt
+from gftool.density import density_iw
 
 
 def _join(*args):
@@ -350,8 +350,8 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         self_root = self_root_eq_(self_cpa, e_onsite=e_onsite - mu)
         gf_coher_iw = hilbert_trafo(iws - self_cpa)
         m2 = self_cpa[..., -1].real  # for large iws, real part should static part
-        occ_root = gt.density_iw(iws, gf_iw=gf_coher_iw, beta=beta,
-                                 moments=np.stack([m1, m2], axis=-1))
+        occ_root = density_iw(iws, gf_iw=gf_coher_iw, beta=beta,
+                              moments=np.stack([m1, m2], axis=-1))
         return _join([occ_root - occ], self_root.real, self_root.imag)[0]
 
     method = root_kwds.pop('method', 'df-sane')
