@@ -64,6 +64,11 @@ gftool
    * utility functions like Matsubara frequencies and Fermi functions.
    * reliable calculation of particle numbers via Matsubara sums
 
+cpa/beb
+   * Single site approximation to disorder
+   * diagonal disorder only (CPA) and diagonal and off-diagonal (BEB)
+   * average local Green's function and component Green's functions
+
 fourier
    * Fourier transforms from Matsubara frequencies to imaginary time and back,
      including the handling of high-frequencies moments

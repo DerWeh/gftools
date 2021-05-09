@@ -3,6 +3,16 @@
 What's New
 ==========
 
+0.9.0 (2021-05-09)
+------------------
+
+New Features
+~~~~~~~~~~~~
+
+Implement `~gftool.cpa` and `~gftool.beb` to treat disorder (:commit:`c3bad20c`)
+
+
+
 0.8.1 (2021-04-25)
 ------------------
 
