@@ -70,6 +70,8 @@ We can also explicitly give the second moments:
    :hidden:
 
    gftool
+   generated/gftool.beb
+   generated/gftool.cpa
    generated/gftool.fourier
    generated/gftool.lattice
    generated/gftool.matrix
