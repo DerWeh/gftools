@@ -93,7 +93,6 @@ source_suffix = '.rst'
 # Autosummary
 # -----------------------------------------------------------------------------
 
-import glob
 autosummary_generate = True
 # autosummary_imported_members = True
 

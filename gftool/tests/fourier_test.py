@@ -199,7 +199,6 @@ def test_tau2iw_multi_pole_hfm(args):
     poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
-    m0 = resids.sum(axis=-1, keepdims=True)
     BETA = 1.3
     N_TAU = 2048 + 1
     tau = np.linspace(0, BETA, num=N_TAU)
@@ -372,9 +371,9 @@ def test_tt2z_multi_pole(args):
 
     # test if zero handles gu-structure correctly
     ww[ww.size//2] = 0
-    gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
+    gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
     ww[0] = ww[-1] = 0
-    gf_ft = gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
+    gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
 
 
 @given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,

@@ -1,7 +1,6 @@
 """Test the functionality of the pade module."""
 import logging
 
-import pytest
 import numpy as np
 
 from . import old_pade
