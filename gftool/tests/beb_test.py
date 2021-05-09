@@ -14,12 +14,16 @@ from .context import gftool as gt
 
 
 # test for some random handpicked values as it is expensive
+@pytest.mark.parametrize("t", [
+    np.array([[1.0, 0.3], [0.3, 1.2]]),  # full rank example
+    np.array([[4.0, 6.0], [6.0, 9.0]]),  # rank deficient example
+])
 @pytest.mark.parametrize("self_beb_z", (
     (0.3-1j)*np.eye(2, 2),
     np.array([[0.178 - 0.13j, 0.4 + 1j],
               [0.4 + 1j, -1.38 - 0.46j]])
 ))
-def test_gf_loc(self_beb_z):
+def test_gf_loc(t, self_beb_z):
     """Check local Green's function against integration.
 
     This is a rather expensive test -> currently no hypothesis.
@@ -28,8 +32,6 @@ def test_gf_loc(self_beb_z):
     # symmetrize matrix
     self_beb_z[1, 0] = self_beb_z[0, 1] = 0.5*(self_beb_z[0, 1] + self_beb_z[1, 0])
     assert np.linalg.cond(self_beb_z) < 1e4   # reasonably well condition matrices only
-    t = np.array([[1.0, 0.3],
-                  [0.3, 1.2]])
     D = 1.3
     hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=D)
 
@@ -47,14 +49,16 @@ def test_gf_loc(self_beb_z):
     assert np.allclose(gf_z, gf_cmp)
 
 
+@pytest.mark.parametrize("t", [
+    np.array([[1.0, 0.3], [0.3, 1.2]]),  # full rank example
+    np.array([[4.0, 6.0], [6.0, 9.0]]),  # rank deficient example
+])
 @given(z=st.complex_numbers(max_magnitude=1e-6))
-def test_selfconsistency(z):
+def test_selfconsistency(t, z):
     """Self-consistent Gf is diagonal and equals averaged Gf."""
     # randomly chosen example
     assume(z.imag != 0)
     z = np.array(z.conjugate() if z.imag < 0 else z)
-    t = np.array([[1.0, 0.3],
-                  [0.3, 1.2]])
     eps = np.array([-0.137, 0.23])
     c = np.array([0.137, 0.863])
     D = 1.3
