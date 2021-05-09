@@ -69,6 +69,7 @@ system.
     plt.show()
 
 """
+# pylint: disable=too-many-locals
 import logging
 
 from typing import Callable, NamedTuple
