@@ -118,6 +118,26 @@ class SVD(NamedTuple):
         return SVD(u=self.u[..., :, significant], s=self.s[..., significant],
                    vh=self.vh[..., significant, :])
 
+    @property
+    def is_trunacted(self) -> bool:
+        """Check if SVD of square matrix is truncated/compact or full."""
+        ushape, vhshape = self.u.shape, self.vh.shape
+        if not ushape[-2] == vhshape[-1]:
+            raise NotImplementedError("We only consider square matrices in this module.")
+        return not ushape[-2] == ushape[-1] == vhshape[-2]
+
+    def partition(self, return_sqrts=False):
+        """Symmetrically partition the SVD as `u*np.sqrt(s), np.sqrt(s)*vh`.
+
+        If `return_sqrts` then `us, np.sqrt(s), svh` is returned,
+        else only `us, svh` is returned (default: False).
+        """
+        sqrt_s = np.sqrt(self.s)
+        us, svh = self.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * self.vh
+        if return_sqrts:
+            return us, sqrt_s, svh
+        return us, svh
+
 
 def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex],
              diag=True, rcond=None):
@@ -161,14 +181,13 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     kind = 'diag' if diag else 'full'
 
     eye = np.eye(*hopping.shape)
-    sqrt_s = np.sqrt(hopping_svd.s)
-    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * hopping_svd.vh
+    us, sqrt_s, svh = hopping_svd.partition(return_sqrts=True)
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
     dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
     diag_inv = 1. / dec.xi
-    if us.shape[-2] == us.shape[-1]:  # square matrix -> not truncated (full rank)
+    if not hopping_svd.is_trunacted:
         svh_inv = transpose(hopping_svd.vh).conj() / sqrt_s[..., newaxis, :]
         us_inv = transpose(hopping_svd.u).conj() / sqrt_s[..., :, newaxis]
         dec.rv = svh_inv @ np.asfortranarray(dec.rv)
@@ -215,15 +234,14 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
     eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     # split symmetrically
-    sqrt_s = np.sqrt(hopping_svd.s)
-    us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * hopping_svd.vh
+    us, svh = hopping_svd.partition()
     # matrix-products are faster if larger arrays are in Fortran order
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
     dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
     dec.rv = us @ np.asfortranarray(dec.rv)
     dec.rv_inv = np.asfortranarray(dec.rv_inv) @ svh
     diag_inv = 1. / dec.xi
-    if us.shape[-2] == us.shape[-1]:  # square matrix -> not truncated
+    if not hopping_svd.is_trunacted:
         gf_loc_inv = dec.reconstruct(1./hilbert_trafo(diag_inv), kind='full')
     else:
         gf_loc_inv = z_m_self + dec.reconstruct(1./hilbert_trafo(diag_inv) - diag_inv, kind='full')
@@ -360,9 +378,9 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
                       **self_root_part.keywords)  # pylint: disable=no-member
 
     root_kwds.setdefault("method", "krylov")
+    LOGGER.debug('Search BEB self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
-        LOGGER.debug('Search BEB self-energy root')
         root_kwds['callback'] = lambda x, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
 
     sol = optimize.root(root_eq, x0=self_beb_z0, **root_kwds)
@@ -370,8 +388,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     if LOGGER.isEnabledFor(logging.INFO):
         # check condition number in matrix diagonalization to make sure it is well defined
-        sqrt_s = np.sqrt(hopping_svd.s)
-        us, svh = hopping_svd.u * sqrt_s[..., newaxis, :], sqrt_s[..., newaxis] * hopping_svd.vh
+        us, svh = hopping_svd.partition()  # pylint: disable=unbalanced-tuple-unpacking
         z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
         dec = Decomposition.from_gf(svh @ np.linalg.inv(z_m_self) @ us)
         max_cond = np.max(np.linalg.cond(dec.rv))
