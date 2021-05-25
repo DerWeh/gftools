@@ -2,10 +2,29 @@
 import numpy as np
 import hypothesis.strategies as st
 
-from hypothesis import given
+from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+
+
+@given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
+                   elements=[st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=+0, max_value=1),
+                             ],
+                   max_dims_extra=2, max_side=5),
+       st.complex_numbers(min_magnitude=1e-6, allow_infinity=False),
+       )
+def test_gf_loc_z_vs_resolvent(args, z):
+    """Check `gf0_loc_z` against resolvent."""
+    e_onsite, e_bath, hopping = args
+    assume(abs(z.imag) > 1e-3)
+    z = np.conj(z) if z.imag < 0 else z
+    gf0_loc_z = gt.siam.gf0_loc_z(z, e_onsite, e_bath, abs(hopping)**2)
+    ham = gt.siam.hamiltonian_matrix(e_onsite, e_bath, hopping)
+    resolvent = np.linalg.inv(z*np.eye(*ham.shape[-2:]) - ham)
+    assert np.allclose(gf0_loc_z, resolvent[..., 0, 0])
 
 
 @given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
@@ -34,7 +53,7 @@ def test_consistency_gf_loc_z_vs_ret_t(args):
                              st.floats(min_value=+0, max_value=1),
                              ],
                    max_dims_extra=2, max_side=5),
-       st.floats(min_value=0, exclude_min=True))
+       st.floats(min_value=0, exclude_min=True, allow_infinity=False))
 def test_consistency_gf_loc_ret_vs_grle(args, beta):
     """Check if Laplace transform of `gf0_loc_ret_t` matches `gf0_loc_gr_t`/`gf0_loc_le_t`."""
     tt, e_onsite, e_bath, hopping = args

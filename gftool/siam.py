@@ -76,14 +76,7 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
         Retarded Green's function of the impurity site.
 
     """
-    broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
-    n_bath = broadcast.shape[-1]
-    ham = np.zeros([*broadcast.shape[:-1], n_bath+1, n_bath+1], dtype=hopping.dtype)
-    ham[..., 0, 0] = e_onsite
-    ham[..., 0, 1:] = hopping
-    ham[..., 1:, 0] = np.conj(hopping)
-    ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
-
+    ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
     dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
@@ -114,14 +107,7 @@ def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
         Greater Green's function of the impurity site.
 
     """
-    broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
-    n_bath = broadcast.shape[-1]
-    ham = np.zeros([*broadcast.shape[:-1], n_bath+1, n_bath+1], dtype=hopping.dtype)
-    ham[..., 0, 0] = e_onsite
-    ham[..., 0, 1:] = hopping
-    ham[..., 1:, 0] = np.conj(hopping)
-    ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
-
+    ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
     dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
@@ -152,6 +138,42 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
         Lesser Green's function of the impurity site.
 
     """
+    ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
+    dec = decompose_hamiltonian(ham)
+    # calculate only elements [..., 0] corresponding to the local impurity site
+    dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
+    eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.xi, beta=beta)
+    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    return gf0_t
+
+
+def hamiltonian_matrix(e_onsite, e_bath, hopping):
+    r"""One-particle Hamiltonian matrix of the SIAM.
+
+    The non-interacting Hamiltonian can be written in the form
+
+    .. math:: \hat{H} = ∑_{ijσ} c^†_{iσ} H_{ijσ} c_{jσ}.
+
+    The Hamiltonian matrix is :math:`H_{ij}`, where we fixed the spin σ.
+    The element `H_{00}` corresponds to the impurity site.
+
+    Parameters
+    ----------
+    e_onsite : (...) float np.ndarray
+        On-site energy of the impurity site.
+    e_bath : (..., Nb) float np.ndarray
+        On-site energy of the bath sites.
+    hopping : (..., Nb) complex np.ndarray
+        Hopping matrix element between impurity and the bath sites.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    ham_mat : (..., Nb+1, Nb+1) complex np.ndarray
+        Lesser Green's function of the impurity site.
+
+    """
     broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
     n_bath = broadcast.shape[-1]
     ham = np.zeros([*broadcast.shape[:-1], n_bath+1, n_bath+1], dtype=hopping.dtype)
@@ -159,13 +181,7 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
     ham[..., 0, 1:] = hopping
     ham[..., 1:, 0] = np.conj(hopping)
     ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
-
-    dec = decompose_hamiltonian(ham)
-    # calculate only elements [..., 0] corresponding to the local impurity site
-    dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
-    eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.xi, beta=beta)
-    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
-    return gf0_t
+    return ham
 
 
 def hybrid_z(z, e_bath, hopping_sqr):
@@ -186,4 +202,4 @@ def hybrid_z(z, e_bath, hopping_sqr):
         Hybridization function of the impurity site.
 
     """
-    return _gu_sum(hopping_sqr/(z[..., np.newaxis] - e_bath))
+    return _gu_sum(hopping_sqr/(np.asanyarray(z)[..., np.newaxis] - e_bath))
