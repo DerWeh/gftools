@@ -28,8 +28,9 @@ with the hybridization function
 import numpy as np
 
 from gftool._util import _gu_sum
-from gftool import matrix
-from gftool.basis.pole import _single_pole_gf_ret_t
+from gftool.matrix import decompose_hamiltonian
+from gftool.basis.pole import (_single_pole_gf_gr_t, _single_pole_gf_le_t,
+                               _single_pole_gf_ret_t)
 
 
 def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
@@ -83,10 +84,86 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
     ham[..., 1:, 0] = np.conj(hopping)
     ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
 
-    dec = matrix.decompose_hamiltonian(ham)
+    dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
     eig_exp = _single_pole_gf_ret_t(tt[..., np.newaxis], dec.xi)
+    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    return gf0_t
+
+
+def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
+    """Noninteracting greater local Green's function for the impurity.
+
+    Parameters
+    ----------
+    tt : (...) float np.ndarray
+        Time variable. Note that the retarded Green's function is `0` for `tt<0`.
+    e_onsite : (...) float np.ndarray
+        On-site energy of the impurity site.
+    e_bath : (..., Nb) float np.ndarray
+        On-site energy of the bath sites.
+    hopping : (..., Nb) complex np.ndarray
+        Hopping matrix element between impurity and the bath sites.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf0_loc_gr_t : (...) complex np.ndarray
+        Greater Green's function of the impurity site.
+
+    """
+    broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
+    n_bath = broadcast.shape[-1]
+    ham = np.zeros([*broadcast.shape[:-1], n_bath+1, n_bath+1], dtype=hopping.dtype)
+    ham[..., 0, 0] = e_onsite
+    ham[..., 0, 1:] = hopping
+    ham[..., 1:, 0] = np.conj(hopping)
+    ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
+
+    dec = decompose_hamiltonian(ham)
+    # calculate only elements [..., 0] corresponding to the local impurity site
+    dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
+    eig_exp = _single_pole_gf_gr_t(tt[..., np.newaxis], dec.xi, beta=beta)
+    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    return gf0_t
+
+
+def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
+    """Noninteracting lesser local Green's function for the impurity.
+
+    Parameters
+    ----------
+    tt : (...) float np.ndarray
+        Time variable. Note that the retarded Green's function is `0` for `tt<0`.
+    e_onsite : (...) float np.ndarray
+        On-site energy of the impurity site.
+    e_bath : (..., Nb) float np.ndarray
+        On-site energy of the bath sites.
+    hopping : (..., Nb) complex np.ndarray
+        Hopping matrix element between impurity and the bath sites.
+    beta : float
+        The inverse temperature :math:`beta = 1/k_B T`.
+
+    Returns
+    -------
+    gf0_loc_le_t : (...) complex np.ndarray
+        Lesser Green's function of the impurity site.
+
+    """
+    broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
+    n_bath = broadcast.shape[-1]
+    ham = np.zeros([*broadcast.shape[:-1], n_bath+1, n_bath+1], dtype=hopping.dtype)
+    ham[..., 0, 0] = e_onsite
+    ham[..., 0, 1:] = hopping
+    ham[..., 1:, 0] = np.conj(hopping)
+    ham[..., np.arange(n_bath)+1, np.arange(n_bath)+1] = e_bath
+
+    dec = decompose_hamiltonian(ham)
+    # calculate only elements [..., 0] corresponding to the local impurity site
+    dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
+    eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.xi, beta=beta)
     gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
     return gf0_t
 

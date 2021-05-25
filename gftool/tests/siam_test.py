@@ -25,3 +25,20 @@ def test_consistency_gf_loc_z_vs_ret_t(args):
                                           hopping[..., None, :])
     gf0_ft_z = gt.fourier.tt2z(tt, gf0_loc_ret_t, z=ww)
     assert np.allclose(gf0_loc_z, gf0_ft_z, rtol=1e-3, atol=1e-4)
+
+
+@given(gufunc_args('(),(),(n),(n)->(l)', dtype=np.float_,
+                   elements=[st.floats(min_value=+0, max_value=1000),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=+0, max_value=1),
+                             ],
+                   max_dims_extra=2, max_side=5),
+       st.floats(min_value=0, exclude_min=True))
+def test_consistency_gf_loc_ret_vs_grle(args, beta):
+    """Check if Laplace transform of `gf0_loc_ret_t` matches `gf0_loc_gr_t`/`gf0_loc_le_t`."""
+    tt, e_onsite, e_bath, hopping = args
+    gf0_loc_ret_t = gt.siam.gf0_loc_ret_t(tt, e_onsite, e_bath, hopping)
+    gf0_loc_gr_t = gt.siam.gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta=beta)
+    gf0_loc_le_t = gt.siam.gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta=beta)
+    assert np.allclose(gf0_loc_ret_t, gf0_loc_gr_t - gf0_loc_le_t)
