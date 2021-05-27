@@ -75,10 +75,10 @@ def test_cpa_occ():
     pot = np.average(e_onsite, weights=concentration) - mu
     occ_coher = gt.density_iw(iws, gf_coher_iw, moments=[1.0, pot], beta=beta)
     assert np.allclose(occ_coher, occ)
-    gf_cmpt_iw = gt.cpa.gf_cmpt_z(iws, self_iw, e_onsite-mu, hilbert_trafo=hilbert).T
+    gf_cmpt_iw = gt.cpa.gf_cmpt_z(iws, self_iw, np.array(e_onsite)-mu, hilbert_trafo=hilbert).T
     occ_cmpt = gt.density_iw(iws, gf_cmpt_iw, moments=[1.0, pot], beta=beta)
     assert np.allclose(np.average(occ_cmpt, weights=concentration), occ)
 
-    self_iw_fxdmu = gt.cpa.solve_root(iws, e_onsite-mu, concentration, hilbert_trafo=hilbert,
-                                      options=dict(fatol=1e-14))
+    self_iw_fxdmu = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, concentration,
+                                      hilbert_trafo=hilbert, options=dict(fatol=1e-14))
     assert np.allclose(self_iw_fxdmu, self_iw)
