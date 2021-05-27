@@ -185,7 +185,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     self_cpa_z0 : (..., N_z) complex np.ndarray, optional
         Starting guess for CPA self-energy.
     restricted : bool, optional
-        Wether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
+        Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
         Note, that even if `restricted=True`, the imaginary part can get negative
         within tolerance. This should be removed by hand if necessary.
     root_kwds
@@ -285,7 +285,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     self_cpa_iw0, mu0 : (..., N_iw) complex np.ndarray and float, optional
         Starting guess for CPA self-energy and chemical potential.
     restricted : bool, optional
-        Wether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
+        Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
         Note, that even if `restricted=True`, the imaginary part can get negative
         within tolerance. This should be removed by hand if necessary.
     root_kwds
@@ -328,7 +328,8 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     check CPA
 
-    >>> self_compare = gt.cpa.solve_root(iws, e_onsite-mu, conc, hilbert_trafo=hilbert)
+    >>> self_compare = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, conc,
+    ...                                  hilbert_trafo=hilbert)
     >>> np.allclose(self_cpa_iw, self_compare, atol=1e-5)
     True
 
