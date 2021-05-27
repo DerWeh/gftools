@@ -26,9 +26,8 @@ setup(
     ],
     url="https://github.com/DerWeh/gftools",
     project_urls={
-        "ReadTheDocs": "https://gftools.readthedocs.io/en/latest/",
+        "ReadTheDocs": "https://gftools.readthedocs.io/",
         "Source Code": "https://github.com/DerWeh/gftools",
-        "Documentation": "https://derweh.github.io/gftools/",
     },
     author="Weh",
     author_email="andreas.weh@physik.uni-augsburg.de",
