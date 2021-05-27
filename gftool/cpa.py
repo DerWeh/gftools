@@ -358,4 +358,4 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         raise RuntimeError(sol.message)
     mu, self_cpa_re, self_cpa_im = _split(sol.x, shapes)
     self_cpa = self_cpa_re - mu + 1j*self_cpa_im
-    return RootFxdocc(self_cpa, mu=mu)
+    return RootFxdocc(self_cpa, mu=mu.item())
