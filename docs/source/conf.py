@@ -12,6 +12,8 @@
 #
 import os
 import sys
+import math
+
 sys.path.insert(0, os.path.abspath('../..'))
 
 import gftool
@@ -34,13 +36,17 @@ if on_rtd:  # RTD modifies `conf.py` file resulting in dirty git
     dirty, gtver = '.dirty', gftool.__version__
     clean_version = gtver[:-len(dirty)] if gtver.endswith(dirty) else gtver
     gftool.__version__ = clean_version
-    version = clean_version
     release = clean_version
+    version = clean_version
 else:
     # The short X.Y version.
     version = gftool.__version__
     # The full version, including alpha/beta/rc tags.
     release = gftool.__version__
+
+commits = int(clean_version.split('+', maxsplit=1)[1].split('.', maxsplit=1)[0])
+if not commits:  # this is a taged version, let's just state the tag
+    version = gftool.__version__.split('+', maxsplit=1)[0]
 
 # -- General configuration ---------------------------------------------------
 
@@ -132,7 +138,6 @@ plot_include_source = True
 plot_html_show_source_link = False
 plot_formats = [('png', 100), 'pdf']
 
-import math
 phi = (math.sqrt(5) + 1)/2
 
 plot_rcparams = {
