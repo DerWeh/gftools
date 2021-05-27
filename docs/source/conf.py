@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 import gftool
 # -- Project information -----------------------------------------------------
 
-project = 'Gftool'
+project = 'GfTool'
 copyright = '2019, Weh Andreas'
 author = 'Weh Andreas'
 today_fmt = '%Y-%m-%d'
