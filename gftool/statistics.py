@@ -225,6 +225,23 @@ def matsubara_frequencies_b(n_points, beta):
     return 2j * np.pi / beta * n_points
 
 
+def _pade_frequencies(num: int):
+    """Temperature independent part, useful for caching."""
+    num = 2*num
+    a = -np.diagflat(range(1, 2*num, 2))
+    b = np.zeros_like(a, dtype=np.float_)
+    np.fill_diagonal(b[1:, :], 0.5)
+    np.fill_diagonal(b[:, 1:], 0.5)
+    eig, v = linalg.eig(a, b=b, overwrite_a=True, overwrite_b=True)
+    sort = np.argsort(eig)
+    izp = 1j*eig[sort]
+    resids = (0.25*v[0]*np.linalg.inv(v)[:, 0]*eig**2)[sort]
+    assert np.allclose(-izp[:num//2][::-1], izp[num//2:])
+    assert np.allclose(resids[:num//2][::-1], resids[num//2:])
+    assert np.all(~np.iscomplex(resids))
+    return izp[num//2:], resids.real[num//2:]
+
+
 def pade_frequencies(num: int, beta):
     """Return `num` *fermionic* Padé frequencies :math:`iz_p`.
 
@@ -277,16 +294,5 @@ def pade_frequencies(num: int, beta):
     array([ 1.        ,  1.00002021,  1.04839303,  2.32178225, 22.12980451])
 
     """
-    num = 2*num
-    a = -np.diagflat(range(1, 2*num, 2))
-    b = np.zeros_like(a, dtype=np.float_)
-    np.fill_diagonal(b[1:, :], 0.5)
-    np.fill_diagonal(b[:, 1:], 0.5)
-    eig, v = linalg.eig(a, b=b, overwrite_a=True, overwrite_b=True)
-    sort = np.argsort(eig)
-    izp = 1j/beta * eig[sort]
-    resids = (0.25*v[0]*np.linalg.inv(v)[:, 0]*eig**2)[sort]
-    assert np.allclose(-izp[:num//2][::-1], izp[num//2:])
-    assert np.allclose(resids[:num//2][::-1], resids[num//2:])
-    assert np.all(~np.iscomplex(resids))
-    return izp[num//2:], resids.real[num//2:]
+    izp, resids = _pade_frequencies(num)
+    return 1/beta * izp, resids
