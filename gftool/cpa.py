@@ -151,7 +151,7 @@ def restrict_self_root_eq(self_cpa_z, *args, **kwds):
     distance = self_cpa_z.imag[unphysical].copy()  # distance to physical solution
     # print('>', max(distance))
     self_cpa_z.imag[unphysical] = 0
-    root = self_root_eq(self_cpa_z, *args, **kwds)
+    root = np.asanyarray(self_root_eq(self_cpa_z, *args, **kwds))
     root[unphysical] *= (1 + distance)  # linearly enlarge residues
     # kill unphysical roots
     root.real[unphysical] += 1e-3 * distance * np.where(root.real[unphysical] >= 0, 1, -1)
