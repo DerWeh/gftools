@@ -107,8 +107,7 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
     """
     gf_coher_z = hilbert_trafo(z - self_cpa_z)
     energy_diff = e_onsite - self_cpa_z[..., np.newaxis]
-    T = np.average(energy_diff / (1 - energy_diff*gf_coher_z[..., np.newaxis]),
-                   weights=concentration, axis=-1)
+    T = np.sum(concentration * energy_diff / (1 - energy_diff*gf_coher_z[..., np.newaxis]), axis=-1)
     return T/(1+T*gf_coher_z)
 
 
@@ -169,20 +168,17 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
     Parameters
     ----------
-    z : (N_z) complex array_like
+    z : (...) complex array_like
         Frequency points.
-    e_onsite : (N_cmpt) float or (..., N_z, N_cmpt) complex np.ndarray
+    e_onsite : (..., N_cmpt) float or complex np.ndarray
         On-site energy of the components. This can also include a local
         frequency dependent self-energy of the component sites.
-        If multiple non-frequency dependent on-site energies should be
-        considered simultaneously, pass an on-site energy with `N_z=1`:
-        `e_onsite[..., np.newaxis, :]`.
     concentration : (..., N_cmpt) float array_like
         Concentration of the different components used for the average.
     hilbert_trafo : Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the coherent Green's
         function.
-    self_cpa_z0 : (..., N_z) complex np.ndarray, optional
+    self_cpa_z0 : (...) complex np.ndarray, optional
         Starting guess for CPA self-energy.
     restricted : bool, optional
         Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
@@ -196,7 +192,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
     Returns
     -------
-    self_cpa_z : (..., N_z) complex np.ndarray
+    self_cpa_z : (...) complex np.ndarray
         The CPA self-energy as the root of `self_root_eq`.
 
     Examples
@@ -225,8 +221,9 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     For `restricted==False`, we made made good experince with the method `'broyden2'`.
 
     """
+    concentration = np.array(concentration)
     if self_cpa_z0 is None:  # static average + 0j to make it complex array
-        self_cpa_z0 = np.average(e_onsite, weights=concentration, axis=-1) + 0j
+        self_cpa_z0 = np.sum(e_onsite * concentration, axis=-1) + 0j
         self_cpa_z0, __ = np.broadcast_arrays(self_cpa_z0, z)
     else:  # make sure that `self_cpa_z0` has right shape of output for root
         output = np.broadcast(z, e_onsite[..., 0], concentration[..., 0], self_cpa_z0)
@@ -259,9 +256,8 @@ class RootFxdocc(NamedTuple):
 
 
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
-                      beta: float, occ: float = None, weights=1, n_fit=0,
-                      self_cpa_iw0=None, mu0: float = 0,
-                      restricted=True, **root_kwds) -> RootFxdocc:
+                      beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
+                      weights=1, n_fit=0, restricted=True, **root_kwds) -> RootFxdocc:
     """Determine the CPA self-energy by solving the root problem for fixed `occ`.
 
     Parameters
@@ -339,7 +335,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     >>> gf_coher_iw = hilbert(iws - self_cpa_iw)
     >>> gt.density_iw(iws, gf_coher_iw, beta=beta, moments=[1, self_cpa_iw[-1].real])
-    0.5000...
+    0.499999...
 
     check CPA
 
@@ -349,8 +345,9 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     True
 
     """
+    concentration = np.asarray(concentration)[..., np.newaxis, :]
     if self_cpa_iw0 is None:  # static average + 0j to make it complex array
-        self_cpa_iw0 = np.average(e_onsite, weights=concentration, axis=-1) - mu0 + 0j
+        self_cpa_iw0 = np.sum(e_onsite * concentration, axis=-1) - mu0 + 0j
         self_cpa_iw0, __ = np.broadcast_arrays(self_cpa_iw0, iws)
     self_cpa_iw0 = self_cpa_iw0 + mu0  # strip contribution of mu
 
@@ -361,7 +358,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         gf_coher_iw = hilbert_trafo(iws - x)
         m2 = x[..., -1].real  # for large iws, real part should static part
         occ_root = density_iw(iws, gf_iw=gf_coher_iw, beta=beta, weights=weights,
-                              moments=np.stack([m1, m2], axis=-1), n_fit=n_fit)
+                              moments=np.stack([m1, m2], axis=-1), n_fit=n_fit).sum()
         return occ_root - occ
 
     mu = chemical_potential(lambda mu: _occ_diff(self_cpa_iw0 - mu), mu0=mu0)

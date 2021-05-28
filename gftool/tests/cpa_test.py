@@ -12,6 +12,11 @@ from hypothesis_gufunc.gufunc import gufunc_args
 from .context import gftool as gt
 
 
+ignore_close_to_root = pytest.mark.filterwarnings(
+    "ignore:(invalid value encountered in double_scalars):RuntimeWarning"
+)
+
+
 @given(gufunc_args('(n)->(n)', dtype=np.complex_,
                    elements=st.complex_numbers(allow_infinity=False, allow_nan=False)))
 def test_trival_cmpt_gf(args):
@@ -59,6 +64,28 @@ def test_restriction(z):
     self_cpa_z = gt.cpa.solve_root(z, e_onsite, concentration, hilbert_trafo=hilbert,
                                    options=dict(fatol=1e-14))
     assert self_cpa_z.imag < +1e-10
+
+
+@ignore_close_to_root
+@given(gufunc_args('(),(n),(n)->()', dtype=complex,
+                   elements=[st.complex_numbers(max_magnitude=1e-3),
+                             st.floats(min_value=-2, max_value=+2),
+                             st.floats(min_value=0, max_value=1), ],
+                   max_dims_extra=2, min_side=2, max_side=4),
+       )
+def test_cpa_interface(args):
+    """Test fixed-occupation CPA for various broadcastable inputs."""
+    hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
+    z, eps, conc = args
+    assume(np.all(conc.sum(axis=-1)) > 0)
+    z = np.where(z.imag < 0, z.conj(), z)
+    z += 1j  # go into imaginary plane where convergences is fast
+    conc /= conc.sum(axis=-1)[..., np.newaxis]
+
+    self_cpa_z = gt.cpa.solve_root(z, e_onsite=eps, concentration=conc, hilbert_trafo=hilbert)
+    gf_z = hilbert(z - self_cpa_z)
+    gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, eps, hilbert_trafo=hilbert)
+    assert np.allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z)
 
 
 def test_cpa_occ_simple():
