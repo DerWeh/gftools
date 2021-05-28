@@ -12,6 +12,7 @@ from gftool.basis.pole import PoleGf
 
 LOGGER = logging.getLogger(__name__)
 
+
 def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 

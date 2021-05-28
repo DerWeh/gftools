@@ -259,7 +259,8 @@ class RootFxdocc(NamedTuple):
 
 
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
-                      beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
+                      beta: float, occ: float = None, weights=1, n_fit=0,
+                      self_cpa_iw0=None, mu0: float = 0,
                       restricted=True, **root_kwds) -> RootFxdocc:
     """Determine the CPA self-energy by solving the root problem for fixed `occ`.
 
@@ -284,6 +285,27 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         Total occupation.
     self_cpa_iw0, mu0 : (..., N_iw) complex np.ndarray and float, optional
         Starting guess for CPA self-energy and chemical potential.
+        `self_cpa_iw0` implicitly contains the chemical potential `mu0`,
+        thus they should match.
+
+    Returns
+    -------
+    root.self_cpa : (..., N_iw) complex np.ndarray
+        The CPA self-energy as the root of `self_root_eq`.
+    root.mu : float
+        Chemical potential for the given occupation `occ`.
+
+    Other Parameters
+    ----------------
+    weights : (N_iw) float np.ndarray, optional
+        Passed to `gftool.density_iw`.
+        Residues of the frequencies with respect to the residues of the
+        Matsubara frequencies `1/beta`. (default: 1.)
+        For Padé frequencies this needs to be provided.
+    n_fit : int, optional
+        Passed to `gftool.density_iw`.
+        Number of additionally fitted moments. If Padé frequencies
+        are used, this is typically not necessary. (default: 0)
     restricted : bool, optional
         Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
         Note, that even if `restricted=True`, the imaginary part can get negative
@@ -293,13 +315,6 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         `method` can be used to choose a solver.
         `options=dict(fatol=tol)` can be specified to set the desired tolerance
         `tol`.
-
-    Returns
-    -------
-    root.self_cpa : (..., N_iw) complex np.ndarray
-        The CPA self-energy as the root of `self_root_eq`.
-    root.mu : float
-        Chemical potential for the given occupation `occ`.
 
     Examples
     --------
