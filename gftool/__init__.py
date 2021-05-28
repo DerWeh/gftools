@@ -33,11 +33,11 @@ Glossary
 
    iv
    iν_n
-      Bosonic Matsubara frequncies
+      Bosonic Matsubara frequencies
 
    iw
    iω_n
-      Fermionic Matusbara frequncies
+      Fermionic Matsubara frequencies
 
    tau
    τ
