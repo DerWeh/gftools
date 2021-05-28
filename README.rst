@@ -81,14 +81,14 @@ matrix
 pade
    * analytic continuation via the Padé algorithm
 
-.. |build-status-master| image:: https://travis-ci.org/DerWeh/gftools.svg?branch=master
-   :target: https://travis-ci.org/DerWeh/gftools
+.. |build-status-master| image:: https://travis-ci.com/DerWeh/gftools.svg?branch=master
+   :target: https://travis-ci.com/DerWeh/gftools
    :alt: Build status master
 .. |codecov-master| image:: https://codecov.io/gh/DerWeh/gftools/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/DerWeh/gftools
    :alt: Coverage master
-.. |build-status-develop| image:: https://travis-ci.org/DerWeh/gftools.svg?branch=develop
-   :target: https://travis-ci.org/DerWeh/gftools
+.. |build-status-develop| image:: https://travis-ci.com/DerWeh/gftools.svg?branch=develop
+   :target: https://travis-ci.com/DerWeh/gftools
    :alt: Build status develop
 .. |codecov-develop| image:: https://codecov.io/gh/DerWeh/gftools/branch/develop/graph/badge.svg
    :target: https://codecov.io/gh/DerWeh/gftools
