@@ -13,6 +13,8 @@ fixing the charge on the real axis directly.
 
 """
 # pylint: disable=too-many-locals
+import logging
+
 from functools import partial
 from typing import Callable, NamedTuple
 
@@ -21,6 +23,9 @@ import numpy as np
 from scipy import optimize
 
 from gftool.density import density_iw, chemical_potential
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _join(*args):
@@ -346,10 +351,11 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     """
     concentration = np.asarray(concentration)[..., np.newaxis, :]
+    e_onsite = np.asarray(e_onsite)
     if self_cpa_iw0 is None:  # static average + 0j to make it complex array
         self_cpa_iw0 = np.sum(e_onsite * concentration, axis=-1) - mu0 + 0j
         self_cpa_iw0, __ = np.broadcast_arrays(self_cpa_iw0, iws)
-    self_cpa_iw0 = self_cpa_iw0 + mu0  # strip contribution of mu
+    self_cpa_nomu = self_cpa_iw0 + mu0  # strip contribution of mu
 
     # TODO: use on-site energy to estimate m2+mu, which only has to be adjusted by mu
     m1 = np.ones_like(self_cpa_iw0[..., -1].real)
@@ -362,8 +368,14 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         return occ_root - occ
 
     mu = chemical_potential(lambda mu: _occ_diff(self_cpa_iw0 - mu), mu0=mu0)
+    LOGGER.debug("VCA chemical potential: %s", mu)
+    # one iteration gives the ATA: average t-matrix approximation
+    self_cpa_nomu = self_fxdpnt_eq(self_cpa_nomu - mu, iws, e_onsite - mu,
+                                   concentration, hilbert_trafo) + mu
+    mu = chemical_potential(lambda mu: _occ_diff(self_cpa_nomu - mu), mu0=mu)
+    LOGGER.debug("ATA chemical potential: %s", mu)
 
-    x0, shapes = _join([mu], self_cpa_iw0.real, self_cpa_iw0.imag)
+    x0, shapes = _join([mu], self_cpa_nomu.real, self_cpa_nomu.imag)
     self_root_eq_ = partial(restrict_self_root_eq if restricted else self_root_eq,
                             z=iws, concentration=concentration, hilbert_trafo=hilbert_trafo)
 
@@ -376,9 +388,18 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
                      self_root.real, self_root.imag)[0]
 
     root_kwds.setdefault("method", "krylov")
+    LOGGER.debug('Search BEB self-energy root')
+    if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
+        # setup LOGGER if no 'callback' is provided
+        root_kwds['callback'] = lambda x, f: LOGGER.debug(
+            'Residue: mu=%+6g   cpa=%6g', f[0], np.linalg.norm(f[1:])
+        )
+
     sol = optimize.root(root_eq, x0=x0, **root_kwds)
+    LOGGER.debug("CPA self-energy root found after %s iterations.", sol.nit)
     if not sol.success:
         raise RuntimeError(sol.message)
     mu, self_cpa_re, self_cpa_im = _split(sol.x, shapes)
     self_cpa = self_cpa_re - mu + 1j*self_cpa_im  # add contribution of mu
+    LOGGER.debug("CPA chemical potential: %s", mu.item())
     return RootFxdocc(self_cpa, mu=mu.item())
