@@ -1,5 +1,6 @@
 """Test CPA."""
 from functools import partial
+from itertools import product
 
 import numpy as np
 import hypothesis.strategies as st
@@ -60,7 +61,7 @@ def test_restriction(z):
     assert self_cpa_z.imag < +1e-10
 
 
-def test_cpa_occ():
+def test_cpa_occ_simple():
     """Simple check if `gt.cpa.solve_fxdocc_root` gives right occupation."""
     beta = 7
     occ = 0.37
@@ -82,3 +83,25 @@ def test_cpa_occ():
     self_iw_fxdmu = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, concentration,
                                       hilbert_trafo=hilbert, options=dict(fatol=1e-14))
     assert np.allclose(self_iw_fxdmu, self_iw)
+
+
+@pytest.mark.parametrize("conc", [(0.5, 0.5), (0.3, 0.7), (0.1, 0.9)])
+def test_cpa_occ(conc):
+    """Test fixed-occupation CPA for a grid of parameters and odd starting points."""
+    beta = 13.5
+    izp, rp = gt.pade_frequencies(50, beta)
+    hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
+    conc = np.array(conc)
+    for occ, delta, mu in product([0.2, 0.4, 0.6, 0.8],
+                                  [0.4, 0.8, 1.2, 1.6],
+                                  [-1.5, -0.5, 0.5, 1.5]):
+        eps = 0.5*np.array([-delta, +delta]) - mu
+        self_izp, mu = gt.cpa.solve_fxdocc_root(
+            izp, eps[..., np.newaxis, :], conc, hilbert_trafo=hilbert, weights=rp,
+            beta=beta, occ=occ,
+        )
+        gf_izp = hilbert(izp - self_izp)
+        pot = np.sum(eps * conc, axis=-1) - mu
+        mom = np.stack([np.ones_like(pot), pot], axis=-1)
+        occ_coher = gt.density_iw(izp, gf_izp, weights=rp, moments=mom, beta=beta).sum()
+        assert occ == pytest.approx(occ_coher, abs=1e-6)

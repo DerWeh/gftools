@@ -50,13 +50,11 @@ Glossary
 import logging
 import warnings
 
-from typing import Callable
 from collections import namedtuple
 
 import numpy as np
 
 from numpy import newaxis
-from scipy import optimize
 
 from . import beb, cpa, fourier, lattice, matrix as gtmatrix
 from ._util import _gu_sum
@@ -125,7 +123,7 @@ from .basis.pole import (gf_z as pole_gf_z,
                          gf_ret_t as pole_gf_ret_t,
                          moments as pole_gf_moments)
 
-from .density import density_iw
+from .density import density_iw, chemical_potential
 
 __version__ = get_versions()['version']
 
@@ -145,7 +143,7 @@ assert all((fcc_dos, fcc_dos_moment, fcc_gf_z, fcc_hilbert_transform))
 assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_frequencies))
 assert all((bose_fct, matsubara_frequencies_b))
 assert all((pole_gf_z, pole_gf_d1_z, pole_gf_tau, pole_gf_ret_t, pole_gf_moments))
-assert density_iw
+assert all((density_iw, chemical_potential))
 
 
 def surface_gf_zeps(z, eps, hopping_nn):
@@ -333,92 +331,6 @@ def pole_gf_tau_b(tau, poles, weights, beta):
         raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
     return _gu_sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles))
-
-
-def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, **kwds) -> float:
-    """Search chemical potential for a given occupation.
-
-    Parameters
-    ----------
-    occ_root : callable
-        Function `occ_root(mu_i) -> occ_i - occ`, which returns the difference
-        in occupation to the desired occupation `occ` for a chemical potential
-        `mu_i`.
-        Note that the sign is important, `occ_i - occ` has to be returned!
-    mu0 : float, optional
-        The starting guess for the chemical potential. (default: 0)
-    step0 : float, optional
-        Starting step-width for the bracket search. A reasonable guess is of
-        the order of the band-width. (default: 1)
-    kwds
-        Additional keyword arguments passed to `scipy.optimize.root_scalar`.
-        Common arguments might be `xtol` or `rtol` for absolute or relative
-        tolerance.
-
-    Returns
-    -------
-    mu : float
-        The chemical potential given the correct charge `occ_root(mu)=0`.
-
-    Raises
-    ------
-    RuntimeError
-        If either no bracket can be found (this should only happen for the
-        complete empty or completely filled case),
-        or if the scalar root search in the bracket fails.
-
-    Notes
-    -----
-    The search for a chemical potential is a two-step procedure:
-    *First*, we search for a bracket `[mua, mub]` with
-    `occ_root(mua) < 0 < occ_root(mub)`. We use that the occupation is a
-    monotonous increasing function of the chemical potential `mu`.
-    *Second*, we perform a standard root-search in `[mua, mub]` which is done
-    using `scipy.optimize.root_scalar`, Brent's method is currently used as
-    default.
-
-    Examples
-    --------
-    We search for the occupation of a simple 3-level system, where the
-    occupation of each level is simply given by the Fermi function:
-
-    >>> occ = 1.67  # desired total occupation
-    >>> BETA = 100  # inverse temperature
-    >>> eps = np.random.random(3)
-    >>> def occ_fct(mu):
-    ...     return gt.fermi_fct(eps - mu, beta=BETA).sum()
-    >>> mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
-    >>> occ_fct(mu), occ
-    (1.67000..., 1.67)
-
-    """
-    # find a bracket
-    delta_occ0 = occ_root(mu0)
-    if delta_occ0 == 0:  # has already correct occupation
-        return mu0
-    sign0 = np.sign(delta_occ0)  # whether occupation is too large or too small
-    step = -step0 * delta_occ0
-
-    mu1 = mu0
-    loops = 0
-    while np.sign(occ_root(mu0 + step)) == sign0:
-        mu1 = mu0 + step
-        step *= 2  # increase step width exponentially till a bounds are found
-        loops += 1
-        if loops > 100:
-            raise RuntimeError("No bracket `occ_root(mua) < 0 < occ_root(mub)` could be found.")
-    bracket = list(sorted([mu1, mu0+step]))
-    LOGGER.debug("Bracket found after %s iterations.", loops)
-    root_res = optimize.root_scalar(occ_root, bracket=bracket, **kwds)
-    if not root_res.converged:
-        runtime_err = RuntimeError(
-            f"Root-search for chemical potential failed after {root_res.iterations}.\n"
-            f"Cause of failure: {root_res.flag}"
-        )
-        runtime_err.mu = root_res.root
-        raise runtime_err
-    LOGGER.debug("Root found after %s additional evaluations.", root_res.function_calls)
-    return root_res.root
 
 
 Result = namedtuple('Result', ['x', 'err'])

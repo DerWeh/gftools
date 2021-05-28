@@ -20,7 +20,7 @@ import numpy as np
 
 from scipy import optimize
 
-from gftool.density import density_iw
+from gftool.density import density_iw, chemical_potential
 
 
 def _join(*args):
@@ -337,26 +337,36 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     if self_cpa_iw0 is None:  # static average + 0j to make it complex array
         self_cpa_iw0 = np.average(e_onsite, weights=concentration, axis=-1) - mu0 + 0j
         self_cpa_iw0, __ = np.broadcast_arrays(self_cpa_iw0, iws)
-    x0, shapes = _join([mu0], self_cpa_iw0.real, self_cpa_iw0.imag)
+    self_cpa_iw0 = self_cpa_iw0 + mu0  # strip contribution of mu
+
+    # TODO: use on-site energy to estimate m2+mu, which only has to be adjusted by mu
+    m1 = np.ones_like(self_cpa_iw0[..., -1].real)
+
+    def _occ_diff(x):
+        gf_coher_iw = hilbert_trafo(iws - x)
+        m2 = x[..., -1].real  # for large iws, real part should static part
+        occ_root = density_iw(iws, gf_iw=gf_coher_iw, beta=beta, weights=weights,
+                              moments=np.stack([m1, m2], axis=-1), n_fit=n_fit)
+        return occ_root - occ
+
+    mu = chemical_potential(lambda mu: _occ_diff(self_cpa_iw0 - mu), mu0=mu0)
+
+    x0, shapes = _join([mu], self_cpa_iw0.real, self_cpa_iw0.imag)
     self_root_eq_ = partial(restrict_self_root_eq if restricted else self_root_eq,
                             z=iws, concentration=concentration, hilbert_trafo=hilbert_trafo)
-    m1 = np.ones_like(self_cpa_iw0[..., -1].real)
-    # TODO: use on-site energy to estimate m2+mu, which only has to be adjusted by mu
 
     def root_eq(mu_selfcpa):
         mu, self_cpa_re, self_cpa_im = _split(mu_selfcpa, shapes)
-        self_cpa = self_cpa_re + 1j*self_cpa_im - mu
+        self_cpa = self_cpa_re + 1j*self_cpa_im - mu  # add contribution of mu
         self_root = self_root_eq_(self_cpa, e_onsite=e_onsite - mu)
-        gf_coher_iw = hilbert_trafo(iws - self_cpa)
-        m2 = self_cpa[..., -1].real  # for large iws, real part should static part
-        occ_root = density_iw(iws, gf_iw=gf_coher_iw, beta=beta,
-                              moments=np.stack([m1, m2], axis=-1))
-        return _join([occ_root - occ], self_root.real, self_root.imag)[0]
+        occ_root = _occ_diff(self_cpa)
+        return _join([self_root.size*occ_root],
+                     self_root.real, self_root.imag)[0]
 
-    root_kwds.setdefault("method", "df-sane")
+    root_kwds.setdefault("method", "krylov")
     sol = optimize.root(root_eq, x0=x0, **root_kwds)
     if not sol.success:
         raise RuntimeError(sol.message)
     mu, self_cpa_re, self_cpa_im = _split(sol.x, shapes)
-    self_cpa = self_cpa_re - mu + 1j*self_cpa_im
+    self_cpa = self_cpa_re - mu + 1j*self_cpa_im  # add contribution of mu
     return RootFxdocc(self_cpa, mu=mu.item())
