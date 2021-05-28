@@ -132,3 +132,29 @@ def test_cpa_occ(conc):
         mom = np.stack([np.ones_like(pot), pot], axis=-1)
         occ_coher = gt.density_iw(izp, gf_izp, weights=rp, moments=mom, beta=beta).sum()
         assert occ == pytest.approx(occ_coher, abs=1e-6)
+
+
+@given(gufunc_args('(n),(n)->()', dtype=float,
+                   elements=[st.floats(min_value=-2, max_value=+2),
+                             st.floats(min_value=0, max_value=1), ],
+                   max_dims_extra=2, min_side=2, max_side=4),
+       st.floats(min_value=0.3, max_value=0.7))
+def test_cpa_occ_interface(args, occ):
+    """Test fixed-occupation CPA for various broadcastable inputs."""
+    beta = 13.5
+    izp, rp = gt.pade_frequencies(50, beta)
+    hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
+    eps, conc = args
+    assume(np.all(conc.sum(axis=-1)) > 0)
+    conc /= conc.sum(axis=-1)[..., np.newaxis]
+    occ *= conc[..., 0].size
+
+    self_izp, mu = gt.cpa.solve_fxdocc_root(
+        izp, eps[..., np.newaxis, :], conc, hilbert_trafo=hilbert, weights=rp,
+        beta=beta, occ=occ, options=dict(fatol=1e-8)
+    )
+    gf_izp = hilbert(izp - self_izp)
+    pot = np.sum(eps * conc, axis=-1) - mu
+    mom = np.stack([np.ones_like(pot), pot], axis=-1)
+    occ_coher = gt.density_iw(izp, gf_izp, weights=rp, moments=mom, beta=beta).sum()
+    assert occ == pytest.approx(occ_coher, abs=1e-6)
