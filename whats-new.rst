@@ -3,6 +3,22 @@
 What's New
 ==========
 
+0.9.1 (2021-06-01)
+------------------
+
+Bug fixes
+~~~~~~~~~
+CPA:
+
+* return scalar `mu` in `gftool.cpa.solve_fxdocc_root` (:commit:`10fae4d`)
+* find `mu` more reliably
+
+Other New Features
+~~~~~~~~~~~~~~~~~~
+* SIAM: add greater and lesser Green's functions
+  `~gftool.siam.gf0_loc_gr_t` and `~gftool.siam.gf0_loc_le_t` (:commit:`ea541f3`)
+
+
 0.9.0 (2021-05-09)
 ------------------
 
