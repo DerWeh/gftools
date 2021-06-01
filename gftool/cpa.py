@@ -190,7 +190,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
         Note, that even if `restricted=True`, the imaginary part can get negative
         within tolerance. This should be removed by hand if necessary.
     root_kwds
-        Additional arguments passed to `optimize.root`.
+        Additional arguments passed to `scipy.optimize.root`.
         `method` can be used to choose a solver.
         `options=dict(fatol=tol)` can be specified to set the desired tolerance
         `tol`.
@@ -312,7 +312,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         Note, that even if `restricted=True`, the imaginary part can get negative
         within tolerance. This should be removed by hand if necessary.
     root_kwds
-        Additional arguments passed to `optimize.root`.
+        Additional arguments passed to `scipy.optimize.root`.
         `method` can be used to choose a solver.
         `options=dict(fatol=tol)` can be specified to set the desired tolerance
         `tol`.
