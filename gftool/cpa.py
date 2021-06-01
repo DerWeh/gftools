@@ -367,7 +367,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
                               moments=np.stack([m1, m2], axis=-1), n_fit=n_fit).sum()
         return occ_root - occ
 
-    mu = chemical_potential(lambda mu: _occ_diff(self_cpa_iw0 - mu), mu0=mu0)
+    mu = chemical_potential(lambda mu: _occ_diff(self_cpa_nomu - mu), mu0=mu0)
     LOGGER.debug("VCA chemical potential: %s", mu)
     # one iteration gives the ATA: average t-matrix approximation
     self_cpa_nomu = self_fxdpnt_eq(self_cpa_nomu - mu, iws, e_onsite - mu,
