@@ -15,6 +15,9 @@ from .context import gftool as gt
 ignore_close_to_root = pytest.mark.filterwarnings(
     "ignore:(invalid value encountered in double_scalars):RuntimeWarning"
 )
+ignore_illconditioned = pytest.mark.filterwarnings(
+    "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"
+)
 
 
 @given(gufunc_args('(n)->(n)', dtype=np.complex_,
@@ -88,6 +91,22 @@ def test_cpa_interface(args):
     assert np.allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z)
 
 
+@ignore_illconditioned
+@pytest.mark.parametrize("z", [np.linspace(-5, 5, num=251) + 1e-2j,
+                               gt.matsubara_frequencies(range(256), beta=13)])
+def test_cpa(z):
+    """Test fixed-occupation CPA for a grid of parameters and odd starting points."""
+    hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
+    for conc, delta, mu in product([(0.5, 0.5), (0.3, 0.7), (0.1, 0.9)],  # conentration
+                                   [0.4, 0.8, 1.2, 1.6],  # disorder strength
+                                   [-1.5, -0.5, 0.5, 1.5]):  # chemical potential/filling
+        eps = 0.5*np.array([-delta, +delta]) - mu
+        self_cpa_z = gt.cpa.solve_root(z, eps, conc, hilbert_trafo=hilbert)
+        gf_z = hilbert(z - self_cpa_z)
+        gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, eps, hilbert_trafo=hilbert)
+        assert np.allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-4)
+
+
 def test_cpa_occ_simple():
     """Simple check if `gt.cpa.solve_fxdocc_root` gives right occupation."""
     beta = 7
@@ -119,9 +138,9 @@ def test_cpa_occ(conc):
     izp, rp = gt.pade_frequencies(50, beta)
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
     conc = np.array(conc)
-    for occ, delta, mu in product([0.2, 0.4, 0.6, 0.8],
-                                  [0.4, 0.8, 1.2, 1.6],
-                                  [-1.5, -0.5, 0.5, 1.5]):
+    for occ, delta, mu in product([0.2, 0.4, 0.6, 0.8],  # occupation
+                                  [0.4, 0.8, 1.2, 1.6],  # disorder strength
+                                  [-1.5, -0.5, 0.5, 1.5]):  # chemical potential
         eps = 0.5*np.array([-delta, +delta]) - mu
         self_izp, mu = gt.cpa.solve_fxdocc_root(
             izp, eps[..., np.newaxis, :], conc, hilbert_trafo=hilbert, weights=rp,
