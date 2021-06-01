@@ -200,6 +200,11 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     self_cpa_z : (...) complex np.ndarray
         The CPA self-energy as the root of `self_root_eq`.
 
+    Raises
+    ------
+    RuntimeError
+        If unable to find a solution.
+
     Examples
     --------
     >>> from functools import partial
@@ -221,9 +226,9 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
     Notes
     -----
-    For `restricted==True` root-serach, we made good experince with the methods
+    For `restricted=True` root-serach, we made good experince with the methods
     `'anderson'`, `'krylov'` and `'df-sane'`.
-    For `restricted==False`, we made made good experince with the method `'broyden2'`.
+    For `restricted=False`, we made made good experince with the method `'broyden2'`.
 
     """
     concentration = np.array(concentration)
@@ -269,7 +274,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     ----------
     iws : (N_iw) complex array_like
         Positive fermionic Matsubara frequencies.
-    e_onsite : (N_cmpt) float or (..., N_z, N_cmpt) complex np.ndarray
+    e_onsite : (N_cmpt) float or (..., N_iw, N_cmpt) complex np.ndarray
         On-site energy of the components. This can also include a local
         frequency dependent self-energy of the component sites.
         If multiple non-frequency dependent on-site energies should be
@@ -316,6 +321,15 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
         `method` can be used to choose a solver.
         `options=dict(fatol=tol)` can be specified to set the desired tolerance
         `tol`.
+
+    Raises
+    ------
+    RuntimeError
+        If unable to find a solution.
+
+    See Also
+    --------
+    solve_root
 
     Examples
     --------
