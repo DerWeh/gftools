@@ -44,14 +44,18 @@ else:
     # The full version, including alpha/beta/rc tags.
     release = gftool.__version__
 
-commits = gftool.__version__.split('+', maxsplit=1)[1].split('.', maxsplit=1)[0]
-try:
-    commits = int(commits)
-except ValueError:
-    pass
-else:
-    if not commits:  # this is a taged version, let's just state the tag
-        version = gftool.__version__.split('+', maxsplit=1)[0]
+
+try:  # clean the version if it gets dirtied e.g. by RTD
+    commits = gftool.__version__.split('+', maxsplit=1)[1].split('.', maxsplit=1)[0]
+    try:
+        commits = int(commits)
+    except ValueError:
+        pass
+    else:
+        if not commits:  # this is a tagged version, let's just state the tag
+            version = gftool.__version__.split('+', maxsplit=1)[0]
+except IndexError:
+    pass  # apparently we have already only the tag
 
 # -- General configuration ---------------------------------------------------
 
