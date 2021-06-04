@@ -56,7 +56,7 @@ The documentation of specific branches can also be accessed:
 `master doc`_, `develop doc`_.
 There is also a GitHub page: `documentation`_.
 
-Currently the packages main content is
+Currently, the package's main content is
 
 gftool
    * collection of non-interacting Green's functions and spectral functions,
@@ -72,7 +72,7 @@ cpa/beb
 fourier
    * Fourier transforms from Matsubara frequencies to imaginary time and back,
      including the handling of high-frequencies moments
-     (especially import for transforms from Matsubara to imaginary time)
+     (especially important for transforms from Matsubara to imaginary time)
    * Laplace transform from real times to complex frequencies
 
 matrix
