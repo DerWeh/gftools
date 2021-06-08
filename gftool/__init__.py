@@ -56,7 +56,7 @@ import numpy as np
 
 from numpy import newaxis
 
-from . import beb, cpa, fourier, lattice, matrix as gtmatrix
+from . import beb, cpa, fourier, lattice, matrix as gtmatrix, linearprediction
 from ._util import _gu_sum
 from ._version import get_versions
 
@@ -130,7 +130,7 @@ __version__ = get_versions()['version']
 LOGGER = logging.getLogger(__name__)
 
 # silence warnings of unused imports
-assert all((beb, cpa, fourier, lattice))
+assert all((beb, cpa, fourier, lattice, linearprediction))
 assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
             bethe_gf_z, bethe_hilbert_transform))
 assert all((onedim_dos, onedim_dos_moment, onedim_gf_z, onedim_hilbert_transform))
