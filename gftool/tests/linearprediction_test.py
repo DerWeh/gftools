@@ -58,3 +58,18 @@ def test_pcoeff_burg_implementation():
     cmp_a, cmp_sig2 = lp.pcoeff_burg(x, 10)
     assert np.allclose(A, cmp_a, atol=5e-4)
     assert np.allclose(SIG2, cmp_sig2, atol=1e-4)
+
+
+def test_simple_extrapolation():
+    """Extrapolate retarded Green's function of a box-like SIAM."""
+    tt = np.linspace(0, 100, num=1001)
+    # consider a box-like hybridization
+    eps_0 = np.array(0.25)
+    eps_b = np.linspace(-2, 2, num=1000)
+    V = np.ones_like(eps_b)
+    gf_ret_t = gt.siam.gf0_loc_ret_t(tt, eps_0, e_bath=eps_b, hopping=V)
+    # try to extrapolate second half from first half
+    gf_half = gf_ret_t[:tt.size//2+1]
+    pcoeff, __ = lp.pcoeff_burg(gf_half, order=tt.size//4)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size//2)
+    np.allclose(gf_ret_t, gf_pred, atol=5e-3)
