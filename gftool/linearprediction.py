@@ -12,7 +12,7 @@ References
 import numpy as np
 
 
-def pcoeff_burg(x, m: int):
+def pcoeff_burg(x, order: int):
     """Burg's method for linear prediction (LP) coefficients.
 
     Burg's method calculates the coefficients from an estimate of the reflection
@@ -23,12 +23,12 @@ def pcoeff_burg(x, m: int):
     ----------
     x : (N) complex np.ndarray
         Data of the (time) series to be predicted.
-    m : int
+    order : int
         Prediction order, has to be smaller then `N`.
 
     Returns
     -------
-    a : (m) complex np.ndarray
+    a : (order) complex np.ndarray
         Prediction coefficients
     rho : float
         Variance estimate.
@@ -40,12 +40,12 @@ def pcoeff_burg(x, m: int):
 
     """
     N = x.shape[-1]
-    rho = np.full(m+1, np.nan)
+    rho = np.full(order+1, np.nan)
     rho[0] = np.sum(abs(x)**2) / N
     eforw = x[1:]
     eback = x[:-1]
-    a = np.full([m, m], np.nan, dtype=complex)
-    for k in range(1, m+1):
+    a = np.full([order, order], np.nan, dtype=complex)
+    for k in range(1, order+1):
         # eq (7.38)
         numer = -2*np.sum(eforw*np.conj(eback))
         # eq (7.42) for more efficient denom
@@ -63,3 +63,30 @@ def pcoeff_burg(x, m: int):
     sig2 = rho[-1]
     a = a[-1]
     return a, sig2
+
+
+def predict(x, pcoeff, num: int):
+    """Forward-predict a series additional `num` steps.
+
+    Parameters
+    ----------
+    x : (N) complex np.ndarray
+        Data of the (time) series to be predicted.
+    pcoeff : (order) complex np.ndarray
+        Prediction coefficients
+    num : int
+        Number of additional (time) steps.
+
+    Returns
+    -------
+    px : (N+num) complex np.ndarray
+        Data of the (time) series extended by `num` steps, with
+        `px[:x.size] = x`.
+
+    """
+    start = x.size
+    order = pcoeff.size
+    xtended = np.concatenate([x, np.full(num, np.nan)], axis=-1)
+    for ii in range(start, start+num):
+        xtended[ii] = -np.sum(pcoeff[::-1] * xtended[ii-order:ii])
+    return xtended
