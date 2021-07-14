@@ -11,8 +11,11 @@ inverse Green's functions take the simple form:
     (G^{-1}(iω))_{ij} &= t_{ij} \quad \text{for } i ≠ j
 
 """
-from collections.abc import Sequence
+from __future__ import annotations
+
 from functools import partial
+from dataclasses import dataclass
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -20,12 +23,13 @@ import numpy as np
 transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 
+@dataclass
 class Decomposition(Sequence):
     """Decomposition of a Matrix into eigenvalues and eigenvectors.
 
     This class holds the eigenvalues and eigenvectors of the decomposition of a
     matrix and offers methods to reconstruct it.
-    The intended use case is to use the `Decomposition` for the inversion of
+    One intended use case is to use the `Decomposition` for the inversion of
     the Green's function to calculate it from the resolvent.
 
     The order of the attributes is always `rv, xi, rv_inv`, as this gives the
@@ -34,7 +38,7 @@ class Decomposition(Sequence):
     Attributes
     ----------
     rv : (..., N, N) complex np.ndarray
-        The matrix of right eigenvalues.
+        The matrix of right eigenvectors.
     xi : (..., N) complex np.ndarray
         The vector of eigenvalues.
     rv_inv : (..., N, N) complex np.ndarray
@@ -44,22 +48,9 @@ class Decomposition(Sequence):
 
     __slots__ = ('rv', 'xi', 'rv_inv')
 
-    def __init__(self, rv, xi, rv_inv):
-        """Assign the attributes obtained from a matrix digitalization.
-
-        Parameters
-        ----------
-        rv : (..., N, N) complex np.ndarray
-            The matrix of right eigenvectors.
-        xi : (..., N) complex np.ndarray
-            The vector of eigenvalues
-        rv_inv : (..., N, N) complex np.ndarray
-            The inverse of `rv`.
-
-        """
-        self.rv = rv
-        self.xi = xi
-        self.rv_inv = rv_inv
+    rv: np.ndarray
+    xi: np.ndarray
+    rv_inv: np.ndarray
 
     @classmethod
     def from_hamiltonian(cls, hamilton):
@@ -84,7 +75,7 @@ class Decomposition(Sequence):
         return decompose_hamiltonian(hamilton)
 
     @classmethod
-    def from_gf(cls, gf):
+    def from_gf(cls, gf) -> Decomposition:
         r"""Decompose the inverse Green's function matrix.
 
         The similarity transformation:
@@ -137,14 +128,14 @@ class Decomposition(Sequence):
             return np.asfortranarray((self.rv * xi[..., np.newaxis, :])) @ self.rv_inv
         return np.einsum(kind, self.rv, xi, self.rv_inv)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int):
         """Make `Decomposition` behave like the tuple `(rv, xi, rv_inv)`."""
         return (self.rv, self.xi, self.rv_inv)[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return 3
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
 
 
@@ -208,8 +199,7 @@ def decompose_hamiltonian(hamilton) -> Decomposition:
 def construct_gf(rv, diag_inv, rv_inv):
     r"""Construct Green's function from decomposition of its inverse.
 
-    .. math::
-        G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
+    .. math:: G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
 
     Parameters
     ----------
