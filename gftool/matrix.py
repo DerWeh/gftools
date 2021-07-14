@@ -139,6 +139,67 @@ class Decomposition(Sequence):
         return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
 
 
+@dataclass  # pylint: disable=too-many-ancestors
+class UDecomposition(Decomposition):
+    """Unitary decomposition of a Matrix into eigenvalues and eigenvectors.
+
+    This class holds the eigenvalues and eigenvectors of the decomposition of a
+    matrix and offers methods to reconstruct it.
+    One intended use case is to use the `Decomposition` for the inversion of
+    the Green's function to calculate it from the resolvent.
+
+    The order of the attributes is always `rv, xi, rv_inv`, as this gives the
+    reconstruct of the matrix:  `mat = (rv * xi) @ rv_inv`
+
+    Attributes
+    ----------
+    rv : (..., N, N) complex np.ndarray
+        The matrix of right eigenvectors.
+    xi : (..., N) float np.ndarray
+        The vector of real eigenvalues.
+    rv_inv : (..., N, N) complex np.ndarray
+        The inverse of `rv`.
+
+    """
+
+    @property
+    def u(self):
+        """Unitary matrix of right eigenvectors, same as `rv`."""
+        return self.rv
+
+    @property
+    def uh(self):
+        """Hermitian conjugate of unitary matrix of right eigenvectors, same as `rv_inv`."""
+        return self.rv_inv
+
+    @property
+    def s(self):
+        """Singular values."""
+        return np.sort(abs(self.xi))[::-1]
+
+    @classmethod
+    def from_hamiltonian(cls, hamilton) -> UDecomposition:
+        r"""Decompose the Hamiltonian matrix.
+
+        The similarity transformation:
+
+        .. math:: H = U Λ U^†,    Λ = diag(λ_l)
+
+        Parameters
+        ----------
+        hamilton : (..., N, N) complex np.ndarray
+            Hermitian matrix to be decomposed
+
+        Returns
+        -------
+        Decomposition
+
+        """
+        if isinstance(hamilton, cls):
+            return hamilton
+        return decompose_hamiltonian(hamilton)
+
+
 def decompose_gf(g_inv) -> Decomposition:
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
@@ -167,7 +228,7 @@ def decompose_gf(g_inv) -> Decomposition:
     return Decomposition(rv=rv, xi=h, rv_inv=np.linalg.inv(rv))
 
 
-def decompose_hamiltonian(hamilton) -> Decomposition:
+def decompose_hamiltonian(hamilton) -> UDecomposition:
     r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
 
     The similarity transformation:
@@ -193,7 +254,7 @@ def decompose_hamiltonian(hamilton) -> Decomposition:
     if isinstance(hamilton, Decomposition):
         return hamilton
     h, rv = np.linalg.eigh(hamilton)
-    return Decomposition(rv=rv, xi=h, rv_inv=np.swapaxes(rv.conj(), -2, -1))
+    return UDecomposition(rv=rv, xi=h, rv_inv=transpose(rv.conj()))
 
 
 def construct_gf(rv, diag_inv, rv_inv):
