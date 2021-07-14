@@ -3,6 +3,15 @@
 What's New
 ==========
 
+0.10.0 (not released)
+---------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+* Drop support for Python 3.6, minimal version is now 3.7
+
+
+
 0.9.1 (2021-06-01)
 ------------------
 

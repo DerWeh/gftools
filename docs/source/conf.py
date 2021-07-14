@@ -169,7 +169,7 @@ plot_rcparams = {
 # Intersphinx
 # -----------------------------------------------------------------------------
 # taken from https://gist.github.com/bskinn/0e164963428d4b51017cebdb6cda5209
-intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
+intersphinx_mapping = {'python': ('https://docs.python.org/3.9', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'np': ('http://docs.scipy.org/doc/numpy/', None),
