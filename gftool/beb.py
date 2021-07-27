@@ -3,7 +3,7 @@
 It extends CPA allowing for random hopping amplitudes. [blackman1971]_
 
 The implementation is based on a SVD of the `hopping` matrix,
-which is the dimensionless scaling of the hopping of the components.
+which is the dimensionless scaling of the hopping of the components. [weh2021]_
 
 Physical quantities
 -------------------
@@ -27,6 +27,11 @@ References
    Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.
    Generalized Locator---Coherent-Potential Approach to Binary Alloys.
    Phys. Rev. B 4, 2412–2428. https://doi.org/10.1103/PhysRevB.4.2412
+.. [weh2021] Weh, A., Zhang, Y., Östlin, A., Terletska, H., Bauernfeind, D.,
+   Tam, K.-M., Evertz, H.G., Byczuk, K., Vollhardt, D., Chioncel, L., 2021.
+   Dynamical mean-field theory of the Anderson--Hubbard model with local and
+   nonlocal disorder in tensor formulation. Phys. Rev. B 104, 045127.
+   https://doi.org/10.1103/PhysRevB.104.045127
 
 
 Examples
