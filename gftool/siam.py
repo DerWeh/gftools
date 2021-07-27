@@ -165,8 +165,6 @@ def hamiltonian_matrix(e_onsite, e_bath, hopping):
         On-site energy of the bath sites.
     hopping : (..., Nb) complex np.ndarray
         Hopping matrix element between impurity and the bath sites.
-    beta : float
-        The inverse temperature :math:`beta = 1/k_B T`.
 
     Returns
     -------
