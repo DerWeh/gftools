@@ -179,28 +179,6 @@ class UDecomposition(Decomposition):
         """Singular values."""
         return np.sort(abs(self.eig))[::-1]
 
-    @classmethod
-    def from_hamiltonian(cls, hamilton) -> UDecomposition:
-        r"""Decompose the Hamiltonian matrix.
-
-        The similarity transformation:
-
-        .. math:: H = U Λ U^†,    Λ = diag(λ_l)
-
-        Parameters
-        ----------
-        hamilton : (..., N, N) complex np.ndarray
-            Hermitian matrix to be decomposed
-
-        Returns
-        -------
-        Decomposition
-
-        """
-        if isinstance(hamilton, cls):
-            return hamilton
-        return decompose_hamiltonian(hamilton)
-
 
 def decompose_mat(mat) -> Decomposition:
     r"""Decompose matrix `mat` into eigenvalues and (right) eigenvectors.
