@@ -1,14 +1,43 @@
 # encoding: utf-8
 r"""Functions to work with Green's functions in matrix from.
 
-In the limit of infinite coordination number the self-energy becomes local,
-inverse Green's functions take the simple form:
+A main use case of this library is the calculation of the Green's function
+as the resolvent of the Hermitian or from Dyson equation.
+Instead of calculating the inverse for every frequency/k-point it is oftentimes
+more efficient, to calculate an eigendecomposition once.
 
-.. math::
+For example, let us calculate the Green's function for 1D tight-binding chain
+using:
 
-    (G^{-1}(iω))_{ii} &= iω - μ_i - t_{ii} - Σ_i(iω)
+.. math:: G(z) = [1z - H]^{-1} = [1z - UλU^†]^{-1} = U [z-λ]^{-1} U^†
 
-    (G^{-1}(iω))_{ij} &= t_{ij} \quad \text{for } i ≠ j
+>>> N = 51  # system size
+>>> t = 1   # hopping amplitude
+>>> hamilton = np.zeros((N, N))
+>>> row, col = np.diag_indices(N)
+>>> hamilton[row[:-1], col[1:]] = hamilton[row[1:], col[:-1]] = -t
+
+>>> ww = np.linspace(-2.5, 2.5, num=201) + 1e-1j
+>>> dec = gt.matrix.decompose_her(hamilton)
+>>> gf_ww = dec.reconstruct(eig=1.0/(ww[:, np.newaxis] - dec.eig))
+
+Let's check that it agrees with the inversion:
+
+>>> gf_inv = np.linalg.inv(np.eye(N)*ww[0] - hamilton)
+>>> np.allclose(gf_ww[0], gf_inv)
+True
+
+If we only need the diagonal (local) elements, we can calculate them using:
+
+>>> gf_ww = dec.reconstruct(eig=1.0/(ww[:, np.newaxis] - dec.eig), kind='diag')
+
+Recommended functions
+---------------------
+
+* `decompose_mat` to create `Decomposition` of general matrices
+* `decompose_her` to create `UDecomposition` of Hermitian matrices
+
+Rest are mostly legacy functions.
 
 """
 from __future__ import annotations
@@ -21,13 +50,14 @@ from collections.abc import Sequence
 
 import numpy as np
 
-
 transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 
 @dataclass
 class Decomposition(Sequence):
-    """Decomposition of a Matrix into eigenvalues and eigenvectors.
+    """Decomposition of a matrix into eigenvalues and eigenvectors.
+
+    .. math:: M = P Λ P^{-1}, Λ = diag(λ₀, λ₁, …)
 
     This class holds the eigenvalues and eigenvectors of the decomposition of a
     matrix and offers methods to reconstruct it.
@@ -37,7 +67,7 @@ class Decomposition(Sequence):
     The order of the attributes is always `rv, eig, rv_inv`, as this gives the
     reconstruct of the matrix:  `mat = (rv * eig) @ rv_inv`
 
-    Attributes
+    Parameters
     ----------
     rv : (..., N, N) complex np.ndarray
         The matrix of right eigenvectors.
@@ -46,13 +76,28 @@ class Decomposition(Sequence):
     rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
 
+    Examples
+    --------
+    Perform the eigendecomposition:
+
+    >>> matrix = np.random.random((10, 10))
+    >>> dec = gt.matrix.decompose_mat(matrix)
+    >>> np.allclose(matrix, dec.reconstruct())
+    True
+
+    Inversion of matrix
+
+    >>> matrix_inv = dec.reconstruct(eig=1.0/dec.eig)
+    >>> np.allclose(np.linalg.inv(matrix), matrix_inv)
+    True
+
     """
 
     __slots__ = ('rv', 'eig', 'rv_inv')
 
-    rv: np.ndarray
-    eig: np.ndarray
-    rv_inv: np.ndarray
+    rv: np.ndarray  #: The matrix of right eigenvectors.
+    eig: np.ndarray  #: The vector of eigenvalues.
+    rv_inv: np.ndarray  #: The inverse of `rv`.
 
     @classmethod
     def from_hamiltonian(cls, hamilton):
@@ -113,7 +158,7 @@ class Decomposition(Sequence):
             Defines how to reconstruct the matrix. If `kind` is 'diag',
             only the diagonal elements are computed, if it is 'full' the
             complete matrix is returned.
-            Alternatively a `str` used for subscript of `np.einsum` can be given.
+            Alternatively a `str` used for subscript of `numpy.einsum` can be given.
 
         Returns
         -------
@@ -143,17 +188,19 @@ class Decomposition(Sequence):
 
 @dataclass  # pylint: disable=too-many-ancestors
 class UDecomposition(Decomposition):
-    """Unitary decomposition of a Matrix into eigenvalues and eigenvectors.
+    """Unitary decomposition of a matrix into eigenvalues and eigenvectors.
+
+    .. math:: H = U Λ U^†,    Λ = diag(λₗ)
 
     This class holds the eigenvalues and eigenvectors of the decomposition of a
     matrix and offers methods to reconstruct it.
-    One intended use case is to use the `Decomposition` for the inversion of
+    One intended use case is to use the `UDecomposition` for the inversion of
     the Green's function to calculate it from the resolvent.
 
     The order of the attributes is always `rv, eig, rv_inv`, as this gives the
     reconstruct of the matrix: `mat = (rv * eig) @ rv_inv`
 
-    Attributes
+    Parameters
     ----------
     rv : (..., N, N) complex np.ndarray
         The matrix of right eigenvectors.
@@ -161,6 +208,37 @@ class UDecomposition(Decomposition):
         The vector of real eigenvalues.
     rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
+
+    Attributes
+    ----------
+    u
+        Alias for unitary `rv`.
+    uh
+        Alias for `rv_inv`, this is the Hermitian conjugate of `u`:
+        `uh == u.conj().T`
+
+    Examples
+    --------
+    Perform the eigendecomposition:
+
+    >>> matrix = np.random.random((10, 10)) + 1j*np.random.random((10, 10))
+    >>> matrix = 0.5*(matrix + matrix.conj().T)
+    >>> dec = gt.matrix.decompose_her(matrix)
+    >>> np.allclose(matrix, dec.reconstruct())
+    True
+
+    Inversion of matrix
+
+    >>> matrix_inv = dec.reconstruct(eig=1.0/dec.eig)
+    >>> np.allclose(np.linalg.inv(matrix), matrix_inv)
+    True
+
+    The similarity transformation is unitary:
+
+    >>> np.allclose(dec.u.conj().T, dec.uh)
+    True
+    >>> np.allclose(dec.u @ dec.u.conj().T, np.eye(*matrix.shape))
+    True
 
     """
 
@@ -176,7 +254,7 @@ class UDecomposition(Decomposition):
 
     @property
     def s(self):
-        """Singular values."""
+        """Singular values in descending order, different from order of `eig`."""
         return np.sort(abs(self.eig))[::-1]
 
 
@@ -351,6 +429,8 @@ def construct_gf(rv, diag_inv, rv_inv):
     r"""Construct Green's function from decomposition of its inverse.
 
     .. math:: G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
+
+    It is recommended to directly use `Decomposition.reconstruct` instead.
 
     Parameters
     ----------
