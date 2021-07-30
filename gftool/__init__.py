@@ -436,7 +436,7 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
         assert gf_iw.ndim == 1
 
     if matrix:
-        dec = gtmatrix.decompose_hamiltonian(potential)
+        dec = gtmatrix.decompose_her(potential)
         eig = dec.eig
         tail = dec.reconstruct(1./np.add.outer(iw, eig), kind='diag')
         tail = np.moveaxis(tail, source=0, destination=-1)
@@ -565,7 +565,7 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
 
     if matrix:
-        dec = gtmatrix.decompose_hamiltonian(potential)
+        dec = gtmatrix.decompose_her(potential)
         tail = dec.reconstruct(1./np.add.outer(dec.eig, iw), kind='diag')
     else:
         tail = 1/np.add.outer(potential, iw)

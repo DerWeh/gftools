@@ -13,6 +13,8 @@ inverse Green's functions take the simple form:
 """
 from __future__ import annotations
 
+import warnings
+
 from functools import partial
 from dataclasses import dataclass
 from collections.abc import Sequence
@@ -200,12 +202,121 @@ class UDecomposition(Decomposition):
         return decompose_hamiltonian(hamilton)
 
 
+def decompose_mat(mat) -> Decomposition:
+    r"""Decompose matrix `mat` into eigenvalues and (right) eigenvectors.
+
+    Decompose the `mat` into `rv, eig, rv_inv`, with `mat = (rv * eig) @ rv_inv`.
+    This is the similarity transformation:
+
+    .. math:: M = P Λ P^{-1}, Λ = diag(λ₀, λ₁, …)
+
+    where :math:`λₗ` are the eigenvalues and :math:`P` the matrix of right
+    eigenvectors returned as `rv`.
+    Internally, this is just a wrapper for `numpy.linalg.eig`.
+
+    Parameters
+    ----------
+    mat : (..., N, N) complex np.ndarray
+        matrix to be decomposed
+
+    Returns
+    -------
+    Decomposition.rv : (..., N, N) complex np.ndarray
+        The right eigenvectors :math:`P`
+    Decomposition.eig : (..., N) complex np.ndarray
+        The complex eigenvalues of `mat`
+    Decomposition.rv_inv : (..., N, N) complex np.ndarray
+        The *inverse* of the right eigenvectors :math:`P`
+
+    Examples
+    --------
+    Perform the eigendecomposition:
+
+    >>> matrix = np.random.random((10, 10))
+    >>> rv, eig, rv_inv = gt.matrix.decompose_mat(matrix)
+    >>> np.allclose(matrix, (rv * eig) @ rv_inv)
+    True
+    >>> np.allclose(rv @ rv_inv, np.eye(*matrix.shape))
+    True
+
+    This can also be simplified using the `Decomposition` class
+
+    >>> dec = gt.matrix.decompose_mat(matrix)
+    >>> np.allclose(matrix, dec.reconstruct())
+    True
+
+    """
+    eig, vec = np.linalg.eig(mat)
+    return Decomposition(rv=vec, eig=eig, rv_inv=np.linalg.inv(vec))
+
+
+def decompose_her(her_mat, check=True) -> UDecomposition:
+    r"""Decompose Hermitian matrix `her_mat` into eigenvalues and (right) eigenvectors.
+
+    Decompose the `her_mat` into `rv, eig, rv_inv`, with `her_mat = (rv * eig) @ rv_inv`.
+    This is the unitary similarity transformation:
+
+    .. math:: M = U Λ U^†,    Λ = diag(λ₀, λ₁, …)
+
+    where :math:`λₗ` are the eigenvalues and :math:`U` the unitary matrix of
+    right eigenvectors returned as `rv` with :math:`U^{-1} = U^†`.
+    Internally, this is just a wrapper for `numpy.linalg.eigh`.
+
+    Parameters
+    ----------
+    her_mat : (..., N, N) complex np.ndarray
+        matrix to be decomposed
+    check : bool, optional
+        If `check`, raise an error if `her_mat` is not Hermitian. (default: True)
+
+    Returns
+    -------
+    Decomposition.rv : (..., N, N) complex np.ndarray
+        The right eigenvectors :math:`U`
+    Decomposition.eig : (..., N) complex np.ndarray
+        The complex eigenvalues of `her_mat`
+    Decomposition.rv_inv : (..., N, N) complex np.ndarray
+        The *inverse* of the right eigenvectors :math:`U`
+
+    Raises
+    ------
+    ValueError
+        If `check=True` and `her_mat` is not Hermitian.
+
+    Examples
+    --------
+    Perform the eigendecomposition:
+
+    >>> matrix = np.random.random((10, 10)) + 1j*np.random.random((10, 10))
+    >>> her_mat = 0.5*(matrix + matrix.conj().T)
+    >>> rv, eig, rv_inv = gt.matrix.decompose_her(her_mat)
+    >>> np.allclose(her_mat, (rv * eig) @ rv_inv)
+    True
+    >>> np.allclose(rv @ rv.conj().T, np.eye(*her_mat.shape))
+    True
+
+    This can also be simplified using the `Decomposition` class
+
+    >>> dec = gt.matrix.decompose_her(her_mat)
+    >>> np.allclose(her_mat, dec.reconstruct())
+    True
+
+    """
+    if check and not np.allclose(her_mat - transpose(her_mat.conj()), 0):
+        raise ValueError("Matrix `her_mat` is not Hermitian.")
+    eig, vec = np.linalg.eigh(her_mat)
+    return UDecomposition(rv=vec, eig=eig, rv_inv=transpose(vec.conj()))
+
+
 def decompose_gf(g_inv) -> Decomposition:
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
     The similarity transformation:
 
     .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)
+
+    .. deprecated:: 0.10.0
+       Use the function `decompose_mat` or `decompose_sym` instead.
 
     Parameters
     ----------
@@ -222,10 +333,9 @@ def decompose_gf(g_inv) -> Decomposition:
         The *inverse* of the right eigenvectors :math:`P`
 
     """
-    if isinstance(g_inv, Decomposition):
-        return g_inv
-    h, rv = np.linalg.eig(g_inv)
-    return Decomposition(rv=rv, eig=h, rv_inv=np.linalg.inv(rv))
+    warnings.warn("`decompose_gf` is deprecated; use `decompose_mat` or `decompose_sym` instead.",
+                  category=DeprecationWarning)
+    return decompose_mat(mat=g_inv)
 
 
 def decompose_hamiltonian(hamilton) -> UDecomposition:
@@ -234,6 +344,9 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
     The similarity transformation:
 
     .. math:: H = U h U^†, \quad h = diag(λ_l)
+
+    .. deprecated:: 0.10.0
+       Use the function `decompose_her`.
 
     Parameters
     ----------
@@ -251,10 +364,9 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
 
     """
-    if isinstance(hamilton, Decomposition):
-        return hamilton
-    h, rv = np.linalg.eigh(hamilton)
-    return UDecomposition(rv=rv, eig=h, rv_inv=transpose(rv.conj()))
+    warnings.warn("`decompose_hamiltonian` is deprecated; use `decompose_her` instead.",
+                  category=DeprecationWarning)
+    return decompose_her(hamilton, check=False)
 
 
 def construct_gf(rv, diag_inv, rv_inv):

@@ -25,6 +25,7 @@ class TestDecompositionGeneral:
     omega = np.ravel(omega_mesh[0] + 1j*omega_mesh[1])
     g0_loc_inv = (omega)**-1
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_eigenvectors_non_interacting(self, size):
         """Eigenvector matrices for similarity transformations must be its inverse."""
@@ -37,6 +38,7 @@ class TestDecompositionGeneral:
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
         r"""Decomposition we be used to calculate the inverse.
@@ -57,6 +59,7 @@ class TestDecompositionGeneral:
             g0_alt = gt.matrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
             assert np.allclose(g0, g0_alt)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_eigsum_non_interacting(self, size):
         """Trace of the matrix must be trace of eigenvalues *h*.
@@ -73,6 +76,7 @@ class TestDecompositionGeneral:
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
 def test_decomposition_reconsturction(args):
@@ -93,6 +97,7 @@ def test_decomposition_reconsturction(args):
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
 def test_decomposition_inverse(args):
@@ -118,6 +123,7 @@ def test_decomposition_inverse(args):
                        np.diagonal(inverse, axis1=-2, axis2=-1))
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @given(hopping=st.floats(min_value=-1e6, max_value=1e6),
        eps1=st.floats(min_value=-1e6, max_value=1e6),
