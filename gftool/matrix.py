@@ -242,6 +242,8 @@ class UDecomposition(Decomposition):
 
     """
 
+    __slots__ = ()
+
     @property
     def u(self):
         """Unitary matrix of right eigenvectors, same as `rv`."""
