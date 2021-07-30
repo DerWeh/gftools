@@ -23,6 +23,6 @@ exclude_lines =
 
 ignore_errors = True
 
-omit = 
+omit =
   gftool/_version.py
   gftool/tests/*

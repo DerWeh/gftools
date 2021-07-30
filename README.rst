@@ -12,7 +12,7 @@ GfTool
 
 Collection of commonly used Green's functions and utilities.
 The main purpose of this module is to have a tested and thus reliable basis
-to do numerics. It happened to me too often, that I just made a mistake copying 
+to do numerics. It happened to me too often, that I just made a mistake copying
 the Green's function and was then wondering what was wrong with my algorithm.
 For example, a *selection* of lattice Green's functions or rather the corresponding DOSs:
 

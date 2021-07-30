@@ -54,7 +54,7 @@ def test_lstsq_ce_is_lstq(args):
         assume(np.all(np.linalg.cond(a) < 1e8))
     lstsq = np.linalg.lstsq(a, b[..., np.newaxis], rcond=None)[0][..., 0]
     n = lstsq.shape[-1]
-    c = np.eye(n//2, n) 
+    c = np.eye(n//2, n)
     d = lstsq[..., :n//2]
     lstsq_ec = gt.linalg.lstsq_ec(a, b, c, d)
     assert np.allclose(lstsq_ec, lstsq)

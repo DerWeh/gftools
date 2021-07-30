@@ -127,7 +127,7 @@ We indicate this by argument shapes containing an ellipse e.g. `(...)` or `(...,
 It must be possible for all ellipses to be broadcasted against each other.
 A good example is the `~gftool.fourier` module.
 
-We calculate the Fourier transforms `~gftool.fourier.iw2tau` for Green's 
+We calculate the Fourier transforms `~gftool.fourier.iw2tau` for Green's
 functions with different on-site energies without looping:
 
 >>> e_onsite = np.array([-0.5, 0, 0.5])

@@ -93,7 +93,7 @@ Documentation
 Internal improvements
 ~~~~~~~~~~~~~~~~~~~~~
 
-* Ensure more accurate `numpy.sum` using partial pairwise summation for 
+* Ensure more accurate `numpy.sum` using partial pairwise summation for
   generalized ufuncs (:commit:`2d3baef`)
 
 
@@ -107,7 +107,7 @@ Breaking Changes
 * The `gftool.pade` module had a minor rework.
   The behavior of filters changed. Future breaking changes are to be expected,
   the module is not well structured.
- 
+
 New Features
 ~~~~~~~~~~~~
 

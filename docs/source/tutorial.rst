@@ -61,7 +61,7 @@ If we want e.g. the Bethe lattice at quarter filling
 ...     """Calculate the difference to the desired occupation, note the sign."""
 ...     gf_iw = gt.bethe_gf_z(iws + mu, half_bandwidth=1.)
 ...     return gt.density_iw(iws, gf_iw, beta=1./temperature) - occ_quarter
-... 
+...
 >>> mu = gt.chemical_potential(bethe_occ_diff)
 >>> mu
 -0.406018...
@@ -154,7 +154,7 @@ as lattice we consider a Bethe lattice with half-bandwidth `1`:
    :format: doctest
    :context:
    :nofigs:
-   
+
    >>> from functools import partial
    >>> e_onsite = np.array([-0.3, -0.1, 0.4])
    >>> concentration = np.array([0.3, 0.5, 0.2])
@@ -228,7 +228,7 @@ We can also take the previous self-energy as a starting guess `self_cpa_z0`:
 .. plot::
    :format: doctest
    :context: close-figs
-   
+
    >>> e_onsite = np.array([[-0.3, +0.15, +0.4],
    ...                      [-0.3, -0.35, +0.4]])
    >>> concentration = np.array([0.3, 0.5, 0.2])
@@ -239,7 +239,7 @@ We can also take the previous self-energy as a starting guess `self_cpa_z0`:
    >>> gf_cmpt_ww = gt.cpa.gf_cmpt_z(ww[:, np.newaxis], self_cpa_ww, e_onsite, hilbert_trafo=g0)
    >>> __, axes = plt.subplots(nrows=2)
    >>> for spin, ax in enumerate(axes):
-   ...     for cmpt in range(3): 
+   ...     for cmpt in range(3):
    ...         __ = ax.plot(ww.real, -1/np.pi*gf_cmpt_ww[:, spin, cmpt].imag, label=f"cmpt {cmpt}")
    >>> __ = plt.legend()
    >>> plt.show()
@@ -264,7 +264,7 @@ Let's compare `~gftool.cpa` and `~gftool.beb`:
 .. plot::
    :format: doctest
    :context: close-figs
-   
+
    >>> from functools import partial
    >>> e_onsite = np.array([-0.3, -0.1, 0.4])
    >>> concentration = np.array([0.3, 0.5, 0.2])
@@ -305,14 +305,14 @@ different components can be different.
 Let's say we have two components 'A' and 'B'. The values
 `hopping=np.array([[1.0, 0.5], [0.5, 1.2]])` mean that the hopping amplitude
 between 'B' sites is `1.2` times the hopping amplitude between 'A' sites;
-the hopping amplitude from 'A' to 'B' is `0.5` times the hopping amplitude 
+the hopping amplitude from 'A' to 'B' is `0.5` times the hopping amplitude
 between 'A' sites.
 
 
 .. plot::
    :format: doctest
    :context: close-figs
-   
+
    >>> from functools import partial
    >>> e_onsite = np.array([0.2, -0.2])
    >>> concentration = np.array([0.3, 0.7])

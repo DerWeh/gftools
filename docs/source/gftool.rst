@@ -2,7 +2,7 @@ gftool
 ======
 
 .. automodule:: gftool
-   
+
 
 Green's functions and lattices
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -51,7 +51,7 @@ Green's functions and lattices
    fcc_dos_moment
    fcc_gf_z
    fcc_hilbert_transform
-   
+
 
 .. rubric:: Miscellaneous
 .. autosummary::
@@ -92,7 +92,7 @@ Statistics and particle numbers
    density_error
    density_error2
    check_convergence
-   
+
 Utilities
 ^^^^^^^^^
 .. rubric:: Functions
@@ -101,9 +101,9 @@ Utilities
 
    get_versions
 
-   
+
 .. rubric:: Classes
 .. autosummary::
    :toctree: generated
-   
+
    Result
