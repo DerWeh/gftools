@@ -80,8 +80,8 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
     dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
-    eig_exp = _single_pole_gf_ret_t(tt[..., np.newaxis], dec.xi)
-    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    eig_exp = _single_pole_gf_ret_t(tt[..., np.newaxis], dec.eig)
+    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
     return gf0_t
 
 
@@ -111,8 +111,8 @@ def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
     dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
-    eig_exp = _single_pole_gf_gr_t(tt[..., np.newaxis], dec.xi, beta=beta)
-    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    eig_exp = _single_pole_gf_gr_t(tt[..., np.newaxis], dec.eig, beta=beta)
+    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
     return gf0_t
 
 
@@ -142,8 +142,8 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
     dec = decompose_hamiltonian(ham)
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
-    eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.xi, beta=beta)
-    gf0_t = dec.reconstruct(xi=eig_exp, kind='diag')[..., 0]
+    eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.eig, beta=beta)
+    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
     return gf0_t
 
 

@@ -103,8 +103,8 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_gf(mat)
-    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
-    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
                        np.diagonal(inverse, axis1=-2, axis2=-1))
 
     # Hermitian
@@ -113,8 +113,8 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_hamiltonian(mat)
-    assert np.allclose(dec.reconstruct(1./dec.xi, kind='full'), inverse)
-    assert np.allclose(dec.reconstruct(1./dec.xi, kind='diag'),
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
                        np.diagonal(inverse, axis1=-2, axis2=-1))
 
 
@@ -130,9 +130,9 @@ def test_2x2_gf(z, eps0, eps1, hopping):
     ham = np.array([[eps0, hopping],
                     [hopping, eps1]])
     dec = gt.matrix.decompose_hamiltonian(ham)
-    gf_num = dec.reconstruct(1/(z - dec.xi), kind='diag')
+    gf_num = dec.reconstruct(1/(z - dec.eig), kind='diag')
     assert np.allclose(gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping), gf_num)
     g0 = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
-    gf_num = dec.reconstruct(g0(z - dec.xi), kind='diag')
+    gf_num = dec.reconstruct(g0(z - dec.eig), kind='diag')
     gf_2x2 = gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping, hilbert_trafo=g0)
     assert np.allclose(gf_2x2, gf_num)

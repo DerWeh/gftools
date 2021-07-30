@@ -32,24 +32,24 @@ class Decomposition(Sequence):
     One intended use case is to use the `Decomposition` for the inversion of
     the Green's function to calculate it from the resolvent.
 
-    The order of the attributes is always `rv, xi, rv_inv`, as this gives the
-    reconstruct of the matrix:  `mat = (rv * xi) @ rv_inv`
+    The order of the attributes is always `rv, eig, rv_inv`, as this gives the
+    reconstruct of the matrix:  `mat = (rv * eig) @ rv_inv`
 
     Attributes
     ----------
     rv : (..., N, N) complex np.ndarray
         The matrix of right eigenvectors.
-    xi : (..., N) complex np.ndarray
+    eig : (..., N) complex np.ndarray
         The vector of eigenvalues.
     rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
 
     """
 
-    __slots__ = ('rv', 'xi', 'rv_inv')
+    __slots__ = ('rv', 'eig', 'rv_inv')
 
     rv: np.ndarray
-    xi: np.ndarray
+    eig: np.ndarray
     rv_inv: np.ndarray
 
     @classmethod
@@ -96,17 +96,17 @@ class Decomposition(Sequence):
             return gf
         return decompose_gf(gf)
 
-    def reconstruct(self, xi=None, kind='full'):
+    def reconstruct(self, eig=None, kind='full'):
         """Get matrix back from `Decomposition`.
 
-        If the reciprocal of `self.xi` was taken, this corresponds to the
+        If the reciprocal of `self.eig` was taken, this corresponds to the
         inverse of the original matrix.
 
         Parameters
         ----------
-        xi : (..., N) np.ndarray, optional
-            Alternative value used for `self.xi`. This argument can be used
-            instead of modifying `self.xi`.
+        eig : (..., N) np.ndarray, optional
+            Alternative value used for `self.eig`. This argument can be used
+            instead of modifying `self.eig`.
         kind : {'diag', 'full'} or str
             Defines how to reconstruct the matrix. If `kind` is 'diag',
             only the diagonal elements are computed, if it is 'full' the
@@ -120,23 +120,23 @@ class Decomposition(Sequence):
             the shape of the output might differ.
 
         """
-        xi = xi if xi is not None else self.xi
+        eig = eig if eig is not None else self.eig
         kind = kind.lower()
         if 'diag'.startswith(kind):
-            return ((transpose(self.rv_inv)*self.rv) @ xi[..., np.newaxis])[..., 0]
+            return ((transpose(self.rv_inv)*self.rv) @ eig[..., np.newaxis])[..., 0]
         if 'full'.startswith(kind):
-            return np.asfortranarray((self.rv * xi[..., np.newaxis, :])) @ self.rv_inv
-        return np.einsum(kind, self.rv, xi, self.rv_inv)
+            return np.asfortranarray((self.rv * eig[..., np.newaxis, :])) @ self.rv_inv
+        return np.einsum(kind, self.rv, eig, self.rv_inv)
 
     def __getitem__(self, key: int):
-        """Make `Decomposition` behave like the tuple `(rv, xi, rv_inv)`."""
-        return (self.rv, self.xi, self.rv_inv)[key]
+        """Make `Decomposition` behave like the tuple `(rv, eig, rv_inv)`."""
+        return (self.rv, self.eig, self.rv_inv)[key]
 
     def __len__(self) -> int:
         return 3
 
     def __str__(self) -> str:
-        return f"Decomposition({self.rv.shape}x{self.xi.shape}x{self.rv_inv.shape})"
+        return f"Decomposition({self.rv.shape}x{self.eig.shape}x{self.rv_inv.shape})"
 
 
 @dataclass  # pylint: disable=too-many-ancestors
@@ -148,14 +148,14 @@ class UDecomposition(Decomposition):
     One intended use case is to use the `Decomposition` for the inversion of
     the Green's function to calculate it from the resolvent.
 
-    The order of the attributes is always `rv, xi, rv_inv`, as this gives the
-    reconstruct of the matrix:  `mat = (rv * xi) @ rv_inv`
+    The order of the attributes is always `rv, eig, rv_inv`, as this gives the
+    reconstruct of the matrix: `mat = (rv * eig) @ rv_inv`
 
     Attributes
     ----------
     rv : (..., N, N) complex np.ndarray
         The matrix of right eigenvectors.
-    xi : (..., N) float np.ndarray
+    eig : (..., N) float np.ndarray
         The vector of real eigenvalues.
     rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
@@ -175,7 +175,7 @@ class UDecomposition(Decomposition):
     @property
     def s(self):
         """Singular values."""
-        return np.sort(abs(self.xi))[::-1]
+        return np.sort(abs(self.eig))[::-1]
 
     @classmethod
     def from_hamiltonian(cls, hamilton) -> UDecomposition:
@@ -225,7 +225,7 @@ def decompose_gf(g_inv) -> Decomposition:
     if isinstance(g_inv, Decomposition):
         return g_inv
     h, rv = np.linalg.eig(g_inv)
-    return Decomposition(rv=rv, xi=h, rv_inv=np.linalg.inv(rv))
+    return Decomposition(rv=rv, eig=h, rv_inv=np.linalg.inv(rv))
 
 
 def decompose_hamiltonian(hamilton) -> UDecomposition:
@@ -254,7 +254,7 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
     if isinstance(hamilton, Decomposition):
         return hamilton
     h, rv = np.linalg.eigh(hamilton)
-    return UDecomposition(rv=rv, xi=h, rv_inv=transpose(rv.conj()))
+    return UDecomposition(rv=rv, eig=h, rv_inv=transpose(rv.conj()))
 
 
 def construct_gf(rv, diag_inv, rv_inv):

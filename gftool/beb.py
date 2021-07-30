@@ -192,7 +192,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
     dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
-    diag_inv = 1. / dec.xi
+    diag_inv = 1. / dec.eig
     if not hopping_svd.is_trunacted:
         svh_inv = transpose(hopping_svd.vh).conj() / sqrt_s[..., newaxis, :]
         us_inv = transpose(hopping_svd.u).conj() / sqrt_s[..., :, newaxis]
@@ -246,7 +246,7 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_svd: SVD,
     dec = Decomposition.from_gf(svh @ z_m_self_inv @ us)
     dec.rv = us @ np.asfortranarray(dec.rv)
     dec.rv_inv = np.asfortranarray(dec.rv_inv) @ svh
-    diag_inv = 1. / dec.xi
+    diag_inv = 1. / dec.eig
     if not hopping_svd.is_trunacted:
         gf_loc_inv = dec.reconstruct(1./hilbert_trafo(diag_inv), kind='full')
     else:
