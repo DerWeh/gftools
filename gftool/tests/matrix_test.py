@@ -29,12 +29,12 @@ class TestDecompositionGeneral:
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_eigenvectors_non_interacting(self, size):
         """Eigenvector matrices for similarity transformations must be its inverse."""
-        t_nn = np.ones(size-1)
+        t_nn = 1.2
+        idx = np.arange(size)
         g0_inv_full = np.zeros((size, size), dtype=complex)
-        g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
-        g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
+        g0_inv_full[idx[:-1], idx[1:]] = g0_inv_full[idx[1:], idx[:-1]] = t_nn
         for g0 in self.g0_loc_inv:
-            g0_inv_full[1] = g0
+            g0_inv_full[idx, idx] = g0
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
 
@@ -46,12 +46,12 @@ class TestDecompositionGeneral:
         .. math::
             G^{-1} = P^{-1} h P \Rightarrow P^{-1} h^{-1} P = G
         """
-        t_nn = np.ones(size-1)
+        t_nn = 1.2
+        idx = np.arange(size)
         g0_inv_full = np.zeros((size, size), dtype=complex)
-        g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
-        g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
+        g0_inv_full[idx[:-1], idx[1:]] = g0_inv_full[idx[1:], idx[:-1]] = t_nn
         for g0 in self.g0_loc_inv:
-            g0_inv_full[np.arange(size), np.arange(size)] = g0
+            g0_inv_full[idx, idx] = g0
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             g0 = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
             assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
@@ -66,12 +66,12 @@ class TestDecompositionGeneral:
 
         This is due to cyclic invariance under the trace.
         """
-        t_nn = np.ones(size-1)
+        t_nn = 1.2
+        idx = np.arange(size)
         g0_inv_full = np.zeros((size, size), dtype=complex)
-        g0_inv_full[np.arange(size-1), np.arange(size-1)+1] = t_nn
-        g0_inv_full[np.arange(size-1)+1, np.arange(size-1)] = t_nn
+        g0_inv_full[idx[:-1], idx[1:]] = g0_inv_full[idx[1:], idx[:-1]] = t_nn
         for g0 in self.g0_loc_inv:
-            g0_inv_full[np.arange(size), np.arange(size)] = g0
+            g0_inv_full[idx, idx] = g0
             _, h, _ = gt.matrix.decompose_gf(g0_inv_full)
             assert np.allclose(np.sum(h), np.trace(g0_inv_full))
 
