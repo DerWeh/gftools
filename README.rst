@@ -39,6 +39,12 @@ where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
 consider using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
 Of course you can also clone or fork the project.
 
+For `conda`_ users, `GfTool` is also available on `conda-forge`_
+
+.. code-block:: console
+
+   $ conda install -c conda-forge gftool
+
 If you clone the project, you can locally build the documentation:
 
 .. code-block:: console
@@ -116,5 +122,7 @@ pade
    https://docs.python.org/3/library/venv.html
 .. _conda:
    https://docs.conda.io/en/latest/
+.. _conda-forge:
+   https://anaconda.org/conda-forge/gftool
 .. _pyenv:
    https://github.com/pyenv/pyenv
