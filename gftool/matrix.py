@@ -35,6 +35,7 @@ Recommended functions
 ---------------------
 
 * `decompose_mat` to create `Decomposition` of general matrices
+* `decompose_sym` to create `Decomposition` of complex symmetric matrices
 * `decompose_her` to create `UDecomposition` of Hermitian matrices
 
 Rest are mostly legacy functions.
@@ -306,6 +307,86 @@ def decompose_mat(mat) -> Decomposition:
     """
     eig, vec = np.linalg.eig(mat)
     return Decomposition(rv=vec, eig=eig, rv_inv=np.linalg.inv(vec))
+
+
+def decompose_sym(sym_mat, check=True) -> Decomposition:
+    r"""Decompose symmetric matrix `sym_mat` into eigenvalues and (right) eigenvectors.
+
+    Decompose the `sym_mat` into `rv, eig, rv_inv`, with `sym_mat = (rv * eig) @ rv_inv`.
+    This is the *almost orthogonal* similarity transformation:
+
+    .. math:: M = O Λ O^T,    Λ = diag(λ₀, λ₁, …)
+
+    where :math:`λₗ` are the eigenvalues and :math:`U` the unitary matrix of
+    right eigenvectors returned as `rv` with :math:`O^{-1} ≈ O^T`.
+    Internally, this is just a wrapper for `numpy.linalg.eig`.
+    As mentioned the transformation is only *almost orthogonal*, so you should
+    not rely on this fact! Still, `decompose_sym` should be better conditioned
+    than `decompose_mat` so it is preferable (so slightly slower).
+
+    If you require orthogonality consider using [noble2017]_, it should also be
+    faster.
+
+    Parameters
+    ----------
+    sym_mat : (..., N, N) complex np.ndarray
+        matrix to be decomposed
+    check : bool, optional
+        If `check`, raise an error if `sym_mat` is not symmetric. (default: True)
+
+    Returns
+    -------
+    Decomposition.rv : (..., N, N) complex np.ndarray
+        The right eigenvectors :math:`U`
+    Decomposition.eig : (..., N) complex np.ndarray
+        The complex eigenvalues of `sym_mat`
+    Decomposition.rv_inv : (..., N, N) complex np.ndarray
+        The *inverse* of the right eigenvectors :math:`U`
+
+    Raises
+    ------
+    ValueError
+        If `check=True` and `sym_mat` is not symmetric.
+
+    References
+    ----------
+    .. [noble2017] Noble, J.H., Lubasch, M., Stevens, J., Jentschura, U.D., 2017.
+       Diagonalization of complex symmetric matrices: Generalized Householder
+       reflections, iterative deflation and implicit shifts.
+       Computer Physics Communications 221, 304–316.
+       https://doi.org/10.1016/j.cpc.2017.06.014
+
+    Examples
+    --------
+    Perform the eigendecomposition:
+
+    >>> matrix = np.random.random((10, 10)) + 1j*np.random.random((10, 10))
+    >>> sym_mat = 0.5*(matrix + matrix.T)
+    >>> rv, eig, rv_inv = gt.matrix.decompose_sym(sym_mat)
+    >>> np.allclose(sym_mat, (rv * eig) @ rv_inv)
+    True
+
+    The result should be almost orthogonal, but *do not* rely on it!
+
+    >>> np.allclose(np.linalg.inv(rv), rv.T)
+    True
+
+    This can also be simplified using the `Decomposition` class
+
+    >>> dec = gt.matrix.decompose_sym(sym_mat)
+    >>> np.allclose(sym_mat, dec.reconstruct())
+    True
+
+    """
+    if check and not np.allclose(sym_mat - transpose(sym_mat), 0):
+        raise ValueError("Matrix `sym_mat` is not symmetric.")
+    h, rv = np.linalg.eig(sym_mat)
+    # improve coordination number for complex symmetric matrices, rv_scaled is orthogonal
+    rv *= np.sum(rv**2, axis=-2, keepdims=True)**-0.5
+    # transpose(rv) yields same result, but is susceptible to slight asymmetry of `sym_mat`
+    # np.linalg.inv is therefore more stable
+    rv_inv = np.linalg.inv(rv)
+    return Decomposition(rv=rv, eig=h, rv_inv=rv_inv)
 
 
 def decompose_her(her_mat, check=True) -> UDecomposition:

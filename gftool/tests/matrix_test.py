@@ -88,13 +88,21 @@ def test_decomposition_reconsturction(args):
     assert np.allclose(dec.reconstruct(kind='full'), mat)
     assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
 
+    # symmetric
+    sym_mat = mat + gt.matrix.transpose(mat)
+    if sym_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(sym_mat) < 1e8))
+    dec = gt.matrix.decompose_sym(sym_mat)
+    assert np.allclose(dec.reconstruct(kind='full'), sym_mat)
+    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(sym_mat, axis1=-2, axis2=-1))
+
     # Hermitian
-    mat = mat + gt.matrix.transpose(mat).conj()
-    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1e8))
-    dec = gt.matrix.decompose_hamiltonian(mat)
-    assert np.allclose(dec.reconstruct(kind='full'), mat)
-    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+    her_mat = mat + gt.matrix.transpose(mat).conj()
+    if her_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(her_mat) < 1e8))
+    dec = gt.matrix.decompose_hamiltonian(her_mat)
+    assert np.allclose(dec.reconstruct(kind='full'), her_mat)
+    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(her_mat, axis1=-2, axis2=-1))
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -112,12 +120,22 @@ def test_decomposition_inverse(args):
     assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
                        np.diagonal(inverse, axis1=-2, axis2=-1))
 
+    # symmetric
+    sym_mat = mat + gt.matrix.transpose(mat)
+    if sym_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(sym_mat) < 1e8))
+    inverse = np.linalg.inv(sym_mat)
+    dec = gt.matrix.decompose_sym(sym_mat)
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
+    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
+                       np.diagonal(inverse, axis1=-2, axis2=-1))
+
     # Hermitian
-    mat = mat + gt.matrix.transpose(mat).conj()
-    if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(mat) < 1e8))
-    inverse = np.linalg.inv(mat)
-    dec = gt.matrix.Decomposition.from_hamiltonian(mat)
+    her_mat = mat + gt.matrix.transpose(mat).conj()
+    if her_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
+        assume(np.all(np.linalg.cond(her_mat) < 1e8))
+    inverse = np.linalg.inv(her_mat)
+    dec = gt.matrix.Decomposition.from_hamiltonian(her_mat)
     assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
     assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
                        np.diagonal(inverse, axis1=-2, axis2=-1))
