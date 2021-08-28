@@ -9,7 +9,7 @@ Welcome to GfTool's documentation!
 :Release: |version|
 :Date: |today|
 
-This reference manual details functions, modules, and objects included in GfTools,
+This reference manual details functions, modules, and objects included in `GfTool`,
 describing what they are and what they do.
 
 .. toctree::
