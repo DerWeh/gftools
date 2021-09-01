@@ -4,31 +4,121 @@
    contain the root `toctree` directive.
 
 Welcome to GfTool's documentation!
-===================================
+==================================
 
 :Release: |version|
 :Date: |today|
 
+|pypi| |conda-forge| |DOI|
+
 This reference manual details functions, modules, and objects included in `GfTool`,
 describing what they are and what they do.
 
-.. toctree::
-   :includehidden:
-   :maxdepth: 3
-   :caption: Contents:
+.. contents::  Contents
+   :local:
 
-   self
-   tutorial
+`GfTool` is a collection of commonly used Green's functions and utilities.
+The main purpose of this module is to have a tested and thus reliable basis
+to do numerics. It happened to me too often, that I just made a mistake copying
+the Green's function and was then wondering what was wrong with my algorithm.
+
+.. plot:: dos_gallary.py
+   :include-source: False
+   :width: 800
+   :alt: Selection of DOSs
+
+   *Selection* of lattice Green's functions or rather the corresponding DOSs available in `GfTool`.
+
+The main use case of `GfTool` was DMFT and its real space generalization,
+in particular using CT-QMC algorithms.
 
 
-README
-======
+.. |pypi| image:: https://badge.fury.io/py/gftool.svg
+   :target: https://badge.fury.io/py/gftool
+   :alt: PyPI release
+.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/gftool.svg
+   :target: https://anaconda.org/conda-forge/gftool
+   :alt: conda-forge release
+.. |DOI| image:: https://zenodo.org/badge/115784231.svg
+   :target: https://zenodo.org/badge/latestdoi/115784231
+   :alt: DOI
 
-.. include:: ../../README.rst
+
+GfTool's main content
+---------------------
+
+`gftool`
+   * collection of non-interacting Green's functions and spectral functions,
+     see also the `~gftool.lattice` submodule.
+   * utility functions like Matsubara frequencies and Fermi functions.
+   * reliable calculation of particle numbers via Matsubara sums
+
+`~gftool.cpa`/`~gftool.beb`
+   * Single site approximation to disorder
+   * diagonal disorder only (CPA) and diagonal and off-diagonal (BEB)
+   * average local Green's function and component Green's functions
+
+`~gftool.fourier`
+   * Fourier transforms from Matsubara frequencies to imaginary time and back,
+     including the handling of high-frequencies moments
+     (especially important for transforms from Matsubara to imaginary time)
+   * Laplace transform from real times to complex frequencies
+
+`~gftool.matrix`
+   * helper for Green's functions in matrix form
+
+`~gftool.pade`
+   * analytic continuation via the Padé algorithm
+
+
+Installation
+------------
+The package is available on PyPI:
+
+.. code-block:: console
+
+   $ pip install gftool
+
+Alternatively, it can be installed via GitHub. You can install it using
+
+.. code-block:: console
+
+   $ pip install https://github.com/DerWeh/gftools/archive/VERSION.zip
+
+where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
+(As always, it is not advised to install it into your system Python,
+consider using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
+Of course you can also clone or fork the project.
+
+For `conda`_ users, `GfTool` is also available on `conda-forge`_
+
+.. code-block:: console
+
+   $ conda install -c conda-forge gftool
+
+If you clone the project, you can locally build the documentation:
+
+.. code-block:: console
+
+   $ pip install -r requirements-doc.txt
+   $ python setup.py build_sphinx
+
+
+.. _pipenv:
+   https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
+.. _venv:
+   https://docs.python.org/3/library/venv.html
+.. _conda:
+   https://docs.conda.io/en/latest/
+.. _conda-forge:
+   https://anaconda.org/conda-forge/gftool
+.. _pyenv:
+   https://github.com/pyenv/pyenv
+
 
 
 Note on documentation
-=====================
+---------------------
 We try to follow `numpy` broadcasting rules. Many functions acting on an axis
 act like generalized `ufuncs`_. In this case, a function can be called for
 stacked arguments instead of looping over the specific arguments.
@@ -65,6 +155,16 @@ We can also explicitly give the second moments:
 
 
 .. toctree::
+   :includehidden:
+   :maxdepth: 3
+   :caption: Contents
+   :hidden:
+
+   self
+   tutorial
+
+
+.. toctree::
    :maxdepth: 2
    :caption: API
    :hidden:
@@ -89,7 +189,7 @@ We can also explicitly give the second moments:
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
