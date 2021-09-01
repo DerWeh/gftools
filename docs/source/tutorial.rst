@@ -5,7 +5,7 @@ Lattice Green's functions
 -------------------------
 
 This tutorial explains some of the basic functionality.
-Throughout the tutorial we assume you have imported GfTool as
+Throughout the tutorial we assume you have imported `GfTool` as
 
 >>> import gftool as gt
 
@@ -77,7 +77,7 @@ Validate the result:
 Fourier transform
 -----------------
 
-GfTool offers also accurate Fourier transformations between Matsubara frequencies
+`GfTool` offers also accurate Fourier transformations between Matsubara frequencies
 and imaginary time for local Green's functions, see `gftool.fourier`.
 As a major part of the package, these functions are gu-functions.
 This is indicated in the docstrings via the shapes `(..., N)`. The ellipsis
@@ -94,7 +94,7 @@ stands for arbitrary leading dimensions. Let's consider a simple example with ma
    >>> iws = gt.matsubara_frequencies(range(1024), beta=beta)
 
 We can calculate the Fourier transform using broadcasting,
-with the need for any loops.
+no need for any loops.
 
 .. plot::
    :format: doctest
@@ -111,9 +111,8 @@ The Fourier transform generates the imaginary time Green's function on the inter
 
 .. plot::
    :format: doctest
-   :context:
+   :context: close-figs
 
-   >>> plt.clf()  # clear previous figure
    >>> tau = np.linspace(0, beta, num=gf_tau.shape[-1])
    >>> __ = plt.plot(tau, gf_tau[0], label=r'$\sigma=\uparrow$')
    >>> __ = plt.plot(tau, gf_tau[1], label=r'$\sigma=\downarrow$')
@@ -136,18 +135,18 @@ high-frequency moments.
 Single site approximation of disorder
 -------------------------------------
 
-We also offer the single site approximation for disordered Hamiltons,
+We also offer the single site approximation for disordered Hamiltonians,
 namely `~gftool.cpa` and it extension to off-diagonal disorder `~gftool.beb`.
 These methods treat substitutional disorder.
 A multi-component system is considered, where each lattice site is randomly
 occupied by one of the components.
-The concentration of the components is know.
+The concentration of the components is known.
 
 
 Coherent potential approximation (CPA)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We first consider the `~gftool.cpa`, where only the on-site energies depend on the component.
-As example we consider a sytem of three components.
+As example we consider a system of three components.
 We choose the on-site energies and concentrations (which should add to `1`),
 as lattice we consider a Bethe lattice with half-bandwidth `1`:
 
@@ -203,19 +202,20 @@ Additional keyword arguments are passed to `scipy.optimize.root`:
    >>> plt.show()
 
 Now, everything looks fine.
-The component Green's function are caluclated by `gftool.cpa.gf_cmpt_z`.
-According to the law of total expectation it is relates to the average Green's
-function: `np.sum(concentration*gf_cmpt_z, axis=-1) == gf_coher_ww`:
+The component Green's functions are calculated by `gftool.cpa.gf_cmpt_z`.
+The law of total expectation relates the component Green's functions to the
+average Green's function: `np.sum(concentration*gf_cmpt_ww, axis=-1) == gf_coher_ww`:
 
 .. plot::
    :format: doctest
    :context: close-figs
 
    >>> gf_cmpt_ww = gt.cpa.gf_cmpt_z(ww, self_cpa_ww, e_onsite, hilbert_trafo=g0)
+   >>> np.allclose(np.sum(concentration*gf_cmpt_ww, axis=-1), gf_coher_ww)
+   True
    >>> for cmpt in range(3):
    ...     __ = plt.plot(ww.real, -1/np.pi*gf_cmpt_ww[..., cmpt].imag, label=f"cmpt {cmpt}")
-   >>> __ = plt.plot(ww.real, -1/np.pi*np.sum(concentration*gf_cmpt_ww, axis=-1).imag,
-   ...              linestyle=':', label="avg")
+   >>> __ = plt.plot(ww.real, -1/np.pi*gf_coher_ww.imag, linestyle=':', label="avg")
    >>> __ = plt.legend()
    >>> plt.show()
 
@@ -247,15 +247,15 @@ We can also take the previous self-energy as a starting guess `self_cpa_z0`:
 
 Blackman, Esterling, Berk (BEB)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The `~gftool.beb` formalism is a an extension of `~gftool.cpa` to off-diagonal disorder.
-This means, we can provid different hoppling amplitudes.
-We have the addional parameter `hopping` which gives the realtive hopping amplitudes.
+The `~gftool.beb` formalism is an extension of `~gftool.cpa` to off-diagonal disorder.
+This means, we can provide different hopping amplitudes.
+We have the additional parameter `hopping` which gives the relative hopping amplitudes.
 The `~gftool.cpa` corresponds to `hopping=np.ones([N, N])`, where `N` is the number
 of components.
 The `~gftool.beb` module works very similar to `~gftool.cpa`:
 We use `~gftool.beb.solve_root` to get the effective medium,
 in BEB, however, the effective medium is a matrix.
-Next the component Green's function are calulated using `~gftool.beb.gf_loc_z`.
+Next the component Green's function are calculated using `~gftool.beb.gf_loc_z`.
 These are, however, already multiplied by the concentration.
 So the average Green's function is `gf_loc_z.sum(axis=-1)`.
 Let's compare `~gftool.cpa` and `~gftool.beb`:
@@ -302,7 +302,7 @@ Of course, also the components match:
 The relevant case is when `hopping` differs from the CPA case.
 Then the components can have different band-widths and also the hopping between
 different components can be different.
-Let's say we have to components 'A' and 'B'. The values
+Let's say we have two components 'A' and 'B'. The values
 `hopping=np.array([[1.0, 0.5], [0.5, 1.2]])` mean that the hopping amplitude
 between 'B' sites is `1.2` times the hopping amplitude between 'A' sites;
 the hopping amplitude from 'A' to 'B' is `0.5` times the hopping amplitude 
