@@ -14,6 +14,14 @@ Collection of commonly used Green's functions and utilities.
 The main purpose of this module is to have a tested and thus reliable basis
 to do numerics. It happened to me too often, that I just made a mistake copying 
 the Green's function and was then wondering what was wrong with my algorithm.
+For example, a *selection* of lattice Green's functions or rather the corresponding DOSs:
+
+.. image:: https://gftools.readthedocs.io/en/develop/_images/dos_gallary.png
+   :width: 800
+   :alt: Selection of DOSs
+
+Also have a look at the `tutorial`_ to get an idea.
+
 The main use case of `GfTool` was DMFT and its real space generalization,
 in particular using CT-QMC algorithms.
 
@@ -116,6 +124,8 @@ pade
    https://gftools.readthedocs.io/en/develop/
 .. _ReadTheDocs:
    https://gftools.readthedocs.io/en/latest/
+.. _tutorial:
+   https://gftools.readthedocs.io/en/develop/tutorial.html
 .. _pipenv:
    https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
 .. _venv:
