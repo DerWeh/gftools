@@ -8,7 +8,7 @@ GfTool
 | develop ||build-status-develop|||codecov-develop||
 +---------+----------------------+-----------------+
 
-|pypi| |DOI| |lgtm|
+|pypi| |conda-forge| |DOI| |lgtm|
 
 Collection of commonly used Green's functions and utilities.
 The main purpose of this module is to have a tested and thus reliable basis
@@ -110,6 +110,9 @@ pade
 .. |pypi| image:: https://badge.fury.io/py/gftool.svg
    :target: https://badge.fury.io/py/gftool
    :alt: PyPI release
+.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/gftool.svg
+   :target: https://anaconda.org/conda-forge/gftool
+   :alt: conda-forge release
 .. |DOI| image:: https://zenodo.org/badge/115784231.svg
    :target: https://zenodo.org/badge/latestdoi/115784231
    :alt: DOI
