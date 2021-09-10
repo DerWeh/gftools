@@ -336,3 +336,58 @@ by setting:
 >>> import logging
 >>> logging.basicConfig()
 >>> logging.getLogger('gftool.beb').setLevel(logging.DEBUG)
+
+
+
+Matrix Green's functions via diagonalization
+--------------------------------------------
+The module `gftool.matrix` contains some helper functions for matrix diagonalization.
+A main use case is to calculate the one-particle Green's function from the resolvent.
+Instead of inverting the matrix for every frequency point,
+we can diagonalize the Hamiltonian once:
+
+.. math:: G(z) = [1z - H]^{-1} = [1z - UλU^†]^{-1} = U [z-λ]^{-1} U^†
+
+Let's consider the simple example of a 2D square lattice with nearest-neighbor hopping.
+The Hamiltonian can be easily constructed:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> N = 21   # system size in one dimension
+   >>> t = tx = ty = 0.5  # hopping amplitude
+   >>> hamilton = np.zeros([N]*4)
+   >>> diag = np.arange(N)
+   >>> hamilton[diag[1:], :, diag[:-1], :] = hamilton[diag[:-1], :, diag[1:], :] = -tx
+   >>> hamilton[:, diag[1:], :, diag[:-1]] = hamilton[:, diag[:-1], :, diag[1:]] = -ty
+   >>> ham_mat = hamilton.reshape(N**2, N**2)  # turn in into a matrix
+
+Let's diagonalize it using the helper in `gftool.matrix` and calculated the Green's function
+
+.. plot::
+   :format: doctest
+   :context:
+
+   >>> dec = gt.matrix.decompose_her(ham_mat)
+   >>> ww = np.linspace(-2.5, 2.5, num=201) + 1e-1j  # frequency match
+   >>> gf_ww = dec.reconstruct(1.0/(ww[:, np.newaxis] - dec.eig))
+   >>> gf_ww = gf_ww.reshape(ww.size, *[N]*4)  # reshape for easy access
+
+Let's check the local spectral function of the central lattice site:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> __ = plt.plot(ww.real, -1.0/np.pi*gf_ww.imag[:, N//2, N//2, N//2, N//2])
+   >>> __ = plt.plot(ww.real, -1.0/np.pi*gt.square_gf_z(ww, half_bandwidth=4*t).imag,
+   ...               color='black', linestyle='--')
+   >>> plt.show()
+
+Oftentimes we are only interested in the local Green's functions and can avoid
+a large part of the computation, only calculating the diagonal elements.
+This can be done using the `kind` argument:
+
+>>> gf_diag = dec.reconstruct(1.0/(ww[:, np.newaxis] - dec.eig), kind='diag')
+>>> gf_diag = gf_diag.reshape(ww.size, N, N)
