@@ -402,7 +402,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
                      self_root.real, self_root.imag)[0]
 
     root_kwds.setdefault("method", "krylov")
-    LOGGER.debug('Search BEB self-energy root')
+    LOGGER.debug('Search CPA self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
         root_kwds['callback'] = lambda x, f: LOGGER.debug(
