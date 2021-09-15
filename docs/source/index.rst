@@ -8,8 +8,7 @@ Welcome to GfTool's documentation!
 
 :Release: |version|
 :Date: |today|
-
-|pypi| |conda-forge| |DOI|
+:DOI: `10.5281/zenodo.4744545 <https://doi.org/10.5281/zenodo.4744545>`_
 
 This reference manual details functions, modules, and objects included in `GfTool`,
 describing what they are and what they do.
@@ -29,16 +28,6 @@ the Green's function and was then wondering what was wrong with my algorithm.
 The main use case of `GfTool` was DMFT and its real space generalization,
 in particular using CT-QMC algorithms.
 
-
-.. |pypi| image:: https://badge.fury.io/py/gftool.svg
-   :target: https://badge.fury.io/py/gftool
-   :alt: PyPI release
-.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/gftool.svg
-   :target: https://anaconda.org/conda-forge/gftool
-   :alt: conda-forge release
-.. |DOI| image:: https://zenodo.org/badge/115784231.svg
-   :target: https://zenodo.org/badge/latestdoi/115784231
-   :alt: DOI
 
 
 .. toctree::
