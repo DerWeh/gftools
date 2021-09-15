@@ -11,3 +11,4 @@ python:
 
 formats:
   - htmlzip
+  - pdf

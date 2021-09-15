@@ -26,6 +26,9 @@ today_fmt = '%Y-%m-%d'
 html_last_updated_fmt = '%Y-%d-%m'
 master_doc = 'index'
 
+latex_engine = 'xelatex'  # xelatex can handle Unicode
+papersize = 'a4paper'
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
