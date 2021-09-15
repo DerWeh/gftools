@@ -20,7 +20,7 @@ the Green's function and was then wondering what was wrong with my algorithm.
 
 .. plot:: dos_gallary.py
    :include-source: False
-   :width: 800
+   :width: 95%
    :alt: Selection of DOSs
 
    *Selection* of lattice Green's functions or rather the corresponding DOSs available in `GfTool`.
