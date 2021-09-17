@@ -8,7 +8,36 @@ What's New
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
-* Drop support for Python 3.6, minimal version is now 3.7
+* Drop support for Python 3.6, **minimal version** is now **3.7**
+* Content of `gftool.matrix` was renamed more appropriately:
+
+   - `xi` of `~gftool.matrix.Decomposition` is now
+     `~gftool.matrix.Decomposition.eig`, as it contains the eigenvalues
+   - New functions
+     `~gftool.matrix.decompose_mat` for general matrices,
+     `~gftool.matrix.decompose_sym` for complex symmetric matrices,
+     and `~gftool.matrix.decompose_her` for Hermitian matrices.
+
+Depreciations
+~~~~~~~~~~~~~
+* Deprecate the `~gftool.matrix` functions
+  `~gftool.matrix.decompose_gf`,
+  `~gftool.matrix.decompose_hamiltonian`,
+  `~gftool.matrix.Decomposition.from_gf`,
+  and `~gftool.matrix.Decomposition.from_hamiltonian`.
+
+Documentation
+~~~~~~~~~~~~~
+* New index page independent of README,
+  separated :doc:`getting-started` page.
+* Improve :doc:`tutorial` and `gftool.matrix`
+* Generate PDF documentation on ReadTheDocs (:commit:`3122e1ba`)
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+* Use eigendecomposition instead of SVD in `gftool.beb` (:commit:`0475c110`)
+* Drop slow `~numpy.asfortranarray` in `gftool.matrix` (:commit:`4865cc05`)
+* Use `pre-commit` (:commit:`6f4028d3`)
 
 
 
