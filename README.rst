@@ -36,6 +36,12 @@ The package is available on PyPI_:
 
    $ pip install gftool
 
+For `conda`_ users, `GfTool` is also available on `conda-forge`_
+
+.. code-block:: console
+
+   $ conda install -c conda-forge gftool
+
 Alternatively, it can be installed via GitHub. You can install it using
 
 .. code-block:: console
@@ -46,12 +52,6 @@ where `VERSION` can be a release (e.g. `0.5.1`) or a branch (e.g. `develop`).
 (As always, it is not advised to install it into your system Python,
 consider using `pipenv`_, `venv`_, `conda`_, `pyenv`_, or similar tools.)
 Of course you can also clone or fork the project.
-
-For `conda`_ users, `GfTool` is also available on `conda-forge`_
-
-.. code-block:: console
-
-   $ conda install -c conda-forge gftool
 
 If you clone the project, you can locally build the documentation:
 
