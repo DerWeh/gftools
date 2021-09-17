@@ -16,7 +16,7 @@ Lattice Green's functions
 
 The package contains non-interacting Green's functions for some tight-binding
 lattices. They can be found in `gftool.lattice`.
-E.g. the `~gftool.lattice.bethe.dos` of the Bethe lattice `~gftool.lattice.bethe`:
+E.g. the `~gftool.lattice.bethe.dos` of the Bethe lattice, `~gftool.lattice.bethe`:
 
 .. plot::
    :format: doctest
@@ -44,7 +44,7 @@ for local Green's function. We have the relation
 
 .. math:: ⟨n⟩ = T \sum_{\{iω_n\}} \Re G(iω_n)
 
-to calculate the density for a given temperature from `1024` (fermionic)
+To calculate the density for a given temperature from `1024` (fermionic)
 Matsubara frequencies we use `~gftool.density_iw`:
 
 >>> temperature = 0.02
@@ -54,8 +54,9 @@ Matsubara frequencies we use `~gftool.density_iw`:
 >>> occ
 0.5
 
-We can also search the chemical potential :math:`μ` for a given occupation `~gftool.chemical_potential`.
-If we want e.g. the Bethe lattice at quarter filling
+We can also search the chemical potential :math:`μ` for a given occupation
+using `~gftool.chemical_potential`.
+To get, e.g., the Bethe lattice at quarter filling, we write:
 
 >>> occ_quarter = 0.25
 >>> def bethe_occ_diff(mu):
@@ -165,7 +166,7 @@ The average local Green's function and the component Green's functions
 (conditional average for local site fixed to a specific component) are calculate
 in CPA using an effective medium.
 The self-consistent effective medium is obtained via a root search
-`~gftool.cpa.solve_root`:
+using `~gftool.cpa.solve_root`:
 
 .. plot::
    :format: doctest
@@ -175,7 +176,7 @@ The self-consistent effective medium is obtained via a root search
    >>> ww = np.linspace(-1.5, 1.5, num=501) + 1e-6j
    >>> self_cpa_ww = gt.cpa.solve_root(ww, e_onsite, concentration, hilbert_trafo=g0)
 
-The average Green's function is then
+The average Green's function is
 
 .. plot::
    :format: doctest
@@ -189,7 +190,8 @@ The average Green's function is then
 For frequencies close to the real axis, issues might arise, that the conjugate
 solution (advanced instead of retarded) is obtained.
 The default `restricted=True` uses some heuristic to avoid this.
-In this example we see, that for small imaginary part this can still fail.
+In this example we see at the left band-edge,
+that for small imaginary part this can still fail.
 In this case, it is enough to just increase the accuracy of the root search.
 Additional keyword arguments are passed to `scipy.optimize.root`:
 
@@ -253,7 +255,7 @@ We can also take the previous self-energy as a starting guess `self_cpa_z0`:
 Blackman, Esterling, Berk (BEB)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The `~gftool.beb` formalism is an extension of `~gftool.cpa` to off-diagonal disorder.
-This means, we can provide different hopping amplitudes.
+It allows us to provide different hopping amplitudes.
 We have the additional parameter `hopping` which gives the relative hopping amplitudes.
 The `~gftool.cpa` corresponds to `hopping=np.ones([N, N])`, where `N` is the number
 of components.
@@ -383,6 +385,8 @@ Let's diagonalize it using the helper in `gftool.matrix` and calculated the Gree
    >>> gf_ww = dec.reconstruct(1.0/(ww[:, np.newaxis] - dec.eig))
    >>> gf_ww = gf_ww.reshape(ww.size, *[N]*4)  # reshape for easy access
 
+Where we used `~gftool.matrix.Decomposition.reconstruct`
+to calculate the matrix product for the given diagonal matrix.
 Let's check the local spectral function of the central lattice site:
 
 .. plot::
