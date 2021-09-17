@@ -25,6 +25,7 @@ E.g. the `~gftool.lattice.bethe.dos` of the Bethe lattice `~gftool.lattice.bethe
    >>> ww = np.linspace(-1.1, 1.1, num=1000)
    >>> dos_ww = gt.lattice.bethe.dos(ww, half_bandwidth=1.)
    >>> __ = plt.plot(ww, dos_ww)
+   >>> __ = plt.xlabel(r"$\epsilon$")
    >>> plt.show()
 
 Typically, a shorthand for these functions exist in the top-level module e.g.
@@ -182,6 +183,7 @@ The average Green's function is then
 
    >>> gf_coher_ww = g0(ww - self_cpa_ww)
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_coher_ww.imag)
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 For frequencies close to the real axis, issues might arise, that the conjugate
@@ -199,6 +201,7 @@ Additional keyword arguments are passed to `scipy.optimize.root`:
    ...                                 options=dict(fatol=1e-10))
    >>> gf_coher_ww = g0(ww - self_cpa_ww)
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_coher_ww.imag)
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 Now, everything looks fine.
@@ -217,6 +220,7 @@ average Green's function: `np.sum(concentration*gf_cmpt_ww, axis=-1) == gf_coher
    ...     __ = plt.plot(ww.real, -1/np.pi*gf_cmpt_ww[..., cmpt].imag, label=f"cmpt {cmpt}")
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_coher_ww.imag, linestyle=':', label="avg")
    >>> __ = plt.legend()
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 Of course, it can be calculated for any lattice Hilbert transform.
@@ -237,11 +241,12 @@ We can also take the previous self-energy as a starting guess `self_cpa_z0`:
    ...                                 hilbert_trafo=g0, options=dict(fatol=1e-8),
    ...                                 self_cpa_z0=self_cpa_ww[:, np.newaxis])
    >>> gf_cmpt_ww = gt.cpa.gf_cmpt_z(ww[:, np.newaxis], self_cpa_ww, e_onsite, hilbert_trafo=g0)
-   >>> __, axes = plt.subplots(nrows=2)
+   >>> __, axes = plt.subplots(nrows=2, sharex=True)
    >>> for spin, ax in enumerate(axes):
    ...     for cmpt in range(3):
    ...         __ = ax.plot(ww.real, -1/np.pi*gf_cmpt_ww[:, spin, cmpt].imag, label=f"cmpt {cmpt}")
    >>> __ = plt.legend()
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 
@@ -282,6 +287,7 @@ Let's compare `~gftool.cpa` and `~gftool.beb`:
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_coher_ww.imag, label="CPA avg")
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_loc_ww.sum(axis=-1).imag,
    ...              linestyle='--', label="BEB avg")
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 
@@ -297,6 +303,7 @@ Of course, also the components match:
    ...     __ = plt.plot(ww.real, -1/np.pi*c_gf_cmpt_ww[..., cmpt].imag, label=f"CPA {cmpt}")
    ...     __ = plt.plot(ww.real, -1/np.pi*gf_loc_ww[..., cmpt].imag, '--', label=f"BEB {cmpt}")
    >>> __ = plt.legend()
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 The relevant case is when `hopping` differs from the CPA case.
@@ -328,6 +335,8 @@ between 'A' sites.
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_loc_ww[..., 1].imag, label="B")
    >>> __ = plt.plot(ww.real, -1/np.pi*gf_loc_ww.sum(axis=-1).imag,
    ...              linestyle='--', label="BEB avg")
+   >>> __ = plt.legend()
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 Additional diagnostic output is logged, you can get information on the convergence
@@ -383,6 +392,7 @@ Let's check the local spectral function of the central lattice site:
    >>> __ = plt.plot(ww.real, -1.0/np.pi*gf_ww.imag[:, N//2, N//2, N//2, N//2])
    >>> __ = plt.plot(ww.real, -1.0/np.pi*gt.square_gf_z(ww, half_bandwidth=4*t).imag,
    ...               color='black', linestyle='--')
+   >>> __ = plt.xlabel(r"$\omega$")
    >>> plt.show()
 
 Oftentimes we are only interested in the local Green's functions and can avoid
