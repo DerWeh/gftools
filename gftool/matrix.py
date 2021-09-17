@@ -448,12 +448,12 @@ def decompose_her(her_mat, check=True) -> UDecomposition:
 def decompose_gf(g_inv) -> Decomposition:
     r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
+    .. deprecated:: 0.10.0
+       Use the function `decompose_mat` or `decompose_sym` instead.
+
     The similarity transformation:
 
     .. math:: G^{-1} = P g P^{-1}, \quad g = diag(λ_l)
-
-    .. deprecated:: 0.10.0
-       Use the function `decompose_mat` or `decompose_sym` instead.
 
     Parameters
     ----------
@@ -478,12 +478,12 @@ def decompose_gf(g_inv) -> Decomposition:
 def decompose_hamiltonian(hamilton) -> UDecomposition:
     r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
 
+    .. deprecated:: 0.10.0
+       Use the function `decompose_her`.
+
     The similarity transformation:
 
     .. math:: H = U h U^†, \quad h = diag(λ_l)
-
-    .. deprecated:: 0.10.0
-       Use the function `decompose_her`.
 
     Parameters
     ----------
