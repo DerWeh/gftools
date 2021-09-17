@@ -213,10 +213,8 @@ class UDecomposition(Decomposition):
     Attributes
     ----------
     u
-        Alias for unitary `rv`.
     uh
-        Alias for `rv_inv`, this is the Hermitian conjugate of `u`:
-        `uh == u.conj().T`
+    s
 
     Examples
     --------
@@ -252,7 +250,7 @@ class UDecomposition(Decomposition):
 
     @property
     def uh(self):
-        """Hermitian conjugate of unitary matrix of right eigenvectors, same as `rv_inv`."""
+        """Hermitian conjugate of unitary matrix `rv`, same as `rv_inv`."""
         return self.rv_inv
 
     @property
