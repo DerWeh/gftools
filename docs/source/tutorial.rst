@@ -34,6 +34,40 @@ Typically, a shorthand for these functions exist in the top-level module e.g.
 >>> gt.bethe_dos is gt.lattice.bethe.dos
 True
 
+The corresponding Green's functions are also available.
+The Green's functions can be evaluate for any complex frequency,
+excluding the real axis, where it might become singular.
+E.g. the `~gftool.lattice.fcc.gf_z` of the face-centered cubic (fcc) lattice,
+`~gftool.lattice.fcc`, on a contour parallel to the real axis:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> ww = np.linspace(-0.9, 1.7, num=1000) + 1e-6j
+   >>> gf_ww = gt.lattice.fcc.gf_z(ww, half_bandwidth=1.)
+   >>> __ = plt.axhline(0, color="dimgray", linewidth=0.8)
+   >>> __ = plt.axvline(0, color="dimgray", linewidth=0.8)
+   >>> __ = plt.plot(ww.real, gf_ww.real)
+   >>> __ = plt.plot(ww.real, gf_ww.imag)
+   >>> __ = plt.xlabel(r"$\omega$")
+   >>> __ = plt.ylim(-7.0, 2.5)
+   >>> plt.show()
+
+or on the Matsubara axis:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> beta = 50
+   >>> iws = gt.matsubara_frequencies(range(128), beta=beta)
+   >>> gf_iw = gt.lattice.fcc.gf_z(iws, half_bandwidth=1.)
+   >>> __ = plt.axhline(0, color="dimgray", linewidth=0.8)
+   >>> __ = plt.plot(gf_iw.real, "x--")
+   >>> __ = plt.plot(gf_iw.imag, "+--")
+   >>> __ = plt.xlabel("$n$")
+   >>> plt.show()
 
 
 Density
