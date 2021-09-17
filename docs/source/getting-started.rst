@@ -31,7 +31,7 @@ GfTool's main content
 
 Installation
 ------------
-The package is available on PyPI:
+The package is available on PyPI_:
 
 .. code-block:: console
 
@@ -62,6 +62,8 @@ If you clone the project, you can locally build the documentation:
    $ python setup.py build_sphinx
 
 
+.. _PyPi:
+   https://pypi.org/project/gftool/
 .. _pipenv:
    https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
 .. _venv:

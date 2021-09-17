@@ -30,7 +30,7 @@ in particular using CT-QMC algorithms.
 Installation
 ------------
 
-The package is available on PyPI:
+The package is available on PyPI_:
 
 .. code-block:: console
 
@@ -129,6 +129,8 @@ pade
    https://gftools.readthedocs.io/en/latest/
 .. _tutorial:
    https://gftools.readthedocs.io/en/develop/tutorial.html
+.. _PyPi:
+   https://pypi.org/project/gftool/
 .. _pipenv:
    https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today
 .. _venv:
