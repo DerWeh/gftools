@@ -1,18 +1,18 @@
 Tutorial
 ========
-
-Lattice Green's functions
--------------------------
-
 This tutorial explains some of the basic functionality.
 Throughout the tutorial we assume you have imported `GfTool` as
 
 >>> import gftool as gt
 
-and the typical packages `numpy` and `matplotlib` are made available
+and the packages `numpy` and `matplotlib` are imported as usual
 
 >>> import numpy as np
 >>> import matplotlib.pyplot as plt
+
+
+Lattice Green's functions
+-------------------------
 
 The package contains non-interacting Green's functions for some tight-binding
 lattices. They can be found in `gftool.lattice`.
