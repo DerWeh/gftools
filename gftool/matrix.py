@@ -335,11 +335,11 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`U`
+        The right eigenvectors :math:`O`
     Decomposition.eig : (..., N) complex np.ndarray
         The complex eigenvalues of `sym_mat`
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
-        The *inverse* of the right eigenvectors :math:`U`
+        The *inverse* of the right eigenvectors :math:`O`
 
     Raises
     ------
