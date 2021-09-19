@@ -2,11 +2,11 @@
 GfTool
 ======
 
-+---------+----------------------+-----------------+
-| master  ||build-status-master| ||codecov-master| |
-+---------+----------------------+-----------------+
-| develop ||build-status-develop|||codecov-develop||
-+---------+----------------------+-----------------+
++---------+----------------------+-----------------+-------------+
+| master  ||build-status-master| ||codecov-master| ||rtd-master| |
++---------+----------------------+-----------------+-------------+
+| develop ||build-status-develop|||codecov-develop|||rtd-develop||
++---------+----------------------+-----------------+-------------+
 
 |pypi| |conda-forge| |DOI| |lgtm|
 
@@ -101,12 +101,18 @@ pade
 .. |codecov-master| image:: https://codecov.io/gh/DerWeh/gftools/branch/master/graph/badge.svg
    :target: https://app.codecov.io/gh/DerWeh/gftools/branch/master
    :alt: Coverage master
+.. |rtd-master| image:: https://readthedocs.org/projects/gftools/badge/?version=master
+   :target: https://gftools.readthedocs.io/en/master/?badge=master
+   :alt: Documentation Status master
 .. |build-status-develop| image:: https://app.travis-ci.com/DerWeh/gftools.svg?branch=develop
    :target: https://app.travis-ci.com/DerWeh/gftools
    :alt: Build status develop
 .. |codecov-develop| image:: https://codecov.io/gh/DerWeh/gftools/branch/develop/graph/badge.svg
    :target: https://app.codecov.io/gh/DerWeh/gftools/branch/develop
    :alt: Coverage develop
+.. |rtd-develop| image:: https://readthedocs.org/projects/gftools/badge/?version=develop
+   :target: https://gftools.readthedocs.io/en/develop/?badge=develop
+   :alt: Documentation Status
 .. |pypi| image:: https://badge.fury.io/py/gftool.svg
    :target: https://badge.fury.io/py/gftool
    :alt: PyPI release
