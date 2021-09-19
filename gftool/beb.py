@@ -80,7 +80,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import Callable, NamedTuple
+from typing import Callable
 from functools import partial
 
 import numpy as np
@@ -95,57 +95,6 @@ LOGGER = logging.getLogger(__name__)
 # gu-function versions to extract diagonal and transpose matrices
 diagonal = partial(np.diagonal, axis1=-2, axis2=-1)
 transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
-
-
-class SVD(NamedTuple):
-    """Container for the singular value decomposition of a matrix."""
-
-    u: np.ndarray
-    s: np.ndarray
-    vh: np.ndarray
-
-    def truncate(self, rcond=None) -> SVD:
-        """Return the truncated singular values decomposition.
-
-        Singular values smaller than `rcond` times the largest singular values
-        are discarded.
-
-        Parameters
-        ----------
-        rcond : float, rcond
-            Cut-off ratio for small singular values.
-
-        Returns
-        -------
-        truncated_svd : SVD
-            The truncates singular value decomposition.
-
-        """
-        if rcond is None:
-            rcond = np.finfo(self.s.dtype).eps * max(self.u.shape[-2:])
-        significant = self.s > self.s[..., 0]*rcond
-        return SVD(u=self.u[..., :, significant], s=self.s[..., significant],
-                   vh=self.vh[..., significant, :])
-
-    @property
-    def is_trunacted(self) -> bool:
-        """Check if SVD of square matrix is truncated/compact or full."""
-        ushape, vhshape = self.u.shape, self.vh.shape
-        if not ushape[-2] == vhshape[-1]:
-            raise NotImplementedError("We only consider square matrices in this module.")
-        return not ushape[-2] == ushape[-1] == vhshape[-2]
-
-    def partition(self, return_sqrts=False):
-        """Symmetrically partition the SVD as `u*np.sqrt(s), np.sqrt(s)*vh`.
-
-        If `return_sqrts` then `us, np.sqrt(s), svh` is returned,
-        else only `us, svh` is returned (default: False).
-        """
-        sqrt_s = np.sqrt(self.s)
-        us, svh = self.u * sqrt_s[..., newaxis, :], sqrt_s[..., :, newaxis] * self.vh
-        if return_sqrts:
-            return us, sqrt_s, svh
-        return us, svh
 
 
 class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
