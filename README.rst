@@ -99,13 +99,13 @@ pade
    :target: https://app.travis-ci.com/DerWeh/gftools
    :alt: Build status master
 .. |codecov-master| image:: https://codecov.io/gh/DerWeh/gftools/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/DerWeh/gftools
+   :target: https://app.codecov.io/gh/DerWeh/gftools/branch/master
    :alt: Coverage master
 .. |build-status-develop| image:: https://app.travis-ci.com/DerWeh/gftools.svg?branch=develop
    :target: https://app.travis-ci.com/DerWeh/gftools
    :alt: Build status develop
 .. |codecov-develop| image:: https://codecov.io/gh/DerWeh/gftools/branch/develop/graph/badge.svg
-   :target: https://codecov.io/gh/DerWeh/gftools
+   :target: https://app.codecov.io/gh/DerWeh/gftools/branch/develop
    :alt: Coverage develop
 .. |pypi| image:: https://badge.fury.io/py/gftool.svg
    :target: https://badge.fury.io/py/gftool
