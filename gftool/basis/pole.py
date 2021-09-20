@@ -448,11 +448,11 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(1, N+1)` for large `z`.
-    width : float or (...) float array_like, optional
+    width : float or (...) float array_like or None, optional
         Spread of the poles; they are in the interval [-width, width].
         `width=1` are the normal Chebyshev nodes in the interval [-1, 1].
-        The default is such, that if the second moment `moments[..., 1]` is
-        given, it will be chosen as the largest poles, unless it is small
+        If `width=None` and the second moment `moments[..., 1]` is given,
+        the largest pole will match the second moment, unless it is small
         (`abs(moments[..., 1]) < 0.1`), then we choose `width=1`.
 
     Returns
@@ -510,11 +510,11 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
-    width : float or None, optional
+    width : float or (...) float array_like or None, optional
         Spread of the poles; they are in the interval [-width, width]. (default: 1.)
         `width=1` are the normal Chebyshev nodes in the interval [-1, 1].
         If `width=None` and the second moment `moments[..., 1]` is given,
-        it will be chosen as the largest poles, unless it is small
+        the largest pole will match the second moment, unless it is small
         (`abs(moments[..., 1]) < 0.1`), then we choose `width=1`.
     weight : (..., N_z) float np.ndarray, optional
         Weighting of the fit. If an error `σ` of the input `gf_z` is known,
