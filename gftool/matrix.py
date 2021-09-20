@@ -132,7 +132,7 @@ class Decomposition(Sequence):
 
         Parameters
         ----------
-        g_inv : (..., N, N) complex np.ndarray
+        gf : (..., N, N) complex np.ndarray
             matrix to be decomposed
 
         Returns

@@ -557,7 +557,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         ----------
         z : complex ndarray
             points at with the functions will be evaluated
-        args, kwds :
+        args, kwds
             Passed to the `mod_fct` {mod_fct.__name__}.
 
         Returns

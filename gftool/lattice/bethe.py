@@ -134,7 +134,6 @@ def gf_z_inv(gf, half_bandwidth):
 
     where :math:`R(z) = G^{-1}(z)` is the inverse of the Green's function.
 
-
     Parameters
     ----------
     gf : complex array_like or complex

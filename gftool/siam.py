@@ -44,8 +44,9 @@ def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
         On-site energy of the impurity site.
     e_bath : (..., Nb) float np.ndarray
         On-site energy of the bath sites.
-    hopping : (..., Nb) complex np.ndarray
-        Hopping matrix element between impurity and the bath sites.
+    hopping_sqr : (..., Nb) complex np.ndarray
+        Absolute square of hopping matrix element between impurity and the bath
+        sites.
 
     Returns
     -------
@@ -191,8 +192,9 @@ def hybrid_z(z, e_bath, hopping_sqr):
         Complex frequency variable.
     e_bath : (..., Nb) float np.ndarray
         On-site energy of the bath sites.
-    hopping : (..., Nb) complex np.ndarray
-        Hopping matrix element between impurity and the bath sites.
+    hopping_sqr : (..., Nb) complex np.ndarray
+        Absolute square of hopping matrix element between impurity and the bath
+        sites.
 
     Returns
     -------

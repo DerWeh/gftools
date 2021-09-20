@@ -59,11 +59,11 @@ def _split(joined, shapes):
 
 
 def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], complex]):
-    """Green's function for the components embedded in `self_cp_z`.
+    """Green's function for the components embedded in `self_cpa_z`.
 
     Parameters
     ----------
-    z, self_cp_z : (...) complex np.ndarray
+    z, self_cpa_z : (...) complex np.ndarray
         Frequency points and corresponding CPA self-energy.
     e_onsite : (..., N_cmpt) float of complex np.ndarray
         On-site energy of the components. This can also include a local
@@ -90,7 +90,7 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
 
     Parameters
     ----------
-    self_cp_z : (...) complex np.ndarray
+    self_cpa_z : (...) complex np.ndarray
         CPA self-energy.
     z : (...) complex array_like
         Frequency points.
@@ -106,7 +106,7 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
     Returns
     -------
     remainder : (...) complex np.ndarray
-        The result of r(Σ), if it is `0` and hence a root, `self_cp_z` is the
+        The result of r(Σ), if it is `0` and hence a root, `self_cpa_z` is the
         correct CPA self-energy.
 
     """
@@ -124,7 +124,7 @@ def self_fxdpnt_eq(self_cpa_z, z, e_onsite, concentration,
 
     Parameters
     ----------
-    self_cp_z : (...) complex np.ndarray
+    self_cpa_z : (...) complex np.ndarray
         CPA self-energy.
     z : (...) complex array_like
         Frequency points.
