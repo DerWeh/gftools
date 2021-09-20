@@ -87,6 +87,12 @@ class PoleFct(NamedTuple):
         moments : (..., N) float array_like
             Moments of the high-frequency expansion, where
             `g(z) = moments / z**np.arange(1, N+1)` for large `z`.
+        width : float or (...) float array_like or None, optional
+            Spread of the poles; they are in the interval [-width, width].
+            `width=1` are the normal Chebyshev nodes in the interval [-1, 1].
+            If `width=None` and the second moment `moments[..., 1]` is given,
+            the largest pole will match the second moment, unless it is small
+            (`abs(moments[..., 1]) < 0.1`), then we choose `width=1`.
 
         Returns
         -------
@@ -240,8 +246,12 @@ class PoleGf(PoleFct):
         moments : (..., N) float array_like
             Moments of the high-frequency expansion, where
             `G(z) = moments / z**np.arange(N)` for large `z`.
+        occ : float, optional
+            If given, fix occupation of pole Green's function to `occ`. (default: False)
         width : float, optional
             Distance of the largest pole to the origin. (default: 1.)
+        weight : (..., N_tau) float np.ndarray, optional
+            Weight the values of `gf_tau`, can be provided to include uncertainty.
 
         Returns
         -------
@@ -595,8 +605,12 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     moments : (..., N) float array_like
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
+    occ : float, optional
+        If given, fix occupation of pole Green's function to `occ`. (default: False)
     width : float, optional
         Distance of the largest pole to the origin. (default: 1.)
+    weight : (..., N_tau) float np.ndarray, optional
+        Weight the values of `gf_tau`, can be provided to include uncertainty.
 
     Returns
     -------

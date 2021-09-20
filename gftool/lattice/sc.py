@@ -319,7 +319,6 @@ def dos_mp(eps, half_bandwidth=1):
     .. [katsura1971] S. Katsura et al., J. Math. Phys., 12, 895 (1971).
        https://doi.org/10.1063/1.1665663
 
-
     Examples
     --------
     >>> eps = np.linspace(-1.1, 1.1, num=501)

@@ -367,6 +367,8 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
         the error estimate is larger than `return_err`. If `False`, no error
         estimate is calculated.
         See `density_error` for description of the error estimate.
+    matrix : bool, optional
+        Whether the given `potential` is a matrix (default: False)
     total : bool or tuple
         If `total` the total density (summed over all dimensions) is returned.
         Also a tuple can be given, over which axes the sums is taken.
@@ -482,6 +484,10 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
         needed.
     iw_n : (N) complex ndarray
         The Matsubara frequencies corresponding to `delta_gf_iw`.
+    noisy : bool, optional
+        Whether the input `delta_gf_iw` contains noise (default: True).
+        If `noisy`, an average over the highest frequency is taken to estimate
+        the error.
 
     Returns
     -------

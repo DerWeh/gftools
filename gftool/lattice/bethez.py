@@ -29,7 +29,7 @@ def gf_z(z, half_bandwidth, coordination):
     gf_z : complex ndarray or complex
         Value of the Bethe Green's function
 
-    See also
+    See Also
     --------
     gftool.lattice.bethe.gf_z : case for `coordination=np.infty`
     gftool.lattice.onedim.gf_z : case for `coordination=2`
@@ -79,7 +79,7 @@ def dos(eps, half_bandwidth, coordination):
     dos : float ndarray or float
         The value of the DOS.
 
-    See also
+    See Also
     --------
     gftool.lattice.bethe.dos : case for `coordination=np.infty`
     gftool.lattice.onedim.dos : case for `coordination=2`

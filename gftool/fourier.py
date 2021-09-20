@@ -308,7 +308,6 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
     --------
     iw2tau_dft : Back-end: plain implementation of Fourier transform
     iw2tau_dft_soft : Back-end: Fourier transform with artificial softening of oszillations
-
     pole_gf_from_moments : Function handling the given `moments`
 
     Notes
@@ -863,7 +862,6 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     --------
     tau2iw_ft_lin : Back-end: Fourier integration using Filon's method
     tau2iw_dft : Back-end: plain implementation using Riemann sum.
-
     pole_gf_from_tau : Function handling the fitting of `gf_tau`
 
     Examples
@@ -1002,7 +1000,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
 
     Fourier transformation of a fermionic Padé Green's function to
     imaginary-time domain.
-    We assume a Hermitian Green's function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,
+    We assume a Hermitian Green's function `gf_izp`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,
     which is the case for commutator Green's functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`
     with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.
 
@@ -1010,7 +1008,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
 
     Parameters
     ----------
-    izp, gf_iw : (N_izp) float np.ndarray
+    izp, gf_izp : (N_izp) float np.ndarray
         Positive **fermionic** Padé frequencies :math:`iz_p` and the Green's
         function at specified frequencies.
     tau : (N_tau) float np.ndarray
@@ -1019,7 +1017,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
     moments : (m) float array_like, optional
-        High-frequency moments of `gf_iw`.
+        High-frequency moments of `gf_izp`.
 
     Returns
     -------
@@ -1380,6 +1378,10 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     moments : (m) float array_like, optional
         High-frequency moments of `gf_iw`. If none are given, the first moment
         is chosen to remove the discontinuity at :math:`τ=0^{±}`.
+    occ : float, optional
+        If given, fix occupation of Green's function to `occ`. (default: False)
+    weight : (..., N_tau) float np.ndarray, optional
+        Weight the values of `gf_tau`, can be provided to include uncertainty.
 
     Returns
     -------
@@ -1389,7 +1391,6 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     See Also
     --------
     tau2iw : Fourier transform to fermionic Matsubara frequencies.
-
     pole_gf_from_tau : Function handling the fitting of `gf_tau`
 
     Notes

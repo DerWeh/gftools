@@ -14,17 +14,17 @@ def pade_init(iw, u, n_pade):
 
     Parameters
     ----------
-    iw :
+    iw
         mesh on imaginary axis
-    u :
+    u
         value of the function on iw-mesh
-    n_pade :
-        number of points used of pade
+    n_pade
+        number of points used of Padé
 
     Returns
     -------
-    a :
-        Pade coefficients
+    a
+        Padé coefficients
 
     """
     if iw.shape != u.shape:
@@ -57,23 +57,23 @@ def test_pade_init_junya(z, u, N):
 
 # calculate u_pade(w) at w
 def pade_calc(iw, a, w, n_pade):
-    """Calculate Pade of function at points w.
+    """Calculate Padé of function at points `w`.
 
     Parameters
     ----------
-    iw :
-        imaginary mesh used to calculate *a*
-    a :
-        coefficients for Pade, calculated from *pade_init*
-    w :
+    iw
+        imaginary mesh used to calculate `a`
+    a
+        coefficients for Padé, calculated from `pade_init`
+    w
         points at with the functions will be evaluated
-    n_pade :
-        number of imaginary frequencies used for the Pade
+    n_pade
+        number of imaginary frequencies used for the Padé
 
     Returns
     -------
-    pade_calc :
-        function evaluated at points *w*
+    pade_calc
+        function evaluated at points `w`
 
     """
     A0, A1 = 0., a[0]
