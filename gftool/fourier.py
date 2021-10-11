@@ -475,7 +475,7 @@ def tau2iv_ft_lin(gf_tau, beta):
 
     :math:`G(τ)` is approximated by a linear spline. A linear approximation was
     chosen to be able to integrate noisy functions. Information on oscillatory
-    integrations can be found e.g. in [filon1928]_ and [iserles]_.
+    integrations can be found e.g. in [filon1930]_ and [iserles2006]_.
 
     Parameters
     ----------
@@ -496,10 +496,13 @@ def tau2iv_ft_lin(gf_tau, beta):
 
     References
     ----------
-    .. [filon1928] L.N. Filon, On a quadrature formula for trigonometric integrals,
-       Proc. Roy. Soc. Edinburgh 49 (1928) 38-47.
-    .. [iserles] A. Iserles, S.P. Nørsett, and S. Olver, Highly oscillatory
-       quadrature: The story so far,
+    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       https://doi.org/10.1017/S0370164600026262
+    .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
+       Quadrature: The Story so Far. in Numerical Mathematics and Advanced
+       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
+       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
 
     Examples
@@ -740,7 +743,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     :math:`G(τ)` is approximated by a linear spline. A linear approximation was
     chosen to be able to integrate noisy functions. Information on oscillatory
-    integrations can be found e.g. in [filon1928]_ and [iserles]_.
+    integrations can be found e.g. in [filon1930]_ and [iserles2006]_.
 
     Parameters
     ----------
@@ -761,10 +764,13 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     References
     ----------
-    .. [filon1928] L.N. Filon, On a quadrature formula for trigonometric integrals,
-       Proc. Roy. Soc. Edinburgh 49 (1928) 38-47.
-    .. [iserles] A. Iserles, S.P. Nørsett, and S. Olver, Highly oscillatory
-       quadrature: The story so far,
+    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       https://doi.org/10.1017/S0370164600026262
+    .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
+       Quadrature: The Story so Far. in Numerical Mathematics and Advanced
+       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
+       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
 
     Examples
@@ -1152,8 +1158,8 @@ def tt2z_lin(tt, gf_t, z):
 
     :math:`G(t)` is approximated by a linear spline.
     The function currently requires an equidistant `tt`.
-    Information on oscillatory integrations can be found e.g. in [filon1928]_
-    and [iserles]_.
+    Information on oscillatory integrations can be found e.g. in [filon1930]_
+    and [iserles2006]_.
 
     Parameters
     ----------
@@ -1187,10 +1193,13 @@ def tt2z_lin(tt, gf_t, z):
 
     References
     ----------
-    .. [filon1928] L.N. Filon, On a quadrature formula for trigonometric integrals,
-       Proc. Roy. Soc. Edinburgh 49 (1928) 38-47.
-    .. [iserles] A. Iserles, S.P. Nørsett, and S. Olver, Highly oscillatory
-       quadrature: The story so far,
+    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       https://doi.org/10.1017/S0370164600026262
+    .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
+       Quadrature: The Story so Far. in Numerical Mathematics and Advanced
+       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
+       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
 
     """
