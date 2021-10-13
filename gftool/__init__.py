@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Collection of commonly used Green's functions and utilities.
 
 Main purpose is to have a tested base.

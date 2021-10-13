@@ -1,4 +1,3 @@
-# coding: utf8
 """Test the Fourier transformation of Green's functions."""
 import numpy as np
 import pytest

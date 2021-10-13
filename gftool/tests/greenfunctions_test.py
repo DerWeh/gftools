@@ -1,4 +1,3 @@
-# coding: utf8
 """Tests for Green's functions and related functions.
 
 TODO: use accuracy of *integrate.quad* for *pytest.approx*

@@ -1,4 +1,3 @@
-# encoding: utf-8
 r"""Functions to work with Green's functions in matrix from.
 
 A main use case of this library is the calculation of the Green's function
