@@ -1,0 +1,6 @@
+gftool.cpa.RootFxdocc.self\_cpa
+===============================
+
+.. currentmodule:: gftool.cpa
+
+.. autoproperty:: RootFxdocc.self_cpa

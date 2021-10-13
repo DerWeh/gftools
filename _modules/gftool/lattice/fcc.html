@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice.fcc &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/toggleprompt.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice.fcc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.lattice.fcc</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;3D face-centered cubic (fcc) lattice.</span>
+
+<span class="sd">The dispersion of the 3D face-centered cubic lattice is given by</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">   ϵ_{k_x,k_y,k_z} = 4t [\cos(k_x/2)\cos(k_y/2) + \cos(k_x/2)\cos(k_z/2) + \cos(k_y/2) \cos(k_z/2)]</span>
+
+<span class="sd">which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-4t, +12t] = [-0.5D, +1.5D]`.</span>
+
+<span class="sd">:half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping</span>
+<span class="sd">                 of `t=D/8`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">mp</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_u_ellipk</span>
+
+
+<span class="k">def</span> <span class="nf">_signed_sqrt</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Square root with correct sign for fcc lattice.&quot;&quot;&quot;</span>
+    <span class="c1"># sign = np.where((z.real &lt; 0) &amp; (z.imag &lt; 0), -1, 1)</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">real</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sign</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">scimath</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sign</span><span class="o">*</span><span class="n">z</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="gf_z"><a class="viewcode-back" href="../../../generated/gftool.lattice.fcc.gf_z.html#gftool.lattice.fcc.gf_z">[docs]</a><span class="k">def</span> <span class="nf">gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Local Green&#39;s function of the 3D face-centered cubic (fcc) lattice.</span>
+
+<span class="sd">    Note, that the spectrum is asymmetric and in :math:`[-D/2, 3D/2]`,</span>
+<span class="sd">    where :math:`D` is the half-bandwidth.</span>
+
+<span class="sd">    Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at</span>
+<span class="sd">    `z=0` (continuous but not differentiable).</span>
+
+<span class="sd">    Implements equations (2.16), (2.17) and (2.11) from [morita1971]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex np.ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the face-centered cubic lattice.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex np.ndarray or complex</span>
+<span class="sd">        Value of the face-centered cubic lattice Green&#39;s function</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice</span>
+<span class="sd">       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of</span>
+<span class="sd">       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.6, 1.6, num=501, dtype=complex)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.lattice.fcc.gf_z(ww, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(-0.5, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.real, label=r&quot;$\Re G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.imag, &#39;--&#39;, label=r&quot;$\Im G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;$G*D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\omega/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=ww.real.min(), right=ww.real.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">half_bandwidth</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">D</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">retarded</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">retarded</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>  <span class="c1"># calculate advanced only, and use symmetry</span>
+    <span class="n">zp1</span> <span class="o">=</span> <span class="n">z</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">zp1_pow</span> <span class="o">=</span> <span class="n">_signed_sqrt</span><span class="p">(</span><span class="n">zp1</span><span class="p">)</span><span class="o">**-</span><span class="mi">3</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">_signed_sqrt</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">zp1_pow</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_signed_sqrt</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">zp1_pow</span>
+    <span class="n">m_p</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sum1</span> <span class="o">-</span> <span class="n">sum2</span><span class="p">)</span>  <span class="c1"># eq. (2.11)</span>
+    <span class="n">m_m</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sum1</span> <span class="o">-</span> <span class="n">sum2</span><span class="p">)</span>  <span class="c1"># eq. (2.11)</span>
+    <span class="n">kii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">_u_ellipk</span><span class="p">(</span><span class="n">m_p</span><span class="p">))</span>
+    <span class="n">kii</span><span class="p">[</span><span class="n">m_p</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">2</span><span class="n">j</span><span class="o">*</span><span class="n">_u_ellipk</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m_p</span><span class="p">[</span><span class="n">m_p</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># eq (2.17)</span>
+    <span class="n">gf</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">zp1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_u_ellipk</span><span class="p">(</span><span class="n">m_m</span><span class="p">)</span> <span class="o">*</span> <span class="n">kii</span>  <span class="c1"># eq (2.16)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">retarded</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">gf</span><span class="p">),</span> <span class="n">gf</span><span class="p">)</span>  <span class="c1"># return to retarded by symmetry</span></div>
+
+
+<div class="viewcode-block" id="hilbert_transform"><a class="viewcode-back" href="../../../generated/gftool.lattice.fcc.hilbert_transform.html#gftool.lattice.fcc.hilbert_transform">[docs]</a><span class="k">def</span> <span class="nf">hilbert_transform</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hilbert transform of non-interacting DOS of the face-centered cubic lattice.</span>
+
+<span class="sd">    The Hilbert transform is defined</span>
+
+<span class="sd">    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}</span>
+
+<span class="sd">    The lattice Hilbert transform is the same as the non-interacting Green&#39;s</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xi : complex np.ndarray or complex</span>
+<span class="sd">        Point at which the Hilbert transform is evaluated</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        half-bandwidth of the DOS of the 3D face-centered cubic lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hilbert_transform : complex np.ndarray or complex</span>
+<span class="sd">        Hilbert transform of `xi`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Relation between nearest neighbor hopping `t` and half-bandwidth `D`</span>
+
+<span class="sd">    .. math:: 8t = D</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.fcc.gf_z</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gf_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../../generated/gftool.lattice.fcc.dos.html#gftool.lattice.fcc.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;DOS of non-interacting 3D face-centered cubic lattice.</span>
+
+<span class="sd">    Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at</span>
+<span class="sd">    `z=0` (continuous but not differentiable).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float np.ndarray or float</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(`eps` &lt; -0.5*`half_bandwidth`) = 0,</span>
+<span class="sd">        DOS(1.5*`half_bandwidth` &lt; `eps`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos : float np.ndarray or float</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.fcc.dos_mp : multi-precision version suitable for integration</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice</span>
+<span class="sd">       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of</span>
+<span class="sd">       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.6, 1.6, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; dos = gt.lattice.fcc.dos(eps, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(-0.5, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">singular</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">==</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">half_bandwidth</span>
+    <span class="n">finite</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="n">half_bandwidth</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">eps</span> <span class="o">&lt;</span> <span class="mf">1.5</span><span class="o">*</span><span class="n">half_bandwidth</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">singular</span>
+    <span class="n">dos_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">dos_</span><span class="p">[</span><span class="n">finite</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">gf_z</span><span class="p">(</span><span class="n">eps</span><span class="p">[</span><span class="n">finite</span><span class="p">],</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="n">half_bandwidth</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
+    <span class="n">dos_</span><span class="p">[</span><span class="n">singular</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">infty</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dos_</span><span class="p">)</span>  <span class="c1"># at 0.5D wrong sign</span></div>
+
+
+<span class="c1"># ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1</span>
+<span class="c1"># from: integral of dos_mp with mp.workdps(100)</span>
+<span class="c1"># for m in range(0, 21, 1):</span>
+<span class="c1">#     with mp.workdps(100):</span>
+<span class="c1">#         print(mp.quad(lambda eps: eps**m * dos_mp(eps), [mp.mpf(&#39;-0.5&#39;), 0, 1])</span>
+<span class="c1"># rational numbers obtained by mp.identify</span>
+<span class="n">dos_moment_coefficients</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">16</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="mi">3</span><span class="o">/</span><span class="mi">32</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">135</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="mi">135</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mf">0.1611328125</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="mf">0.1922607421875</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="mf">0.24070143699646</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="mf">0.305163860321045</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="mf">0.394462153315544</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mf">0.516299419105052</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mf">0.683690124191343</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="mf">0.913928582333027</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mf">1.23181895411108</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="mf">1.67210463207448</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="mf">2.28395076888283</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="mf">3.13686893977359</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mf">4.32941325997849</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="mf">6.00152324929046</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="mf">8.35226611969712</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="dos_moment"><a class="viewcode-back" href="../../../generated/gftool.lattice.fcc.dos_moment.html#gftool.lattice.fcc.dos_moment">[docs]</a><span class="k">def</span> <span class="nf">dos_moment</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the `m` th moment of the face-centered cubic DOS.</span>
+
+<span class="sd">    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The order of the moment.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the 3D face-centered cubic lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_moment : float</span>
+<span class="sd">        The `m` th moment of the 3D face-centered cubic DOS.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        Currently only implemented for a few specific moments `m`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.fcc.dos</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dos_moment_coefficients</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">half_bandwidth</span><span class="o">**</span><span class="n">m</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">keyerr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Calculation of arbitrary moments not implemented.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">keyerr</span></div>
+
+
+<span class="k">def</span> <span class="nf">_signed_mp_sqrt</span><span class="p">(</span><span class="n">eps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Square root with correct sign for fcc lattice.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">eps</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">mp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="n">eps</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="dos_mp"><a class="viewcode-back" href="../../../generated/gftool.lattice.fcc.dos_mp.html#gftool.lattice.fcc.dos_mp">[docs]</a><span class="k">def</span> <span class="nf">dos_mp</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-precision DOS of non-interacting 3D face-centered cubic lattice.</span>
+
+<span class="sd">    Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at</span>
+<span class="sd">    `z=0` (continuous but not differentiable).</span>
+
+<span class="sd">    This function is particularity suited to calculate integrals of the form</span>
+<span class="sd">    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,</span>
+<span class="sd">    consider using :math:`∫dϵ DOS(ϵ)[f(ϵ)-f(-1/2)] + f(-1/2)` to avoid the</span>
+<span class="sd">    singularity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : mpmath.mpf or mpf_like</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : mpmath.mpf or mpf_like</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(`eps` &lt; -0.5*`half_bandwidth`) = 0,</span>
+<span class="sd">        DOS(1.5*`half_bandwidth` &lt; `eps`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_mp : mpmath.mpf</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.fcc.dos : vectorized version suitable for array evaluations</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice</span>
+<span class="sd">       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of</span>
+<span class="sd">       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate integrals:</span>
+
+<span class="sd">    &gt;&gt;&gt; from mpmath import mp</span>
+<span class="sd">    &gt;&gt;&gt; unit = mp.quad(gt.lattice.fcc.dos_mp, [-0.5, 0, 1.5])</span>
+<span class="sd">    &gt;&gt;&gt; mp.identify(unit)</span>
+<span class="sd">    &#39;1&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.6, 1.6, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; dos_mp = [gt.lattice.fcc.dos_mp(ee, half_bandwidth=1) for ee in eps]</span>
+<span class="sd">    &gt;&gt;&gt; dos_mp = np.array(dos_mp, dtype=np.float64)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(-0.5, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos_mp)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">half_bandwidth</span><span class="p">)</span> <span class="o">*</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;1/2&#39;</span><span class="p">)</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">/</span> <span class="n">D</span>
+    <span class="k">if</span> <span class="mi">3</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">eps</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">epsp1</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">epsp1_pow</span> <span class="o">=</span> <span class="n">_signed_mp_sqrt</span><span class="p">(</span><span class="n">epsp1</span><span class="p">)</span><span class="o">**-</span><span class="mi">3</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">_signed_mp_sqrt</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">*</span> <span class="n">epsp1_pow</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="p">(</span><span class="n">eps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_signed_mp_sqrt</span><span class="p">(</span><span class="n">eps</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">epsp1_pow</span>
+    <span class="n">m_p</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;0.5&#39;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">sum1</span> <span class="o">-</span> <span class="n">sum2</span><span class="p">)</span>  <span class="c1"># eq. (2.11)</span>
+    <span class="n">m_m</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;0.5&#39;</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sum1</span> <span class="o">-</span> <span class="n">sum2</span><span class="p">)</span>  <span class="c1"># eq. (2.11)</span>
+    <span class="n">kii</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">ellipk</span><span class="p">(</span><span class="n">m_p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m_p</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">kii</span> <span class="o">+=</span> <span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">mp</span><span class="o">.</span><span class="n">ellipk</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">m_p</span><span class="p">)</span>  <span class="c1"># eq (2.17)</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">epsp1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">_u_ellipk</span><span class="p">(</span><span class="n">m_m</span><span class="p">)</span> <span class="o">*</span> <span class="n">kii</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>  <span class="c1"># eq (2.16)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+gftool.lattice.kagome.dos\_moment
+=================================
+
+.. currentmodule:: gftool.lattice.kagome
+
+.. autofunction:: dos_moment

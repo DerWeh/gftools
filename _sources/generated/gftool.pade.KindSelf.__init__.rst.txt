@@ -1,0 +1,6 @@
+gftool.pade.KindSelf.\_\_init\_\_
+=================================
+
+.. currentmodule:: gftool.pade
+
+.. automethod:: KindSelf.__init__

@@ -1,0 +1,6 @@
+﻿gftool.sc\_dos
+==============
+
+.. currentmodule:: gftool
+
+.. autofunction:: sc_dos

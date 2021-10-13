@@ -1,0 +1,6 @@
+gftool.fourier.tt2z\_lin
+========================
+
+.. currentmodule:: gftool.fourier
+
+.. autofunction:: tt2z_lin

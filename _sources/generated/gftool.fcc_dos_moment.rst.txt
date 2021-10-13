@@ -1,0 +1,6 @@
+﻿gftool.fcc\_dos\_moment
+=======================
+
+.. currentmodule:: gftool
+
+.. autofunction:: fcc_dos_moment

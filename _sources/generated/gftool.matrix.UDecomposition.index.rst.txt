@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.index
+==================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: UDecomposition.index

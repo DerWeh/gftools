@@ -1,0 +1,35 @@
+gftool.lattice.fcc
+==================
+
+.. module:: gftool.lattice.fcc
+
+.. automodule:: gftool.lattice.fcc
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

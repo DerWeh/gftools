@@ -1,0 +1,6 @@
+gftool.lattice.bethe.dos\_moment
+================================
+
+.. currentmodule:: gftool.lattice.bethe
+
+.. autofunction:: dos_moment

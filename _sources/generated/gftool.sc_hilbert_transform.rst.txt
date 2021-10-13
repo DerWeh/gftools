@@ -1,0 +1,6 @@
+﻿gftool.sc\_hilbert\_transform
+=============================
+
+.. currentmodule:: gftool
+
+.. autofunction:: sc_hilbert_transform

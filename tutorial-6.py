@@ -1,0 +1,6 @@
+tau = np.linspace(0, beta, num=gf_tau.shape[-1])
+__ = plt.plot(tau, gf_tau[0], label=r'$\sigma=\uparrow$')
+__ = plt.plot(tau, gf_tau[1], label=r'$\sigma=\downarrow$')
+__ = plt.xlabel(r'$\tau$')
+__ = plt.legend()
+plt.show()

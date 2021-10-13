@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.fourier &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.fourier</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.fourier</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier transformations of Green&#39;s functions.</span>
+
+<span class="sd">Fourier transformation between imaginary time and Matsubara frequencies.</span>
+<span class="sd">The function in this module should be used after explicitly treating the</span>
+<span class="sd">high-frequency behavior, as this is not yet implemented.</span>
+<span class="sd">Typically, transformation from τ-space to Matsubara frequency are unproblematic.</span>
+
+<span class="sd">The Fourier transforms are defined in the following way:</span>
+
+<span class="sd">Definitions</span>
+<span class="sd">-----------</span>
+
+<span class="sd">real time → complex frequencies</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">The Laplace integral for the Green&#39;s function is defined as</span>
+
+<span class="sd">.. math:: G(z) = ∫_{-∞}^{∞} dt G(t) \exp(izt)</span>
+
+<span class="sd">This integral is only well defined</span>
+
+<span class="sd">* in the upper complex half-plane `z.imag&gt;=0` for retarded Green&#39;s function :math:`∝θ(t)`</span>
+<span class="sd">* in the lower complex half-plane `z.imag&lt;=0` for advanced Green&#39;s function :math:`∝θ(-t)`</span>
+
+<span class="sd">The recommended high-level function to perform this Laplace transform is:</span>
+
+<span class="sd">* `tt2z` for both retarded and advanced Green&#39;s function</span>
+
+<span class="sd">Currently, to sub-functions can be used equivalently, the abstraction `tt2z` is</span>
+<span class="sd">mostly for consistency with the imaginary time ↔ Matsubara frequencies</span>
+<span class="sd">Fourier transformations.</span>
+
+<span class="sd">imaginary time → Matsubara frequencies</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">The Fourier integral for the Matsubara Green&#39;s function is defined as:</span>
+
+<span class="sd">.. math:: G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n τ)</span>
+
+<span class="sd">with :math:`iw_n = iπn/β`. For fermionic Green&#39;s functions only odd frequencies</span>
+<span class="sd">are non-vanishing, for bosonic Green&#39;s functions only even.</span>
+
+<span class="sd">The recommended high-level function to perform this Fourier transform is:</span>
+
+<span class="sd">* `tau2iw` for *fermionic* Green&#39;s functions</span>
+<span class="sd">* `tau2iv` for *bosonic* Green&#39;s functions</span>
+
+<span class="sd">Matsubara frequencies → imaginary time</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">The Fourier sum for the imaginary time Green&#39;s function is defined as:</span>
+
+<span class="sd">.. math:: G(τ) = 1/β \sum_{n=-\infty}^{\infty} G(iw_n) \exp(-iw_n τ).</span>
+
+<span class="sd">The recommended high-level function to perform this Fourier transform is:</span>
+
+<span class="sd">* `iw2tau` for *fermionic* Green&#39;s functions</span>
+
+<span class="sd">Glossary</span>
+<span class="sd">--------</span>
+
+<span class="sd">.. glossary::</span>
+
+<span class="sd">   dft</span>
+<span class="sd">      &lt;discrete Foruier transform&gt;</span>
+
+<span class="sd">   ft</span>
+<span class="sd">      &lt;Fourier transformation&gt; In contrast to :term:`dft`, this is used for</span>
+<span class="sd">      Fourier integration of continous variables without discretization.</span>
+
+<span class="sd">Previously defined:</span>
+
+<span class="sd">* :term:`iv`</span>
+<span class="sd">* :term:`iw`</span>
+<span class="sd">* :term:`tau`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">newaxis</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_gu_matvec</span>
+<span class="kn">from</span> <span class="nn">gftool.statistics</span> <span class="kn">import</span> <span class="n">matsubara_frequencies</span><span class="p">,</span> <span class="n">matsubara_frequencies_b</span>
+<span class="kn">from</span> <span class="nn">gftool.basis.pole</span> <span class="kn">import</span> <span class="n">PoleFct</span><span class="p">,</span> <span class="n">PoleGf</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">numexpr</span> <span class="k">as</span> <span class="nn">ne</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_HAS_NUMEXPR</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_HAS_NUMEXPR</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_phase_numexpr</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">tt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s1">&#39;exp(1j*z*tt)&#39;</span><span class="p">,</span> <span class="n">local_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;tt&#39;</span><span class="p">:</span> <span class="n">tt</span><span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">_phase_numpy</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">tt</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">z</span><span class="o">*</span><span class="n">tt</span><span class="p">)</span>
+
+
+<span class="n">_phase</span> <span class="o">=</span> <span class="n">_phase_numexpr</span> <span class="k">if</span> <span class="n">_HAS_NUMEXPR</span> <span class="k">else</span> <span class="n">_phase_numpy</span>
+
+
+<div class="viewcode-block" id="iw2tau_dft"><a class="viewcode-back" href="../../generated/gftool.fourier.iw2tau_dft.html#gftool.fourier.iw2tau_dft">[docs]</a><span class="k">def</span> <span class="nf">iw2tau_dft</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Discrete Fourier transform of the Hermitian Green&#39;s function `gf_iw`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic Matsubara Green&#39;s function to</span>
+<span class="sd">    imaginary-time domain.</span>
+<span class="sd">    The infinite Fourier sum is truncated.</span>
+<span class="sd">    We assume a Hermitian Green&#39;s function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,</span>
+<span class="sd">    which is the case for commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`</span>
+<span class="sd">    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_iw : (..., N_iw) complex np.ndarray</span>
+<span class="sd">        The Green&#39;s function at positive **fermionic** Matsubara frequencies</span>
+<span class="sd">        :math:`iω_n`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_tau : (..., 2*N_iw + 1) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    iw2tau_dft_soft : Fourier transform with artificial softening of oszillations</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`</span>
+<span class="sd">    has already reached it&#39;s high-frequency behaviour, which need to be included</span>
+<span class="sd">    explicitly. Therefore, the accuracy of the FT depends implicitely on the</span>
+<span class="sd">    bandwidth!</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range(1024), beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+<span class="sd">    &gt;&gt;&gt; # 1/z tail has to be handled manually</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.iw2tau_dft(gf_iw - 1/iws, beta=BETA) - .5</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw.size, gf_dft.size</span>
+<span class="sd">    (1024, 2049)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_tau, label=&#39;exact&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_dft, &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Oscillations around boundaries 0, β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, gf_tau - gf_dft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ/β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_iw.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_noisy = gt.fourier.iw2tau_dft(gf_iw + noise - 1/iws, beta=BETA) - .5</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, abs(gf_tau - gf_dft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, abs(gf_tau - gf_dft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gf_iwall</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">gf_iwall</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">gf_iw</span>  <span class="c1"># GF containing fermionic and bosonic Matsubaras</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">hfft</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">beta</span> <span class="o">*</span> <span class="n">gf_iwall</span><span class="p">)</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">gf_iwall</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>  <span class="c1"># trim to tau in [0, beta]  # pylint: disable=unsubscriptable-object,C0301</span>
+    <span class="k">return</span> <span class="n">gf_tau</span></div>
+
+
+<div class="viewcode-block" id="iw2tau_dft_soft"><a class="viewcode-back" href="../../generated/gftool.fourier.iw2tau_dft_soft.html#gftool.fourier.iw2tau_dft_soft">[docs]</a><span class="k">def</span> <span class="nf">iw2tau_dft_soft</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Discrete Fourier transform of the Hermitian Green&#39;s function `gf_iw`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic Matsubara Green&#39;s function to</span>
+<span class="sd">    imaginary-time domain.</span>
+<span class="sd">    Add a tail letting `gf_iw` go to 0. The tail is just a cosine function to</span>
+<span class="sd">    exactly hit the 0.</span>
+<span class="sd">    This is unphysical but suppresses oscillations. This methods should be used</span>
+<span class="sd">    with care, as it might hide errors.</span>
+<span class="sd">    We assume a Hermitian Green&#39;s function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,</span>
+<span class="sd">    which is the case for commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`</span>
+<span class="sd">    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_iw : (..., N_iw) complex np.ndarray</span>
+<span class="sd">        The Green&#39;s function at positive **fermionic** Matsubara frequencies</span>
+<span class="sd">        :math:`iω_n`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_tau : (..., 2*N_iw + 1) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    iw2tau_dft : Plain implementation of Fourier transform</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`</span>
+<span class="sd">    has already reached it&#39;s high-frequency behaviour, which need to be included</span>
+<span class="sd">    explicitly. Therefore, the accuracy of the FT depends implicitely on the</span>
+<span class="sd">    bandwidth!</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range(1024), beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+<span class="sd">    &gt;&gt;&gt; # 1/z tail has to be handled manually</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.iw2tau_dft_soft(gf_iw - 1/iws, beta=BETA) - .5</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw.size, gf_dft.size</span>
+<span class="sd">    (1024, 2049)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_tau, label=&#39;exact&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_dft, &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Oscillations around boundaries 0, β slightly suppressed&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, gf_tau - gf_dft, label=&#39;DFT soft&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_bare = gt.fourier.iw2tau_dft(gf_iw - 1/iws, beta=BETA) - .5</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, gf_tau - gf_dft_bare, &#39;--&#39;,  label=&#39;DFT bare&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ/β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_iw.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_noisy = gt.fourier.iw2tau_dft_soft(gf_iw + noise - 1/iws, beta=BETA) - .5</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, abs(gf_tau - gf_dft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, abs(gf_tau - gf_dft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tail_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">tail</span> <span class="o">=</span> <span class="mf">.5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">tail_range</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Remaining tail approximated by &#39;cos&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">gf_iw_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">tail</span><span class="o">*</span><span class="n">gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">iw2tau_dft</span><span class="p">(</span><span class="n">gf_iw_extended</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># trim artificial resolution</span>
+    <span class="k">return</span> <span class="n">gf_tau</span></div>
+
+
+<div class="viewcode-block" id="iw2tau"><a class="viewcode-back" href="../../generated/gftool.fourier.iw2tau.html#gftool.fourier.iw2tau">[docs]</a><span class="k">def</span> <span class="nf">iw2tau</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,),</span> <span class="n">fourier</span><span class="o">=</span><span class="n">iw2tau_dft</span><span class="p">,</span> <span class="n">n_fit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Discrete Fourier transform of the Hermitian Green&#39;s function `gf_iw`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic Matsubara Green&#39;s function to</span>
+<span class="sd">    imaginary-time domain.</span>
+<span class="sd">    We assume a Hermitian Green&#39;s function `gf_iw`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,</span>
+<span class="sd">    which is the case for commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`</span>
+<span class="sd">    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_iw : (..., N_iw) complex np.ndarray</span>
+<span class="sd">        The Green&#39;s function at positive **fermionic** Matsubara frequencies</span>
+<span class="sd">        :math:`iω_n`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    moments : (..., m) float array_like</span>
+<span class="sd">        High-frequency moments of `gf_iw`.</span>
+<span class="sd">    fourier : {`iw2tau_dft`, `iw2tau_dft_soft`}, optional</span>
+<span class="sd">        Back-end to perform the actual Fourier transformation.</span>
+<span class="sd">    n_fit : int, optional</span>
+<span class="sd">        Number of additionally fitted moments (in fact, `gf_iw` is fitted, not</span>
+<span class="sd">        not directly moments).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_tau : (..., 2*N_iw + 1) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    iw2tau_dft : Back-end: plain implementation of Fourier transform</span>
+<span class="sd">    iw2tau_dft_soft : Back-end: Fourier transform with artificial softening of oszillations</span>
+<span class="sd">    pole_gf_from_moments : Function handling the given `moments`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For accurate an accurate Fourier transform, it is necessary, that `gf_iw`</span>
+<span class="sd">    has already reached it&#39;s high-frequency behaviour, which need to be included</span>
+<span class="sd">    explicitly. Therefore, the accuracy of the FT depends implicitely on the</span>
+<span class="sd">    bandwidth!</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range(1024), beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2*iws.size + 1, endpoint=True)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.iw2tau(gf_iw, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw.size, gf_dft.size</span>
+<span class="sd">    (1024, 2049)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_tau, label=&#39;exact&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_dft, &#39;--&#39;, label=&#39;FT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Oscillations around boundaries 0, β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, gf_tau - gf_dft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ/β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Results can be drastically improved giving high-frequency moments,</span>
+<span class="sd">    this reduces the truncation error.</span>
+
+<span class="sd">    &gt;&gt;&gt; mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(8), axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 8):</span>
+<span class="sd">    ...     gf = gt.fourier.iw2tau(gf_iw, moments=mom[:n], beta=BETA)</span>
+<span class="sd">    ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), label=f&#39;n_mom={n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ/β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_iw.size)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 7, 2):</span>
+<span class="sd">    ...     gf = gt.fourier.iw2tau(gf_iw+noise, moments=mom[:n], beta=BETA)</span>
+<span class="sd">    ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), &#39;--&#39;, label=f&#39;n_mom={n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, abs(gf_tau - gf_dft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+    <span class="n">iws</span> <span class="o">=</span> <span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="c1"># newaxis in pole_gf inserts axis for iws/tau</span>
+    <span class="k">if</span> <span class="n">n_fit</span><span class="p">:</span>
+        <span class="n">n_mom</span> <span class="o">=</span> <span class="n">moments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_z</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_fit</span><span class="o">+</span><span class="n">n_mom</span><span class="p">,</span>
+                                <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">weight</span><span class="o">=</span><span class="n">iws</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="p">(</span><span class="n">n_mom</span><span class="o">+</span><span class="n">n_fit</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_moments</span><span class="p">(</span><span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">gf_iw</span> <span class="o">=</span> <span class="n">gf_iw</span> <span class="o">-</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_z</span><span class="p">(</span><span class="n">iws</span><span class="p">)</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">fourier</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">gf_tau</span> <span class="o">+=</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_tau</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gf_tau</span></div>
+
+
+<div class="viewcode-block" id="tau2iv_dft"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iv_dft.html#gftool.fourier.tau2iv_dft">[docs]</a><span class="k">def</span> <span class="nf">tau2iv_dft</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Discrete Fourier transform of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a bosonic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    The Fourier integral is replaced by a Riemann sum giving a discrete</span>
+<span class="sd">    Fourier transform (DFT).</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iv : (..., (N_iv + 1)/2) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara</span>
+<span class="sd">        frequencies :math:`iν_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iv_ft_lin : Fourier integration using Filon&#39;s method</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles, weights = np.random.random(10), np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iv_dft(gf_tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_dft.size</span>
+<span class="sd">    (2049, 1025)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_dft.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_dft.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Error growing with frequency&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft))</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-3</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_noisy = gt.fourier.tau2iv_dft(gf_tau + noise, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; # plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gf_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">beta</span><span class="o">/</span><span class="p">(</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">gf_iv</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gf_mean</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">])</span>
+    <span class="n">gf_iv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gf_mean</span>
+    <span class="c1"># gives better results in practice but is wrong...</span>
+    <span class="c1"># gf_iv = beta * np.fft.ihfft(.5*(gf_tau[..., 1:] + gf_tau[..., :-1]))</span>
+    <span class="k">return</span> <span class="n">gf_iv</span></div>
+
+
+<div class="viewcode-block" id="tau2iv_ft_lin"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iv_ft_lin.html#gftool.fourier.tau2iv_ft_lin">[docs]</a><span class="k">def</span> <span class="nf">tau2iv_ft_lin</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier integration of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a bosonic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.</span>
+<span class="sd">    Filon&#39;s method is used to calculated the Fourier integral</span>
+
+<span class="sd">    .. math:: G^n = ∫_{0}^{β}dτ G(τ) e^{iν_n τ},</span>
+
+<span class="sd">    :math:`G(τ)` is approximated by a linear spline. A linear approximation was</span>
+<span class="sd">    chosen to be able to integrate noisy functions. Information on oscillatory</span>
+<span class="sd">    integrations can be found e.g. in [filon1930]_ and [iserles2006]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iv : (..., (N_iv + 1)/2) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara</span>
+<span class="sd">        frequencies :math:`iν_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iv_dft : Plain implementation using Riemann sum.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for</span>
+<span class="sd">       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).</span>
+<span class="sd">       https://doi.org/10.1017/S0370164600026262</span>
+<span class="sd">    .. [iserles2006] Iserles, A., Nørsett, S. P. &amp; Olver, S. Highly Oscillatory</span>
+<span class="sd">       Quadrature: The Story so Far. in Numerical Mathematics and Advanced</span>
+<span class="sd">       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. &amp; Salgado, P.)</span>
+<span class="sd">       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6</span>
+<span class="sd">       http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles, weights = np.random.random(10), np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_lin = gt.fourier.tau2iv_ft_lin(gf_tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_ft_lin.size</span>
+<span class="sd">    (2049, 1025)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft_lin.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft_lin.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Error decreasing with frequency&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_ft_lin), label=&#39;FT_lin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iv_dft(gf_tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft), &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 5e-6</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_noisy = gt.fourier.tau2iv_ft_lin(gf_tau + noise, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_ft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_ft_lin), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_tau</span> <span class="o">=</span> <span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">gf_dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">d_gf_dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">d_tau_ivs</span> <span class="o">=</span> <span class="mi">2</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">n_tau</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">gf_dft</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">d_tau_ivs</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># avoid zero division, fix value by hand later</span>
+    <span class="n">expm1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">d_tau_ivs</span><span class="p">)</span>
+    <span class="n">weight1</span> <span class="o">=</span> <span class="n">expm1</span><span class="o">/</span><span class="n">d_tau_ivs</span>
+    <span class="n">weight2</span> <span class="o">=</span> <span class="p">(</span><span class="n">expm1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">weight1</span><span class="p">)</span><span class="o">/</span><span class="n">d_tau_ivs</span>
+    <span class="n">weight1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">weight2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">.5</span>  <span class="c1"># special case n=0, fix from before</span>
+    <span class="n">gf_iv</span> <span class="o">=</span> <span class="n">weight1</span><span class="o">*</span><span class="n">gf_dft</span> <span class="o">+</span> <span class="n">weight2</span><span class="o">*</span><span class="n">d_gf_dft</span>
+    <span class="n">gf_iv</span> <span class="o">=</span> <span class="n">beta</span><span class="o">*</span><span class="n">gf_iv</span>
+    <span class="k">return</span> <span class="n">gf_iv</span></div>
+
+
+<div class="viewcode-block" id="tau2iv"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iv.html#gftool.fourier.tau2iv">[docs]</a><span class="k">def</span> <span class="nf">tau2iv</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">fourier</span><span class="o">=</span><span class="n">tau2iv_ft_lin</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier transformation of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a bosonic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iv` is then Hermitian.</span>
+<span class="sd">    This function removes the discontinuity :math:`G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.</span>
+
+<span class="sd">    TODO: if high-frequency moments are know, they should be stripped for</span>
+<span class="sd">    increased accuracy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    fourier : {`tau2iv_ft_lin`, `tau2iv_dft`}, optional</span>
+<span class="sd">        Back-end to perform the actual Fourier transformation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iv : (..., (N_iv + 1)/2) complex np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for non-negative bosonic Matsubara</span>
+<span class="sd">        frequencies :math:`iν_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iv_dft : Back-end: plain implementation using Riemann sum.</span>
+<span class="sd">    tau2iv_ft_lin : Back-end: Fourier integration using Filon&#39;s method.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; ivs = gt.matsubara_frequencies_b(range((tau.size+1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles, weights = np.random.random(10), np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau_b(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.tau2iv(gf_tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_ft.size</span>
+<span class="sd">    (2049, 1025)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iv = gt.pole_gf_z(ivs, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iv.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Accuracy of the different back-ends</span>
+
+<span class="sd">    &gt;&gt;&gt; ft_lin, dft = gt.fourier.tau2iv_ft_lin, gt.fourier.tau2iv_dft</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_lin = gt.fourier.tau2iv(gf_tau, beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iv(gf_tau, beta=BETA, fourier=dft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_ft_lin), label=&#39;FT_lin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft), &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The methods are resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 5e-6</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_lin_noisy = gt.fourier.tau2iv(gf_tau + noise, beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_noisy = gt.fourier.tau2iv(gf_tau + noise, beta=BETA, fourier=dft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_ft_lin_noisy), &#39;--&#39;, label=&#39;FT_lin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iv - gf_dft_noisy), &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g1</span> <span class="o">=</span> <span class="p">(</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># = 1/z moment = jump of Gf at 0^{±}</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">gf_tau</span> <span class="o">-</span> <span class="n">g1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">/</span><span class="n">beta</span><span class="o">*</span><span class="n">tau</span>  <span class="c1"># remove jump by linear shift</span>
+    <span class="n">gf_iv</span> <span class="o">=</span> <span class="n">fourier</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">ivs</span> <span class="o">=</span> <span class="n">matsubara_frequencies_b</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">gf_iv</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">gf_iv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">g1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">/</span><span class="n">ivs</span>
+    <span class="n">gf_iv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">g1</span> <span class="o">*</span> <span class="n">beta</span>  <span class="c1"># `iv_{n=0}` = 0 has to be treated separately</span>
+    <span class="k">return</span> <span class="n">gf_iv</span></div>
+
+
+<div class="viewcode-block" id="tau2iw_dft"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iw_dft.html#gftool.fourier.tau2iw_dft">[docs]</a><span class="k">def</span> <span class="nf">tau2iw_dft</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Discrete Fourier transform of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    The Fourier integral is replaced by a Riemann sum giving a discrete</span>
+<span class="sd">    Fourier transform (DFT).</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iw : (..., (N_iw - 1)/2) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for positive fermionic Matsubara</span>
+<span class="sd">        frequencies :math:`iω_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iw_ft_lin : Fourier integration using Filon&#39;s method</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; # 1/z tail has to be handled manually</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iw_dft(gf_tau + .5, beta=BETA) + 1/iws</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_dft.size</span>
+<span class="sd">    (2049, 1024)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_dft.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_dft.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Error growing with frequency&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_dft))</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-5</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft_noisy = gt.fourier.tau2iw_dft(gf_tau + noise + .5, beta=BETA) + 1/iws</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_dft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_dft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># expand `gf_tau` to [-β, β] to get symmetric function</span>
+    <span class="n">gf_tau_full_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">gf_tau</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">gf_tau_full_range</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">gf_iw</span> <span class="o">=</span> <span class="o">-</span><span class="n">beta</span> <span class="o">*</span> <span class="n">dft</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># select *fermionic* Matsubara frequencies</span>
+    <span class="k">return</span> <span class="n">gf_iw</span></div>
+
+
+<div class="viewcode-block" id="tau2iw_ft_lin"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iw_ft_lin.html#gftool.fourier.tau2iw_ft_lin">[docs]</a><span class="k">def</span> <span class="nf">tau2iw_ft_lin</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier integration of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.</span>
+<span class="sd">    Filon&#39;s method is used to calculated the Fourier integral</span>
+
+<span class="sd">    .. math:: G^n = 0.5 ∫_{-β}^{β}dτ G(τ) e^{iω_n τ},</span>
+
+<span class="sd">    :math:`G(τ)` is approximated by a linear spline. A linear approximation was</span>
+<span class="sd">    chosen to be able to integrate noisy functions. Information on oscillatory</span>
+<span class="sd">    integrations can be found e.g. in [filon1930]_ and [iserles2006]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iw : (..., (N_iw - 1)/2) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for positive fermionic Matsubara</span>
+<span class="sd">        frequencies :math:`iω_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iw_dft : Plain implementation using Riemann sum.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for</span>
+<span class="sd">       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).</span>
+<span class="sd">       https://doi.org/10.1017/S0370164600026262</span>
+<span class="sd">    .. [iserles2006] Iserles, A., Nørsett, S. P. &amp; Olver, S. Highly Oscillatory</span>
+<span class="sd">       Quadrature: The Story so Far. in Numerical Mathematics and Advanced</span>
+<span class="sd">       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. &amp; Salgado, P.)</span>
+<span class="sd">       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6</span>
+<span class="sd">       http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; # 1/z tail has to be handled manually</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_lin = gt.fourier.tau2iw_ft_lin(gf_tau + .5, beta=BETA) + 1/iws</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_ft_lin.size</span>
+<span class="sd">    (2049, 1024)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft_lin.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft_lin.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Error decreasing with frequency&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_ft_lin), label=&#39;FT_lin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iw_dft(gf_tau + .5, beta=BETA) + 1/iws</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_dft), &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 5e-6</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_noisy = gt.fourier.tau2iw_ft_lin(gf_tau + noise + .5, beta=BETA) + 1/iws</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_ft_noisy), &#39;--&#39;, label=&#39;noisy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_ft_lin), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gf_tau_full_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">gf_tau</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">n_tau</span> <span class="o">=</span> <span class="n">gf_tau_full_range</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># pylint: disable=unsubscriptable-object</span>
+    <span class="n">gf_dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">gf_tau_full_range</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">d_gf_tau</span> <span class="o">=</span> <span class="n">gf_tau_full_range</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">gf_tau_full_range</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">d_gf_dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">(</span><span class="n">d_gf_tau</span><span class="p">)</span>
+    <span class="n">d_tau_iws</span> <span class="o">=</span> <span class="mi">2</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">gf_dft</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">n_tau</span>
+    <span class="n">expm1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">d_tau_iws</span><span class="p">)</span>
+    <span class="n">weight1</span> <span class="o">=</span> <span class="n">expm1</span><span class="o">/</span><span class="n">d_tau_iws</span>
+    <span class="n">weight2</span> <span class="o">=</span> <span class="p">(</span><span class="n">expm1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">weight1</span><span class="p">)</span><span class="o">/</span><span class="n">d_tau_iws</span>
+    <span class="n">gf_iw</span> <span class="o">=</span> <span class="n">weight1</span><span class="o">*</span><span class="n">gf_dft</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">weight2</span><span class="o">*</span><span class="n">d_gf_dft</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">gf_iw</span> <span class="o">=</span> <span class="o">-</span><span class="n">beta</span><span class="o">*</span><span class="n">gf_iw</span>
+    <span class="k">return</span> <span class="n">gf_iw</span></div>
+
+
+<div class="viewcode-block" id="tau2iw"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2iw.html#gftool.fourier.tau2iw">[docs]</a><span class="k">def</span> <span class="nf">tau2iw</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fourier</span><span class="o">=</span><span class="n">tau2iw_ft_lin</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier transform of the real Green&#39;s function `gf_tau`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic imaginary-time Green&#39;s function to</span>
+<span class="sd">    Matsubara domain.</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.</span>
+<span class="sd">    If no explicit `moments` are given, this function removes</span>
+<span class="sd">    :math:`-G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (..., N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    n_pole : int, optional</span>
+<span class="sd">        Number of poles used to fit `gf_tau`. Needs to be at least as large as</span>
+<span class="sd">        the number of given moments `m`. (default: no fitting is performed)</span>
+<span class="sd">    moments : (..., m) float array_like, optional</span>
+<span class="sd">        High-frequency moments of `gf_iw`. If none are given, the first moment</span>
+<span class="sd">        is chosen to remove the discontinuity at :math:`τ=0^{±}`.</span>
+<span class="sd">    fourier : {`tau2iw_ft_lin`, `tau2iw_dft`}, optional</span>
+<span class="sd">        Back-end to perform the actual Fourier transformation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_iw : (..., (N_iv + 1)/2) complex np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for non-negative fermionic Matsubara</span>
+<span class="sd">        frequencies :math:`iω_n`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iw_ft_lin : Back-end: Fourier integration using Filon&#39;s method</span>
+<span class="sd">    tau2iw_dft : Back-end: plain implementation using Riemann sum.</span>
+<span class="sd">    pole_gf_from_tau : Function handling the fitting of `gf_tau`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range((tau.size-1)//2), beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.tau2iw(gf_tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau.size, gf_ft.size</span>
+<span class="sd">    (2049, 1024)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.pole_gf_z(iws, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_iw.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Accuracy of the different back-ends</span>
+
+<span class="sd">    &gt;&gt;&gt; ft_lin, dft = gt.fourier.tau2iw_ft_lin, gt.fourier.tau2iw_dft</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft_lin = gt.fourier.tau2iw(gf_tau, beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    &gt;&gt;&gt; gf_dft = gt.fourier.tau2iw(gf_tau, beta=BETA, fourier=dft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_ft_lin), label=&#39;FT_lin&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_iw - gf_dft), &#39;--&#39;, label=&#39;DFT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The accuracy can be further improved by fitting as suitable pole Green&#39;s</span>
+<span class="sd">    function:</span>
+
+<span class="sd">    &gt;&gt;&gt; for n, n_mom in enumerate(range(1, 30, 5)):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau, n_pole=n_mom, moments=(1,), beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_iw - gf), label=f&#39;n_fit={n_mom}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau, n_pole=n_mom, moments=(1,), beta=BETA, fourier=dft)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_iw - gf), &#39;--&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend(loc=&#39;lower right&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Results for DFT can be drastically improved giving high-frequency moments.</span>
+<span class="sd">    The reason is, that lower large frequencies, where FT_lin is superior, are</span>
+<span class="sd">    treated by the moments instead of the Fourier transform.</span>
+
+<span class="sd">    &gt;&gt;&gt; mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(8), axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 8):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau, moments=mom[:n], beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_iw - gf), label=f&#39;n_mom={n}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau, moments=mom[:n], beta=BETA, fourier=dft)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_iw - gf), &#39;--&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend(loc=&#39;lower right&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; __, axes = plt.subplots(ncols=2, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; for n, n_mom in enumerate(range(1, 20, 5)):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    ...     __ = axes[0].plot(abs(gf_iw - gf), label=f&#39;n_fit={n_mom}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=dft)</span>
+<span class="sd">    ...     __ = axes[1].plot(abs(gf_iw - gf), &#39;--&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; for ax in axes:</span>
+<span class="sd">    ...     __ = ax.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = axes[0].legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __, axes = plt.subplots(ncols=2, sharey=True)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 7, 2):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau + noise, moments=mom[:n], beta=BETA, fourier=ft_lin)</span>
+<span class="sd">    ...     __ = axes[0].plot(abs(gf_iw - gf), &#39;--&#39;, label=f&#39;n_mom={n}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    ...     gf = gt.fourier.tau2iw(gf_tau + noise, moments=mom[:n], beta=BETA, fourier=dft)</span>
+<span class="sd">    ...     __ = axes[1].plot(abs(gf_iw - gf), &#39;--&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; for ax in axes:</span>
+<span class="sd">    ...     __ = ax.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = axes[0].plot(abs(gf_iw - gf_ft_lin), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = axes[1].plot(abs(gf_iw - gf_dft), &#39;--&#39;, label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = axes[0].legend(loc=&#39;lower right&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="o">-</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">moments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># = 1/z moment = jump of Gf at 0^{±}</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">m1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Provided 1/z moment differs from jump.&quot;</span>
+                           <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> mom: </span><span class="si">%s</span><span class="s2">, jump: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_pole</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_pole</span> <span class="o">=</span> <span class="n">moments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># add additional axis for tau/iws for easy gu-function calling</span>
+    <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_tau</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_pole</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span>
+                              <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">gf_tau</span> <span class="o">=</span> <span class="n">gf_tau</span> <span class="o">-</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_tau</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+    <span class="n">gf_iw</span> <span class="o">=</span> <span class="n">fourier</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">iws</span> <span class="o">=</span> <span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">gf_iw</span> <span class="o">+=</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_z</span><span class="p">(</span><span class="n">iws</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gf_iw</span></div>
+
+
+<span class="k">def</span> <span class="nf">_z2polegf</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">gf_z</span><span class="p">,</span> <span class="n">n_pole</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,))</span> <span class="o">-&gt;</span> <span class="n">PoleFct</span><span class="p">:</span>
+    <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">error_</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+        <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleFct</span><span class="o">.</span><span class="n">from_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">gf_z</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_pole</span><span class="p">,</span>
+                                 <span class="c1"># if width is 0, no higher moments exist</span>
+                                 <span class="n">moments</span><span class="o">=</span><span class="n">moments</span> <span class="k">if</span> <span class="n">width</span> <span class="k">else</span> <span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">gf_fit</span> <span class="o">=</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_z</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">gf_z</span> <span class="o">-</span> <span class="n">gf_fit</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize_scalar</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">error_</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting error: </span><span class="si">%s</span><span class="s2"> Optimal pole-spread: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">fun</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">opt_pole_gf</span> <span class="o">=</span> <span class="n">PoleFct</span><span class="o">.</span><span class="n">from_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">gf_z</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_pole</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">opt_pole_gf</span>
+
+
+<div class="viewcode-block" id="izp2tau"><a class="viewcode-back" href="../../generated/gftool.fourier.izp2tau.html#gftool.fourier.izp2tau">[docs]</a><span class="k">def</span> <span class="nf">izp2tau</span><span class="p">(</span><span class="n">izp</span><span class="p">,</span> <span class="n">gf_izp</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,)):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier transform of the Hermitian Green&#39;s function `gf_izp` to `tau`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic Padé Green&#39;s function to</span>
+<span class="sd">    imaginary-time domain.</span>
+<span class="sd">    We assume a Hermitian Green&#39;s function `gf_izp`, i.e. :math:`G(-iω_n) = G^*(iω_n)`,</span>
+<span class="sd">    which is the case for commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩`</span>
+<span class="sd">    with :math:`A = B^†`. The Fourier transform `gf_tau` is then real.</span>
+
+<span class="sd">    TODO: this function is not vectorized yet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    izp, gf_izp : (N_izp) float np.ndarray</span>
+<span class="sd">        Positive **fermionic** Padé frequencies :math:`iz_p` and the Green&#39;s</span>
+<span class="sd">        function at specified frequencies.</span>
+<span class="sd">    tau : (N_tau) float np.ndarray</span>
+<span class="sd">        Imaginary times `0 &lt;= tau &lt;= beta` at which the Fourier transform is</span>
+<span class="sd">        evaluated.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    moments : (m) float array_like, optional</span>
+<span class="sd">        High-frequency moments of `gf_izp`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_tau : (N_tau) float np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_izp` for imaginary times `tau`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    iw2tau : Fourier transform from fermionic Matsubara frequencies.</span>
+<span class="sd">    _z2polegf : Function handling the fitting of `gf_izp`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The algorithm performs in fact an analytic continuation instead of a</span>
+<span class="sd">    Fourier integral. It is however only evaluated on the imaginary axis, so</span>
+<span class="sd">    far the algorithm was observed to be stable</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; izp, __ = gt.pade_frequencies(50, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_izp = gt.pole_gf_z(izp, poles=poles, weights=weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_tau, label=&#39;exact&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_ft, &#39;--&#39;, label=&#39;FT&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; __ = plt.title(&#39;Oscillations of tiny magnitude&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, gf_tau - gf_ft)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ/β&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Results of `izp2tau` can be improved giving high-frequency moments.</span>
+
+<span class="sd">    &gt;&gt;&gt; mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(4), axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 4):</span>
+<span class="sd">    ...     gf = gt.fourier.izp2tau(izp, gf_izp, tau, beta=BETA, moments=mom[:n])</span>
+<span class="sd">    ...     __ = plt.plot(tau, abs(gf_tau - gf), label=f&#39;n_mom={n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_izp.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf = gt.fourier.izp2tau(izp, gf_izp + noise, tau, beta=BETA, moments=(1,))</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, abs(gf_tau - gf))</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 4):</span>
+<span class="sd">    ...     gf = gt.fourier.izp2tau(izp, gf_izp + noise, tau, beta=BETA, moments=mom[:n])</span>
+<span class="sd">    ...     __ = plt.plot(tau/BETA, abs(gf_tau - gf), &#39;--&#39;, label=f&#39;n_mom={n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau/BETA, abs(gf_tau - gf_ft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="p">(</span><span class="o">*</span><span class="n">_z2polegf</span><span class="p">(</span><span class="n">izp</span><span class="p">,</span> <span class="n">gf_izp</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">izp</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_tau</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="tt2z_trapz"><a class="viewcode-back" href="../../generated/gftool.fourier.tt2z_trapz.html#gftool.fourier.tt2z_trapz">[docs]</a><span class="k">def</span> <span class="nf">tt2z_trapz</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Laplace transform of the real-time Green&#39;s function `gf_t`.</span>
+
+<span class="sd">    Approximate the Laplace integral by trapezoidal rule:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       G(z) = ∫dt G(t) \exp(izt)</span>
+<span class="sd">            ≈ ∑_{k=1}^N [G(t_{k-1})\exp(izt_{k-1}) + G(t_k)\exp(izt_k)] Δt_k/2</span>
+
+<span class="sd">    The function can handle any input discretization `tt`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (Nt) float np.ndarray</span>
+<span class="sd">        The points for which the Green&#39;s function `gf_t` is given.</span>
+<span class="sd">    gf_t : (..., Nt) complex np.ndarray</span>
+<span class="sd">        Green&#39;s function and time points `tt`.</span>
+<span class="sd">    z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Frequency points for which the Laplace transformed Green&#39;s function</span>
+<span class="sd">        should be evaluated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Laplace transformed Green&#39;s function for complex frequencies `z`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tt2z_lin : Laplace integration using Filon&#39;s method</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function is equivalent to the one-liner</span>
+<span class="sd">    `np.trapz(np.exp(1j*z[:, None]*tt)*gf_t, x=tt)`.</span>
+<span class="sd">    Internally this function evaluates the sum as a matrix product to leverage</span>
+<span class="sd">    the speed-up of BLAS. If `numexpr` is available, it is used for the speed</span>
+<span class="sd">    up it provides for transcendental equations.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">_phase</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">],</span> <span class="n">tt</span><span class="p">[</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">boundary</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="o">+</span> <span class="n">phase</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:]</span><span class="o">*</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tt</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">d2tt</span> <span class="o">=</span> <span class="n">tt</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">-</span> <span class="n">tt</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">trapz</span> <span class="o">=</span> <span class="n">_gu_matvec</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">d2tt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">boundary</span> <span class="o">+</span> <span class="n">trapz</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="tt2z_lin"><a class="viewcode-back" href="../../generated/gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin">[docs]</a><span class="k">def</span> <span class="nf">tt2z_lin</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Laplace transform of the real-time Green&#39;s function `gf_t`.</span>
+
+<span class="sd">    Filon&#39;s method is used to calculate the Laplace integral</span>
+
+<span class="sd">    .. math:: G(z) = ∫dt G(t) \exp(izt),</span>
+
+<span class="sd">    :math:`G(t)` is approximated by a linear spline.</span>
+<span class="sd">    The function currently requires an equidistant `tt`.</span>
+<span class="sd">    Information on oscillatory integrations can be found e.g. in [filon1930]_</span>
+<span class="sd">    and [iserles2006]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (Nt) float np.ndarray</span>
+<span class="sd">        The equidistant points for which the Green&#39;s function `gf_t` is given.</span>
+<span class="sd">    gf_t : (..., Nt) complex np.ndarray</span>
+<span class="sd">        Green&#39;s function and time points `tt`.</span>
+<span class="sd">    z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Frequency points for which the Laplace transformed Green&#39;s function</span>
+<span class="sd">        should be evaluated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Laplace transformed Green&#39;s function for complex frequencies `z`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the time points `tt` are not equidistant.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tt2z_trapz : Plain implementation using trapezoidal rule.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Internally this function evaluates the sum as a matrix product to leverage</span>
+<span class="sd">    the speed-up of BLAS. If `numexpr` is available, it is used for the speed</span>
+<span class="sd">    up it provides for transcendental equations.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for</span>
+<span class="sd">       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).</span>
+<span class="sd">       https://doi.org/10.1017/S0370164600026262</span>
+<span class="sd">    .. [iserles2006] Iserles, A., Nørsett, S. P. &amp; Olver, S. Highly Oscillatory</span>
+<span class="sd">       Quadrature: The Story so Far. in Numerical Mathematics and Advanced</span>
+<span class="sd">       Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. &amp; Salgado, P.)</span>
+<span class="sd">       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6</span>
+<span class="sd">       http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delta_tt</span> <span class="o">=</span> <span class="n">tt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">tt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">delta_tt</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Equidistant `tt` required for current implementation.&quot;</span><span class="p">)</span>
+    <span class="n">zero</span> <span class="o">=</span> <span class="n">z</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># special case `z=0` has to be handled separately (due: 1/z)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">zero</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">zero</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">izdt</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">z</span><span class="o">*</span><span class="n">delta_tt</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">_phase</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">],</span> <span class="n">tt</span><span class="p">[</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">g_dft</span> <span class="o">=</span> <span class="n">_gu_matvec</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">dg_dft</span> <span class="o">=</span> <span class="n">_gu_matvec</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">gf_t</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">weight1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">izdt</span><span class="p">)</span><span class="o">/</span><span class="n">izdt</span>
+    <span class="n">weight2</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">izdt</span><span class="p">)</span> <span class="o">-</span> <span class="n">weight1</span><span class="p">)</span><span class="o">/</span><span class="n">izdt</span>
+    <span class="n">gf_z</span> <span class="o">=</span> <span class="n">delta_tt</span> <span class="o">*</span> <span class="p">(</span><span class="n">weight1</span><span class="o">*</span><span class="n">g_dft</span> <span class="o">+</span> <span class="n">weight2</span><span class="o">*</span><span class="n">dg_dft</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">zero</span><span class="p">):</span>
+        <span class="n">gf_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">zero</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">gf_t</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">tt</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gf_z</span></div>
+
+
+<div class="viewcode-block" id="tt2z"><a class="viewcode-back" href="../../generated/gftool.fourier.tt2z.html#gftool.fourier.tt2z">[docs]</a><span class="k">def</span> <span class="nf">tt2z</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">laplace</span><span class="o">=</span><span class="n">tt2z_lin</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Laplace transform of the real-time Green&#39;s function `gf_t`.</span>
+
+<span class="sd">    Calculate the Laplace transform</span>
+
+<span class="sd">    .. math:: G(z) = ∫dt G(t) \exp(izt)</span>
+
+<span class="sd">    For the Laplace transform to be well defined,</span>
+<span class="sd">    it should either be `tt&gt;=0 and z.imag&gt;=0` for the retarded Green&#39;s function,</span>
+<span class="sd">    or `tt&lt;=0 and z.imag&lt;=0` for the advance Green&#39;s function.</span>
+
+<span class="sd">    The retarded (advanced) Green&#39;s function can in principle be evaluated for</span>
+<span class="sd">    any frequency point `z` in the upper (lower) complex half-plane.</span>
+
+<span class="sd">    The accented contours for `tt` and `z` depend on the specific used back-end</span>
+<span class="sd">    `laplace`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (Nt) float np.ndarray</span>
+<span class="sd">        The points for which the Green&#39;s function `gf_t` is given.</span>
+<span class="sd">    gf_t : (..., Nt) complex np.ndarray</span>
+<span class="sd">        Green&#39;s function and time points `tt`.</span>
+<span class="sd">    z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Frequency points for which the Laplace transformed Green&#39;s function</span>
+<span class="sd">        should be evaluated.</span>
+<span class="sd">    laplace : {`tt2z_lin`, `tt2z_trapz`}, optional</span>
+<span class="sd">        Back-end to perform the actual Fourier transformation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : (..., Nz) complex np.ndarray</span>
+<span class="sd">        Laplace transformed Green&#39;s function for complex frequencies `z`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tt2z_trapz : Back-end: approximate integral by trapezoidal rule</span>
+<span class="sd">    tt2z_lin : Back-end: approximate integral by Filon&#39;s method</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If neither the condition for retarded or advanced Green&#39;s function is</span>
+<span class="sd">        fulfilled.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; tt = np.linspace(0, 150, num=1501)</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-2, 2, num=501) + 1e-1j</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, gf_ww.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, gf_ft.imag, &#39;--&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, gf_ww.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, gf_ft.real, &#39;--&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The function Laplace transform can be evaluated at abitrary contours,</span>
+<span class="sd">    e.g. for a semi-ceircle in the the upper half-plane.</span>
+<span class="sd">    Note, that close to the real axis the accuracy is bad, due to the</span>
+<span class="sd">    truncation at `max(tt)`</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.exp(1j*np.pi*np.linspace(0, 1, num=51))</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=z)</span>
+<span class="sd">    &gt;&gt;&gt; gf_z = gt.pole_gf_z(z, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(z.real, gf_z.imag, &#39;+&#39;, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(z.real, gf_ft.imag, &#39;x&#39;, label=&#39;DFT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(z.real, gf_z.real, &#39;+&#39;, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(z.real, gf_ft.real, &#39;x&#39;, label=&#39;DFT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Accuracy of the different back-ends:</span>
+
+<span class="sd">     * For large `z.imag`, `tt2z_lin` performs better.</span>
+<span class="sd">     * For intermediate `z.imag`, the quality depends on the relevant `z.real`.</span>
+<span class="sd">       For small `z.real`, the error of `tt2z_trapz` is more uniform;</span>
+<span class="sd">       for big `z.real`, `tt2z_lin` is a good approximation.</span>
+<span class="sd">     * For small `z.imag`, the methods are almost identical,</span>
+<span class="sd">       the truncation of `tt` dominates the error.</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; for ii, eta in enumerate([1.0, 0.5, 0.1, 0.03]):</span>
+<span class="sd">    ...     ww.imag = eta</span>
+<span class="sd">    ...     gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)</span>
+<span class="sd">    ...     gf_trapz = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_trapz)</span>
+<span class="sd">    ...     gf_lin = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_lin)</span>
+<span class="sd">    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_trapz)/gf_ww),</span>
+<span class="sd">    ...                   label=f&quot;z.imag={eta}&quot;, color=f&quot;C{ii}&quot;)</span>
+<span class="sd">    ...     __ = plt.plot(ww.real, abs((gf_ww - gf_lin)/gf_ww), &#39;--&#39;, color=f&quot;C{ii}&quot;)</span>
+<span class="sd">    ...     __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retarded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tt</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">imag</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">advanced</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">retarded</span> <span class="ow">or</span> <span class="n">advanced</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Laplace Transform only well defined if `tt&gt;=0 and z.imag&gt;=0`&quot;</span>
+                         <span class="s2">&quot; or `tt&lt;=0 and z.imag&lt;=0`&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># consistent behavior for gufuncs</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">laplace</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_t</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_tau2polegf</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">n_pole</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">occ</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PoleGf</span><span class="p">:</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="o">-</span><span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">gf_tau</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">moments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># = 1/z moment = jump of Gf at 0^{±}</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">m1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">moments</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Provided 1/z moment differs from jump.&quot;</span>
+                           <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> mom: </span><span class="si">%s</span><span class="s2">, jump: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">moments</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">m1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">error_</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+        <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_tau</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_pole</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span>
+                                  <span class="c1"># if width is 0, no higher moments exist</span>
+                                  <span class="n">moments</span><span class="o">=</span><span class="n">moments</span> <span class="k">if</span> <span class="n">width</span> <span class="k">else</span> <span class="n">m1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">],</span>
+                                  <span class="n">occ</span><span class="o">=</span><span class="n">occ</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+        <span class="n">gf_fit</span> <span class="o">=</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_tau</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">gf_tau</span> <span class="o">-</span> <span class="n">gf_fit</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize_scalar</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">error_</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fitting error: </span><span class="si">%s</span><span class="s2"> Optimal pole-spread: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">fun</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">opt_pole_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_tau</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_pole</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">,</span>
+                                  <span class="n">occ</span><span class="o">=</span><span class="n">occ</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">opt_pole_gf</span>
+
+
+<div class="viewcode-block" id="tau2izp"><a class="viewcode-back" href="../../generated/gftool.fourier.tau2izp.html#gftool.fourier.tau2izp">[docs]</a><span class="k">def</span> <span class="nf">tau2izp</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">izp</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">occ</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fourier transform of the real Green&#39;s function `gf_tau` to `izp`.</span>
+
+<span class="sd">    Fourier transformation of a fermionic imaginary-time Green&#39;s function to</span>
+<span class="sd">    fermionic imaginary Padé frequencies `izp`.</span>
+<span class="sd">    We assume a real Green&#39;s function `gf_tau`, which is the case for</span>
+<span class="sd">    commutator Green&#39;s functions :math:`G_{AB}(τ) = ⟨A(τ)B⟩` with</span>
+<span class="sd">    :math:`A = B^†`. The Fourier transform `gf_iw` is then Hermitian.</span>
+<span class="sd">    If no explicit `moments` are given, this function removes</span>
+<span class="sd">    :math:`-G_{AB}(β) - G_{AB}(0) = ⟨[A,B]⟩`.</span>
+
+<span class="sd">    TODO: this function is not vectorized yet.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_tau : (N_tau) float np.ndarray</span>
+<span class="sd">        The Green&#39;s function at imaginary times :math:`τ \in [0, β]`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    izp : (N_izp) complex np.ndarray</span>
+<span class="sd">        Complex Padé frequencies at which the Fourier transform is evaluated.</span>
+<span class="sd">    moments : (m) float array_like, optional</span>
+<span class="sd">        High-frequency moments of `gf_iw`. If none are given, the first moment</span>
+<span class="sd">        is chosen to remove the discontinuity at :math:`τ=0^{±}`.</span>
+<span class="sd">    occ : float, optional</span>
+<span class="sd">        If given, fix occupation of Green&#39;s function to `occ`. (default: False)</span>
+<span class="sd">    weight : (..., N_tau) float np.ndarray, optional</span>
+<span class="sd">        Weight the values of `gf_tau`, can be provided to include uncertainty.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_izp : (N_izp) complex np.ndarray</span>
+<span class="sd">        The Fourier transform of `gf_tau` for given Padé frequencies `izp`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    tau2iw : Fourier transform to fermionic Matsubara frequencies.</span>
+<span class="sd">    pole_gf_from_tau : Function handling the fitting of `gf_tau`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The algorithm performs in fact an analytic continuation instead of a</span>
+<span class="sd">    Fourier integral. It is however only evaluated on the imaginary axis, so</span>
+<span class="sd">    far the algorithm was observed to be stable</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, BETA, num=2049, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; izp, __ = gt.pade_frequencies(50, beta=BETA)</span>
+
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; weights = np.random.random(10)</span>
+<span class="sd">    &gt;&gt;&gt; weights = weights/np.sum(weights)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ft = gt.fourier.tau2izp(gf_tau, beta=BETA, izp=izp)</span>
+<span class="sd">    &gt;&gt;&gt; gf_izp = gt.pole_gf_z(izp, poles=poles, weights=weights)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_izp.imag, label=&#39;exact Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.imag, &#39;--&#39;, label=&#39;FT Im&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_izp.real, label=&#39;exact Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(gf_ft.real, &#39;--&#39;, label=&#39;FT Re&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Results of `tau2izp` can be improved giving high-frequency moments.</span>
+
+<span class="sd">    &gt;&gt;&gt; mom = np.sum(weights[:, np.newaxis] * poles[:, np.newaxis]**range(6), axis=0)</span>
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 6):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2izp(gf_tau, izp=izp, moments=mom[:n], beta=BETA)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_izp - gf), label=f&#39;n_mom={n}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    The method is resistant against noise,</span>
+<span class="sd">    especially if there is knowledge of the noise:</span>
+
+<span class="sd">    &gt;&gt;&gt; magnitude = 2e-7</span>
+<span class="sd">    &gt;&gt;&gt; noise = np.random.normal(scale=magnitude, size=gf_tau.size)</span>
+<span class="sd">    &gt;&gt;&gt; gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=(1,), beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_izp - gf), label=&#39;bare&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=(1,), beta=BETA,</span>
+<span class="sd">    ...                         weight=abs(noise)**-0.5)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_izp - gf), label=&#39;weighted&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &gt;&gt;&gt; for n in range(1, 7, 2):</span>
+<span class="sd">    ...     gf = gt.fourier.tau2izp(gf_tau + noise, izp=izp, moments=mom[:n], beta=BETA)</span>
+<span class="sd">    ...     __ = plt.plot(abs(gf_izp - gf), &#39;--&#39;, label=f&#39;n_mom={n}&#39;, color=f&#39;C{n}&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(magnitude, color=&#39;black&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(abs(gf_izp - gf_ft), label=&#39;clean&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.yscale(&#39;log&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.tight_layout()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pole_gf</span> <span class="o">=</span> <span class="n">_tau2polegf</span><span class="p">(</span><span class="n">gf_tau</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">izp</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">,</span> <span class="n">occ</span><span class="o">=</span><span class="n">occ</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pole_gf</span><span class="o">.</span><span class="n">eval_z</span><span class="p">(</span><span class="n">izp</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

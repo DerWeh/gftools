@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.lattice.bethe" href="gftool.lattice.bethe.html" />
+    <link rel="prev" title="gftool.fourier.tt2z_trapz" href="gftool.fourier.tt2z_trapz.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gftool.lattice</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.bethe.html">gftool.lattice.bethe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.bethez.html">gftool.lattice.bethez</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.onedim.html">gftool.lattice.onedim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.square.html">gftool.lattice.square</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.rectangular.html">gftool.lattice.rectangular</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.lieb.html">gftool.lattice.lieb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.triangular.html">gftool.lattice.triangular</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.honeycomb.html">gftool.lattice.honeycomb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.kagome.html">gftool.lattice.kagome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.sc.html">gftool.lattice.sc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.bcc.html">gftool.lattice.bcc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.lattice.fcc.html">gftool.lattice.fcc</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.lattice.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-gftool.lattice">
+<span id="gftool-lattice"></span><h1>gftool.lattice<a class="headerlink" href="#module-gftool.lattice" title="Permalink to this headline">¶</a></h1>
+<p>Collection of different lattices and their Green’s functions.</p>
+<p>The lattices are described by a tight binding Hamiltonian</p>
+<div class="math notranslate nohighlight">
+\[H = t ∑_{⟨i,j⟩ σ} c^†_{iσ} c_{jσ},\]</div>
+<p>where <span class="math notranslate nohighlight">\(t\)</span> is the hopping amplitude or integral.
+Mind the sign, often tight binding Hamiltonians are instead defined with a
+negative sign in front of <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<p>The Hamiltonian can be diagonalized</p>
+<div class="math notranslate nohighlight">
+\[H = ∑_{kσ} ϵ_{k} c^†_{kσ} c_{kσ}.\]</div>
+<p>Typical quantities provided for the different lattices are:</p>
+<dl class="field-list">
+<dt class="field-odd"><em class="xref py py-obj">gf_z</em></dt>
+<dd class="field-odd"><p>The one-particle Green’s function</p>
+<div class="math notranslate nohighlight">
+\[G_{ii}(z) = ⟨⟨c_{iσ}|c^†_{iσ}⟩⟩(z) = 1/N ∑_k \frac{1}{z - ϵ_k}.\]</div>
+</dd>
+<dt class="field-even"><em class="xref py py-obj">dos</em></dt>
+<dd class="field-even"><p>The density of states (DOS)</p>
+<div class="math notranslate nohighlight">
+\[DOS(ϵ) = 1/N ∑_k δ(ϵ - ϵₖ).\]</div>
+</dd>
+<dt class="field-odd"><em class="xref py py-obj">dos_moment</em></dt>
+<dd class="field-odd"><p>The moments of the DOS</p>
+<div class="math notranslate nohighlight">
+\[ϵ^{(m)} = ∫dϵ DOS(ϵ) ϵ^m\]</div>
+</dd>
+</dl>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.bethe.html#module-gftool.lattice.bethe" title="gftool.lattice.bethe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe</span></code></a></p></td>
+<td><p>Bethe lattice with infinite coordination number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.bethez.html#module-gftool.lattice.bethez" title="gftool.lattice.bethez"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethez</span></code></a></p></td>
+<td><p>Bethe lattice for general coordination number Z.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.onedim.html#module-gftool.lattice.onedim" title="gftool.lattice.onedim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onedim</span></code></a></p></td>
+<td><p>1D lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.square.html#module-gftool.lattice.square" title="gftool.lattice.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a></p></td>
+<td><p>2D square lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.rectangular.html#module-gftool.lattice.rectangular" title="gftool.lattice.rectangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rectangular</span></code></a></p></td>
+<td><p>2D rectangular lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.lieb.html#module-gftool.lattice.lieb" title="gftool.lattice.lieb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lieb</span></code></a></p></td>
+<td><p>2D Lieb lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.triangular.html#module-gftool.lattice.triangular" title="gftool.lattice.triangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular</span></code></a></p></td>
+<td><p>2D triangular lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.honeycomb.html#module-gftool.lattice.honeycomb" title="gftool.lattice.honeycomb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">honeycomb</span></code></a></p></td>
+<td><p>2D honeycomb lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.kagome.html#module-gftool.lattice.kagome" title="gftool.lattice.kagome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kagome</span></code></a></p></td>
+<td><p>2D Kagome lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.sc.html#module-gftool.lattice.sc" title="gftool.lattice.sc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc</span></code></a></p></td>
+<td><p>3D simple cubic (sc) lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.lattice.bcc.html#module-gftool.lattice.bcc" title="gftool.lattice.bcc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcc</span></code></a></p></td>
+<td><p>3D body-centered cubic (bcc) lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.lattice.fcc.html#module-gftool.lattice.fcc" title="gftool.lattice.fcc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fcc</span></code></a></p></td>
+<td><p>3D face-centered cubic (fcc) lattice.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.fourier.tt2z_trapz.html" class="btn btn-neutral float-left" title="gftool.fourier.tt2z_trapz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.lattice.bethe.html" class="btn btn-neutral float-right" title="gftool.lattice.bethe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

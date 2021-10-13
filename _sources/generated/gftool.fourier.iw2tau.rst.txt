@@ -1,0 +1,6 @@
+gftool.fourier.iw2tau
+=====================
+
+.. currentmodule:: gftool.fourier
+
+.. autofunction:: iw2tau

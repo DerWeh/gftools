@@ -1,0 +1,6 @@
+﻿gftool.honeycomb\_dos
+=====================
+
+.. currentmodule:: gftool
+
+.. autofunction:: honeycomb_dos

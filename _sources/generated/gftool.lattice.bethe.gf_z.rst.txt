@@ -1,0 +1,6 @@
+gftool.lattice.bethe.gf\_z
+==========================
+
+.. currentmodule:: gftool.lattice.bethe
+
+.. autofunction:: gf_z

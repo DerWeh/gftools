@@ -1,0 +1,6 @@
+gftool.lattice.fcc.dos\_mp
+==========================
+
+.. currentmodule:: gftool.lattice.fcc
+
+.. autofunction:: dos_mp

@@ -1,0 +1,47 @@
+﻿gftool.cpa
+==========
+
+.. module:: gftool.cpa
+
+.. automodule:: gftool.cpa
+   :noindex:
+
+API
+---
+
+.. 
+.. .. inheritance-diagram:: gftool.cpa
+..    :parts: 1
+
+
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  gf_cmpt_z
+  restrict_self_root_eq
+  self_fxdpnt_eq
+  self_root_eq
+  solve_fxdocc_root
+  solve_root
+
+
+
+
+
+
+.. rubric:: Classes
+
+.. autosummary::
+  :toctree:
+
+  RootFxdocc
+
+
+
+
+

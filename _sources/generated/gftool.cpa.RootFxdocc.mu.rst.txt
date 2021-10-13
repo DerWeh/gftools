@@ -1,0 +1,6 @@
+gftool.cpa.RootFxdocc.mu
+========================
+
+.. currentmodule:: gftool.cpa
+
+.. autoproperty:: RootFxdocc.mu

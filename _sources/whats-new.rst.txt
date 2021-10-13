@@ -1,0 +1,1 @@
+.. include:: ../../whats-new.rst

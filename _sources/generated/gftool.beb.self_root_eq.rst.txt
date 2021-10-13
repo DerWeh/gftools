@@ -1,0 +1,6 @@
+gftool.beb.self\_root\_eq
+=========================
+
+.. currentmodule:: gftool.beb
+
+.. autofunction:: self_root_eq

@@ -1,0 +1,6 @@
+gftool.pade.calc\_iterator
+==========================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: calc_iterator

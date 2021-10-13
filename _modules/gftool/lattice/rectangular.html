@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice.rectangular &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/toggleprompt.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice.rectangular</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.lattice.rectangular</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;2D rectangular lattice.</span>
+
+<span class="sd">The dispersion of the 2D rectangular lattice is given by</span>
+
+<span class="sd">.. math:: ϵ_{k_x, k_y} = 2t [\cos(k_x) + γ\cos(k_y)]</span>
+
+<span class="sd">where :math:`γ` is the `scale`.</span>
+<span class="sd">The DOS has a singularity at :math:`2t(γ-1)=D(γ-1)/(γ+1)`.</span>
+
+<span class="sd">:half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping</span>
+<span class="sd">                 of `t=D/2/(scale + 1)`</span>
+<span class="sd">:scale: Relative scale of the different hopping `t_1 = scale*t_2`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">numpy.lib</span> <span class="kn">import</span> <span class="n">scimath</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_u_ellipk</span>
+
+
+<div class="viewcode-block" id="gf_z"><a class="viewcode-back" href="../../../generated/gftool.lattice.rectangular.gf_z.html#gftool.lattice.rectangular.gf_z">[docs]</a><span class="k">def</span> <span class="nf">gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Local Green&#39;s function of the 2D rectangular lattice.</span>
+
+<span class="sd">    .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(z - γ \cos ϕ)^2 - 1}}</span>
+
+<span class="sd">    where :math:`γ` is the `scale`, the hopping is chosen `t=1`, the</span>
+<span class="sd">    `half_bandwidth` is :math:`D=2(1+γ)`.</span>
+<span class="sd">    The integral is the complete elliptic integral of first kind.</span>
+<span class="sd">    See [morita1971]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex np.ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the rectangular lattice.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=D/2/(scale+1)`.</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        Relative scale of the different hoppings :math:`t_1=scale*t_2`.</span>
+<span class="sd">        `scale=1` corresponds to the square lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex np.ndarray or complex</span>
+<span class="sd">        Value of the rectangular lattice Green&#39;s function</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.square.gf_z : Green&#39;s function in the limit `scale=1`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice</span>
+<span class="sd">       Green’s Function for the bcc, fcc, and Rectangular Lattices.</span>
+<span class="sd">       Journal of Mathematical Physics 12, 986–992.</span>
+<span class="sd">       https://doi.org/10.1063/1.1665693</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.5, 1.5, num=500, dtype=complex)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.lattice.rectangular.gf_z(ww, half_bandwidth=1, scale=2)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.real, label=r&quot;$\Re G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.imag, &#39;--&#39;, label=r&quot;$\Im G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;$G*D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\omega/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=ww.real.min(), right=ww.real.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">half_bandwidth</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">scale</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">/</span> <span class="n">D</span>
+    <span class="n">sm1p2</span> <span class="o">=</span> <span class="p">(</span><span class="n">scale</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">k1</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">scale</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">sm1p2</span><span class="p">)</span>
+    <span class="n">elliptic</span> <span class="o">=</span> <span class="n">_u_ellipk</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
+    <span class="n">z_inv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">z</span>
+    <span class="n">k1sqrt</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">scimath</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sm1p2</span><span class="o">*</span><span class="n">z_inv</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">gf_z</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">D</span> <span class="o">*</span> <span class="n">z_inv</span> <span class="o">*</span> <span class="n">k1sqrt</span> <span class="o">*</span> <span class="n">elliptic</span>
+    <span class="k">return</span> <span class="n">gf_z</span></div>
+
+
+<div class="viewcode-block" id="hilbert_transform"><a class="viewcode-back" href="../../../generated/gftool.lattice.rectangular.hilbert_transform.html#gftool.lattice.rectangular.hilbert_transform">[docs]</a><span class="k">def</span> <span class="nf">hilbert_transform</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hilbert transform of non-interacting DOS of the rectangular lattice.</span>
+
+<span class="sd">    The Hilbert transform is defined</span>
+
+<span class="sd">    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}</span>
+
+<span class="sd">    The lattice Hilbert transform is the same as the non-interacting Green&#39;s</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xi : complex np.ndarray or complex</span>
+<span class="sd">        Point at which the Hilbert transform is evaluated</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the 2D rectangular lattice.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=D/2/(scale+1)`.</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        Relative scale of the different hoppings :math:`t_1=scale*t_2`.</span>
+<span class="sd">        `scale=1` corresponds to the square lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hilbert_transform : complex np.ndarray or complex</span>
+<span class="sd">        Hilbert transform at `xi`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Relation between nearest neighbor hopping `t`, scale `γ` and half-bandwidth `D`</span>
+
+<span class="sd">    .. math:: 2(γ+1)t = D</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.rectangular.gf_z</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gf_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../../generated/gftool.lattice.rectangular.dos.html#gftool.lattice.rectangular.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;DOS of non-interacting 2D rectangular lattice.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float np.ndarray or float</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=D/2/(scale+1)`.</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        Relative scale of the different hoppings :math:`t_1=scale*t_2`.</span>
+<span class="sd">        `scale=1` corresponds to the square lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos : float np.ndarray or float</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.1, 1.1, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; dos = gt.lattice.rectangular.dos(eps, half_bandwidth=1, scale=2)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># same code as gf_z, using the itentity for the elliptic integral</span>
+    <span class="c1"># `K(m) = K(m/(m-1)).conj() / (1-m)**0.5` real `m`</span>
+    <span class="c1"># we don&#39;t have to worry about the correct signs here, we just take the positive one</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eps</span> <span class="o">/</span> <span class="n">half_bandwidth</span><span class="p">)</span>
+    <span class="n">dos_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="c1"># eps = 1 divergeces in the current formulation and has to be callculated as limit</span>
+    <span class="n">eps</span><span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>  <span class="c1"># avoid 1, inaccurate fix</span>
+    <span class="n">nonzero</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span>  <span class="c1"># calculate only relevant region</span>
+    <span class="n">kmod</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">scale</span> <span class="o">/</span> <span class="p">(</span><span class="n">scale</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">elliptic</span> <span class="o">=</span> <span class="n">_u_ellipk</span><span class="p">(</span><span class="n">kmod</span><span class="p">)</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">scale</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">half_bandwidth</span>
+    <span class="n">dos_</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">kmod</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">elliptic</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dos_</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

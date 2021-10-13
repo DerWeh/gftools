@@ -1,0 +1,6 @@
+gftool.lattice.square.gf\_z
+===========================
+
+.. currentmodule:: gftool.lattice.square
+
+.. autofunction:: gf_z

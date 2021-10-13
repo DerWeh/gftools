@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.cpa.solve_fxdocc_root &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.cpa.solve_root" href="gftool.cpa.solve_root.html" />
+    <link rel="prev" title="gftool.cpa.self_root_eq" href="gftool.cpa.self_root_eq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="gftool.cpa.html#api">API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.gf_cmpt_z.html">gftool.cpa.gf_cmpt_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.restrict_self_root_eq.html">gftool.cpa.restrict_self_root_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.self_fxdpnt_eq.html">gftool.cpa.self_fxdpnt_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.self_root_eq.html">gftool.cpa.self_root_eq</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gftool.cpa.solve_fxdocc_root</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.solve_root.html">gftool.cpa.solve_root</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.cpa.RootFxdocc.html">gftool.cpa.RootFxdocc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+          <li><a href="gftool.cpa.html">gftool.cpa</a> &raquo;</li>
+      <li>gftool.cpa.solve_fxdocc_root</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.cpa.solve_fxdocc_root.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gftool-cpa-solve-fxdocc-root">
+<h1>gftool.cpa.solve_fxdocc_root<a class="headerlink" href="#gftool-cpa-solve-fxdocc-root" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="gftool.cpa.solve_fxdocc_root">
+<code class="sig-prename descclassname"><span class="pre">gftool.cpa.</span></code><code class="sig-name descname"><span class="pre">solve_fxdocc_root</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_onsite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hilbert_trafo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#complex" title="(in Python v3.9)"><span class="pre">complex</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#complex" title="(in Python v3.9)"><span class="pre">complex</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">occ</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_cpa_iw0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu0</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><span class="pre">float</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restricted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">root_kwds</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="gftool.cpa.RootFxdocc.html#gftool.cpa.RootFxdocc" title="gftool.cpa.RootFxdocc"><span class="pre">gftool.cpa.RootFxdocc</span></a><a class="reference internal" href="../_modules/gftool/cpa.html#solve_fxdocc_root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gftool.cpa.solve_fxdocc_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the CPA self-energy by solving the root problem for fixed <em class="xref py py-obj">occ</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>iws</strong><span class="classifier">(N_iw) complex array_like</span></dt><dd><p>Positive fermionic Matsubara frequencies.</p>
+</dd>
+<dt><strong>e_onsite</strong><span class="classifier">(N_cmpt) float or (…, N_iw, N_cmpt) complex np.ndarray</span></dt><dd><p>On-site energy of the components. This can also include a local
+frequency dependent self-energy of the component sites.
+If multiple non-frequency dependent on-site energies should be
+considered simultaneously, pass an on-site energy with <em class="xref py py-obj">N_z=1</em>:
+<em class="xref py py-obj">e_onsite[…, np.newaxis, :]</em>.</p>
+</dd>
+<dt><strong>concentration</strong><span class="classifier">(…, N_cmpt) float array_like</span></dt><dd><p>Concentration of the different components used for the average.</p>
+</dd>
+<dt><strong>hilbert_trafo</strong><span class="classifier">Callable[[complex], complex]</span></dt><dd><p>Hilbert transformation of the lattice to calculate the coherent Green’s
+function.</p>
+</dd>
+<dt><strong>beta</strong><span class="classifier">float</span></dt><dd><p>Inverse temperature.</p>
+</dd>
+<dt><strong>occ</strong><span class="classifier">float</span></dt><dd><p>Total occupation.</p>
+</dd>
+<dt><strong>self_cpa_iw0, mu0</strong><span class="classifier">(…, N_iw) complex np.ndarray and float, optional</span></dt><dd><p>Starting guess for CPA self-energy and chemical potential.
+<em class="xref py py-obj">self_cpa_iw0</em> implicitly contains the chemical potential <em class="xref py py-obj">mu0</em>,
+thus they should match.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>root.self_cpa</strong><span class="classifier">(…, N_iw) complex np.ndarray</span></dt><dd><p>The CPA self-energy as the root of <a class="reference internal" href="gftool.cpa.self_root_eq.html#gftool.cpa.self_root_eq" title="gftool.cpa.self_root_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">self_root_eq</span></code></a>.</p>
+</dd>
+<dt><strong>root.mu</strong><span class="classifier">float</span></dt><dd><p>Chemical potential for the given occupation <em class="xref py py-obj">occ</em>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Other Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>weights</strong><span class="classifier">(N_iw) float np.ndarray, optional</span></dt><dd><p>Passed to <a class="reference internal" href="gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density_iw</span></code></a>.
+Residues of the frequencies with respect to the residues of the
+Matsubara frequencies <em class="xref py py-obj">1/beta</em>. (default: 1.)
+For Padé frequencies this needs to be provided.</p>
+</dd>
+<dt><strong>n_fit</strong><span class="classifier">int, optional</span></dt><dd><p>Passed to <a class="reference internal" href="gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density_iw</span></code></a>.
+Number of additionally fitted moments. If Padé frequencies
+are used, this is typically not necessary. (default: 0)</p>
+</dd>
+<dt><strong>restricted</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether <em class="xref py py-obj">self_cpa_z</em> is restricted to <em class="xref py py-obj">self_cpa_z.imag &lt;= 0</em>. (default: True)
+Note, that even if <em class="xref py py-obj">restricted=True</em>, the imaginary part can get negative
+within tolerance. This should be removed by hand if necessary.</p>
+</dd>
+<dt><strong>root_kwds</strong></dt><dd><p>Additional arguments passed to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy.optimize.root" title="(in SciPy v1.7.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.optimize.root</span></code></a>.
+<em class="xref py py-obj">method</em> can be used to choose a solver.
+<em class="xref py py-obj">options=dict(fatol=tol)</em> can be specified to set the desired tolerance
+<em class="xref py py-obj">tol</em>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If unable to find a solution.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gftool.cpa.solve_root.html#gftool.cpa.solve_root" title="gftool.cpa.solve_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_root</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beta</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e_onsite</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hilbert</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">occ</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">iws</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">beta</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">self_cpa_iw</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">cpa</span><span class="o">.</span><span class="n">solve_fxdocc_root</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span>
+<span class="gp">... </span>                                           <span class="n">hilbert</span><span class="p">,</span> <span class="n">occ</span><span class="o">=</span><span class="n">occ</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iws</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">self_cpa_iw</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;+--&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">conc</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iws</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">self_cpa_iw</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">&#39;x--&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-cpa-solve_fxdocc_root-1_00_00.png">png</a>, <a class="reference external" href="../generated/gftool-cpa-solve_fxdocc_root-1_00_00.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-cpa-solve_fxdocc_root-1_00_00.png" class="plot-directive" src="../_images/gftool-cpa-solve_fxdocc_root-1_00_00.png" />
+</div>
+<p>check occupation</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_coher_iw</span> <span class="o">=</span> <span class="n">hilbert</span><span class="p">(</span><span class="n">iws</span> <span class="o">-</span> <span class="n">self_cpa_iw</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gt</span><span class="o">.</span><span class="n">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_coher_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">self_cpa_iw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">])</span>
+<span class="go">0.499999...</span>
+</pre></div>
+</div>
+<p>check CPA</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">self_compare</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">cpa</span><span class="o">.</span><span class="n">solve_root</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">)</span><span class="o">-</span><span class="n">mu</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">self_cpa_iw</span><span class="p">,</span> <span class="n">self_compare</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.cpa.self_root_eq.html" class="btn btn-neutral float-left" title="gftool.cpa.self_root_eq" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.cpa.solve_root.html" class="btn btn-neutral float-right" title="gftool.cpa.solve_root" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+gftool.siam.gf0\_loc\_ret\_t
+============================
+
+.. currentmodule:: gftool.siam
+
+.. autofunction:: gf0_loc_ret_t

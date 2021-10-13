@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice.honeycomb &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/toggleprompt.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice.honeycomb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.lattice.honeycomb</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;2D honeycomb lattice.</span>
+
+<span class="sd">The honeycomb lattice can be decomposed into `~gftool.lattice.triangular`</span>
+<span class="sd">sublattices.</span>
+
+<span class="sd">:half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping</span>
+<span class="sd">                 of `t=2D/3`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">mp</span>
+
+<span class="kn">from</span> <span class="nn">gftool.lattice</span> <span class="kn">import</span> <span class="n">triangular</span>
+
+
+<div class="viewcode-block" id="gf_z"><a class="viewcode-back" href="../../../generated/gftool.lattice.honeycomb.gf_z.html#gftool.lattice.honeycomb.gf_z">[docs]</a><span class="k">def</span> <span class="nf">gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Local Green&#39;s function of the 2D honeycomb lattice.</span>
+
+<span class="sd">    The Green&#39;s function of the 2D honeycomb lattice can be expressed in terms</span>
+<span class="sd">    of the 2D triangular lattice `gftool.lattice.triangular.gf_z`,</span>
+<span class="sd">    see [horiguchi1972]_.</span>
+
+<span class="sd">    The Green&#39;s function has singularities at `z=±half_bandwidth/3`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex np.ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the honeycomb lattice.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=2D/3`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex np.ndarray or complex</span>
+<span class="sd">        Value of the honeycomb lattice Green&#39;s function</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.triangular.gf_z</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the</span>
+<span class="sd">       Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,</span>
+<span class="sd">       1411–1419. https://doi.org/10.1063/1.1666155</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.5, 1.5, num=501, dtype=complex) + 1e-64j</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.lattice.honeycomb.gf_z(ww, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.real, label=r&quot;$\Re G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww.real, gf_ww.imag, &#39;--&#39;, label=r&quot;$\Im G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;$G*D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\omega/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=ww.real.min(), right=ww.real.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">half_bandwidth</span> <span class="o">/</span> <span class="mf">1.5</span>
+    <span class="n">z_rel</span> <span class="o">=</span> <span class="n">z</span> <span class="o">/</span> <span class="n">D</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">D</span> <span class="o">*</span> <span class="n">z_rel</span> <span class="o">*</span> <span class="n">triangular</span><span class="o">.</span><span class="n">gf_z</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">z_rel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">9</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../../generated/gftool.lattice.honeycomb.dos.html#gftool.lattice.honeycomb.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;DOS of non-interacting 2D honeycomb lattice.</span>
+
+<span class="sd">    The DOS diverges at `eps=±half_bandwidth/3`.</span>
+<span class="sd">    The Green&#39;s function and therefore the DOS of the 2D honeycomb lattice can</span>
+<span class="sd">    be expressed in terms of the 2D triangular lattice</span>
+<span class="sd">    `gftool.lattice.triangular.dos`, see [horiguchi1972]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float np.ndarray or float</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=2D/3`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos : float np.ndarray or float</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.honeycomb.dos_mp : multi-precision version suitable for integration</span>
+<span class="sd">    gftool.lattice.triangular.dos</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the</span>
+<span class="sd">       Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,</span>
+<span class="sd">       1411–1419. https://doi.org/10.1063/1.1666155</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.5, 1.5, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; dos = gt.lattice.honeycomb.dos(eps, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; for pos in (-1/3, 0, +1/3):</span>
+<span class="sd">    ...     _ = plt.axvline(pos, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">half_bandwidth</span> <span class="o">/</span> <span class="mf">1.5</span>
+    <span class="n">eps_rel</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">D</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">D</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span> <span class="o">*</span> <span class="n">triangular</span><span class="o">.</span><span class="n">dos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">eps_rel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">9</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hilbert_transform"><a class="viewcode-back" href="../../../generated/gftool.lattice.honeycomb.hilbert_transform.html#gftool.lattice.honeycomb.hilbert_transform">[docs]</a><span class="k">def</span> <span class="nf">hilbert_transform</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hilbert transform of non-interacting DOS of the honeycomb lattice.</span>
+
+<span class="sd">    The Hilbert transform is defined</span>
+
+<span class="sd">    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}</span>
+
+<span class="sd">    The lattice Hilbert transform is the same as the non-interacting Green&#39;s</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xi : complex np.ndarray or complex</span>
+<span class="sd">        Point at which the Hilbert transform is evaluated</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        half-bandwidth of the DOS of the 2D honeycomb lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hilbert_transform : complex ndarray or complex</span>
+<span class="sd">        Hilbert transform of `xi`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Relation between nearest neighbor hopping `t` and half-bandwidth `D`</span>
+
+<span class="sd">    .. math:: 3t/2 = D</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.honeycomb.gf_z</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gf_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">)</span></div>
+
+
+<span class="c1"># ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1</span>
+<span class="c1"># from: integral of dos_mp with mp.workdps(100)</span>
+<span class="c1"># for m in range(0, 22, 2):</span>
+<span class="c1">#     with mp.workdps(100):</span>
+<span class="c1">#         print(mp.quad(lambda eps: 2 * eps**m * dos_mp(eps), [0, 1/3, 1])</span>
+<span class="c1"># rational numbers obtained by mp.identify</span>
+<span class="n">dos_moment_coefficients</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">5</span><span class="o">/</span><span class="mi">27</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mi">31</span><span class="o">/</span><span class="mi">243</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="mi">71</span><span class="o">/</span><span class="mi">729</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="mf">0.0787989635726261</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mf">0.0661766781260761</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mf">0.0570430207680627</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="mf">0.0501259782365305</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mf">0.0447055266609815</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="mf">0.0403432070418971</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="dos_moment"><a class="viewcode-back" href="../../../generated/gftool.lattice.honeycomb.dos_moment.html#gftool.lattice.honeycomb.dos_moment">[docs]</a><span class="k">def</span> <span class="nf">dos_moment</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the `m` th moment of the honeycomb DOS.</span>
+
+<span class="sd">    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The order of the moment.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the 2D honeycomb lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_moment : float</span>
+<span class="sd">        The `m` th moment of the 2D honeycomb DOS.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        Currently only implemented for a few specific moments `m`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.honeycomb.dos</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># odd moments vanish due to symmetry</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dos_moment_coefficients</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">half_bandwidth</span><span class="o">**</span><span class="n">m</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">keyerr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Calculation of arbitrary moments not implemented.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">keyerr</span></div>
+
+
+<div class="viewcode-block" id="dos_mp"><a class="viewcode-back" href="../../../generated/gftool.lattice.honeycomb.dos_mp.html#gftool.lattice.honeycomb.dos_mp">[docs]</a><span class="k">def</span> <span class="nf">dos_mp</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-precision DOS of non-interacting 2D honeycomb lattice.</span>
+
+<span class="sd">    The DOS diverges at `eps=±half_bandwidth/3`.</span>
+
+<span class="sd">    This function is particularity suited to calculate integrals of the form</span>
+<span class="sd">    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,</span>
+<span class="sd">    consider removing singularities, e.g. split the integral</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       ∫^0 dϵ DOS(ϵ)[f(ϵ) - f(-D/3)] + ∫_0 dϵ DOS(ϵ)[f(ϵ) - f(+D/3)] + [f(-D/3) + f(+D/3)]/2</span>
+
+<span class="sd">    where :math:`D` is the `half_bandwidth`, or symmetrize the integral.</span>
+
+<span class="sd">    The Green&#39;s function and therefore the DOS of the 2D honeycomb lattice can</span>
+<span class="sd">    be expressed in terms of the 2D triangular lattice</span>
+<span class="sd">    `gftool.lattice.triangular.dos_mp`, see [horiguchi1972]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : mpmath.mpf or mpf_like</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : mpmath.mpf or mpf_like</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping</span>
+<span class="sd">        :math:`t=2D/3`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_mp : mpmath.mpf</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.honeycomb.dos : vectorized version suitable for array evaluations</span>
+<span class="sd">    gftool.lattice.triangular.dos_mp</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the</span>
+<span class="sd">       Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,</span>
+<span class="sd">       1411–1419. https://doi.org/10.1063/1.1666155</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculated integrals</span>
+
+<span class="sd">    &gt;&gt;&gt; from mpmath import mp</span>
+<span class="sd">    &gt;&gt;&gt; mp.quad(gt.lattice.honeycomb.dos_mp, [-1, -1/3, 0, +1/3, +1])</span>
+<span class="sd">    mpf(&#39;1.0&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.5, 1.5, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; dos_mp = [gt.lattice.honeycomb.dos_mp(ee, half_bandwidth=1) for ee in eps]</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; for pos in (-1/3, 0, +1/3):</span>
+<span class="sd">    ...     _ = plt.axvline(pos, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos_mp)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">D_inv</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;1.5&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">half_bandwidth</span><span class="p">)</span>
+    <span class="n">eps_rel</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">*</span> <span class="n">D_inv</span>
+    <span class="n">t_dos</span> <span class="o">=</span> <span class="n">triangular</span><span class="o">.</span><span class="n">dos_mp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">eps_rel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;1.5&#39;</span><span class="p">),</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;9/4&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">D_inv</span> <span class="o">*</span> <span class="n">mp</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span> <span class="o">*</span> <span class="n">t_dos</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

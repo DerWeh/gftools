@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.uh
+=====================
+
+.. currentmodule:: gftool.beb
+
+.. autoproperty:: SpecDec.uh

@@ -1,0 +1,41 @@
+gftool.matrix.UDecomposition
+============================
+
+.. currentmodule:: gftool.matrix
+
+.. autoclass:: UDecomposition
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~UDecomposition.__init__
+      ~UDecomposition.count
+      ~UDecomposition.from_gf
+      ~UDecomposition.from_hamiltonian
+      ~UDecomposition.index
+      ~UDecomposition.reconstruct
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~UDecomposition.eig
+      ~UDecomposition.rv
+      ~UDecomposition.rv_inv
+      ~UDecomposition.s
+      ~UDecomposition.u
+      ~UDecomposition.uh
+   
+   

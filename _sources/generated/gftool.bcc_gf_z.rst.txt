@@ -1,0 +1,6 @@
+﻿gftool.bcc\_gf\_z
+=================
+
+.. currentmodule:: gftool
+
+.. autofunction:: bcc_gf_z

@@ -1,0 +1,6 @@
+gftool.pade.Averager
+====================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: Averager

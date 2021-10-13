@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.beb &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.beb</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.beb</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.</span>
+
+<span class="sd">It extends CPA allowing for random hopping amplitudes. [blackman1971]_</span>
+
+<span class="sd">The implementation is based on a SVD of the `hopping` matrix,</span>
+<span class="sd">which is the dimensionless scaling of the hopping of the components. [weh2021]_</span>
+<span class="sd">However, we use the unitary eigendecomposition instead of the SVD.</span>
+
+<span class="sd">Physical quantities</span>
+<span class="sd">-------------------</span>
+<span class="sd">The main quantity of interest is the average local Green&#39;s function `gf`.</span>
+
+<span class="sd">First the effective medium `self_beb_z` has to be calculated using `solve_root`.</span>
+<span class="sd">With this result the Green&#39;s function can be calculated by the function `gf_loc_z`.</span>
+
+<span class="sd">In the BEB formalism, the local Green&#39;s function `gf` is a matrix in the components.</span>
+<span class="sd">The self-consistent Green&#39;s function `gf` is diagonal, its trace is the average</span>
+<span class="sd">physical Green&#39;s function.</span>
+<span class="sd">If only the non-vanishing diagonal elements have been calculated `gf=gf_loc_z(..., diag=True)`,</span>
+<span class="sd">the average Green&#39;s function is `np.sum(gf, axis=-1)`.</span>
+<span class="sd">The diagonal elements of `gf` are the average for a specific component</span>
+<span class="sd">(conditional average) multiplied by the concentration of that component.</span>
+
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [blackman1971]</span>
+<span class="sd">   Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.</span>
+<span class="sd">   Generalized Locator---Coherent-Potential Approach to Binary Alloys.</span>
+<span class="sd">   Phys. Rev. B 4, 2412–2428. https://doi.org/10.1103/PhysRevB.4.2412</span>
+<span class="sd">.. [weh2021] Weh, A., Zhang, Y., Östlin, A., Terletska, H., Bauernfeind, D.,</span>
+<span class="sd">   Tam, K.-M., Evertz, H.G., Byczuk, K., Vollhardt, D., Chioncel, L., 2021.</span>
+<span class="sd">   Dynamical mean-field theory of the Anderson--Hubbard model with local and</span>
+<span class="sd">   nonlocal disorder in tensor formulation. Phys. Rev. B 104, 045127.</span>
+<span class="sd">   https://doi.org/10.1103/PhysRevB.104.045127</span>
+
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">We consider a Bethe lattice with two components &#39;A&#39; and &#39;B&#39;.</span>
+<span class="sd">The have the on-site energies `-0.5` and `0.5` respectively,</span>
+<span class="sd">the concentrations `0.3` and `0.7`.</span>
+<span class="sd">Furthermore, we assume that the hopping amplitude between &#39;A&#39; and &#39;B&#39; is only</span>
+<span class="sd">`0.3` times the hopping between two &#39;A&#39; sites,</span>
+<span class="sd">while the hopping between two &#39;B&#39; sites is `1.2` times the hopping between two</span>
+<span class="sd">&#39;A&#39; sites.</span>
+
+<span class="sd">Then the following code calculates the local Green&#39;s function for component &#39;A&#39;</span>
+<span class="sd">and &#39;B&#39; (conditionally averaged) as well as the average Green&#39;s function of the</span>
+<span class="sd">system.</span>
+
+<span class="sd">.. plot::</span>
+
+<span class="sd">    from functools import partial</span>
+
+<span class="sd">    import gftool as gt</span>
+<span class="sd">    import numpy as np</span>
+<span class="sd">    import matplotlib.pyplot as plt</span>
+
+<span class="sd">    eps = np.array([-0.5, 0.5])</span>
+<span class="sd">    c = np.array([0.3, 0.7])</span>
+<span class="sd">    t = np.array([[1.0, 0.3],</span>
+<span class="sd">                  [0.3, 1.2]])</span>
+<span class="sd">    hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=1)</span>
+
+<span class="sd">    ww = np.linspace(-1.6, 1.6, num=1000) + 1e-4j</span>
+<span class="sd">    self_beb_ww = gt.beb.solve_root(ww, e_onsite=eps, concentration=c, hopping=t,</span>
+<span class="sd">                                    hilbert_trafo=hilbert)</span>
+<span class="sd">    gf_loc_ww = gt.beb.gf_loc_z(ww, self_beb_ww, hopping=t, hilbert_trafo=hilbert)</span>
+
+<span class="sd">    __ = plt.plot(ww.real, -1./np.pi/c[0]*gf_loc_ww[:, 0].imag, label=&#39;A&#39;)</span>
+<span class="sd">    __ = plt.plot(ww.real, -1./np.pi/c[1]*gf_loc_ww[:, 1].imag, label=&#39;B&#39;)</span>
+<span class="sd">    __ = plt.plot(ww.real, -1./np.pi*np.sum(gf_loc_ww.imag, axis=-1), &#39;:&#39;, label=&#39;avg&#39;)</span>
+<span class="sd">    __ = plt.legend()</span>
+<span class="sd">    plt.show()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=too-many-locals</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">newaxis</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="kn">from</span> <span class="nn">gftool.matrix</span> <span class="kn">import</span> <span class="n">decompose_her</span><span class="p">,</span> <span class="n">decompose_mat</span><span class="p">,</span> <span class="n">UDecomposition</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># gu-function versions to extract diagonal and transpose matrices</span>
+<span class="n">diagonal</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">transpose</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SpecDec"><a class="viewcode-back" href="../../generated/gftool.beb.SpecDec.html#gftool.beb.SpecDec">[docs]</a><span class="k">class</span> <span class="nc">SpecDec</span><span class="p">(</span><span class="n">UDecomposition</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-ancestors</span>
+    <span class="sd">&quot;&quot;&quot;SVD like spectral decomposition.</span>
+
+<span class="sd">    Works only for N×N matrices unlike the `UDecomposition` base class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SpecDec.truncate"><a class="viewcode-back" href="../../generated/gftool.beb.SpecDec.truncate.html#gftool.beb.SpecDec.truncate">[docs]</a>    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpecDec</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the truncated spectral decomposition.</span>
+
+<span class="sd">        Singular values smaller than `rcond` times the largest singular values</span>
+<span class="sd">        are discarded.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rcond : float, rcond</span>
+<span class="sd">            Cut-off ratio for small singular values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        truncated_svd : SpecDec</span>
+<span class="sd">            The truncates the spectral decomposition discarding small singular values.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rcond</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rcond</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">max_eig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">significant</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_eig</span><span class="o">*</span><span class="n">rcond</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">rv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="n">significant</span><span class="p">],</span> <span class="n">eig</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">significant</span><span class="p">],</span>
+                              <span class="n">rv_inv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">significant</span><span class="p">,</span> <span class="p">:])</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_trunacted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if SVD of square matrix is truncated/compact or full.&quot;&quot;&quot;</span>
+        <span class="n">ushape</span><span class="p">,</span> <span class="n">uhshape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">uh</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">ushape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">ushape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">uhshape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SpecDec.partition"><a class="viewcode-back" href="../../generated/gftool.beb.SpecDec.partition.html#gftool.beb.SpecDec.partition">[docs]</a>    <span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_sqrts</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Symmetrically partition the spectral decomposition as `u * eig**0.5, eig**0.5 * uh`.</span>
+
+<span class="sd">        If `return_sqrts` then `us, np.sqrt(s), suh` is returned,</span>
+<span class="sd">        else only `us, suh` is returned (default: False).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sqrt_eig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">emath</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="p">)</span>
+        <span class="n">us</span><span class="p">,</span> <span class="n">suh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">*</span> <span class="n">sqrt_eig</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">sqrt_eig</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">uh</span>
+        <span class="k">if</span> <span class="n">return_sqrts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">us</span><span class="p">,</span> <span class="n">sqrt_eig</span><span class="p">,</span> <span class="n">suh</span>
+        <span class="k">return</span> <span class="n">us</span><span class="p">,</span> <span class="n">suh</span></div></div>
+
+
+<div class="viewcode-block" id="gf_loc_z"><a class="viewcode-back" href="../../generated/gftool.beb.gf_loc_z.html#gftool.beb.gf_loc_z">[docs]</a><span class="k">def</span> <span class="nf">gf_loc_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">self_beb_z</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">],</span>
+             <span class="n">diag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate average local Green&#39;s function matrix in components.</span>
+
+<span class="sd">    For the self-consistent self-energy `self_beb_z` it is diagonal in the</span>
+<span class="sd">    components. Note, that `gf_loc_z` contain the `concentration`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex np.ndarray</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray</span>
+<span class="sd">        BEB self-energy.</span>
+<span class="sd">    hopping : (N_cmpt, N_cmpt) float array_like</span>
+<span class="sd">        Hopping matrix in the components.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the local Green&#39;s function.</span>
+<span class="sd">    diag : bool, optional</span>
+<span class="sd">        If `diag`, only the diagonal elements are calculated, else the full</span>
+<span class="sd">        matrix. (default: True)</span>
+<span class="sd">    rcond : float, optional</span>
+<span class="sd">        Cut-off ratio for small singular values of `hopping`. For the purposes</span>
+<span class="sd">        of rank determination, singular values are treated as zero if they are</span>
+<span class="sd">        smaller than `rcond` times the largest singular value of `hopping`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_loc_z : (..., N_cmpt) or (..., N_cmpt, N_cmpt) complex np.ndarray</span>
+<span class="sd">        The average local Green&#39;s function matrix.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    solve_root</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hopping_dec</span> <span class="o">=</span> <span class="n">SpecDec</span><span class="p">(</span><span class="o">*</span><span class="n">decompose_her</span><span class="p">(</span><span class="n">hopping</span><span class="p">))</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;hopping singular values </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">hopping_dec</span> <span class="o">=</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="n">rcond</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Keeping </span><span class="si">%s</span><span class="s1"> (out of </span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">uh</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;diag&#39;</span> <span class="k">if</span> <span class="n">diag</span> <span class="k">else</span> <span class="s1">&#39;full&#39;</span>
+
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="o">*</span><span class="n">hopping</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">us</span><span class="p">,</span> <span class="n">sqrt_s</span><span class="p">,</span> <span class="n">suh</span> <span class="o">=</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">return_sqrts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># [..., newaxis]*eye add matrix axis</span>
+    <span class="n">z_m_self</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">eye</span> <span class="o">-</span> <span class="n">self_beb_z</span>
+    <span class="n">z_m_self_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">z_m_self</span><span class="p">))</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_mat</span><span class="p">(</span><span class="n">suh</span> <span class="o">@</span> <span class="n">z_m_self_inv</span> <span class="o">@</span> <span class="n">us</span><span class="p">)</span>
+    <span class="n">diag_inv</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">is_trunacted</span><span class="p">:</span>
+        <span class="n">svh_inv</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">hopping_dec</span><span class="o">.</span><span class="n">uh</span><span class="p">)</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">/</span> <span class="n">sqrt_s</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">us_inv</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">hopping_dec</span><span class="o">.</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">/</span> <span class="n">sqrt_s</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">svh_inv</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">)</span>
+        <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)</span> <span class="o">@</span> <span class="n">us_inv</span>
+        <span class="k">return</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">diag_inv</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">z_m_self_inv</span> <span class="o">@</span> <span class="n">us</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">)</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)</span> <span class="o">@</span> <span class="n">suh</span> <span class="o">@</span> <span class="n">z_m_self_inv</span>
+    <span class="n">correction</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">((</span><span class="n">diag_inv</span><span class="o">*</span><span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">diag_inv</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">diag_inv</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">diagonal</span><span class="p">(</span><span class="n">z_m_self_inv</span><span class="p">)</span> <span class="k">if</span> <span class="n">diag</span> <span class="k">else</span> <span class="n">z_m_self_inv</span><span class="p">)</span> <span class="o">+</span> <span class="n">correction</span></div>
+
+
+<div class="viewcode-block" id="self_root_eq"><a class="viewcode-back" href="../../generated/gftool.beb.self_root_eq.html#gftool.beb.self_root_eq">[docs]</a><span class="k">def</span> <span class="nf">self_root_eq</span><span class="p">(</span><span class="n">self_beb_z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">hopping_dec</span><span class="p">:</span> <span class="n">SpecDec</span><span class="p">,</span>
+                 <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Root equation r(Σ)=0 for BEB.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray</span>
+<span class="sd">        BEB self-energy.</span>
+<span class="sd">    z : (...) complex np.ndarray</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float or complex array_like</span>
+<span class="sd">        On-site energy of the components.</span>
+<span class="sd">    concentration : (..., N_cmpt) float array_like</span>
+<span class="sd">        Concentration of the different components.</span>
+<span class="sd">    hopping_dec : SVD</span>
+<span class="sd">        Compact SVD decomposition of the (N_cmpt, N_cmpt) hopping matrix in the</span>
+<span class="sd">        components.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the local Green&#39;s function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    diff : (..., N_cmpt, N_cmpt)</span>
+<span class="sd">        Difference of the inverses of the local and the average Green&#39;s function.</span>
+<span class="sd">        If `diff = 0`, `self_beb_z` is the correct self-energy.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    solve_root</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eye</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">e_onsite</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># [..., newaxis]*eye adds matrix axis</span>
+    <span class="n">z_m_self</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">eye</span> <span class="o">-</span> <span class="n">self_beb_z</span>
+    <span class="c1"># split symmetrically</span>
+    <span class="n">us</span><span class="p">,</span> <span class="n">suh</span> <span class="o">=</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">partition</span><span class="p">()</span>
+    <span class="c1"># matrix-products are faster if larger arrays are in Fortran order</span>
+    <span class="n">z_m_self_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">z_m_self</span><span class="p">))</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_mat</span><span class="p">(</span><span class="n">suh</span> <span class="o">@</span> <span class="n">z_m_self_inv</span> <span class="o">@</span> <span class="n">us</span><span class="p">)</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">us</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">)</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">)</span> <span class="o">@</span> <span class="n">suh</span>
+    <span class="n">diag_inv</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">is_trunacted</span><span class="p">:</span>
+        <span class="n">gf_loc_inv</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">diag_inv</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gf_loc_inv</span> <span class="o">=</span> <span class="n">z_m_self</span> <span class="o">+</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">diag_inv</span><span class="p">)</span> <span class="o">-</span> <span class="n">diag_inv</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span>
+
+    <span class="n">gf_ii_avg_inv</span> <span class="o">=</span> <span class="p">(</span><span class="n">diagonal</span><span class="p">(</span><span class="n">gf_loc_inv</span><span class="p">)</span> <span class="o">+</span> <span class="n">diagonal</span><span class="p">(</span><span class="n">self_beb_z</span><span class="p">)</span> <span class="o">-</span> <span class="n">e_onsite</span><span class="p">)</span> <span class="o">/</span> <span class="n">concentration</span>
+
+    <span class="k">return</span> <span class="n">gf_loc_inv</span> <span class="o">-</span> <span class="n">gf_ii_avg_inv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">eye</span></div>
+
+
+<div class="viewcode-block" id="restrict_self_root_eq"><a class="viewcode-back" href="../../generated/gftool.beb.restrict_self_root_eq.html#gftool.beb.restrict_self_root_eq">[docs]</a><span class="k">def</span> <span class="nf">restrict_self_root_eq</span><span class="p">(</span><span class="n">self_beb_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrap `self_root_eq` to restrict the solutions to `diagonal(self_beb_z).imag &gt; 0`.&quot;&quot;&quot;</span>
+    <span class="n">diag_idx</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="o">*</span><span class="n">self_beb_z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+    <span class="n">self_diag</span> <span class="o">=</span> <span class="n">self_beb_z</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span>
+    <span class="n">unphysical</span> <span class="o">=</span> <span class="n">self_diag</span><span class="o">.</span><span class="n">imag</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">~</span><span class="n">unphysical</span><span class="p">):</span>  <span class="c1"># no need for restrictions</span>
+        <span class="k">return</span> <span class="n">self_root_eq</span><span class="p">(</span><span class="n">self_beb_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">self_diag</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># distance to physical solution</span>
+    <span class="n">self_diag</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">self_beb_z</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">self_diag</span><span class="o">.</span><span class="n">imag</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">self_root_eq</span><span class="p">(</span><span class="n">self_beb_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    <span class="n">root_diag</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">root_diag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">distance</span><span class="p">)</span>  <span class="c1"># linearly enlarge residues</span>
+    <span class="c1"># kill unphysical roots</span>
+    <span class="n">root_diag</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">root_diag</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">root_diag</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">root_diag</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_diag</span>
+    <span class="k">return</span> <span class="n">root</span></div>
+
+
+<div class="viewcode-block" id="solve_root"><a class="viewcode-back" href="../../generated/gftool.beb.solve_root.html#gftool.beb.solve_root">[docs]</a><span class="k">def</span> <span class="nf">solve_root</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">],</span>
+               <span class="n">self_beb_z0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restricted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determine the BEB self-energy by solving the root problem.</span>
+
+<span class="sd">    Note, that the result should be checked, whether the obtained solution is</span>
+<span class="sd">    physical.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex np.ndarray</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float or complex np.ndarray</span>
+<span class="sd">        On-site energy of the components.</span>
+<span class="sd">    concentration : (..., N_cmpt) float np.ndarray</span>
+<span class="sd">        Concentration of the different components.</span>
+<span class="sd">    hopping : (N_cmpt, N_cmpt) float array_like</span>
+<span class="sd">        Hopping matrix in the components.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the local Green&#39;s function.</span>
+<span class="sd">    self_beb_z0 : (..., N_cmpt, N_cmpt) complex np.ndarray, optional</span>
+<span class="sd">        Starting guess for the BEB self-energy.</span>
+<span class="sd">    restricted : bool, optional</span>
+<span class="sd">        Whether the diagonal of `self_beb_z` is restricted to `self_beb_z.imag &lt;= 0`</span>
+<span class="sd">        (default: True).</span>
+<span class="sd">        Note, that even if `restricted=True`, the imaginary part can get</span>
+<span class="sd">        negative within tolerance. This should be removed by hand if necessary.</span>
+<span class="sd">    rcond : float, optional</span>
+<span class="sd">        Cut-off ratio for small singular values of `hopping`. For the purposes</span>
+<span class="sd">        of rank determination, singular values are treated as zero if they are</span>
+<span class="sd">        smaller than `rcond` times the largest singular value of `hopping`.</span>
+<span class="sd">    root_kwds</span>
+<span class="sd">        Additional arguments passed to `scipy.optimize.root`.</span>
+<span class="sd">        `method` can be used to choose a solver. `options=dict(fatol=tol)` can</span>
+<span class="sd">        be specified to set the desired tolerance `tol`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray</span>
+<span class="sd">        The BEB self-energy as the root of `self_root_eq`</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the root problem cannot be solved.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gf_loc_z</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The root problem is solved for the complete input simultaneously.</span>
+<span class="sd">    This provides a speed up as the code is vectorized, however, it comes</span>
+<span class="sd">    with the trade-off of complicating the root search.</span>
+<span class="sd">    So in some cases, it makes sense to split the input arrays, and calculate</span>
+<span class="sd">    the root separately.</span>
+
+<span class="sd">    The default method is &#39;krylov&#39;, which typically does a good job.</span>
+<span class="sd">    In some cases &#39;excitingmixing&#39; was found to do a better job,</span>
+<span class="sd">    especially close to the CPA limit, where some singular values become small.</span>
+
+<span class="sd">    The progress of the root search is logged for the `logging.DEBUG` level.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from functools import partial</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.array([-0.5, 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; c = np.array([0.3, 0.7])</span>
+<span class="sd">    &gt;&gt;&gt; t = np.array([[1.0, 0.3],</span>
+<span class="sd">    ...               [0.3, 1.2]])</span>
+<span class="sd">    &gt;&gt;&gt; hilbert = partial(gt.bethe_hilbert_transform, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.6, 1.6, num=1000) + 1e-4j</span>
+<span class="sd">    &gt;&gt;&gt; self_beb_ww = gt.beb.solve_root(ww, e_onsite=eps, concentration=c, hopping=t,</span>
+<span class="sd">    ...                                 hilbert_trafo=hilbert)</span>
+<span class="sd">    &gt;&gt;&gt; gf_loc_ww = gt.beb.gf_loc_z(ww, self_beb_ww, hopping=t, hilbert_trafo=hilbert)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi/c[0]*gf_loc_ww[:, 0].imag, label=&#39;A&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi/c[1]*gf_loc_ww[:, 1].imag, label=&#39;B&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi*np.sum(gf_loc_ww.imag, axis=-1), label=&#39;avg&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hopping_dec</span> <span class="o">=</span> <span class="n">SpecDec</span><span class="p">(</span><span class="o">*</span><span class="n">decompose_her</span><span class="p">(</span><span class="n">hopping</span><span class="p">))</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;hopping singular values </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">hopping_dec</span> <span class="o">=</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="n">rcond</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Keeping </span><span class="si">%s</span><span class="s1"> (out of </span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">uh</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">self_root_part</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">self_root_eq</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="o">=</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
+                             <span class="n">hopping_dec</span><span class="o">=</span><span class="n">hopping_dec</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert_trafo</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">self_beb_z0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">self_beb_z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">hopping</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="c1"># experience shows that a single fixed_point is a good starting point</span>
+        <span class="n">self_beb_z0</span> <span class="o">=</span> <span class="n">self_root_part</span><span class="p">(</span><span class="n">self_beb_z0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">imag</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># make sure that we are in the retarded regime</span>
+            <span class="n">diag_idx</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="o">*</span><span class="n">hopping</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+            <span class="n">self_beb_z0</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">self_beb_z0</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span>
+                                             <span class="n">self_beb_z0</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">],</span> <span class="n">self_beb_z0</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">())</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">self_beb_z0</span><span class="p">[</span><span class="n">diag_idx</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># to use in root, self_beb_z0 has to have the correct shape</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">concentration</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">self_beb_z0</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">self_beb_z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">self_beb_z0</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hopping</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">root_eq</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">restrict_self_root_eq</span> <span class="k">if</span> <span class="n">restricted</span> <span class="k">else</span> <span class="n">self_root_eq</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">self_root_part</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
+
+    <span class="n">root_kwds</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;krylov&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Search BEB self-energy root&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;callback&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root_kwds</span> <span class="ow">and</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+        <span class="c1"># setup LOGGER if no &#39;callback&#39; is provided</span>
+        <span class="n">root_kwds</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Residue: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">root_eq</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">self_beb_z0</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BEB self-energy root found after </span><span class="si">%s</span><span class="s2"> iterations.&quot;</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+        <span class="c1"># check condition number in matrix diagonalization to make sure it is well defined</span>
+        <span class="n">us</span><span class="p">,</span> <span class="n">suh</span> <span class="o">=</span> <span class="n">hopping_dec</span><span class="o">.</span><span class="n">partition</span><span class="p">()</span>  <span class="c1"># pylint: disable=unbalanced-tuple-unpacking</span>
+        <span class="n">z_m_self</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="o">*</span><span class="n">hopping</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_mat</span><span class="p">(</span><span class="n">suh</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">z_m_self</span><span class="p">)</span> <span class="o">@</span> <span class="n">us</span><span class="p">)</span>
+        <span class="n">max_cond</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Maximal coordination number for diagonalization: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">max_cond</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

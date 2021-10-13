@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.fourier &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.fourier.iw2tau" href="gftool.fourier.iw2tau.html" />
+    <link rel="prev" title="gftool.cpa.RootFxdocc.self_cpa" href="gftool.cpa.RootFxdocc.self_cpa.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gftool.fourier</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#definitions">Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#real-time-complex-frequencies">real time → complex frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#imaginary-time-matsubara-frequencies">imaginary time → Matsubara frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#matsubara-frequencies-imaginary-time">Matsubara frequencies → imaginary time</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau.html">gftool.fourier.iw2tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau_dft.html">gftool.fourier.iw2tau_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau_dft_soft.html">gftool.fourier.iw2tau_dft_soft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.izp2tau.html">gftool.fourier.izp2tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv.html">gftool.fourier.tau2iv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv_dft.html">gftool.fourier.tau2iv_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv_ft_lin.html">gftool.fourier.tau2iv_ft_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw.html">gftool.fourier.tau2iw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw_dft.html">gftool.fourier.tau2iw_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw_ft_lin.html">gftool.fourier.tau2iw_ft_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2izp.html">gftool.fourier.tau2izp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tt2z.html">gftool.fourier.tt2z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tt2z_lin.html">gftool.fourier.tt2z_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tt2z_trapz.html">gftool.fourier.tt2z_trapz</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.fourier</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.fourier.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-gftool.fourier">
+<span id="gftool-fourier"></span><h1>gftool.fourier<a class="headerlink" href="#module-gftool.fourier" title="Permalink to this headline">¶</a></h1>
+<p>Fourier transformations of Green’s functions.</p>
+<p>Fourier transformation between imaginary time and Matsubara frequencies.
+The function in this module should be used after explicitly treating the
+high-frequency behavior, as this is not yet implemented.
+Typically, transformation from τ-space to Matsubara frequency are unproblematic.</p>
+<p>The Fourier transforms are defined in the following way:</p>
+<div class="section" id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="real-time-complex-frequencies">
+<h3>real time → complex frequencies<a class="headerlink" href="#real-time-complex-frequencies" title="Permalink to this headline">¶</a></h3>
+<p>The Laplace integral for the Green’s function is defined as</p>
+<div class="math notranslate nohighlight">
+\[G(z) = ∫_{-∞}^{∞} dt G(t) \exp(izt)\]</div>
+<p>This integral is only well defined</p>
+<ul class="simple">
+<li><p>in the upper complex half-plane <em class="xref py py-obj">z.imag&gt;=0</em> for retarded Green’s function <span class="math notranslate nohighlight">\(∝θ(t)\)</span></p></li>
+<li><p>in the lower complex half-plane <em class="xref py py-obj">z.imag&lt;=0</em> for advanced Green’s function <span class="math notranslate nohighlight">\(∝θ(-t)\)</span></p></li>
+</ul>
+<p>The recommended high-level function to perform this Laplace transform is:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gftool.fourier.tt2z.html#gftool.fourier.tt2z" title="gftool.fourier.tt2z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z</span></code></a> for both retarded and advanced Green’s function</p></li>
+</ul>
+<p>Currently, to sub-functions can be used equivalently, the abstraction <a class="reference internal" href="gftool.fourier.tt2z.html#gftool.fourier.tt2z" title="gftool.fourier.tt2z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z</span></code></a> is
+mostly for consistency with the imaginary time ↔ Matsubara frequencies
+Fourier transformations.</p>
+</div>
+<div class="section" id="imaginary-time-matsubara-frequencies">
+<h3>imaginary time → Matsubara frequencies<a class="headerlink" href="#imaginary-time-matsubara-frequencies" title="Permalink to this headline">¶</a></h3>
+<p>The Fourier integral for the Matsubara Green’s function is defined as:</p>
+<div class="math notranslate nohighlight">
+\[G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n τ)\]</div>
+<p>with <span class="math notranslate nohighlight">\(iw_n = iπn/β\)</span>. For fermionic Green’s functions only odd frequencies
+are non-vanishing, for bosonic Green’s functions only even.</p>
+<p>The recommended high-level function to perform this Fourier transform is:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gftool.fourier.tau2iw.html#gftool.fourier.tau2iw" title="gftool.fourier.tau2iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iw</span></code></a> for <em>fermionic</em> Green’s functions</p></li>
+<li><p><a class="reference internal" href="gftool.fourier.tau2iv.html#gftool.fourier.tau2iv" title="gftool.fourier.tau2iv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iv</span></code></a> for <em>bosonic</em> Green’s functions</p></li>
+</ul>
+</div>
+<div class="section" id="matsubara-frequencies-imaginary-time">
+<h3>Matsubara frequencies → imaginary time<a class="headerlink" href="#matsubara-frequencies-imaginary-time" title="Permalink to this headline">¶</a></h3>
+<p>The Fourier sum for the imaginary time Green’s function is defined as:</p>
+<div class="math notranslate nohighlight">
+\[G(τ) = 1/β \sum_{n=-\infty}^{\infty} G(iw_n) \exp(-iw_n τ).\]</div>
+<p>The recommended high-level function to perform this Fourier transform is:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gftool.fourier.iw2tau.html#gftool.fourier.iw2tau" title="gftool.fourier.iw2tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iw2tau</span></code></a> for <em>fermionic</em> Green’s functions</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h2>
+<dl class="glossary simple">
+<dt id="term-dft">dft<a class="headerlink" href="#term-dft" title="Permalink to this term">¶</a></dt><dd><p>&lt;discrete Foruier transform&gt;</p>
+</dd>
+<dt id="term-ft">ft<a class="headerlink" href="#term-ft" title="Permalink to this term">¶</a></dt><dd><p>&lt;Fourier transformation&gt; In contrast to <a class="reference internal" href="#term-dft"><span class="xref std std-term">dft</span></a>, this is used for
+Fourier integration of continous variables without discretization.</p>
+</dd>
+</dl>
+<p>Previously defined:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../gftool.html#term-iv"><span class="xref std std-term">iv</span></a></p></li>
+<li><p><a class="reference internal" href="../gftool.html#term-iw"><span class="xref std std-term">iw</span></a></p></li>
+<li><p><a class="reference internal" href="../gftool.html#term-tau"><span class="xref std std-term">tau</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.iw2tau.html#gftool.fourier.iw2tau" title="gftool.fourier.iw2tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iw2tau</span></code></a>(gf_iw, beta[, moments, fourier, n_fit])</p></td>
+<td><p>Discrete Fourier transform of the Hermitian Green’s function <em class="xref py py-obj">gf_iw</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.iw2tau_dft.html#gftool.fourier.iw2tau_dft" title="gftool.fourier.iw2tau_dft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iw2tau_dft</span></code></a>(gf_iw, beta)</p></td>
+<td><p>Discrete Fourier transform of the Hermitian Green’s function <em class="xref py py-obj">gf_iw</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.iw2tau_dft_soft.html#gftool.fourier.iw2tau_dft_soft" title="gftool.fourier.iw2tau_dft_soft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iw2tau_dft_soft</span></code></a>(gf_iw, beta)</p></td>
+<td><p>Discrete Fourier transform of the Hermitian Green’s function <em class="xref py py-obj">gf_iw</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.izp2tau.html#gftool.fourier.izp2tau" title="gftool.fourier.izp2tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">izp2tau</span></code></a>(izp, gf_izp, tau, beta[, moments])</p></td>
+<td><p>Fourier transform of the Hermitian Green’s function <em class="xref py py-obj">gf_izp</em> to <em class="xref py py-obj">tau</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.tau2iv.html#gftool.fourier.tau2iv" title="gftool.fourier.tau2iv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iv</span></code></a>(gf_tau, beta[, fourier])</p></td>
+<td><p>Fourier transformation of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.tau2iv_dft.html#gftool.fourier.tau2iv_dft" title="gftool.fourier.tau2iv_dft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iv_dft</span></code></a>(gf_tau, beta)</p></td>
+<td><p>Discrete Fourier transform of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.tau2iv_ft_lin.html#gftool.fourier.tau2iv_ft_lin" title="gftool.fourier.tau2iv_ft_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iv_ft_lin</span></code></a>(gf_tau, beta)</p></td>
+<td><p>Fourier integration of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.tau2iw.html#gftool.fourier.tau2iw" title="gftool.fourier.tau2iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iw</span></code></a>(gf_tau, beta[, n_pole, moments, fourier])</p></td>
+<td><p>Fourier transform of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.tau2iw_dft.html#gftool.fourier.tau2iw_dft" title="gftool.fourier.tau2iw_dft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iw_dft</span></code></a>(gf_tau, beta)</p></td>
+<td><p>Discrete Fourier transform of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.tau2iw_ft_lin.html#gftool.fourier.tau2iw_ft_lin" title="gftool.fourier.tau2iw_ft_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2iw_ft_lin</span></code></a>(gf_tau, beta)</p></td>
+<td><p>Fourier integration of the real Green’s function <em class="xref py py-obj">gf_tau</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.tau2izp.html#gftool.fourier.tau2izp" title="gftool.fourier.tau2izp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau2izp</span></code></a>(gf_tau, beta, izp[, moments, occ, …])</p></td>
+<td><p>Fourier transform of the real Green’s function <em class="xref py py-obj">gf_tau</em> to <em class="xref py py-obj">izp</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.tt2z.html#gftool.fourier.tt2z" title="gftool.fourier.tt2z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z</span></code></a>(tt, gf_t, z[, laplace])</p></td>
+<td><p>Laplace transform of the real-time Green’s function <em class="xref py py-obj">gf_t</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin" title="gftool.fourier.tt2z_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_lin</span></code></a>(tt, gf_t, z)</p></td>
+<td><p>Laplace transform of the real-time Green’s function <em class="xref py py-obj">gf_t</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.fourier.tt2z_trapz.html#gftool.fourier.tt2z_trapz" title="gftool.fourier.tt2z_trapz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_trapz</span></code></a>(tt, gf_t, z)</p></td>
+<td><p>Laplace transform of the real-time Green’s function <em class="xref py py-obj">gf_t</em>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.cpa.RootFxdocc.self_cpa.html" class="btn btn-neutral float-left" title="gftool.cpa.RootFxdocc.self_cpa" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.fourier.iw2tau.html" class="btn btn-neutral float-right" title="gftool.fourier.iw2tau" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

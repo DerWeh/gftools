@@ -1,0 +1,6 @@
+gftool.cpa.RootFxdocc.count
+===========================
+
+.. currentmodule:: gftool.cpa
+
+.. automethod:: RootFxdocc.count

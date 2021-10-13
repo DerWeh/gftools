@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gftool.beb" href="generated/gftool.beb.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gftool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#green-s-functions-and-lattices">Green’s functions and lattices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.onedim_dos.html">gftool.onedim_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.onedim_dos_moment.html">gftool.onedim_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.onedim_gf_z.html">gftool.onedim_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.onedim_hilbert_transform.html">gftool.onedim_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.square_dos.html">gftool.square_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.square_dos_moment.html">gftool.square_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.square_gf_z.html">gftool.square_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.square_hilbert_transform.html">gftool.square_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.triangular_dos.html">gftool.triangular_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.triangular_dos_moment.html">gftool.triangular_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.triangular_gf_z.html">gftool.triangular_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.triangular_hilbert_transform.html">gftool.triangular_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.honeycomb_dos.html">gftool.honeycomb_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.honeycomb_dos_moment.html">gftool.honeycomb_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.honeycomb_gf_z.html">gftool.honeycomb_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.honeycomb_hilbert_transform.html">gftool.honeycomb_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.sc_dos.html">gftool.sc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.sc_dos_moment.html">gftool.sc_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.sc_gf_z.html">gftool.sc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.sc_hilbert_transform.html">gftool.sc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bcc_dos.html">gftool.bcc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bcc_dos_moment.html">gftool.bcc_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bcc_gf_z.html">gftool.bcc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bcc_hilbert_transform.html">gftool.bcc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fcc_dos.html">gftool.fcc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fcc_dos_moment.html">gftool.fcc_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fcc_gf_z.html">gftool.fcc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fcc_hilbert_transform.html">gftool.fcc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_dos.html">gftool.bethe_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_dos_moment.html">gftool.bethe_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_gf_z.html">gftool.bethe_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_gf_d1_z.html">gftool.bethe_gf_d1_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_gf_d2_z.html">gftool.bethe_gf_d2_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bethe_hilbert_transform.html">gftool.bethe_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_z.html">gftool.pole_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_d1_z.html">gftool.pole_gf_d1_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_moments.html">gftool.pole_gf_moments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_ret_t.html">gftool.pole_gf_ret_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_tau.html">gftool.pole_gf_tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pole_gf_tau_b.html">gftool.pole_gf_tau_b</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.hubbard_I_self_z.html">gftool.hubbard_I_self_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.hubbard_dimer_gf_z.html">gftool.hubbard_dimer_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.surface_gf_zeps.html">gftool.surface_gf_zeps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#statistics-and-particle-numbers">Statistics and particle numbers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fermi_fct.html">gftool.fermi_fct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fermi_fct_d1.html">gftool.fermi_fct_d1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.fermi_fct_inv.html">gftool.fermi_fct_inv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.bose_fct.html">gftool.bose_fct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.matsubara_frequencies.html">gftool.matsubara_frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.matsubara_frequencies_b.html">gftool.matsubara_frequencies_b</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.pade_frequencies.html">gftool.pade_frequencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.density_iw.html">gftool.density_iw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.chemical_potential.html">gftool.chemical_potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.density.html">gftool.density</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.density_error.html">gftool.density_error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.density_error2.html">gftool.density_error2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.check_convergence.html">gftool.check_convergence</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.get_versions.html">gftool.get_versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/gftool.Result.html">gftool.Result</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gftool</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gftool.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-gftool">
+<span id="gftool"></span><h1>gftool<a class="headerlink" href="#module-gftool" title="Permalink to this headline">¶</a></h1>
+<p>Collection of commonly used Green’s functions and utilities.</p>
+<p>Main purpose is to have a tested base.</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.beb.html#module-gftool.beb" title="gftool.beb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.beb</span></code></a></p></td>
+<td><p>Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.cpa.html#module-gftool.cpa" title="gftool.cpa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.cpa</span></code></a></p></td>
+<td><p>Coherent cluster approximation (CPA) to substitutional disorder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.fourier.html#module-gftool.fourier" title="gftool.fourier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.fourier</span></code></a></p></td>
+<td><p>Fourier transformations of Green’s functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.lattice.html#module-gftool.lattice" title="gftool.lattice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice</span></code></a></p></td>
+<td><p>Collection of different lattices and their Green’s functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.matrix</span></code></a></p></td>
+<td><p>Functions to work with Green’s functions in matrix from.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.pade.html#module-gftool.pade" title="gftool.pade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.pade</span></code></a></p></td>
+<td><p>Pade analytic continuation for Green’s functions and self-energies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.siam.html#module-gftool.siam" title="gftool.siam"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.siam</span></code></a></p></td>
+<td><p>Basic functions for the (non-interacting) single impurity Anderson model (SIAM).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h2>
+<dl class="glossary simple">
+<dt id="term-DOS">DOS<a class="headerlink" href="#term-DOS" title="Permalink to this term">¶</a></dt><dd><p>Density of States</p>
+</dd>
+<dt id="term-eps">eps<a class="headerlink" href="#term-eps" title="Permalink to this term">¶</a></dt><dt id="term-epsilon">epsilon<a class="headerlink" href="#term-epsilon" title="Permalink to this term">¶</a></dt><dt id="term-0">ϵ<a class="headerlink" href="#term-0" title="Permalink to this term">¶</a></dt><dd><p>(Real) energy variable. Typically used for for the <a class="reference internal" href="#term-DOS"><span class="xref std std-term">DOS</span></a>
+where it replaces the k-dependent Dispersion <span class="math notranslate nohighlight">\(ϵ_k\)</span>.</p>
+</dd>
+<dt id="term-iv">iv<a class="headerlink" href="#term-iv" title="Permalink to this term">¶</a></dt><dt id="term-i_n">iν_n<a class="headerlink" href="#term-i_n" title="Permalink to this term">¶</a></dt><dd><p>Bosonic Matsubara frequencies</p>
+</dd>
+<dt id="term-iw">iw<a class="headerlink" href="#term-iw" title="Permalink to this term">¶</a></dt><dt id="term-1">iω_n<a class="headerlink" href="#term-1" title="Permalink to this term">¶</a></dt><dd><p>Fermionic Matsubara frequencies</p>
+</dd>
+<dt id="term-tau">tau<a class="headerlink" href="#term-tau" title="Permalink to this term">¶</a></dt><dt id="term-2">τ<a class="headerlink" href="#term-2" title="Permalink to this term">¶</a></dt><dd><p>Imaginary time points</p>
+</dd>
+<dt id="term-z">z<a class="headerlink" href="#term-z" title="Permalink to this term">¶</a></dt><dd><p>Complex frequency variable</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="green-s-functions-and-lattices">
+<h2>Green’s functions and lattices<a class="headerlink" href="#green-s-functions-and-lattices" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">1D</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.onedim_dos.html#gftool.onedim_dos" title="gftool.onedim_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onedim_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 1D lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.onedim_dos_moment.html#gftool.onedim_dos_moment" title="gftool.onedim_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onedim_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the 1D DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.onedim_gf_z.html#gftool.onedim_gf_z" title="gftool.onedim_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onedim_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of the 1D lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.onedim_hilbert_transform.html#gftool.onedim_hilbert_transform" title="gftool.onedim_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">onedim_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the 1D lattice.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">2D</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.square_dos.html#gftool.square_dos" title="gftool.square_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 2D square lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.square_dos_moment.html#gftool.square_dos_moment" title="gftool.square_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the square DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.square_gf_z.html#gftool.square_gf_z" title="gftool.square_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of the 2D square lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.square_hilbert_transform.html#gftool.square_hilbert_transform" title="gftool.square_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the square lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.triangular_dos.html#gftool.triangular_dos" title="gftool.triangular_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 2D triangular lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.triangular_dos_moment.html#gftool.triangular_dos_moment" title="gftool.triangular_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the triangular DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.triangular_gf_z.html#gftool.triangular_gf_z" title="gftool.triangular_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of the 2D triangular lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.triangular_hilbert_transform.html#gftool.triangular_hilbert_transform" title="gftool.triangular_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the triangular lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.honeycomb_dos.html#gftool.honeycomb_dos" title="gftool.honeycomb_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">honeycomb_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 2D honeycomb lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.honeycomb_dos_moment.html#gftool.honeycomb_dos_moment" title="gftool.honeycomb_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">honeycomb_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the honeycomb DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.honeycomb_gf_z.html#gftool.honeycomb_gf_z" title="gftool.honeycomb_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">honeycomb_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of the 2D honeycomb lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.honeycomb_hilbert_transform.html#gftool.honeycomb_hilbert_transform" title="gftool.honeycomb_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">honeycomb_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the honeycomb lattice.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">3D</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.sc_dos.html#gftool.sc_dos" title="gftool.sc_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_dos</span></code></a>(eps[, half_bandwidth])</p></td>
+<td><p>Local Green’s function of 3D simple cubic lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.sc_dos_moment.html#gftool.sc_dos_moment" title="gftool.sc_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the simple cubic DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.sc_gf_z.html#gftool.sc_gf_z" title="gftool.sc_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_gf_z</span></code></a>(z[, half_bandwidth])</p></td>
+<td><p>Local Green’s function of 3D simple cubic lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.sc_hilbert_transform.html#gftool.sc_hilbert_transform" title="gftool.sc_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_hilbert_transform</span></code></a>(xi[, half_bandwidth])</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the simple cubic lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.bcc_dos.html#gftool.bcc_dos" title="gftool.bcc_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcc_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 3D body-centered cubic lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bcc_dos_moment.html#gftool.bcc_dos_moment" title="gftool.bcc_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcc_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the body-centered cubic DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.bcc_gf_z.html#gftool.bcc_gf_z" title="gftool.bcc_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcc_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of 3D body-centered cubic (bcc) lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bcc_hilbert_transform.html#gftool.bcc_hilbert_transform" title="gftool.bcc_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcc_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the body-centered cubic lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.fcc_dos.html#gftool.fcc_dos" title="gftool.fcc_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fcc_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting 3D face-centered cubic lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.fcc_dos_moment.html#gftool.fcc_dos_moment" title="gftool.fcc_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fcc_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the face-centered cubic DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.fcc_gf_z.html#gftool.fcc_gf_z" title="gftool.fcc_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fcc_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of the 3D face-centered cubic (fcc) lattice.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.fcc_hilbert_transform.html#gftool.fcc_hilbert_transform" title="gftool.fcc_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fcc_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the face-centered cubic lattice.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Miscellaneous</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.bethe_dos.html#gftool.bethe_dos" title="gftool.bethe_dos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_dos</span></code></a>(eps, half_bandwidth)</p></td>
+<td><p>DOS of non-interacting Bethe lattice for infinite coordination number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bethe_dos_moment.html#gftool.bethe_dos_moment" title="gftool.bethe_dos_moment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_dos_moment</span></code></a>(m, half_bandwidth)</p></td>
+<td><p>Calculate the <em class="xref py py-obj">m</em> th moment of the Bethe DOS.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.bethe_gf_z.html#gftool.bethe_gf_z" title="gftool.bethe_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_gf_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Local Green’s function of Bethe lattice for infinite coordination number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bethe_gf_d1_z.html#gftool.bethe_gf_d1_z" title="gftool.bethe_gf_d1_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_gf_d1_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>First derivative of local Green’s function of Bethe lattice for infinite coordination number.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.bethe_gf_d2_z.html#gftool.bethe_gf_d2_z" title="gftool.bethe_gf_d2_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_gf_d2_z</span></code></a>(z, half_bandwidth)</p></td>
+<td><p>Second derivative of local Green’s function of Bethe lattice for infinite coordination number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bethe_hilbert_transform.html#gftool.bethe_hilbert_transform" title="gftool.bethe_hilbert_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bethe_hilbert_transform</span></code></a>(xi, half_bandwidth)</p></td>
+<td><p>Hilbert transform of non-interacting DOS of the Bethe lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.pole_gf_z.html#gftool.pole_gf_z" title="gftool.pole_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_z</span></code></a>(z, poles, weights)</p></td>
+<td><p>Green’s function given by a finite number of <em class="xref py py-obj">poles</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.pole_gf_d1_z.html#gftool.pole_gf_d1_z" title="gftool.pole_gf_d1_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_d1_z</span></code></a>(z, poles, weights)</p></td>
+<td><p>First derivative of Green’s function given by a finite number of <em class="xref py py-obj">poles</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.pole_gf_moments.html#gftool.pole_gf_moments" title="gftool.pole_gf_moments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_moments</span></code></a>(poles, weights, order)</p></td>
+<td><p>High-frequency moments of the pole Green’s function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.pole_gf_ret_t.html#gftool.pole_gf_ret_t" title="gftool.pole_gf_ret_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_ret_t</span></code></a>(tt, poles, weights)</p></td>
+<td><p>Retarded time Green’s function given by a finite number of <em class="xref py py-obj">poles</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.pole_gf_tau.html#gftool.pole_gf_tau" title="gftool.pole_gf_tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_tau</span></code></a>(tau, poles, weights, beta)</p></td>
+<td><p>Imaginary time Green’s function given by a finite number of <em class="xref py py-obj">poles</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.pole_gf_tau_b.html#gftool.pole_gf_tau_b" title="gftool.pole_gf_tau_b"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pole_gf_tau_b</span></code></a>(tau, poles, weights, beta)</p></td>
+<td><p>Bosonic imaginary time Green’s function given by a finite number of <em class="xref py py-obj">poles</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.hubbard_I_self_z.html#gftool.hubbard_I_self_z" title="gftool.hubbard_I_self_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard_I_self_z</span></code></a>(z, U, occ)</p></td>
+<td><p>Self-energy in Hubbard-I approximation (atomic solution).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.hubbard_dimer_gf_z.html#gftool.hubbard_dimer_gf_z" title="gftool.hubbard_dimer_gf_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hubbard_dimer_gf_z</span></code></a>(z, hopping, interaction)</p></td>
+<td><p>Green’s function for the two site Hubbard model on a <em>dimer</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.surface_gf_zeps.html#gftool.surface_gf_zeps" title="gftool.surface_gf_zeps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_gf_zeps</span></code></a>(z, eps, hopping_nn)</p></td>
+<td><p>Surface Green’s function for stacked layers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="statistics-and-particle-numbers">
+<h2>Statistics and particle numbers<a class="headerlink" href="#statistics-and-particle-numbers" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.fermi_fct.html#gftool.fermi_fct" title="gftool.fermi_fct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fermi_fct</span></code></a>(eps, beta)</p></td>
+<td><p>Return the Fermi function <em class="xref py py-obj">1/(exp(βϵ)+1)</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.fermi_fct_d1.html#gftool.fermi_fct_d1" title="gftool.fermi_fct_d1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fermi_fct_d1</span></code></a>(eps, beta)</p></td>
+<td><p>Return the 1st derivative of the Fermi function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.fermi_fct_inv.html#gftool.fermi_fct_inv" title="gftool.fermi_fct_inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fermi_fct_inv</span></code></a>(fermi, beta)</p></td>
+<td><p>Inverse of the Fermi function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.bose_fct.html#gftool.bose_fct" title="gftool.bose_fct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bose_fct</span></code></a>(eps, beta)</p></td>
+<td><p>Return the Bose function <em class="xref py py-obj">1/(exp(βϵ)-1)</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.matsubara_frequencies.html#gftool.matsubara_frequencies" title="gftool.matsubara_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matsubara_frequencies</span></code></a>(n_points, beta)</p></td>
+<td><p>Return <em>fermionic</em> Matsubara frequencies <span class="math notranslate nohighlight">\(iω_n\)</span> for the points <em class="xref py py-obj">n_points</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.matsubara_frequencies_b.html#gftool.matsubara_frequencies_b" title="gftool.matsubara_frequencies_b"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matsubara_frequencies_b</span></code></a>(n_points, beta)</p></td>
+<td><p>Return <em>bosonic</em> Matsubara frequencies <span class="math notranslate nohighlight">\(iν_n\)</span> for the points <em class="xref py py-obj">n_points</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.pade_frequencies.html#gftool.pade_frequencies" title="gftool.pade_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pade_frequencies</span></code></a>(num, beta)</p></td>
+<td><p>Return <em class="xref py py-obj">num</em> <em>fermionic</em> Padé frequencies <span class="math notranslate nohighlight">\(iz_p\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">density_iw</span></code></a>(iws, gf_iw, beta[, weights, …])</p></td>
+<td><p>Calculate the number density of the Green’s function <em class="xref py py-obj">gf_iw</em> at finite temperature <em class="xref py py-obj">beta</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.chemical_potential.html#gftool.chemical_potential" title="gftool.chemical_potential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chemical_potential</span></code></a>(occ_root[, mu0, step0])</p></td>
+<td><p>Search chemical potential for a given occupation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.density.html#gftool.density" title="gftool.density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">density</span></code></a>(gf_iw, potential, beta[, …])</p></td>
+<td><p>Calculate the number density of the Green’s function <em class="xref py py-obj">gf_iw</em> at finite temperature <em class="xref py py-obj">beta</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.density_error.html#gftool.density_error" title="gftool.density_error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">density_error</span></code></a>(delta_gf_iw, iw_n[, noisy])</p></td>
+<td><p>Return an estimate for the upper bound of the error in the density.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/gftool.density_error2.html#gftool.density_error2" title="gftool.density_error2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">density_error2</span></code></a>(delta_gf_iw, iw_n)</p></td>
+<td><p>Return an estimate for the upper bound of the error in the density.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.check_convergence.html#gftool.check_convergence" title="gftool.check_convergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_convergence</span></code></a>(gf_iw, potential, beta[, …])</p></td>
+<td><p>Return data for visual inspection of  the density error.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.get_versions.html#gftool.get_versions" title="gftool.get_versions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_versions</span></code></a>()</p></td>
+<td><p>Get version information or return default if unable to do so.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/gftool.Result.html#gftool.Result" title="gftool.Result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Result</span></code></a>(x, err)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/gftool.beb.html" class="btn btn-neutral float-right" title="gftool.beb" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

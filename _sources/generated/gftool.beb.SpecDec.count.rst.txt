@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.count
+========================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.count

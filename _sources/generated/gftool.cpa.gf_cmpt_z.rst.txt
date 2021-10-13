@@ -1,0 +1,6 @@
+gftool.cpa.gf\_cmpt\_z
+======================
+
+.. currentmodule:: gftool.cpa
+
+.. autofunction:: gf_cmpt_z

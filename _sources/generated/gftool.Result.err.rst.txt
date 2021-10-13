@@ -1,0 +1,6 @@
+gftool.Result.err
+=================
+
+.. currentmodule:: gftool
+
+.. autoproperty:: Result.err

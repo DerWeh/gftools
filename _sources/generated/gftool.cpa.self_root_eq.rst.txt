@@ -1,0 +1,6 @@
+gftool.cpa.self\_root\_eq
+=========================
+
+.. currentmodule:: gftool.cpa
+
+.. autofunction:: self_root_eq

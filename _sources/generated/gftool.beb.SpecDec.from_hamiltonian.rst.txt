@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.from\_hamiltonian
+====================================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.from_hamiltonian

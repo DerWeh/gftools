@@ -1,0 +1,6 @@
+gftool.lattice.fcc.dos\_moment
+==============================
+
+.. currentmodule:: gftool.lattice.fcc
+
+.. autofunction:: dos_moment

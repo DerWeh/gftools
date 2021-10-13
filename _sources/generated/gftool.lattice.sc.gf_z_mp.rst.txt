@@ -1,0 +1,6 @@
+gftool.lattice.sc.gf\_z\_mp
+===========================
+
+.. currentmodule:: gftool.lattice.sc
+
+.. autofunction:: gf_z_mp

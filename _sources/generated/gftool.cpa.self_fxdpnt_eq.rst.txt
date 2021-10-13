@@ -1,0 +1,6 @@
+gftool.cpa.self\_fxdpnt\_eq
+===========================
+
+.. currentmodule:: gftool.cpa
+
+.. autofunction:: self_fxdpnt_eq

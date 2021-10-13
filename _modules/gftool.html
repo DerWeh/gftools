@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>gftool</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of commonly used Green&#39;s functions and utilities.</span>
+
+<span class="sd">Main purpose is to have a tested base.</span>
+
+<span class="sd">Submodules</span>
+<span class="sd">----------</span>
+
+<span class="sd">.. autosummary::</span>
+<span class="sd">  :toctree: generated</span>
+
+<span class="sd">   gftool.beb</span>
+<span class="sd">   gftool.cpa</span>
+<span class="sd">   gftool.fourier</span>
+<span class="sd">   gftool.lattice</span>
+<span class="sd">   gftool.matrix</span>
+<span class="sd">   gftool.pade</span>
+<span class="sd">   gftool.siam</span>
+
+<span class="sd">Glossary</span>
+<span class="sd">--------</span>
+
+<span class="sd">.. glossary::</span>
+
+<span class="sd">   DOS</span>
+<span class="sd">      Density of States</span>
+
+<span class="sd">   eps</span>
+<span class="sd">   epsilon</span>
+<span class="sd">   ϵ</span>
+<span class="sd">      (Real) energy variable. Typically used for for the :term:`DOS`</span>
+<span class="sd">      where it replaces the k-dependent Dispersion :math:`ϵ_k`.</span>
+
+<span class="sd">   iv</span>
+<span class="sd">   iν_n</span>
+<span class="sd">      Bosonic Matsubara frequencies</span>
+
+<span class="sd">   iw</span>
+<span class="sd">   iω_n</span>
+<span class="sd">      Fermionic Matsubara frequencies</span>
+
+<span class="sd">   tau</span>
+<span class="sd">   τ</span>
+<span class="sd">      Imaginary time points</span>
+
+<span class="sd">   z</span>
+<span class="sd">      Complex frequency variable</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">newaxis</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">beb</span><span class="p">,</span> <span class="n">cpa</span><span class="p">,</span> <span class="n">fourier</span><span class="p">,</span> <span class="n">lattice</span><span class="p">,</span> <span class="n">matrix</span> <span class="k">as</span> <span class="n">gtmatrix</span>
+<span class="kn">from</span> <span class="nn">._util</span> <span class="kn">import</span> <span class="n">_gu_sum</span>
+<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
+
+<span class="c1"># Bethe lattice</span>
+<span class="c1"># pylint: disable=wrong-import-position</span>
+<span class="kn">from</span> <span class="nn">.lattice.bethe</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">bethe_dos</span><span class="p">,</span> <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">bethe_dos_moment</span><span class="p">,</span>
+                            <span class="n">gf_d1_z</span> <span class="k">as</span> <span class="n">bethe_gf_d1_z</span><span class="p">,</span> <span class="n">gf_d2_z</span> <span class="k">as</span> <span class="n">bethe_gf_d2_z</span><span class="p">,</span>
+                            <span class="n">gf_z</span> <span class="k">as</span> <span class="n">bethe_gf_z</span><span class="p">,</span>
+                            <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">bethe_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># One-dimensional lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.onedim</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">onedim_dos</span><span class="p">,</span>
+                             <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">onedim_dos_moment</span><span class="p">,</span>
+                             <span class="n">gf_z</span> <span class="k">as</span> <span class="n">onedim_gf_z</span><span class="p">,</span>
+                             <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">onedim_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Square lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.square</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">square_dos</span><span class="p">,</span>
+                             <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">square_dos_moment</span><span class="p">,</span>
+                             <span class="n">gf_z</span> <span class="k">as</span> <span class="n">square_gf_z</span><span class="p">,</span>
+                             <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">square_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Triangular lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.triangular</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">triangular_dos</span><span class="p">,</span>
+                                 <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">triangular_dos_moment</span><span class="p">,</span>
+                                 <span class="n">gf_z</span> <span class="k">as</span> <span class="n">triangular_gf_z</span><span class="p">,</span>
+                                 <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">triangular_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Honeycomb lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.honeycomb</span> <span class="kn">import</span><span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">honeycomb_dos</span><span class="p">,</span>
+                               <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">honeycomb_dos_moment</span><span class="p">,</span>
+                               <span class="n">gf_z</span> <span class="k">as</span> <span class="n">honeycomb_gf_z</span><span class="p">,</span>
+                               <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">honeycomb_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Simple cubic lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.sc</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">sc_dos</span><span class="p">,</span>
+                         <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">sc_dos_moment</span><span class="p">,</span>
+                         <span class="n">gf_z</span> <span class="k">as</span> <span class="n">sc_gf_z</span><span class="p">,</span>
+                         <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">sc_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Body-centered cubic lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.bcc</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">bcc_dos</span><span class="p">,</span>
+                          <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">bcc_dos_moment</span><span class="p">,</span>
+                          <span class="n">gf_z</span> <span class="k">as</span> <span class="n">bcc_gf_z</span><span class="p">,</span>
+                          <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">bcc_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Body-centered cubic lattice</span>
+<span class="kn">from</span> <span class="nn">.lattice.fcc</span> <span class="kn">import</span> <span class="p">(</span><span class="n">dos</span> <span class="k">as</span> <span class="n">fcc_dos</span><span class="p">,</span>
+                          <span class="n">dos_moment</span> <span class="k">as</span> <span class="n">fcc_dos_moment</span><span class="p">,</span>
+                          <span class="n">gf_z</span> <span class="k">as</span> <span class="n">fcc_gf_z</span><span class="p">,</span>
+                          <span class="n">hilbert_transform</span> <span class="k">as</span> <span class="n">fcc_hilbert_transform</span><span class="p">)</span>
+
+<span class="c1"># Fermi statistics</span>
+<span class="kn">from</span> <span class="nn">.statistics</span> <span class="kn">import</span> <span class="p">(</span><span class="n">fermi_fct</span><span class="p">,</span> <span class="n">fermi_fct_d1</span><span class="p">,</span> <span class="n">fermi_fct_inv</span><span class="p">,</span>
+                         <span class="n">matsubara_frequencies</span><span class="p">,</span> <span class="n">pade_frequencies</span><span class="p">)</span>
+
+<span class="c1"># Bose statistics</span>
+<span class="kn">from</span> <span class="nn">.statistics</span> <span class="kn">import</span> <span class="p">(</span><span class="n">bose_fct</span><span class="p">,</span> <span class="n">matsubara_frequencies_b</span><span class="p">)</span>
+
+<span class="c1"># Green&#39;s function give by finite number poles</span>
+<span class="kn">from</span> <span class="nn">.basis.pole</span> <span class="kn">import</span> <span class="p">(</span><span class="n">gf_z</span> <span class="k">as</span> <span class="n">pole_gf_z</span><span class="p">,</span>
+                         <span class="n">gf_d1_z</span> <span class="k">as</span> <span class="n">pole_gf_d1_z</span><span class="p">,</span>
+                         <span class="n">gf_tau</span> <span class="k">as</span> <span class="n">pole_gf_tau</span><span class="p">,</span>
+                         <span class="n">gf_ret_t</span> <span class="k">as</span> <span class="n">pole_gf_ret_t</span><span class="p">,</span>
+                         <span class="n">moments</span> <span class="k">as</span> <span class="n">pole_gf_moments</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.density</span> <span class="kn">import</span> <span class="n">density_iw</span><span class="p">,</span> <span class="n">chemical_potential</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="n">get_versions</span><span class="p">()[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># silence warnings of unused imports</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">beb</span><span class="p">,</span> <span class="n">cpa</span><span class="p">,</span> <span class="n">fourier</span><span class="p">,</span> <span class="n">lattice</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">bethe_dos</span><span class="p">,</span> <span class="n">bethe_dos_moment</span><span class="p">,</span> <span class="n">bethe_gf_d1_z</span><span class="p">,</span> <span class="n">bethe_gf_d2_z</span><span class="p">,</span>
+            <span class="n">bethe_gf_z</span><span class="p">,</span> <span class="n">bethe_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">onedim_dos</span><span class="p">,</span> <span class="n">onedim_dos_moment</span><span class="p">,</span> <span class="n">onedim_gf_z</span><span class="p">,</span> <span class="n">onedim_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">square_dos</span><span class="p">,</span> <span class="n">square_dos_moment</span><span class="p">,</span> <span class="n">square_gf_z</span><span class="p">,</span> <span class="n">square_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">triangular_dos</span><span class="p">,</span> <span class="n">triangular_dos_moment</span><span class="p">,</span> <span class="n">triangular_gf_z</span><span class="p">,</span> <span class="n">triangular_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">honeycomb_dos</span><span class="p">,</span> <span class="n">honeycomb_dos_moment</span><span class="p">,</span> <span class="n">honeycomb_gf_z</span><span class="p">,</span> <span class="n">honeycomb_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">sc_dos</span><span class="p">,</span> <span class="n">sc_dos_moment</span><span class="p">,</span> <span class="n">sc_gf_z</span><span class="p">,</span> <span class="n">sc_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">bcc_dos</span><span class="p">,</span> <span class="n">bcc_dos_moment</span><span class="p">,</span> <span class="n">bcc_gf_z</span><span class="p">,</span> <span class="n">bcc_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">fcc_dos</span><span class="p">,</span> <span class="n">fcc_dos_moment</span><span class="p">,</span> <span class="n">fcc_gf_z</span><span class="p">,</span> <span class="n">fcc_hilbert_transform</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">fermi_fct</span><span class="p">,</span> <span class="n">fermi_fct_d1</span><span class="p">,</span> <span class="n">fermi_fct_inv</span><span class="p">,</span> <span class="n">matsubara_frequencies</span><span class="p">,</span> <span class="n">pade_frequencies</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">bose_fct</span><span class="p">,</span> <span class="n">matsubara_frequencies_b</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">pole_gf_z</span><span class="p">,</span> <span class="n">pole_gf_d1_z</span><span class="p">,</span> <span class="n">pole_gf_tau</span><span class="p">,</span> <span class="n">pole_gf_ret_t</span><span class="p">,</span> <span class="n">pole_gf_moments</span><span class="p">))</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">((</span><span class="n">density_iw</span><span class="p">,</span> <span class="n">chemical_potential</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="surface_gf_zeps"><a class="viewcode-back" href="../generated/gftool.surface_gf_zeps.html#gftool.surface_gf_zeps">[docs]</a><span class="k">def</span> <span class="nf">surface_gf_zeps</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">hopping_nn</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Surface Green&#39;s function for stacked layers.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})</span>
+
+<span class="sd">    with :math:`g_{00} = (z-ϵ)^{-1}` [odashima2016]_. This is in principle the</span>
+<span class="sd">    Green&#39;s function for a semi-infinite chain.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`.</span>
+<span class="sd">    eps : float</span>
+<span class="sd">        Eigenenergy (dispersion) for which the Green&#39;s function is evaluated.</span>
+<span class="sd">    hopping_nn : float</span>
+<span class="sd">        Nearest neighbor hopping :math:`t` between neighboring layers.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    surface_gf_zeps : complex</span>
+<span class="sd">        Value of the surface Green&#39;s function</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [odashima2016] Odashima, Mariana M., Beatriz G. Prado, and E. Vernek. Pedagogical</span>
+<span class="sd">       Introduction to Equilibrium Green&#39;s Functions: Condensed-Matter Examples</span>
+<span class="sd">       with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,</span>
+<span class="sd">       no. 1 (September 22, 2016).</span>
+<span class="sd">       https://doi.org/10.1590/1806-9126-rbef-2016-0087.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">z</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">2.</span><span class="o">*</span><span class="n">hopping_nn</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hubbard_dimer_gf_z"><a class="viewcode-back" href="../generated/gftool.hubbard_dimer_gf_z.html#gftool.hubbard_dimer_gf_z">[docs]</a><span class="k">def</span> <span class="nf">hubbard_dimer_gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">interaction</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Green&#39;s function for the two site Hubbard model on a *dimer*.</span>
+
+<span class="sd">    The Hamilton is given</span>
+
+<span class="sd">    .. math:: H = -t∑_{σ}(c^†_{1σ} c_{2σ} + c^†_{2σ} c_{1σ}) + U∑_i n_{i↑} n_{i↓}</span>
+
+<span class="sd">    with the `hopping` :math:`t` and the `interaction` :math:`U`.</span>
+<span class="sd">    The Green&#39;s function is given for the operators :math:`c_{±σ} = 1/√2 (c_{1σ} ± c_{2σ})`,</span>
+<span class="sd">    where :math:`±` is given by `kind`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`</span>
+<span class="sd">    hopping : float</span>
+<span class="sd">        The hopping parameter between the sites of the dimer.</span>
+<span class="sd">    interaction : float</span>
+<span class="sd">        The Hubbard interaction strength for the on-site interaction.</span>
+<span class="sd">    kind : {&#39;+&#39;, &#39;-&#39;}</span>
+<span class="sd">        The operator  for which the Green&#39;s function is calculated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex ndarray</span>
+<span class="sd">        Value of the Hubbard dimer Green&#39;s function at frequencies `z`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The solution is obtained by exact digitalization and shown in [eder2017]_.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [eder2017] Eder, Robert. “Introduction to the Hubbard Mode.” In The</span>
+<span class="sd">       Physics of Correlated Insulators, Metals and Superconductors, edited by</span>
+<span class="sd">       Eva Pavarini, Erik Koch, Richard Scalettar, and Richard Martin.</span>
+<span class="sd">       Schriften Des Forschungszentrums Jülich Reihe Modeling and Simulation 7.</span>
+<span class="sd">       Jülich: Forschungszentrum Jülich, 2017.</span>
+<span class="sd">       https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid literal for `kind`: &#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;+&#39;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">hopping</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">interaction</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="o">*</span><span class="n">U</span><span class="o">*</span><span class="n">U</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">t</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="n">E_0</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">U</span> <span class="o">-</span> <span class="n">W</span>
+    <span class="n">gf_z</span>  <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="p">(</span><span class="n">E_0</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">gf_z</span> <span class="o">+=</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">s</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">W</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="p">(</span><span class="n">U</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">t</span> <span class="o">-</span> <span class="n">E_0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">gf_z</span></div>
+
+
+<div class="viewcode-block" id="hubbard_I_self_z"><a class="viewcode-back" href="../generated/gftool.hubbard_I_self_z.html#gftool.hubbard_I_self_z">[docs]</a><span class="k">def</span> <span class="nf">hubbard_I_self_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">occ</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Self-energy in Hubbard-I approximation (atomic solution).</span>
+
+<span class="sd">    The chemical potential and the onsite energy have to be included in `z`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex array_like</span>
+<span class="sd">        The complex frequencies at which the self-energy is evaluated. `z`</span>
+<span class="sd">        should be shifted by the onsite energy and the chemical potential.</span>
+<span class="sd">    U : float array_like</span>
+<span class="sd">        The local Hubbard interaction `U`.</span>
+<span class="sd">    occ : float array_like</span>
+<span class="sd">        The occupation of the opposite spin as the spin of the self-energy.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Σ_{Hub I} : complex array_like</span>
+<span class="sd">        The self-energy in Hubbard I approximation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; U = 5</span>
+<span class="sd">    &gt;&gt;&gt; mu = U/2  # particle-hole symmetric case -&gt; n=0.5</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-5, 5, num=1000) + 1e-6j</span>
+
+<span class="sd">    &gt;&gt;&gt; self_ww = gt.hubbard_I_self_z(ww+mu, U, occ=0.5)</span>
+
+<span class="sd">    Show the spectral function for the Bethe lattice,</span>
+<span class="sd">    we see the two Hubbard bands centered at ±U/2:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = gt.bethe_gf_z(ww+mu-self_ww, half_bandwidth=1.)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi*gf_iw.imag)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hartree</span> <span class="o">=</span> <span class="n">U</span> <span class="o">*</span> <span class="n">occ</span>
+    <span class="k">return</span> <span class="n">hartree</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">U</span> <span class="o">+</span> <span class="n">hartree</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pole_gf_tau_b"><a class="viewcode-back" href="../generated/gftool.pole_gf_tau_b.html#gftool.pole_gf_tau_b">[docs]</a><span class="k">def</span> <span class="nf">pole_gf_tau_b</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bosonic imaginary time Green&#39;s function given by a finite number of `poles`.</span>
+
+<span class="sd">    The bosonic Green&#39;s function is given by</span>
+<span class="sd">    `G(tau) = -(1 + bose_fct(poles, beta))*exp(-poles*tau)`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tau : (...) float array_like</span>
+<span class="sd">        Green&#39;s function is evaluated at imaginary times `tau`.</span>
+<span class="sd">        Only implemented for :math:`τ ∈ [0, β]`.</span>
+<span class="sd">    poles, weights : (..., N) float array_like</span>
+<span class="sd">        Position and weight of the poles. The real part of the poles needs to</span>
+<span class="sd">        be positive `poles.real &gt; 0`.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Inverse temperature</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pole_gf_tau_b : (...) float np.ndarray</span>
+<span class="sd">        Imaginary time Green&#39;s function.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pole_gf_z : corresponding commutator Green&#39;s function</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If any `poles.real &lt;= 0`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; beta = 10</span>
+<span class="sd">    &gt;&gt;&gt; tau = np.linspace(0, beta, num=1000)</span>
+<span class="sd">    &gt;&gt;&gt; gf_tau = gt.pole_gf_tau_b(tau, .5, 1., beta=beta)</span>
+
+<span class="sd">    The integrated imaginary time Green&#39;s function gives `-np.sum(weights/poles)`</span>
+
+<span class="sd">    &gt;&gt;&gt; np.trapz(gf_tau, x=tau)</span>
+<span class="sd">    -2.0000041750107735</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(tau, gf_tau)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.xlabel(&#39;τ&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">tau</span> <span class="o">&gt;=</span> <span class="mf">0.</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tau</span> <span class="o">&lt;=</span> <span class="n">beta</span><span class="p">))</span>
+    <span class="n">poles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">poles</span><span class="p">)</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">tau</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">beta</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">newaxis</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">poles</span><span class="o">.</span><span class="n">real</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Bosonic Green&#39;s function only well-defined for positive `poles`.&quot;</span><span class="p">)</span>
+    <span class="c1"># eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)</span>
+    <span class="k">return</span> <span class="n">_gu_sum</span><span class="p">(</span><span class="n">weights</span><span class="o">*</span><span class="n">bose_fct</span><span class="p">(</span><span class="n">poles</span><span class="p">,</span> <span class="o">-</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">tau</span><span class="o">*</span><span class="n">poles</span><span class="p">))</span></div>
+
+
+<span class="n">Result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Result&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;err&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="density"><a class="viewcode-back" href="../generated/gftool.density.html#gftool.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">potential</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">return_err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the number density of the Green&#39;s function `gf_iw` at finite temperature `beta`.</span>
+
+<span class="sd">    As Green&#39;s functions decay only as :math:`1/ω`, the known part of the form</span>
+<span class="sd">    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.</span>
+<span class="sd">    :math:`Σ_{\text{static}}` is the ω-independent mean-field part of the self-energy.</span>
+
+<span class="sd">    .. deprecated:: 0.8.0</span>
+<span class="sd">       Mostly superseded by more flexible `density_iw`, thus this function will</span>
+<span class="sd">       likely be discontinued. Currently `density` is a little more accurate</span>
+<span class="sd">       for `matrix=True`, compared to `density_iw` without using fitting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gf_iw : complex ndarray</span>
+<span class="sd">        The Matsubara frequency Green&#39;s function for positive frequencies :math:`iω_n`.</span>
+<span class="sd">        The last axis corresponds to the Matsubara frequencies.</span>
+<span class="sd">    potential : float ndarray or float</span>
+<span class="sd">        The static potential for the large-ω behavior of the Green&#39;s function.</span>
+<span class="sd">        It is the real constant :math:`μ - ϵ - ℜΣ_{\text{static}}`.</span>
+<span class="sd">        The shape must agree with `gf_iw` without the last axis.</span>
+<span class="sd">        If `matrix`, then potential needs to be a (N, N) matrix. It is the</span>
+<span class="sd">        negative of the Hamiltonian matrix and thus needs to be hermitian.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature `beta` = 1/T.</span>
+<span class="sd">    return_err : bool or float, optional</span>
+<span class="sd">        If `True` (default), the error estimate will be returned along with the density.</span>
+<span class="sd">        If `return_err` is a float, a warning will Warning will be issued if</span>
+<span class="sd">        the error estimate is larger than `return_err`. If `False`, no error</span>
+<span class="sd">        estimate is calculated.</span>
+<span class="sd">        See `density_error` for description of the error estimate.</span>
+<span class="sd">    matrix : bool, optional</span>
+<span class="sd">        Whether the given `potential` is a matrix (default: False)</span>
+<span class="sd">    total : bool or tuple</span>
+<span class="sd">        If `total` the total density (summed over all dimensions) is returned.</span>
+<span class="sd">        Also a tuple can be given, over which axes the sums is taken.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        The number density of the given Green&#39;s function `gf_iw`.</span>
+<span class="sd">    err : float</span>
+<span class="sd">        An estimate for the density error. Only returned if `return_err` is `True`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The number density can be obtained from the Matsubara frequency Green&#39;s function using</span>
+
+<span class="sd">    .. math:: ⟨n⟩ = \lim_{ϵ↗0} G(τ=-ϵ) = 1/β ∑_{n=-∞}^{∞} G(iω_n)</span>
+
+<span class="sd">    As Green&#39;s functions decay only as :math:`O(1/ω)`, truncation of the summation</span>
+<span class="sd">    yields a non-vanishing contribution of the tail.</span>
+<span class="sd">    For the analytic structure of the Green&#39;s function see [2]_, [3]_.</span>
+<span class="sd">    To take this into consideration the known part of the form</span>
+<span class="sd">    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.</span>
+<span class="sd">    This yields [1]_</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       ⟨n⟩ = 1/β ∑_{n=-∞}^{∞} [G(iω_n) - 1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})] \\</span>
+<span class="sd">             + 1/2 + 1/2 \tanh[1/2 β(μ - ϵ - ℜΣ_{\text{static}})].</span>
+
+<span class="sd">    We can use the symmetry :math:`G(z*) = G^*(z)` do reduce the sum only over</span>
+<span class="sd">    positive Matsubara frequencies</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       ∑_{n=-∞}^{∞} G(iω_n)</span>
+<span class="sd">          &amp;= ∑_{n=-∞}^{-1} G(iω_n) + ∑_{n=0}^{n=∞} G(iω_n) \\</span>
+<span class="sd">          &amp;= ∑_{n=0}^{∞} [G(-iω_n) + G(iω_n)] \\</span>
+<span class="sd">          &amp;= 2 ∑_{n=0}^{∞} ℜG(iω_n).</span>
+
+<span class="sd">    Thus we get the final expression</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       ⟨n⟩ = 2/β ∑_{n≥0} ℜ[G(iω_n) - 1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})] \\</span>
+<span class="sd">             + 1/2 + 1/2 \tanh[1/2 β(μ - ϵ - ℜΣ_{\text{static}})].</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Hale, S. T. F., and J. K. Freericks. &quot;Many-Body Effects on the</span>
+<span class="sd">       Capacitance of Multilayers Made from Strongly Correlated Materials.&quot;</span>
+<span class="sd">       Physical Review B 85, no. 20 (May 24, 2012).</span>
+<span class="sd">       https://doi.org/10.1103/PhysRevB.85.205444.</span>
+<span class="sd">    .. [2] Eder, Robert. “Introduction to the Hubbard Mode.” In The Physics of</span>
+<span class="sd">       Correlated Insulators, Metals and Superconductors, edited by Eva</span>
+<span class="sd">       Pavarini, Erik Koch, Richard Scalettar, and Richard Martin. Schriften</span>
+<span class="sd">       Des Forschungszentrums Jülich Reihe Modeling and Simulation 7. Jülich:</span>
+<span class="sd">       Forschungszentrum Jülich, 2017.</span>
+<span class="sd">       https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.</span>
+<span class="sd">    .. [3] Luttinger, J. M. “Analytic Properties of Single-Particle Propagators</span>
+<span class="sd">       for Many-Fermion Systems.” Physical Review 121, no. 4 (February 15,</span>
+<span class="sd">       1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;`density` is deprecated; use `density_iw` instead.&quot;</span><span class="p">,</span>
+                  <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="n">iw</span> <span class="o">=</span> <span class="n">matsubara_frequencies</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">total</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">gf_iw</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">matrix</span><span class="p">:</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">gtmatrix</span><span class="o">.</span><span class="n">decompose_her</span><span class="p">(</span><span class="n">potential</span><span class="p">)</span>
+        <span class="n">eig</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">iw</span><span class="p">,</span> <span class="n">eig</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">destination</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">analytic</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">fermi_fct</span><span class="p">(</span><span class="o">-</span><span class="n">eig</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">potential</span><span class="p">,</span> <span class="n">iw</span><span class="p">)</span>
+        <span class="n">analytic</span> <span class="o">=</span> <span class="n">fermi_fct</span><span class="p">(</span><span class="o">-</span><span class="n">potential</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">total</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">tail</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">total</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">total</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">tail</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="n">analytic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">analytic</span><span class="p">)</span>
+
+    <span class="n">delta_g_re</span> <span class="o">=</span> <span class="n">gf_iw</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">tail</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">density</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delta_g_re</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">beta</span>
+    <span class="n">density</span> <span class="o">+=</span> <span class="n">analytic</span>
+    <span class="k">if</span> <span class="n">return_err</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">density_error</span><span class="p">(</span><span class="n">delta_g_re</span><span class="p">,</span> <span class="n">iw</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_err</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">density</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">err</span> <span class="o">&gt;</span> <span class="n">return_err</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;density result inaccurate, error estimate = &quot;</span>
+                              <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="ne">Warning</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">density</span></div>
+
+
+<div class="viewcode-block" id="density_error"><a class="viewcode-back" href="../generated/gftool.density_error.html#gftool.density_error">[docs]</a><span class="k">def</span> <span class="nf">density_error</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="p">,</span> <span class="n">iw_n</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an estimate for the upper bound of the error in the density.</span>
+
+<span class="sd">    This estimate is based on the *integral test*. The crucial assumption is,</span>
+<span class="sd">    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^2` for all larger</span>
+<span class="sd">    :math:`n`.</span>
+<span class="sd">    If this criteria is not met, the error estimate is unreasonable and can</span>
+<span class="sd">    **not** be trusted. If the error is of the same magnitude as the density</span>
+<span class="sd">    itself, the behavior of the variable `factor` should be checked.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    delta_gf_iw : (..., N) ndarray</span>
+<span class="sd">        The difference between the Green&#39;s function :math:`Δ G(iω_n)`</span>
+<span class="sd">        and the non-interacting high-frequency estimate. Only it&#39;s real part is</span>
+<span class="sd">        needed.</span>
+<span class="sd">    iw_n : (N) complex ndarray</span>
+<span class="sd">        The Matsubara frequencies corresponding to `delta_gf_iw`.</span>
+<span class="sd">    noisy : bool, optional</span>
+<span class="sd">        Whether the input `delta_gf_iw` contains noise (default: True).</span>
+<span class="sd">        If `noisy`, an average over the highest frequency is taken to estimate</span>
+<span class="sd">        the error.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    estimate : float</span>
+<span class="sd">        The estimate of the upper bound of the error. Reliable only for large</span>
+<span class="sd">        enough Matsubara frequencies.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">part</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">iw_n</span><span class="o">.</span><span class="n">size</span><span class="o">//</span><span class="mi">10</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># only consider last 10, iw must be big</span>
+    <span class="n">wn</span> <span class="o">=</span> <span class="n">iw_n</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">wn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">noisy</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span> <span class="o">*</span> <span class="n">wn</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">delta_gf_iw</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span> <span class="o">*</span> <span class="n">wn</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">estimate</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">denominator</span>
+    <span class="k">return</span> <span class="n">estimate</span></div>
+
+
+<div class="viewcode-block" id="density_error2"><a class="viewcode-back" href="../generated/gftool.density_error2.html#gftool.density_error2">[docs]</a><span class="k">def</span> <span class="nf">density_error2</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="p">,</span> <span class="n">iw_n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an estimate for the upper bound of the error in the density.</span>
+
+<span class="sd">    This estimate is based on the *integral test*. The crucial assumption is,</span>
+<span class="sd">    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^3` for all larger</span>
+<span class="sd">    :math:`n`.</span>
+<span class="sd">    If this criteria is not met, the error estimate is unreasonable and can</span>
+<span class="sd">    **not** be trusted. If the error is of the same magnitude as the density</span>
+<span class="sd">    itself, the behavior of the variable `factor` should be checked.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    delta_gf_iw : (..., N) ndarray</span>
+<span class="sd">        The difference between the Green&#39;s function :math:`Δ G(iω_n)`</span>
+<span class="sd">        and the non-interacting high-frequency estimate. Only it&#39;s real part is</span>
+<span class="sd">        needed.</span>
+<span class="sd">    iw_n : (N) complex ndarray</span>
+<span class="sd">        The Matsubara frequencies corresponding to `delta_gf_iw`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    estimate : float</span>
+<span class="sd">        The estimate of the upper bound of the error. Reliable only for large</span>
+<span class="sd">        enough Matsubara frequencies.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delta_gf_iw</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+    <span class="n">part</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">iw_n</span><span class="o">.</span><span class="n">size</span><span class="o">//</span><span class="mi">10</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># only consider last 10, iw must be big</span>
+    <span class="n">wn</span> <span class="o">=</span> <span class="n">iw_n</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">wn</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">delta_gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">part</span><span class="p">]</span> <span class="o">*</span> <span class="n">wn</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">estimate</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">denominator</span>
+    <span class="k">return</span> <span class="n">estimate</span></div>
+
+
+<div class="viewcode-block" id="check_convergence"><a class="viewcode-back" href="../generated/gftool.check_convergence.html#gftool.check_convergence">[docs]</a><span class="k">def</span> <span class="nf">check_convergence</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">potential</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return data for visual inspection of  the density error.</span>
+
+<span class="sd">    The calculation of the density error assumes that *sufficient* Matsubara</span>
+<span class="sd">    frequencies were used. Sufficient means here, that the reminder :math:`ΔG`</span>
+<span class="sd">    does **not** grow anymore. If the error estimate is small, but</span>
+<span class="sd">    `check_convergence` returns rapidly growing data, the number of Matsubara</span>
+<span class="sd">    frequencies is not sufficient</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    see `density`</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    order : int</span>
+<span class="sd">        The assumed order of the first non-vanishing term of the Laurent expansion.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    check_convergence : float ndarray</span>
+<span class="sd">        The last dimension of `check_convergence` corresponds to the Matsubara</span>
+<span class="sd">        frequencies.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iw</span> <span class="o">=</span> <span class="n">matsubara_frequencies</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">matrix</span><span class="p">:</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">gtmatrix</span><span class="o">.</span><span class="n">decompose_her</span><span class="p">(</span><span class="n">potential</span><span class="p">)</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">,</span> <span class="n">iw</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">potential</span><span class="p">,</span> <span class="n">iw</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">total</span><span class="p">:</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">tail</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">tail</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="n">delta_g_re</span> <span class="o">=</span> <span class="n">gf_iw</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">tail</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">iw</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="n">order</span> <span class="o">*</span> <span class="n">delta_g_re</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

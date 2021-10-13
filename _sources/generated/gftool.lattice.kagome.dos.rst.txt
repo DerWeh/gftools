@@ -1,0 +1,6 @@
+gftool.lattice.kagome.dos
+=========================
+
+.. currentmodule:: gftool.lattice.kagome
+
+.. autofunction:: dos

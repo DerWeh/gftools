@@ -1,0 +1,6 @@
+gftool.pade.avg\_no\_neg\_imag
+==============================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: avg_no_neg_imag

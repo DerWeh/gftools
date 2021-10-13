@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.matrix &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.matrix.construct_gf" href="gftool.matrix.construct_gf.html" />
+    <link rel="prev" title="gftool.lattice.fcc.hilbert_transform" href="gftool.lattice.fcc.hilbert_transform.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gftool.matrix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-functions">Recommended functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.construct_gf.html">gftool.matrix.construct_gf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.decompose_gf.html">gftool.matrix.decompose_gf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.decompose_hamiltonian.html">gftool.matrix.decompose_hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.decompose_her.html">gftool.matrix.decompose_her</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.decompose_mat.html">gftool.matrix.decompose_mat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.decompose_sym.html">gftool.matrix.decompose_sym</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.gf_2x2_z.html">gftool.matrix.gf_2x2_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.Decomposition.html">gftool.matrix.Decomposition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.matrix.UDecomposition.html">gftool.matrix.UDecomposition</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.matrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.matrix.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-gftool.matrix">
+<span id="gftool-matrix"></span><h1>gftool.matrix<a class="headerlink" href="#module-gftool.matrix" title="Permalink to this headline">¶</a></h1>
+<p>Functions to work with Green’s functions in matrix from.</p>
+<p>A main use case of this library is the calculation of the Green’s function
+as the resolvent of the Hermitian or from Dyson equation.
+Instead of calculating the inverse for every frequency/k-point it is oftentimes
+more efficient, to calculate an eigendecomposition once.</p>
+<p>For example, let us calculate the Green’s function for 1D tight-binding chain
+using:</p>
+<div class="math notranslate nohighlight">
+\[G(z) = [1z - H]^{-1} = [1z - UλU^†]^{-1} = U [z-λ]^{-1} U^†\]</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">N</span> <span class="o">=</span> <span class="mi">51</span>  <span class="c1"># system size</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># hopping amplitude</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hamilton</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hamilton</span><span class="p">[</span><span class="n">row</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span> <span class="o">=</span> <span class="n">hamilton</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">col</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="n">t</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-1j</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dec</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">decompose_her</span><span class="p">(</span><span class="n">hamilton</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ww</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">eig</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">ww</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">-</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Let’s check that it agrees with the inversion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">*</span><span class="n">ww</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">hamilton</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">gf_ww</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gf_inv</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>If we only need the diagonal (local) elements, we can calculate them using:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ww</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">eig</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">ww</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">-</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="recommended-functions">
+<h2>Recommended functions<a class="headerlink" href="#recommended-functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="gftool.matrix.decompose_mat.html#gftool.matrix.decompose_mat" title="gftool.matrix.decompose_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_mat</span></code></a> to create <a class="reference internal" href="gftool.matrix.Decomposition.html#gftool.matrix.Decomposition" title="gftool.matrix.Decomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Decomposition</span></code></a> of general matrices</p></li>
+<li><p><a class="reference internal" href="gftool.matrix.decompose_sym.html#gftool.matrix.decompose_sym" title="gftool.matrix.decompose_sym"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_sym</span></code></a> to create <a class="reference internal" href="gftool.matrix.Decomposition.html#gftool.matrix.Decomposition" title="gftool.matrix.Decomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Decomposition</span></code></a> of complex symmetric matrices</p></li>
+<li><p><a class="reference internal" href="gftool.matrix.decompose_her.html#gftool.matrix.decompose_her" title="gftool.matrix.decompose_her"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_her</span></code></a> to create <a class="reference internal" href="gftool.matrix.UDecomposition.html#gftool.matrix.UDecomposition" title="gftool.matrix.UDecomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UDecomposition</span></code></a> of Hermitian matrices</p></li>
+</ul>
+<p>Rest are mostly legacy functions.</p>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.matrix.construct_gf.html#gftool.matrix.construct_gf" title="gftool.matrix.construct_gf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">construct_gf</span></code></a>(rv, diag_inv, rv_inv)</p></td>
+<td><p>Construct Green’s function from decomposition of its inverse.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.matrix.decompose_gf.html#gftool.matrix.decompose_gf" title="gftool.matrix.decompose_gf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_gf</span></code></a>(g_inv)</p></td>
+<td><p>Decompose the inverse Green’s function into eigenvalues and eigenvectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.matrix.decompose_hamiltonian.html#gftool.matrix.decompose_hamiltonian" title="gftool.matrix.decompose_hamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_hamiltonian</span></code></a>(hamilton)</p></td>
+<td><p>Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.matrix.decompose_her.html#gftool.matrix.decompose_her" title="gftool.matrix.decompose_her"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_her</span></code></a>(her_mat[, check])</p></td>
+<td><p>Decompose Hermitian matrix <em class="xref py py-obj">her_mat</em> into eigenvalues and (right) eigenvectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.matrix.decompose_mat.html#gftool.matrix.decompose_mat" title="gftool.matrix.decompose_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_mat</span></code></a>(mat)</p></td>
+<td><p>Decompose matrix <em class="xref py py-obj">mat</em> into eigenvalues and (right) eigenvectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.matrix.decompose_sym.html#gftool.matrix.decompose_sym" title="gftool.matrix.decompose_sym"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_sym</span></code></a>(sym_mat[, check])</p></td>
+<td><p>Decompose symmetric matrix <em class="xref py py-obj">sym_mat</em> into eigenvalues and (right) eigenvectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.matrix.gf_2x2_z.html#gftool.matrix.gf_2x2_z" title="gftool.matrix.gf_2x2_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gf_2x2_z</span></code></a>(z, eps0, eps1, hopping[, hilbert_trafo])</p></td>
+<td><p>Calculate the diagonal Green’s function elements for a 2x2 system.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.matrix.Decomposition.html#gftool.matrix.Decomposition" title="gftool.matrix.Decomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Decomposition</span></code></a>(rv, eig, rv_inv)</p></td>
+<td><p>Decomposition of a matrix into eigenvalues and eigenvectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.matrix.UDecomposition.html#gftool.matrix.UDecomposition" title="gftool.matrix.UDecomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UDecomposition</span></code></a>(rv, eig, rv_inv)</p></td>
+<td><p>Unitary decomposition of a matrix into eigenvalues and eigenvectors.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.lattice.fcc.hilbert_transform.html" class="btn btn-neutral float-left" title="gftool.lattice.fcc.hilbert_transform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.matrix.construct_gf.html" class="btn btn-neutral float-right" title="gftool.matrix.construct_gf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

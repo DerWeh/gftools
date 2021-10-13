@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting started &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/toggleprompt.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Welcome to GfTool’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gftool-s-main-content">GfTool’s main content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-on-documentation">Note on documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Getting started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting-started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gftool-s-main-content">
+<h2>GfTool’s main content<a class="headerlink" href="#gftool-s-main-content" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt><a class="reference internal" href="gftool.html#module-gftool" title="gftool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool</span></code></a></dt><dd><ul class="simple">
+<li><p>collection of non-interacting Green’s functions and spectral functions,
+see also the <a class="reference internal" href="generated/gftool.lattice.html#module-gftool.lattice" title="gftool.lattice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lattice</span></code></a> submodule.</p></li>
+<li><p>utility functions like Matsubara frequencies and Fermi functions.</p></li>
+<li><p>reliable calculation of particle numbers via Matsubara sums</p></li>
+</ul>
+</dd>
+<dt><a class="reference internal" href="generated/gftool.cpa.html#module-gftool.cpa" title="gftool.cpa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpa</span></code></a>/<a class="reference internal" href="generated/gftool.beb.html#module-gftool.beb" title="gftool.beb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beb</span></code></a></dt><dd><ul class="simple">
+<li><p>single site approximation to disorder</p></li>
+<li><p>diagonal disorder only (CPA) and diagonal and off-diagonal (BEB)</p></li>
+<li><p>average local Green’s function and component Green’s functions</p></li>
+</ul>
+</dd>
+<dt><a class="reference internal" href="generated/gftool.fourier.html#module-gftool.fourier" title="gftool.fourier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fourier</span></code></a></dt><dd><ul class="simple">
+<li><p>Fourier transforms from Matsubara frequencies to imaginary time and back,
+including the handling of high-frequencies moments
+(especially important for transforms from Matsubara to imaginary time)</p></li>
+<li><p>Laplace transform from real times to complex frequencies</p></li>
+</ul>
+</dd>
+<dt><a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matrix</span></code></a></dt><dd><ul class="simple">
+<li><p>helper for Green’s functions in matrix form</p></li>
+</ul>
+</dd>
+<dt><a class="reference internal" href="generated/gftool.pade.html#module-gftool.pade" title="gftool.pade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pade</span></code></a></dt><dd><ul class="simple">
+<li><p>analytic continuation via the Padé algorithm</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The package is available on <a class="reference external" href="https://pypi.org/project/gftool/">PyPI</a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install gftool
+</pre></div>
+</div>
+<p>For <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a> users, <em class="xref py py-obj">GfTool</em> is also available on <a class="reference external" href="https://anaconda.org/conda-forge/gftool">conda-forge</a></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda install -c conda-forge gftool
+</pre></div>
+</div>
+<p>Alternatively, it can be installed via GitHub. You can install it using</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install https://github.com/DerWeh/gftools/archive/VERSION.zip
+</pre></div>
+</div>
+<p>where <em class="xref py py-obj">VERSION</em> can be a release (e.g. <em class="xref py py-obj">0.5.1</em>) or a branch (e.g. <em class="xref py py-obj">develop</em>).
+(As always, it is not advised to install it into your system Python,
+consider using <a class="reference external" href="https://pipenv.kennethreitz.org/en/latest/#install-pipenv-today">pipenv</a>, <a class="reference external" href="https://docs.python.org/3/library/venv.html">venv</a>, <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>, <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a>, or similar tools.)
+Of course you can also clone or fork the project.</p>
+<p>If you clone the project, you can locally build the documentation:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install -r requirements-doc.txt
+<span class="gp">$ </span>python setup.py build_sphinx
+</pre></div>
+</div>
+</div>
+<div class="section" id="note-on-documentation">
+<h2>Note on documentation<a class="headerlink" href="#note-on-documentation" title="Permalink to this headline">¶</a></h2>
+<p>We try to follow <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy</span></code></a> broadcasting rules. Many functions acting on an axis
+act like generalized <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html">ufuncs</a>. In this case, a function can be called for
+stacked arguments instead of looping over the specific arguments.</p>
+<p>We indicate this by argument shapes containing an ellipse e.g. <em class="xref py py-obj">(…)</em> or <em class="xref py py-obj">(…, N)</em>.
+It must be possible for all ellipses to be broadcasted against each other.
+A good example is the <a class="reference internal" href="generated/gftool.fourier.html#module-gftool.fourier" title="gftool.fourier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fourier</span></code></a> module.</p>
+<p>We calculate the Fourier transforms <a class="reference internal" href="generated/gftool.fourier.iw2tau.html#gftool.fourier.iw2tau" title="gftool.fourier.iw2tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iw2tau</span></code></a> for Green’s
+functions with different on-site energies without looping:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">e_onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beta</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">iws</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">matsubara_frequencies</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_iw</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">bethe_gf_z</span><span class="p">(</span><span class="n">iws</span> <span class="o">-</span> <span class="n">e_onsite</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_iw</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 1024)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gftool</span> <span class="kn">import</span> <span class="n">fourier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_tau</span> <span class="o">=</span> <span class="n">fourier</span><span class="o">.</span><span class="n">iw2tau</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">1</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 2049)</span>
+</pre></div>
+</div>
+<p>The moments are automatically broadcasted.
+We can also explicitly give the second moments:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">3</span><span class="p">]),</span> <span class="n">e_onsite</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_tau</span> <span class="o">=</span> <span class="n">fourier</span><span class="o">.</span><span class="n">iw2tau</span><span class="p">(</span><span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_tau</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 2049)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to GfTool’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

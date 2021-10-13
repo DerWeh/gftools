@@ -1,0 +1,44 @@
+gftool.beb.SpecDec
+==================
+
+.. currentmodule:: gftool.beb
+
+.. autoclass:: SpecDec
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~SpecDec.__init__
+      ~SpecDec.count
+      ~SpecDec.from_gf
+      ~SpecDec.from_hamiltonian
+      ~SpecDec.index
+      ~SpecDec.partition
+      ~SpecDec.reconstruct
+      ~SpecDec.truncate
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~SpecDec.eig
+      ~SpecDec.is_trunacted
+      ~SpecDec.rv
+      ~SpecDec.rv_inv
+      ~SpecDec.s
+      ~SpecDec.u
+      ~SpecDec.uh
+   
+   

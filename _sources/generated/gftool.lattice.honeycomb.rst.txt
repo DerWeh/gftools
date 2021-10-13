@@ -1,0 +1,35 @@
+gftool.lattice.honeycomb
+========================
+
+.. module:: gftool.lattice.honeycomb
+
+.. automodule:: gftool.lattice.honeycomb
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_z
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

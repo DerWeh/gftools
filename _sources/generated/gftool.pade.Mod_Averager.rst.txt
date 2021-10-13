@@ -1,0 +1,6 @@
+gftool.pade.Mod\_Averager
+=========================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: Mod_Averager

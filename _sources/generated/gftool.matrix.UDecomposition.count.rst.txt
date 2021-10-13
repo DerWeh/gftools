@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.count
+==================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: UDecomposition.count

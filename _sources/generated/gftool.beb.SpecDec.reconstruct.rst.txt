@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.reconstruct
+==============================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.reconstruct

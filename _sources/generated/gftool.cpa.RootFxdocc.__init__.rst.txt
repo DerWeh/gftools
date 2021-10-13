@@ -1,0 +1,6 @@
+gftool.cpa.RootFxdocc.\_\_init\_\_
+==================================
+
+.. currentmodule:: gftool.cpa
+
+.. automethod:: RootFxdocc.__init__

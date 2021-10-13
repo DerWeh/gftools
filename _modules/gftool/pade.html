@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.pade &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.pade</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.pade</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Pade analytic continuation for Green&#39;s functions and self-energies.</span>
+
+<span class="sd">The main aim of this module is to provide analytic continuation based on</span>
+<span class="sd">averaging over multiple Pade approximates (similar to [1]_).</span>
+
+<span class="sd">In most cases the following high level function should be used:</span>
+
+<span class="sd">`averaged`, `avg_no_neg_imag`</span>
+<span class="sd">   Return one-shot analytic continuation evaluated at `z`.</span>
+
+<span class="sd">`Averager`</span>
+<span class="sd">   Returns a function for repeated evaluation of the continued function.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Schött et al. “Analytic Continuation by Averaging Pade Approximants”.</span>
+<span class="sd">   Phys Rev B 93, no. 7 (2016): 075104.</span>
+<span class="sd">   https://doi.org/10.1103/PhysRevB.93.075104.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span> <span class="k">as</span> <span class="n">Opt</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">gftool</span> <span class="kn">import</span> <span class="n">Result</span>
+<span class="kn">from</span> <span class="nn">gftool.precision</span> <span class="kn">import</span> <span class="n">PRECISE_TYPES</span> <span class="k">as</span> <span class="n">_PRECISE_TYPES</span>
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_gu_sum</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">LOGGER</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
+
+<span class="n">_nan_std</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="KindSelector"><a class="viewcode-back" href="../../generated/gftool.pade.KindSelector.html#gftool.pade.KindSelector">[docs]</a><span class="k">class</span> <span class="nc">KindSelector</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract filter class to determine high-frequency behavior of Pade.</span>
+
+<span class="sd">    We denote approximants with the corresponding high frequency behavior as</span>
+<span class="sd">    *valid*.</span>
+<span class="sd">    Considers all valid approximants including between `n_min` and `n_max`</span>
+<span class="sd">    Matsubara frequencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="KindSelector.__init__"><a class="viewcode-back" href="../../generated/gftool.pade.KindSelector.__init__.html#gftool.pade.KindSelector.__init__">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Consider approximants including between `n_min` and `n_max` Matsubara frequencies.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_min</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`n_min` needs to be at least 1 (n_min: </span><span class="si">{</span><span class="n">n_min</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_max</span> <span class="o">&lt;=</span> <span class="n">n_min</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`n_max` (</span><span class="si">{</span><span class="n">n_max</span><span class="si">}</span><span class="s2">) needs to be bigger than `n_min` (</span><span class="si">{</span><span class="n">n_min</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">n_min</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># indices start from 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">n_max</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># indices start from 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="bp">NotImplemented</span></div>
+
+<div class="viewcode-block" id="KindSelector.islice"><a class="viewcode-back" href="../../generated/gftool.pade.KindSelector.islice.html#gftool.pade.KindSelector.islice">[docs]</a>    <span class="k">def</span> <span class="nf">islice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return an iterator whose next() method returns valid values from `iterable`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">islice</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return slice selecting the valid approximants.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get indices.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get number of approximants.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return Meaningful string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;(start=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s1">, stop=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="si">}</span><span class="s1">, step=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KindGf"><a class="viewcode-back" href="../../generated/gftool.pade.KindGf.html#gftool.pade.KindGf">[docs]</a><span class="k">class</span> <span class="nc">KindGf</span><span class="p">(</span><span class="n">KindSelector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filter approximants such that the high-frequency behavior is :math:`1/ω`.</span>
+
+<span class="sd">    We denote approximants with the corresponding high frequency behavior as</span>
+<span class="sd">    *valid*.</span>
+<span class="sd">    Considers all valid approximants including between `n_min` and `n_max`</span>
+<span class="sd">    Matsubara frequencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="KindGf.__init__"><a class="viewcode-back" href="../../generated/gftool.pade.KindGf.__init__.html#gftool.pade.KindGf.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Consider approximants including between `n_min` and `n_max` Matsubara frequencies.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">n_min</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">n_min</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># odd number for 1/z required</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">2</span></div></div>
+
+
+<div class="viewcode-block" id="KindSelf"><a class="viewcode-back" href="../../generated/gftool.pade.KindSelf.html#gftool.pade.KindSelf">[docs]</a><span class="k">class</span> <span class="nc">KindSelf</span><span class="p">(</span><span class="n">KindSelector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filter approximants such that the high-frequency behavior is a constant.</span>
+
+<span class="sd">    We denote approximants with the corresponding high frequency behavior as</span>
+<span class="sd">    *valid*.</span>
+<span class="sd">    Considers all valid approximants including between `n_min` and `n_max`</span>
+<span class="sd">    Matsubara frequencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="KindSelf.__init__"><a class="viewcode-back" href="../../generated/gftool.pade.KindSelf.__init__.html#gftool.pade.KindSelf.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Consider approximants including between `n_min` and `n_max` Matsubara frequencies.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_min</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">n_min</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># even number for constant tail required</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">2</span></div></div>
+
+
+<div class="viewcode-block" id="FilterNegImag"><a class="viewcode-back" href="../../generated/gftool.pade.FilterNegImag.html#gftool.pade.FilterNegImag">[docs]</a><span class="k">def</span> <span class="nf">FilterNegImag</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return function to check if imaginary part is smaller than `threshold`.</span>
+
+<span class="sd">    This methods is designed to create `valid_pades` for `Averager`.</span>
+<span class="sd">    The imaginary part of retarded Green&#39;s functions and self-energies must be</span>
+<span class="sd">    negative, this is checked by this filter.</span>
+<span class="sd">    A threshold is given as Pade overshoots when the function goes sharply to 0.</span>
+<span class="sd">    See for example the semi-circular spectral function of the Bethe lattice</span>
+<span class="sd">    with infinite Coordination number as example.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">filter_neg_imag</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check which Pade approximants have a negative imaginary part.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pade_iter : iterable of (..., N_z) complex np.ndarray</span>
+<span class="sd">            Iterator of analytic continuations as generated by `calc_iterator`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        is_valid : (...) bool np.ndarray</span>
+<span class="sd">            True for all approximants that fulfill `apporximant.imag &lt; threshold`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">pade</span><span class="o">.</span><span class="n">imag</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">pade</span> <span class="ow">in</span> <span class="n">pade_iter</span><span class="p">])</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filter Pades with positive imaginary part (threshold: </span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="n">threshold</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">is_valid</span>
+
+    <span class="k">return</span> <span class="n">filter_neg_imag</span></div>
+
+
+<div class="viewcode-block" id="FilterNegImagNum"><a class="viewcode-back" href="../../generated/gftool.pade.FilterNegImagNum.html#gftool.pade.FilterNegImagNum">[docs]</a><span class="k">def</span> <span class="nf">FilterNegImagNum</span><span class="p">(</span><span class="n">abs_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rel_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return function to check how bad the imaginary part gets.</span>
+
+<span class="sd">    This methods is designed to create `valid_pades` for `Averager`.</span>
+<span class="sd">    The imaginary part of retarded Green&#39;s functions and self-energies must be</span>
+<span class="sd">    negative, this is checked by this filter.</span>
+<span class="sd">    All continuations that are *valid* in this sense are kept, the worst invalid</span>
+<span class="sd">    are dropped till only `abs_num` remain.</span>
+
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    Only checked for flat inputs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rel_num</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rel_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="nf">filter_neg_imag_num</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">):</span>
+        <span class="n">badness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pade</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">pade</span> <span class="ow">in</span> <span class="n">pade_iter</span><span class="p">])</span>
+        <span class="n">abs_num_</span> <span class="o">=</span> <span class="n">rel_num</span> <span class="o">*</span> <span class="n">badness</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">abs_num</span>
+        <span class="k">if</span> <span class="n">abs_num_</span> <span class="o">&gt;=</span> <span class="n">badness</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Skipping filter, not enough Pades (#Pades = </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+                           <span class="n">badness</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">badness</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">badness</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:</span><span class="n">abs_num_</span><span class="p">]</span>  <span class="c1"># abs_num_ best results</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">badness</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">is_valid</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">is_valid</span><span class="p">[</span><span class="n">badness</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Filter Pades with positive imaginary part (keep best </span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="n">abs_num_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">abs_num_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_valid</span>
+    <span class="k">return</span> <span class="n">filter_neg_imag_num</span></div>
+
+
+<div class="viewcode-block" id="FilterHighVariance"><a class="viewcode-back" href="../../generated/gftool.pade.FilterHighVariance.html#gftool.pade.FilterHighVariance">[docs]</a><span class="k">def</span> <span class="nf">FilterHighVariance</span><span class="p">(</span><span class="n">rel_num</span><span class="p">:</span> <span class="n">Opt</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">abs_num</span><span class="p">:</span> <span class="n">Opt</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return function to filter continuations with highest variance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rel_num : float, optional</span>
+<span class="sd">        The relative number of continuations to keep.</span>
+<span class="sd">    abs_num : int, optional</span>
+<span class="sd">        The absolute number of continuations to keep.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filter_high_variance : callable</span>
+<span class="sd">        The filter function (pade_iter) -&gt; np.ndarray.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rel_num</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rel_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">rel_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="mf">0.</span> <span class="o">&lt;</span> <span class="n">rel_num</span> <span class="o">&lt;</span> <span class="mf">1.</span>
+    <span class="k">if</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">abs_num</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">filter_high_variance</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove the continuations with highest variance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pade_iter : iterable of (..., N_z) complex np.ndarray</span>
+<span class="sd">            Iterator of analytic continuations as generated by `calc_iterator`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        is_valid : (...) bool np.ndarray</span>
+<span class="sd">            Boolean array indicating which continuations to keep.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pade</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">))</span>
+        <span class="n">pade_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pade</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">N_pades</span> <span class="o">=</span> <span class="n">pade</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># iteratively remove Pades with larges deviation</span>
+        <span class="c1"># why iterative?</span>
+        <span class="c1"># Awful Pades might give wrong features in average, so it should be corrected</span>
+        <span class="k">if</span> <span class="n">abs_num</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">abs_num_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rel_num</span><span class="o">*</span><span class="n">N_pades</span><span class="p">)</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># isin needs list not set</span>
+        <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_pades</span><span class="p">,</span> <span class="n">abs_num_</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">nn</span><span class="o">*</span><span class="n">pade</span> <span class="o">-</span> <span class="n">pade_sum</span>  <span class="c1"># 50% of time</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">_gu_sum</span><span class="p">(</span><span class="n">diff</span><span class="o">.</span><span class="n">real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">diff</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 40% of time</span>
+            <span class="n">badness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># truncate what is not needed</span>
+            <span class="n">newbad</span> <span class="o">=</span> <span class="n">badness</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">badness</span><span class="p">,</span> <span class="n">bad</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">bad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newbad</span><span class="p">)</span>
+            <span class="n">pade_sum</span> <span class="o">-=</span> <span class="n">pade</span><span class="p">[</span><span class="n">newbad</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">is_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">UnboundLocalError</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Not enough pades to filter (#Pades = </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">N_pades</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pade</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">is_valid</span><span class="p">[</span><span class="n">badness</span><span class="p">[:</span><span class="o">-</span><span class="n">abs_num_</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># assert set(badness[:-abs_num_]) == set(bad)  # FIXME</span>
+        <span class="k">return</span> <span class="n">is_valid</span>
+    <span class="k">return</span> <span class="n">filter_high_variance</span></div>
+
+
+<span class="k">def</span> <span class="nf">_contains_nan</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Check if `array` contains any NaN.&quot;&quot;&quot;</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">flat</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="coefficients"><a class="viewcode-back" href="../../generated/gftool.pade.coefficients.html#gftool.pade.coefficients">[docs]</a><span class="k">def</span> <span class="nf">coefficients</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fct_z</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the coefficients for the Pade continuation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (N_z, ) complex ndarray</span>
+<span class="sd">        Array of complex points</span>
+<span class="sd">    fct_z : (..., N_z) complex ndarray</span>
+<span class="sd">        Function at points `z`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coefficients : (..., N_z) complex ndarray</span>
+<span class="sd">        Array of Pade coefficients, needed to perform Pade continuation.</span>
+<span class="sd">        Has the same same shape as `fct_z`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the size of `z` and the last dimension of `fct_z` do not match.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The calculation is always done in quad precision (complex256), as it is</span>
+<span class="sd">    very sensitive towards rounding errors. Afterwards the type of the result</span>
+<span class="sd">    is cast back to double precision (complex128) unless the input data of</span>
+<span class="sd">    `fct_z` was already quad precision {float128, complex256}, see</span>
+<span class="sd">    `_PRECISE_TYPES`. This avoids giving the illusion that the results are more</span>
+<span class="sd">    precise than the input.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">fct_z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dimensions of `z` (</span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">) and `fct_z` (</span><span class="si">{</span><span class="n">fct_z</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">) mismatch.&quot;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">fct_z</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex256</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">ii</span><span class="p">:</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">res</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    <span class="n">complex_pres</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex256</span> <span class="k">if</span> <span class="n">fct_z</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">_PRECISE_TYPES</span> <span class="k">else</span> <span class="nb">complex</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Input type </span><span class="si">%s</span><span class="s2"> precise: </span><span class="si">%s</span><span class="s2"> -&gt; result type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                 <span class="n">fct_z</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">fct_z</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">_PRECISE_TYPES</span><span class="p">,</span> <span class="n">complex_pres</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">complex_pres</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<span class="nd">@partial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">,</span> <span class="n">otypes</span><span class="o">=</span><span class="p">[</span><span class="nb">complex</span><span class="p">],</span> <span class="n">signature</span><span class="o">=</span><span class="s1">&#39;(n),(n)-&gt;(n)&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">masked_coefficients</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fct_z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate coefficients but ignore extreme values.</span>
+
+<span class="sd">    Like `coefficients` but probably better for noisy data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">z</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">fct_z</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex256</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[:]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># cutoff = 1e-6</span>
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="n">mat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fct_z</span>
+
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fct_z</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">cutoff</span>
+    <span class="c1"># last valid</span>
+    <span class="n">last_it</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_coeff</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">last_it</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">signi_diff</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return if the difference of `element` and `last_coeff` is larger `cutoff`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">last_coeff</span> <span class="o">-</span> <span class="n">element</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">cutoff</span>
+
+    <span class="k">def</span> <span class="nf">comparable_mag</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return weather the magnitude of `element` is comparable to `last_coeff`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">last_coeff</span><span class="p">)</span><span class="o">/</span><span class="n">cutoff</span> <span class="o">&gt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">last_coeff</span><span class="p">)</span><span class="o">*</span><span class="n">cutoff</span>
+
+    <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">mat_pi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">signi_diff</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">ii</span><span class="p">])</span> <span class="ow">and</span> <span class="n">comparable_mag</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">ii</span><span class="p">]):</span>
+            <span class="c1"># regular update</span>
+            <span class="n">mat_pi</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">last_coeff</span><span class="o">/</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">last_it</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="p">[</span><span class="n">jj</span><span class="p">]:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">comparable_mag</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">jj</span><span class="p">]):</span>
+                    <span class="n">mat_pi</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">last_coeff</span><span class="o">/</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">last_it</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">last_coeff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mat</span><span class="p">[</span><span class="n">last_it</span><span class="p">,</span> <span class="n">jj</span><span class="p">])</span><span class="o">*</span><span class="n">cutoff</span><span class="p">:</span>  <span class="c1"># tiny quotient</span>
+                    <span class="n">mat_pi</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">last_it</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># huge quotient</span>
+                    <span class="n">mat_pi</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">infty</span>
+            <span class="n">last_it</span> <span class="o">=</span> <span class="n">ii</span>
+            <span class="n">last_coeff</span> <span class="o">=</span> <span class="n">mat_pi</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># pylint: disable=invalid-unary-operand-type</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of eliminated coefficients: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="o">~</span><span class="n">mask</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">mat</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="calc_iterator"><a class="viewcode-back" href="../../generated/gftool.pade.calc_iterator.html#gftool.pade.calc_iterator">[docs]</a><span class="k">def</span> <span class="nf">calc_iterator</span><span class="p">(</span><span class="n">z_out</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate Pade continuation of function at points `z_out`.</span>
+
+<span class="sd">    The continuation is calculated for different numbers of coefficients taken</span>
+<span class="sd">    into account, where the number is in [n_min, n_max].</span>
+<span class="sd">    The algorithm is take from [2]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z_out : complex ndarray</span>
+<span class="sd">        points at with the functions will be evaluated</span>
+<span class="sd">    z_in : (N_in,) complex ndarray</span>
+<span class="sd">        complex mesh used to calculate `coeff`</span>
+<span class="sd">    coeff : (..., N_in) complex ndarray</span>
+<span class="sd">        coefficients for Pade, calculated from `pade.coefficients`</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    pade_calc : (..., N_in, z_out.shape) complex np.ndarray</span>
+<span class="sd">        Function evaluated at points `z_out`.</span>
+<span class="sd">        numbers of Matsubara frequencies between `n_min` and `n_max`.</span>
+<span class="sd">        The shape of the elements is the same as `coeff.shape` with the last</span>
+<span class="sd">        dimension corresponding to N_in replaced by the shape of `z_out`:</span>
+<span class="sd">        (..., N_in, \*z_out.shape).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [2] Vidberg, H. J., and J. W. Serene. “Solving the Eliashberg Equations</span>
+<span class="sd">       by Means of N-Point Pade Approximants.” Journal of Low Temperature</span>
+<span class="sd">       Physics 29, no. 3-4 (November 1, 1977): 179-92.</span>
+<span class="sd">       https://doi.org/10.1007/BF00655090.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">z_in</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">target_shape</span> <span class="o">=</span> <span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">z_out</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">z_out</span> <span class="o">=</span> <span class="n">z_out</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># accept arbitrary shaped z_out</span>
+    <span class="n">id1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">z_out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+    <span class="n">pade_prev</span> <span class="o">=</span> <span class="mf">0.</span><span class="o">*</span><span class="n">id1</span>
+    <span class="n">pade</span> <span class="o">=</span> <span class="n">coeff</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">id1</span>
+    <span class="n">B2</span> <span class="o">=</span> <span class="n">id1</span>
+
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="p">(</span><span class="n">z_out</span> <span class="o">-</span> <span class="n">z_in</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span><span class="o">*</span><span class="n">coeff</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="c1"># move N_in axis in front to iterate over it</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">multiplier</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">multiplier_im</span> <span class="ow">in</span> <span class="n">multiplier</span><span class="p">:</span>
+        <span class="n">multiplier_im</span> <span class="o">=</span> <span class="n">multiplier_im</span> <span class="o">/</span> <span class="n">B2</span>
+        <span class="n">B2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">multiplier_im</span>
+        <span class="n">pade</span><span class="p">,</span> <span class="n">pade_prev</span> <span class="o">=</span> <span class="p">(</span><span class="n">pade</span> <span class="o">+</span> <span class="n">multiplier_im</span><span class="o">*</span><span class="n">pade_prev</span><span class="p">)</span><span class="o">/</span><span class="n">B2</span><span class="p">,</span> <span class="n">pade</span>
+
+        <span class="k">yield</span> <span class="n">pade</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">target_shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Averager"><a class="viewcode-back" href="../../generated/gftool.pade.Averager.html#gftool.pade.Averager">[docs]</a><span class="k">def</span> <span class="nf">Averager</span><span class="p">(</span><span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">valid_pades</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">KindSelector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create function for averaging Pade scheme.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z_in : (N_in,) complex ndarray</span>
+<span class="sd">        complex mesh used to calculate `coeff`</span>
+<span class="sd">    coeff : (..., N_in) complex ndarray</span>
+<span class="sd">        coefficients for Pade, calculated from `pade.coefficients`</span>
+<span class="sd">    valid_pades : list_like of bool</span>
+<span class="sd">        Mask which continuations are correct, all Pades where `valid_pades`</span>
+<span class="sd">        evaluates to false will be ignored for the average.</span>
+<span class="sd">    kind : {KindGf, KindSelf}</span>
+<span class="sd">        Defines the asymptotic of the continued function and the number of</span>
+<span class="sd">        minimum and maximum input points used for Pade. For `KindGf` the</span>
+<span class="sd">        function goes like :math:`1/z` for large `z`, for `KindSelf` the</span>
+<span class="sd">        function behaves like a constant for large `z`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    average : function</span>
+<span class="sd">        The continued function `f(z)` (`z`, ) -&gt; Result. `f(z).x` contains the</span>
+<span class="sd">        function values `f(z).err` the associated variance.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If `valid_pades` not of type `bool`</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If all there are none elements of `valid_pades` that evaluate to True.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">valid_pades</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type of `valid_pades`: </span><span class="si">{</span><span class="n">valid_pades</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="s2">&quot;Expected `bool`.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="c1"># for some axis no valid pade was found</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No Pade fulfills is valid.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;No solution found for coefficient (shape: </span><span class="si">{</span><span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) axes &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">valid_pades</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of valid Pade approximants: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">valid_pades</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate Pade continuation of function at points `z`.</span>
+
+<span class="sd">        The continuation is calculated for different numbers of coefficients</span>
+<span class="sd">        taken into account, where the number is in [n_min, n_max]. The function</span>
+<span class="sd">        value es well as its variance is calculated. The variance should not be</span>
+<span class="sd">        confused with an error estimate.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex ndarray</span>
+<span class="sd">            points at with the functions will be evaluated</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pade.x : complex ndarray</span>
+<span class="sd">            function evaluated at points `z`</span>
+<span class="sd">        pade.err : complex ndarray</span>
+<span class="sd">            variance associated with the function values `pade.x` at points `z`</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the calculated continuation contain any NaNs. This indicates</span>
+<span class="sd">            invalid input in the coefficients and thus the original function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="n">pade_iter</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">calc_iterator</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="n">coeff</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># validity determined for all dimensions -&gt; drop invalid pades</span>
+            <span class="n">pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pade</span> <span class="k">for</span> <span class="n">pade</span><span class="p">,</span> <span class="n">valid</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">,</span> <span class="n">valid_pades</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">_contains_nan</span><span class="p">(</span><span class="n">pades</span><span class="p">):</span>
+                <span class="c1"># check if fct_z already contained nans</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Calculation of Pades failed, results contains NaNs&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">_contains_nan</span><span class="p">(</span><span class="n">pades</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Calculation of Pades failed, results contains NaNs&quot;</span><span class="p">)</span>
+            <span class="n">pades</span><span class="p">[</span><span class="o">~</span><span class="n">valid_pades</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="n">pade_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">pades</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">_nan_std</span><span class="p">(</span><span class="n">pades</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">_nan_std</span><span class="p">(</span><span class="n">pades</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">pade_avg</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">average</span></div>
+
+
+<div class="viewcode-block" id="Mod_Averager"><a class="viewcode-back" href="../../generated/gftool.pade.Mod_Averager.html#gftool.pade.Mod_Averager">[docs]</a><span class="k">def</span> <span class="nf">Mod_Averager</span><span class="p">(</span><span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="p">,</span> <span class="n">mod_fct</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">valid_pades</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">KindSelector</span><span class="p">,</span> <span class="n">vectorized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create function for averaging Pade scheme using `mod_fct` before the average.</span>
+
+<span class="sd">    This function behaves like `Averager` just that `mod_fct` is applied before</span>
+<span class="sd">    taking the averages. This should be used, if not the analytic continuation</span>
+<span class="sd">    but a mollification thereof is used.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z_in : (N_in,) complex ndarray</span>
+<span class="sd">        complex mesh used to calculate `coeff`</span>
+<span class="sd">    coeff : (..., N_in) complex ndarray</span>
+<span class="sd">        coefficients for Pade, calculated from `pade.coefficients`</span>
+<span class="sd">    mod_fct : callable</span>
+<span class="sd">        Modification of the analytic continuation. The signature of the function</span>
+<span class="sd">        should be `mod_fct` (z, pade_z, \*args, \*\*kwds), the tow first</span>
+<span class="sd">        arguments are the point of evaluation `z` and the single Pade approximants.</span>
+<span class="sd">    valid_pades : list_like of bool</span>
+<span class="sd">        Mask which continuations are correct, all Pades where `valid_pades`</span>
+<span class="sd">        evaluates to false will be ignored for the average.</span>
+<span class="sd">    kind : {KindGf, KindSelf}</span>
+<span class="sd">        Defines the asymptotic of the continued function and the number of</span>
+<span class="sd">        minumum and maximum input points used for Pade. For `KindGf` the</span>
+<span class="sd">        function goes like :math:`1/z` for large `z`, for `KindSelf` the</span>
+<span class="sd">        function behaves like a constant for large `z`.</span>
+<span class="sd">    vectorized : bool, optional</span>
+<span class="sd">        If `vectorized`, all approximants are given to the function simultaniously</span>
+<span class="sd">        where the first dimension corresponds to the approximants.</span>
+<span class="sd">        If not `vectorized`, `mod_fct` will be called for every approximant</span>
+<span class="sd">        seperately. (default: True)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mod_average : function</span>
+<span class="sd">        The continued function `f(z)` (`z`, ) -&gt; Result. `f(z).x` contains the</span>
+<span class="sd">        function values `f(z).err` the associated variance.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If `valid_pades` not of type `bool`</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If all there are none elements of `valid_pades` that evaluate to True.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">valid_pades</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid type of `valid_pades`: </span><span class="si">{</span><span class="n">valid_pades</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="s2">&quot;Expected `bool`.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="c1"># for some axis no valid pade was found</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No Pade fulfills is valid.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;No solution found for coefficient (shape: </span><span class="si">{</span><span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) axes &quot;</span>
+                           <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">valid_pades</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of valid Pade approximants: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">valid_pades</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">mod_average</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Result</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate modified Pade continuation of function at points `z`.</span>
+
+<span class="sd">        Calculate the averaged continuation of `mod_fct(f_z, *args, **kwds)`</span>
+<span class="sd">        The continuation is calculated for different numbers of coefficients</span>
+<span class="sd">        taken into account, where the number is in [n_min, n_max]. The function</span>
+<span class="sd">        value es well as its variance is calculated. The variance should not be</span>
+<span class="sd">        confused with an error estimate.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : complex ndarray</span>
+<span class="sd">            points at with the functions will be evaluated</span>
+<span class="sd">        args, kwds</span>
+<span class="sd">            Passed to the `mod_fct` {mod_fct.__name__}.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pade.x : complex ndarray</span>
+<span class="sd">            function evaluated at points `z`</span>
+<span class="sd">        pade.err : complex ndarray</span>
+<span class="sd">            variance associated with the function values `pade.x` at points `z`</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the calculated continuation contain any NaNs. This indicates</span>
+<span class="sd">            invalid input in the coefficients and thus the original function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="n">pade_iter</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">calc_iterator</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="n">coeff</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">valid_pades</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># validity determined for all dimensions -&gt; drop invalid pades</span>
+            <span class="n">pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pade</span> <span class="k">for</span> <span class="n">pade</span><span class="p">,</span> <span class="n">valid</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">,</span> <span class="n">valid_pades</span><span class="p">)</span> <span class="k">if</span> <span class="n">valid</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">_contains_nan</span><span class="p">(</span><span class="n">pades</span><span class="p">):</span>
+                <span class="c1"># check if fct_z already contained nans</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Calculation of Pades failed, results contains NaNs&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pades</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pade_iter</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">_contains_nan</span><span class="p">(</span><span class="n">pades</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Calculation of Pades failed, results contains NaNs&quot;</span><span class="p">)</span>
+            <span class="n">pades</span><span class="p">[</span><span class="o">~</span><span class="n">valid_pades</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">if</span> <span class="n">vectorized</span><span class="p">:</span>
+            <span class="n">mod_pade</span> <span class="o">=</span> <span class="n">mod_fct</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pades</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mod_pade</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mod_fct</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pade_ii</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+                                 <span class="k">for</span> <span class="n">pade_ii</span> <span class="ow">in</span> <span class="n">pades</span><span class="p">])</span>
+        <span class="n">pade_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">mod_pade</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># define helper pade_std np.nanstd( ,axis=0, ddof=1) if complex...</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">mod_pade</span><span class="p">):</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">_nan_std</span><span class="p">(</span><span class="n">mod_pade</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">_nan_std</span><span class="p">(</span><span class="n">mod_pade</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">_nan_std</span><span class="p">(</span><span class="n">mod_pade</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">pade_avg</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="n">std</span><span class="p">)</span>
+    <span class="n">mod_average</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">mod_average</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_fct</span><span class="o">=</span><span class="n">mod_fct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mod_average</span></div>
+
+
+<div class="viewcode-block" id="apply_filter"><a class="viewcode-back" href="../../generated/gftool.pade.apply_filter.html#gftool.pade.apply_filter">[docs]</a><span class="k">def</span> <span class="nf">apply_filter</span><span class="p">(</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="n">validity_iter</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Handle usage of filters for Pade.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filters : callable</span>
+<span class="sd">        Functions to determine which continuations to keep.</span>
+<span class="sd">    validity_iter : iterable of (..., N_z) complex np.ndarray</span>
+<span class="sd">        The iterable of analytic continuations as generated by `calc_iterator`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_valid : (...) bool np.ndarray</span>
+<span class="sd">        Array to index which continuations are good.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">validity_iter</span><span class="p">)</span>
+    <span class="n">validity_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">validity_iter</span><span class="p">))</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">validity_iter</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">validity_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">validity_iter</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">is_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">validity_iter</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i_valid</span><span class="p">,</span> <span class="n">i_validity_iter</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">validity_iter</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filt</span> <span class="ow">in</span> <span class="n">filters</span><span class="p">:</span>
+            <span class="n">is_valid_filt</span> <span class="o">=</span> <span class="n">filt</span><span class="p">(</span><span class="n">i_validity_iter</span><span class="p">[</span><span class="n">i_valid</span><span class="p">])</span>
+            <span class="n">i_valid</span><span class="p">[</span><span class="n">i_valid</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_valid_filt</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">i_valid</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No Pade is valid due to filter </span><span class="si">{</span><span class="n">filt</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;No solution found for coefficient (shape: </span><span class="si">{</span><span class="n">validity_iter</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) axes &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="o">~</span><span class="n">is_valid</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">is_valid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="averaged"><a class="viewcode-back" href="../../generated/gftool.pade.averaged.html#gftool.pade.averaged">[docs]</a><span class="k">def</span> <span class="nf">averaged</span><span class="p">(</span><span class="n">z_out</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">valid_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fct_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">filter_valid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">KindSelector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the averaged Pade continuation with its variance.</span>
+
+<span class="sd">    The output is checked to have an imaginary part smaller than `threshold`,</span>
+<span class="sd">    as retarded Green&#39;s functions and self-energies have a negative imaginary</span>
+<span class="sd">    part.</span>
+<span class="sd">    This is a helper to conveniently get the continuation, it comes however with</span>
+<span class="sd">    overhead.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z_out : (N_out,) complex ndarray</span>
+<span class="sd">        points at with the functions will be evaluated</span>
+<span class="sd">    z_in : (N_in,) complex ndarray</span>
+<span class="sd">        complex mesh used to calculate `coeff`</span>
+<span class="sd">    valid_z : (N_out,) complex ndarray, optional</span>
+<span class="sd">        The output range according to which the Pade approximation is validated</span>
+<span class="sd">        (compared to the `threshold`).</span>
+<span class="sd">    fct_z : (N_z, ) complex ndarray, optional</span>
+<span class="sd">        Function at points `z` from which the coefficients will be calculated.</span>
+<span class="sd">        Can be omitted if `coeff` is directly given.</span>
+<span class="sd">    coeff : (N_in,) complex ndarray, optional</span>
+<span class="sd">        Coefficients for Pade, calculated from `pade.coefficients`. Can be given</span>
+<span class="sd">        instead of `fct_z`.</span>
+<span class="sd">    filter_valid : callable or iterable of callable</span>
+<span class="sd">        Function determining which approximants to keep. The signature should</span>
+<span class="sd">        be filter_valid(iterable) -&gt; bool ndarray.</span>
+<span class="sd">        Currently there are the functions {`FilterNegImag`, `FilterNegImagNum`,</span>
+<span class="sd">        `FilterHighVariance`} implemented to generate filter functions.</span>
+<span class="sd">        Look into the implemented for details to create new filters.</span>
+<span class="sd">    kind : {KindGf, KindSelf}</span>
+<span class="sd">        Defines the asymptotic of the continued function and the number of</span>
+<span class="sd">        minimum and maximum input points used for Pade. For `KindGf` the</span>
+<span class="sd">        function goes like :math:`1/z` for large `z`, for `KindSelf` the</span>
+<span class="sd">        function behaves like a constant for large `z`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    averaged.x : (N_in, N_out) complex ndarray</span>
+<span class="sd">        function evaluated at points `z`</span>
+<span class="sd">    averaged.err : (N_in, N_out) complex ndarray</span>
+<span class="sd">        variance associated with the function values `pade.x` at points `z`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">fct_z</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">coeff</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="n">z_in</span> <span class="o">=</span> <span class="n">z_in</span><span class="p">[:</span><span class="n">kind</span><span class="o">.</span><span class="n">stop</span><span class="p">]</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="p">(</span><span class="n">coefficients</span><span class="p">(</span><span class="n">z_in</span><span class="p">,</span> <span class="n">fct_z</span><span class="o">=</span><span class="n">fct_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">kind</span><span class="o">.</span><span class="n">stop</span><span class="p">])</span> <span class="k">if</span> <span class="n">coeff</span> <span class="ow">is</span> <span class="kc">None</span>
+             <span class="k">else</span> <span class="n">coeff</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">kind</span><span class="o">.</span><span class="n">stop</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">valid_z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">valid_z</span> <span class="o">=</span> <span class="n">z_out</span>
+    <span class="n">valid_z</span> <span class="o">=</span> <span class="n">valid_z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filter_valid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">validity_iter</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">calc_iterator</span><span class="p">(</span><span class="n">valid_z</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="n">coeff</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">filter_valid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># only one filter given</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="p">(</span><span class="n">filter_valid</span><span class="p">,)</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">apply_filter</span><span class="p">(</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="n">validity_iter</span><span class="o">=</span><span class="n">validity_iter</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kind</span><span class="p">),</span> <span class="o">*</span><span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">is_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="n">coeff</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">_average</span> <span class="o">=</span> <span class="n">Averager</span><span class="p">(</span><span class="n">z_in</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="n">coeff</span><span class="p">,</span> <span class="n">valid_pades</span><span class="o">=</span><span class="n">is_valid</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_average</span><span class="p">(</span><span class="n">z_out</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="avg_no_neg_imag"><a class="viewcode-back" href="../../generated/gftool.pade.avg_no_neg_imag.html#gftool.pade.avg_no_neg_imag">[docs]</a><span class="k">def</span> <span class="nf">avg_no_neg_imag</span><span class="p">(</span><span class="n">z_out</span><span class="p">,</span> <span class="n">z_in</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">valid_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fct_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coeff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">KindSelector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Average Pade filtering approximants with non-negative imaginary part.</span>
+
+<span class="sd">    This function wraps `averaged`, see `averaged` for the parameters.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    threshold : float, optional</span>
+<span class="sd">        The numerical threshold, how large of an positive imaginary part is</span>
+<span class="sd">        tolerated (default: 1e-8). `np.infty` can be given to accept all.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    averaged.x : (N_in, N_out) complex ndarray</span>
+<span class="sd">        function evaluated at points `z`</span>
+<span class="sd">    averaged.err : (N_in, N_out) complex ndarray</span>
+<span class="sd">        variance associated with the function values `pade.x` at points `z`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filter_neg_imag</span> <span class="o">=</span> <span class="n">FilterNegImag</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">averaged</span><span class="p">(</span><span class="n">z_out</span><span class="o">=</span><span class="n">z_out</span><span class="p">,</span> <span class="n">z_in</span><span class="o">=</span><span class="n">z_in</span><span class="p">,</span> <span class="n">valid_z</span><span class="o">=</span><span class="n">valid_z</span><span class="p">,</span> <span class="n">fct_z</span><span class="o">=</span><span class="n">fct_z</span><span class="p">,</span>
+                    <span class="n">coeff</span><span class="o">=</span><span class="n">coeff</span><span class="p">,</span> <span class="n">filter_valid</span><span class="o">=</span><span class="n">filter_neg_imag</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span></div>
+
+<span class="c1"># def SelectiveAverage(object):</span>
+<span class="c1">#     &quot;&quot;&quot;Do not accept Matsubara frequencies, which make the result unphysical.&quot;&quot;&quot;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+gftool.cpa.restrict\_self\_root\_eq
+===================================
+
+.. currentmodule:: gftool.cpa
+
+.. autofunction:: restrict_self_root_eq

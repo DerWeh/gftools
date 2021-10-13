@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.rv\_inv
+==========================
+
+.. currentmodule:: gftool.beb
+
+.. autoattribute:: SpecDec.rv_inv

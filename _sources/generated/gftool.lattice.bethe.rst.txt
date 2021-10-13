@@ -1,0 +1,38 @@
+gftool.lattice.bethe
+====================
+
+.. module:: gftool.lattice.bethe
+
+.. automodule:: gftool.lattice.bethe
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  dos_moment
+  dos_mp
+  gf_d1_z
+  gf_d2_z
+  gf_z
+  gf_z_inv
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

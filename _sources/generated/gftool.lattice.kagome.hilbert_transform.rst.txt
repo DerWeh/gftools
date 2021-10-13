@@ -1,0 +1,6 @@
+gftool.lattice.kagome.hilbert\_transform
+========================================
+
+.. currentmodule:: gftool.lattice.kagome
+
+.. autofunction:: hilbert_transform

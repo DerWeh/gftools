@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.u
+==============================
+
+.. currentmodule:: gftool.matrix
+
+.. autoproperty:: UDecomposition.u

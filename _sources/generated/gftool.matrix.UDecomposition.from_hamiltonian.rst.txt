@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.from\_hamiltonian
+==============================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: UDecomposition.from_hamiltonian

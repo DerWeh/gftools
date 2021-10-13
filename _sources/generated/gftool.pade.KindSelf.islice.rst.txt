@@ -1,0 +1,6 @@
+gftool.pade.KindSelf.islice
+===========================
+
+.. currentmodule:: gftool.pade
+
+.. automethod:: KindSelf.islice

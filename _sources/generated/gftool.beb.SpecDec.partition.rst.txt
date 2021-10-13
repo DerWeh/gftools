@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.partition
+============================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.partition

@@ -1,0 +1,6 @@
+gftool.beb.restrict\_self\_root\_eq
+===================================
+
+.. currentmodule:: gftool.beb
+
+.. autofunction:: restrict_self_root_eq

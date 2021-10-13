@@ -1,0 +1,33 @@
+gftool.lattice.rectangular
+==========================
+
+.. module:: gftool.lattice.rectangular
+
+.. automodule:: gftool.lattice.rectangular
+   :noindex:
+
+API
+---
+
+.. 
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  dos
+  gf_z
+  hilbert_transform
+
+
+
+
+
+
+
+
+
+

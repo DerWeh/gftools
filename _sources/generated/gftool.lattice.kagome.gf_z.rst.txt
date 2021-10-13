@@ -1,0 +1,6 @@
+gftool.lattice.kagome.gf\_z
+===========================
+
+.. currentmodule:: gftool.lattice.kagome
+
+.. autofunction:: gf_z

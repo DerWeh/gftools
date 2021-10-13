@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.eig
+===============================
+
+.. currentmodule:: gftool.matrix
+
+.. autoattribute:: Decomposition.eig

@@ -1,0 +1,6 @@
+gftool.lattice.lieb.dos
+=======================
+
+.. currentmodule:: gftool.lattice.lieb
+
+.. autofunction:: dos

@@ -1,0 +1,6 @@
+gftool.lattice.square.dos\_moment
+=================================
+
+.. currentmodule:: gftool.lattice.square
+
+.. autofunction:: dos_moment

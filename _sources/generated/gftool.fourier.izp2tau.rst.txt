@@ -1,0 +1,6 @@
+gftool.fourier.izp2tau
+======================
+
+.. currentmodule:: gftool.fourier
+
+.. autofunction:: izp2tau

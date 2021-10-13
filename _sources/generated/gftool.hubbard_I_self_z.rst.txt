@@ -1,0 +1,6 @@
+﻿gftool.hubbard\_I\_self\_z
+==========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: hubbard_I_self_z

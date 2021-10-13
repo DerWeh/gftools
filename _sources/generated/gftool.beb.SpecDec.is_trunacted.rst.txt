@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.is\_trunacted
+================================
+
+.. currentmodule:: gftool.beb
+
+.. autoproperty:: SpecDec.is_trunacted

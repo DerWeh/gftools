@@ -1,0 +1,6 @@
+gftool.pade.FilterNegImagNum
+============================
+
+.. currentmodule:: gftool.pade
+
+.. autofunction:: FilterNegImagNum

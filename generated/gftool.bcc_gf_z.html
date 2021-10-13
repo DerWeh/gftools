@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.bcc_gf_z &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.bcc_hilbert_transform" href="gftool.bcc_hilbert_transform.html" />
+    <link rel="prev" title="gftool.bcc_dos_moment" href="gftool.bcc_dos_moment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../gftool.html">gftool</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../gftool.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gftool.html#glossary">Glossary</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../gftool.html#green-s-functions-and-lattices">Green’s functions and lattices</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gftool.onedim_dos.html">gftool.onedim_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.onedim_dos_moment.html">gftool.onedim_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.onedim_gf_z.html">gftool.onedim_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.onedim_hilbert_transform.html">gftool.onedim_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.square_dos.html">gftool.square_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.square_dos_moment.html">gftool.square_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.square_gf_z.html">gftool.square_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.square_hilbert_transform.html">gftool.square_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.triangular_dos.html">gftool.triangular_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.triangular_dos_moment.html">gftool.triangular_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.triangular_gf_z.html">gftool.triangular_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.triangular_hilbert_transform.html">gftool.triangular_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.honeycomb_dos.html">gftool.honeycomb_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.honeycomb_dos_moment.html">gftool.honeycomb_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.honeycomb_gf_z.html">gftool.honeycomb_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.honeycomb_hilbert_transform.html">gftool.honeycomb_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.sc_dos.html">gftool.sc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.sc_dos_moment.html">gftool.sc_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.sc_gf_z.html">gftool.sc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.sc_hilbert_transform.html">gftool.sc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bcc_dos.html">gftool.bcc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bcc_dos_moment.html">gftool.bcc_dos_moment</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gftool.bcc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bcc_hilbert_transform.html">gftool.bcc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fcc_dos.html">gftool.fcc_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fcc_dos_moment.html">gftool.fcc_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fcc_gf_z.html">gftool.fcc_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fcc_hilbert_transform.html">gftool.fcc_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_dos.html">gftool.bethe_dos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_dos_moment.html">gftool.bethe_dos_moment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_gf_z.html">gftool.bethe_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_gf_d1_z.html">gftool.bethe_gf_d1_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_gf_d2_z.html">gftool.bethe_gf_d2_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.bethe_hilbert_transform.html">gftool.bethe_hilbert_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_z.html">gftool.pole_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_d1_z.html">gftool.pole_gf_d1_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_moments.html">gftool.pole_gf_moments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_ret_t.html">gftool.pole_gf_ret_t</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_tau.html">gftool.pole_gf_tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pole_gf_tau_b.html">gftool.pole_gf_tau_b</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.hubbard_I_self_z.html">gftool.hubbard_I_self_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.hubbard_dimer_gf_z.html">gftool.hubbard_dimer_gf_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.surface_gf_zeps.html">gftool.surface_gf_zeps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gftool.html#statistics-and-particle-numbers">Statistics and particle numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gftool.html#utilities">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.bcc_gf_z</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.bcc_gf_z.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gftool-bcc-gf-z">
+<h1>gftool.bcc_gf_z<a class="headerlink" href="#gftool-bcc-gf-z" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="gftool.bcc_gf_z">
+<code class="sig-prename descclassname"><span class="pre">gftool.</span></code><code class="sig-name descname"><span class="pre">bcc_gf_z</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_bandwidth</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gftool.bcc_gf_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Local Green’s function of 3D body-centered cubic (bcc) lattice.</p>
+<p>Has a van Hove singularity at <em class="xref py py-obj">z=0</em> (divergence).</p>
+<p>Implements equations (2.1) and (2.4) from <a class="reference internal" href="#rfadd142d93ef-morita1971" id="id1">[morita1971]</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z</strong><span class="classifier">complex np.ndarray or complex</span></dt><dd><p>Green’s function is evaluated at complex frequency <em class="xref py py-obj">z</em>.</p>
+</dd>
+<dt><strong>half_bandwidth</strong><span class="classifier">float</span></dt><dd><p>Half-bandwidth of the DOS of the body-centered cubic lattice.
+The <em class="xref py py-obj">half_bandwidth</em> corresponds to the nearest neighbor hopping <em class="xref py py-obj">t=D/8</em></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>gf_z</strong><span class="classifier">complex np.ndarray or complex</span></dt><dd><p>Value of the body-centered cubic Green’s function at complex energy <em class="xref py py-obj">z</em>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rfadd142d93ef-morita1971"><span class="brackets"><a class="fn-backref" href="#id1">morita1971</a></span></dt>
+<dd><p>Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
+Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
+Mathematical Physics 12, 986–992. <a class="reference external" href="https://doi.org/10.1063/1.1665693">https://doi.org/10.1063/1.1665693</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">bcc</span><span class="o">.</span><span class="n">gf_z</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">gf_ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\Re G$&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">gf_ww</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\Im G$&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\omega/D$&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$G*D$&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">ww</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">right</span><span class="o">=</span><span class="n">ww</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-bcc_gf_z-1.png">png</a>, <a class="reference external" href="../generated/gftool-bcc_gf_z-1.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-bcc_gf_z-1.png" class="plot-directive" src="../_images/gftool-bcc_gf_z-1.png" />
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.bcc_dos_moment.html" class="btn btn-neutral float-left" title="gftool.bcc_dos_moment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.bcc_hilbert_transform.html" class="btn btn-neutral float-right" title="gftool.bcc_hilbert_transform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

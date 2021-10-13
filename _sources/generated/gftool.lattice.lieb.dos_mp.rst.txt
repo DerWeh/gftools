@@ -1,0 +1,6 @@
+gftool.lattice.lieb.dos\_mp
+===========================
+
+.. currentmodule:: gftool.lattice.lieb
+
+.. autofunction:: dos_mp

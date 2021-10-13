@@ -1,0 +1,6 @@
+gftool.beb.gf\_loc\_z
+=====================
+
+.. currentmodule:: gftool.beb
+
+.. autofunction:: gf_loc_z

@@ -1,0 +1,6 @@
+﻿gftool.square\_dos\_moment
+==========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: square_dos_moment

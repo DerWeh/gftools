@@ -1,0 +1,6 @@
+gftool.lattice.honeycomb.dos
+============================
+
+.. currentmodule:: gftool.lattice.honeycomb
+
+.. autofunction:: dos

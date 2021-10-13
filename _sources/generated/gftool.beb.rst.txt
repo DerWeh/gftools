@@ -1,0 +1,45 @@
+﻿gftool.beb
+==========
+
+.. module:: gftool.beb
+
+.. automodule:: gftool.beb
+   :noindex:
+
+API
+---
+
+.. 
+.. .. inheritance-diagram:: gftool.beb
+..    :parts: 1
+
+
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  gf_loc_z
+  restrict_self_root_eq
+  self_root_eq
+  solve_root
+
+
+
+
+
+
+.. rubric:: Classes
+
+.. autosummary::
+  :toctree:
+
+  SpecDec
+
+
+
+
+

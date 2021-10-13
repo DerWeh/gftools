@@ -1,0 +1,6 @@
+﻿gftool.hubbard\_dimer\_gf\_z
+============================
+
+.. currentmodule:: gftool
+
+.. autofunction:: hubbard_dimer_gf_z

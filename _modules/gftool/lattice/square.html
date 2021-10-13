@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice.square &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/toggleprompt.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice.square</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.lattice.square</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;2D square lattice.</span>
+
+<span class="sd">The dispersion of the 2D square lattice is given by</span>
+
+<span class="sd">.. math:: ϵ_{k_x, k_y} = 2t [\cos(k_x) + \cos(k_y)]</span>
+
+<span class="sd">which takes values in :math:`ϵ_{k_x, k_y} ∈ [-4t, +4t] = [-D, +D]`.</span>
+
+<span class="sd">:half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping</span>
+<span class="sd">                 of `t=D/4`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">mp</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">ellipkm1</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_u_ellipk</span>
+
+
+<div class="viewcode-block" id="gf_z"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.gf_z.html#gftool.lattice.square.gf_z">[docs]</a><span class="k">def</span> <span class="nf">gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Local Green&#39;s function of the 2D square lattice.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}</span>
+
+<span class="sd">    where :math:`D` is the half bandwidth and the integral is the complete</span>
+<span class="sd">    elliptic integral of first kind. See [economou2006]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex np.ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the square lattice.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex np.ndarray or complex</span>
+<span class="sd">        Value of the square lattice Green&#39;s function</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [economou2006] Economou, E. N. Green&#39;s Functions in Quantum Physics.</span>
+<span class="sd">       Springer, 2006.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.5, 1.5, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.lattice.square.gf_z(ww, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww, gf_ww.real, label=r&quot;$\Re G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww, gf_ww.imag, &#39;--&#39;, label=r&quot;$\Im G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;$G*D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\omega/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=ww.min(), right=ww.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">z_rel_inv</span> <span class="o">=</span> <span class="n">half_bandwidth</span><span class="o">/</span><span class="n">z</span>
+    <span class="n">elliptic</span> <span class="o">=</span> <span class="n">_u_ellipk</span><span class="p">(</span><span class="n">z_rel_inv</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">gf_z</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">half_bandwidth</span><span class="o">*</span><span class="n">z_rel_inv</span><span class="o">*</span><span class="n">elliptic</span>
+    <span class="k">return</span> <span class="n">gf_z</span></div>
+
+
+<div class="viewcode-block" id="hilbert_transform"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.hilbert_transform.html#gftool.lattice.square.hilbert_transform">[docs]</a><span class="k">def</span> <span class="nf">hilbert_transform</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hilbert transform of non-interacting DOS of the square lattice.</span>
+
+<span class="sd">    The Hilbert transform is defined</span>
+
+<span class="sd">    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}</span>
+
+<span class="sd">    The lattice Hilbert transform is the same as the non-interacting Green&#39;s</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xi : complex np.ndarray or complex</span>
+<span class="sd">        Point at which the Hilbert transform is evaluated</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        half-bandwidth of the DOS of the 2D square lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hilbert_transform : complex np.ndarray or complex</span>
+<span class="sd">        Hilbert transform of `xi`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Relation between nearest neighbor hopping `t` and half-bandwidth `D`</span>
+
+<span class="sd">    .. math:: 4t = D</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.square.gf_z</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gf_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.dos.html#gftool.lattice.square.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;DOS of non-interacting 2D square lattice.</span>
+
+<span class="sd">    Has a van Hove singularity (logarithmic divergence) at `eps = 0`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float np.ndarray or float</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos : float np.ndarray or float</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.square.dos_mp : multi-precision version suitable for integration</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [economou2006] Economou, E. N. Green&#39;s Functions in Quantum Physics.</span>
+<span class="sd">       Springer, 2006.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.1, 1.1, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; dos = gt.lattice.square.dos(eps, half_bandwidth=1)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eps_rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eps</span> <span class="o">/</span> <span class="n">half_bandwidth</span><span class="p">)</span>
+    <span class="n">dos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span>
+    <span class="n">nonzero</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+    <span class="n">elliptic</span> <span class="o">=</span> <span class="n">ellipkm1</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># on real axis we can use fast scipy Implementation</span>
+    <span class="n">dos</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">half_bandwidth</span> <span class="o">*</span> <span class="n">elliptic</span>
+    <span class="k">return</span> <span class="n">dos</span></div>
+
+
+<span class="c1"># ∫dϵ ϵ^m DOS(ϵ) for half-bandwidth D=1</span>
+<span class="c1"># from: integral of dos_mp with mp.workdps(100)</span>
+<span class="c1"># for m in range(0, 22, 2):</span>
+<span class="c1">#     with mp.workdps(100):</span>
+<span class="c1">#         print(mp.quad(lambda eps: 2 * eps**m * dos_mp(eps), [0, 1])</span>
+<span class="c1"># rational numbers obtained by mp.identify</span>
+<span class="n">dos_moment_coefficients</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">9</span><span class="o">/</span><span class="mi">64</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mi">25</span><span class="o">/</span><span class="mi">256</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="p">(</span><span class="mi">35</span><span class="o">/</span><span class="mi">128</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="mi">63</span><span class="o">/</span><span class="mi">256</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mf">0.0508890151977539</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mf">0.0438787937164307</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="mf">0.0385653460398316</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mf">0.0343993364367634</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="mf">0.031045401134179</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="dos_moment"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.dos_moment.html#gftool.lattice.square.dos_moment">[docs]</a><span class="k">def</span> <span class="nf">dos_moment</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the `m` th moment of the square DOS.</span>
+
+<span class="sd">    The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The order of the moment.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the 2D square lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_moment : float</span>
+<span class="sd">        The `m` th moment of the 2D square DOS.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotImplementedError</span>
+<span class="sd">        Currently only implemented for a few specific moments `m`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.square.dos</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># odd moments vanish due to symmetry</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dos_moment_coefficients</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">half_bandwidth</span><span class="o">**</span><span class="n">m</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">keyerr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Calculation of arbitrary moments not implemented.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">keyerr</span></div>
+
+
+<div class="viewcode-block" id="dos_mp"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.dos_mp.html#gftool.lattice.square.dos_mp">[docs]</a><span class="k">def</span> <span class="nf">dos_mp</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-precision DOS of non-interacting 2D square lattice.</span>
+
+<span class="sd">    Has a van Hove singularity (logarithmic divergence) at `eps = 0`.</span>
+
+<span class="sd">    This function is particularity suited to calculate integrals of the form</span>
+<span class="sd">    :math:`∫dϵ DOS(ϵ)f(ϵ)`. If you have problems with the convergence,</span>
+<span class="sd">    consider using :math:`∫dϵ DOS(ϵ)[f(ϵ)-f(0)] + f(0)` to avoid the singularity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : mpmath.mpf or mpf_like</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : mpmath.mpf or mpf_like</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/4`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos_mp : mpmath.mpf</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.square.dos : vectorized version suitable for array evaluations</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [economou2006] Economou, E. N. Green&#39;s Functions in Quantum Physics.</span>
+<span class="sd">       Springer, 2006.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Calculate integrals:</span>
+
+<span class="sd">    &gt;&gt;&gt; from mpmath import mp</span>
+<span class="sd">    &gt;&gt;&gt; mp.quad(gt.lattice.square.dos_mp, [-1, 0, 1])</span>
+<span class="sd">    mpf(&#39;1.0&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.1, 1.1, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; dos_mp = [gt.lattice.square.dos_mp(ee, half_bandwidth=1) for ee in eps]</span>
+<span class="sd">    &gt;&gt;&gt; dos_mp = np.array(dos_mp, dtype=np.float64)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos_mp)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">eps</span><span class="p">),</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="n">half_bandwidth</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mp</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">half_bandwidth</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    <span class="c1"># around 0 we have to double precision for `1 - eps**2` to resolve around singularity</span>
+    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">workdps</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">dps</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalize_output</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">mm</span> <span class="o">=</span> <span class="o">-</span><span class="n">mp</span><span class="o">.</span><span class="n">powm1</span><span class="p">(</span><span class="n">eps</span> <span class="o">/</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">mp</span><span class="o">.</span><span class="n">mpf</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">half_bandwidth</span><span class="p">)</span> <span class="o">*</span> <span class="n">mp</span><span class="o">.</span><span class="n">ellipk</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="stress_trafo"><a class="viewcode-back" href="../../../generated/gftool.lattice.square.stress_trafo.html#gftool.lattice.square.stress_trafo">[docs]</a><span class="k">def</span> <span class="nf">stress_trafo</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Single pole integration over the stress tensor function.</span>
+
+<span class="sd">    In analogy to the Hilbert transformation, we define the stress</span>
+<span class="sd">    tensor transformation as</span>
+
+<span class="sd">    .. math:: T(ξ) = ∫dϵ \tilde{Φ}_{xx}(ϵ)/(ξ - ϵ)</span>
+
+<span class="sd">    with the stress tensor function</span>
+
+<span class="sd">    .. math:: \tilde{Φ}_{xx}(ϵ) ≔ ∑_k 𝜕^2/𝜕k_x^2 δ(ϵ - ϵ_k) = -0.5 * ϵ * DOS(ϵ)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xi : complex or complex array_like</span>
+<span class="sd">        Point of evaluation of the transformation</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the square lattice.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [arsenault2013] Arsenault, L.-F., Tremblay, A.-M.S., 2013. Transport</span>
+<span class="sd">       functions for hypercubic and Bethe lattices. Phys. Rev. B 88, 205109.</span>
+<span class="sd">       https://doi.org/10.1103/PhysRevB.88.205109</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">xi</span><span class="o">*</span><span class="n">gf_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="n">half_bandwidth</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

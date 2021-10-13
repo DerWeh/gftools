@@ -1,0 +1,6 @@
+gftool.matrix.decompose\_sym
+============================
+
+.. currentmodule:: gftool.matrix
+
+.. autofunction:: decompose_sym

@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.truncate
+===========================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.truncate

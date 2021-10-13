@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What’s New &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/toggleprompt.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="gftool.Result.x" href="generated/gftool.Result.x.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s New</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">0.10.0 (2021-09-19)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#depreciations">Depreciations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#internal-improvements">Internal improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.9.1 (2021-06-01)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-new-features">Other New Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.9.0 (2021-05-09)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">0.8.1 (2021-04-25)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">New Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">0.8.0 (2021-04-17)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Other New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Depreciations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Internal improvements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">0.7.0 (2020-10-18)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Breaking Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Other New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">0.6.1</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>What’s New</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/whats-new.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="what-s-new">
+<h1>What’s New<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>0.10.0 (2021-09-19)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="breaking-changes">
+<h3>Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Drop support for Python 3.6, <strong>minimal version</strong> is now <strong>3.7</strong></p></li>
+<li><p>Content of <a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.matrix</span></code></a> was renamed more appropriately:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em class="xref py py-obj">xi</em> of <a class="reference internal" href="generated/gftool.matrix.Decomposition.html#gftool.matrix.Decomposition" title="gftool.matrix.Decomposition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Decomposition</span></code></a> is now
+<a class="reference internal" href="generated/gftool.matrix.Decomposition.eig.html#gftool.matrix.Decomposition.eig" title="gftool.matrix.Decomposition.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eig</span></code></a>, as it contains the eigenvalues</p></li>
+<li><p>New functions
+<a class="reference internal" href="generated/gftool.matrix.decompose_mat.html#gftool.matrix.decompose_mat" title="gftool.matrix.decompose_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_mat</span></code></a> for general matrices,
+<a class="reference internal" href="generated/gftool.matrix.decompose_sym.html#gftool.matrix.decompose_sym" title="gftool.matrix.decompose_sym"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_sym</span></code></a> for complex symmetric matrices,
+and <a class="reference internal" href="generated/gftool.matrix.decompose_her.html#gftool.matrix.decompose_her" title="gftool.matrix.decompose_her"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_her</span></code></a> for Hermitian matrices.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="depreciations">
+<h3>Depreciations<a class="headerlink" href="#depreciations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Deprecate the <a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matrix</span></code></a> functions
+<a class="reference internal" href="generated/gftool.matrix.decompose_gf.html#gftool.matrix.decompose_gf" title="gftool.matrix.decompose_gf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_gf</span></code></a>,
+<a class="reference internal" href="generated/gftool.matrix.decompose_hamiltonian.html#gftool.matrix.decompose_hamiltonian" title="gftool.matrix.decompose_hamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decompose_hamiltonian</span></code></a>,
+<a class="reference internal" href="generated/gftool.matrix.Decomposition.from_gf.html#gftool.matrix.Decomposition.from_gf" title="gftool.matrix.Decomposition.from_gf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gf</span></code></a>,
+and <a class="reference internal" href="generated/gftool.matrix.Decomposition.from_hamiltonian.html#gftool.matrix.Decomposition.from_hamiltonian" title="gftool.matrix.Decomposition.from_hamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hamiltonian</span></code></a>.</p></li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>New index page independent of README,
+separated <a class="reference internal" href="getting-started.html"><span class="doc">Getting started</span></a> page.</p></li>
+<li><p>Improve <a class="reference internal" href="tutorial.html"><span class="doc">Tutorial</span></a> and <a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.matrix</span></code></a></p></li>
+<li><p>Generate PDF documentation on ReadTheDocs (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/3122e1ba">3122e1ba</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="internal-improvements">
+<h3>Internal improvements<a class="headerlink" href="#internal-improvements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use eigendecomposition instead of SVD in <a class="reference internal" href="generated/gftool.beb.html#module-gftool.beb" title="gftool.beb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.beb</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/0475c110">0475c110</a>)</p></li>
+<li><p>Drop slow <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asfortranarray.html#numpy.asfortranarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfortranarray</span></code></a> in <a class="reference internal" href="generated/gftool.matrix.html#module-gftool.matrix" title="gftool.matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.matrix</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/4865cc05">4865cc05</a>)</p></li>
+<li><p>Use <em class="xref py py-obj">pre-commit</em> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/6f4028d3">6f4028d3</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>0.9.1 (2021-06-01)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bug-fixes">
+<h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<p>CPA:</p>
+<ul class="simple">
+<li><p>return scalar <em class="xref py py-obj">mu</em> in <a class="reference internal" href="generated/gftool.cpa.solve_fxdocc_root.html#gftool.cpa.solve_fxdocc_root" title="gftool.cpa.solve_fxdocc_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.cpa.solve_fxdocc_root</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/10fae4d">10fae4d</a>)</p></li>
+<li><p>find <em class="xref py py-obj">mu</em> more reliably</p></li>
+</ul>
+</div>
+<div class="section" id="other-new-features">
+<h3>Other New Features<a class="headerlink" href="#other-new-features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>SIAM: add greater and lesser Green’s functions
+<a class="reference internal" href="generated/gftool.siam.gf0_loc_gr_t.html#gftool.siam.gf0_loc_gr_t" title="gftool.siam.gf0_loc_gr_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gf0_loc_gr_t</span></code></a> and <a class="reference internal" href="generated/gftool.siam.gf0_loc_le_t.html#gftool.siam.gf0_loc_le_t" title="gftool.siam.gf0_loc_le_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gf0_loc_le_t</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/ea541f3">ea541f3</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>0.9.0 (2021-05-09)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="new-features">
+<h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
+<p>Implement <a class="reference internal" href="generated/gftool.cpa.html#module-gftool.cpa" title="gftool.cpa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpa</span></code></a> and <a class="reference internal" href="generated/gftool.beb.html#module-gftool.beb" title="gftool.beb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beb</span></code></a> to treat disorder (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/c3bad20c">c3bad20c</a>)</p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>0.8.1 (2021-04-25)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>New Features<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>The 3D cubic lattices were added:</p>
+<ul class="simple">
+<li><p>body-centered cubic <a class="reference internal" href="generated/gftool.lattice.bcc.html#module-gftool.lattice.bcc" title="gftool.lattice.bcc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.bcc</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/406acef8">406acef8</a>)</p></li>
+<li><p>face-centered cubic <a class="reference internal" href="generated/gftool.lattice.fcc.html#module-gftool.lattice.fcc" title="gftool.lattice.fcc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.fcc</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/ddd559cb">ddd559cb</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>0.8.0 (2021-04-17)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>New Features<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="generated/gftool.lattice.html#module-gftool.lattice" title="gftool.lattice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice</span></code></a> module was extended, especially regarding two-dimensional lattice.
+There where also some enhancements, given DOS moments are now up to order 20,
+and they should be accurate to machine precision.</p>
+<p>The following lattices where added with full interface:</p>
+<ul class="simple">
+<li><p>Simple cubic: <a class="reference internal" href="generated/gftool.lattice.sc.html#module-gftool.lattice.sc" title="gftool.lattice.sc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.sc</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/4e3021">4e3021</a>) by <a class="reference external" href="https://github.com/aostlin">Andreas Östlin</a></p></li>
+<li><p>Honeycomb: <a class="reference internal" href="generated/gftool.lattice.honeycomb.html#module-gftool.lattice.honeycomb" title="gftool.lattice.honeycomb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.honeycomb</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/7aa3133">7aa3133</a>)</p></li>
+<li><p>Triangular: <a class="reference internal" href="generated/gftool.lattice.triangular.html#module-gftool.lattice.triangular" title="gftool.lattice.triangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.triangular</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/c56f33e">c56f33e</a>)</p></li>
+</ul>
+<p>Local Green’s function and DOS is now also available for the following lattices:</p>
+<ul class="simple">
+<li><p>Lieb: <a class="reference internal" href="generated/gftool.lattice.lieb.html#module-gftool.lattice.lieb" title="gftool.lattice.lieb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.lieb</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/c76e948">c76e948</a>)</p></li>
+<li><p>Kagome: <a class="reference internal" href="generated/gftool.lattice.kagome.html#module-gftool.lattice.kagome" title="gftool.lattice.kagome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.kagome</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/28a41c0">28a41c0</a>)</p></li>
+<li><p>Bethe lattice with general coordination: <a class="reference internal" href="generated/gftool.lattice.bethez.html#module-gftool.lattice.bethez" title="gftool.lattice.bethez"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.bethez</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/2648cf4">2648cf4</a>)</p></li>
+<li><p>Rectangular: <a class="reference internal" href="generated/gftool.lattice.rectangular.html#module-gftool.lattice.rectangular" title="gftool.lattice.rectangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.rectangular</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>Other New Features<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>add retarded time Green’s function give by its poles <a class="reference internal" href="generated/gftool.pole_gf_ret_t.html#gftool.pole_gf_ret_t" title="gftool.pole_gf_ret_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.pole_gf_ret_t</span></code></a></p></li>
+<li><p>added <a class="reference internal" href="generated/gftool.siam.html#module-gftool.siam" title="gftool.siam"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.siam</span></code></a> module with some basics for the non-interacting siam</p></li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3>Depreciations<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="generated/gftool.density.html#gftool.density" title="gftool.density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density</span></code></a> is deprecated and will likely be discontinued.
+Consider the more flexible <a class="reference internal" href="generated/gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density_iw</span></code></a> instead.</p></li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>Documentation<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Button to toggle the prompt (&gt;&gt;&gt;) was added (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/46b6f39">46b6f39</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>Internal improvements<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Ensure more accurate <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sum</span></code></a> using partial pairwise summation for
+generalized ufuncs (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/2d3baef">2d3baef</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>0.7.0 (2020-10-18)<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Breaking Changes<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="generated/gftool.pade.html#module-gftool.pade" title="gftool.pade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.pade</span></code></a> module had a minor rework.
+The behavior of filters changed. Future breaking changes are to be expected,
+the module is not well structured.</p></li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>New Features<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>add <a class="reference internal" href="generated/gftool.lattice.onedim.html#module-gftool.lattice.onedim" title="gftool.lattice.onedim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.onedim</span></code></a> for Green’s function of one-dimensional lattice</p></li>
+<li><p>add fitting of high-frequency moment to <a class="reference internal" href="generated/gftool.fourier.iw2tau.html#gftool.fourier.iw2tau" title="gftool.fourier.iw2tau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.fourier.iw2tau</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/e2c92e2">e2c92e2</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>Other New Features<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>add <a class="reference internal" href="generated/gftool.pade_frequencies.html#gftool.pade_frequencies" title="gftool.pade_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.pade_frequencies</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/9f492fc">9f492fc</a>)</p></li>
+<li><p>add <a class="reference internal" href="generated/gftool.density_iw.html#gftool.density_iw" title="gftool.density_iw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density_iw</span></code></a> function as common interface to calculate occupation
+number from Matsubara or Padé frequencies</p></li>
+<li><p>allow calculation of <a class="reference internal" href="generated/gftool.lattice.bethe.html#module-gftool.lattice.bethe" title="gftool.lattice.bethe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.bethe</span></code></a> for Bethe lattice at complex points
+(note, that this is probably not a physically meaningful quantity) (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/ccbac7b">ccbac7b</a>)</p></li>
+<li><p>add stress tensor transformation <a class="reference internal" href="generated/gftool.lattice.square.stress_trafo.html#gftool.lattice.square.stress_trafo" title="gftool.lattice.square.stress_trafo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.lattice.square.stress_trafo</span></code></a> for 2D (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/528fb21">528fb21</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h3>Bug fixes<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix constant in <a class="reference internal" href="generated/gftool.fourier.tau2iw_ft_lin.html#gftool.fourier.tau2iw_ft_lin" title="gftool.fourier.tau2iw_ft_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.fourier.tau2iw_ft_lin</span></code></a> (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/e2163e3">e2163e3</a>).
+This error most likely didn’t significantly affect any results for a reasonable
+number of tau-points.</p></li>
+<li><p><a class="reference internal" href="generated/gftool.density.html#gftool.density" title="gftool.density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool.density</span></code></a> should work now with gu-style matrices (<a class="reference external" href="https://github.com/DerWeh/gftools/commit/4deffdf">4deffdf</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h3>Documentation<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Functions exposed at the top level (<a class="reference internal" href="gftool.html#module-gftool" title="gftool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gftool</span></code></a>) should now properly appear in
+the documentation.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id18">
+<h2>0.6.1<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generated/gftool.Result.x.html" class="btn btn-neutral float-left" title="gftool.Result.x" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

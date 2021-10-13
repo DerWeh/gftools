@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.statistics &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.statistics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.statistics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functionality related or derived from the Fermi and Bose statistics.</span>
+
+<span class="sd">Per default, the functions refer to Fermi statistics,</span>
+<span class="sd">a tailing &#39;_b&#39; indicates Bose statistics instead.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span><span class="p">,</span> <span class="n">logit</span>
+
+
+<div class="viewcode-block" id="bose_fct"><a class="viewcode-back" href="../../generated/gftool.bose_fct.html#gftool.bose_fct">[docs]</a><span class="k">def</span> <span class="nf">bose_fct</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the Bose function `1/(exp(βϵ)-1)`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : complex or float or array_like</span>
+<span class="sd">        The energy at which the Bose function is evaluated.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bose_fct : complex of float or np.ndarray</span>
+<span class="sd">        The Bose function, same type as eps.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.5, 1.5, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; bose = gt.bose_fct(eps, beta=1.0)</span>
+
+<span class="sd">    The Bose function diverges at `eps=0`:</span>
+
+<span class="sd">    &gt;&gt;&gt; bose[eps==0]</span>
+<span class="sd">    array([inf])</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, bose)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/\beta$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">betaeps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">betaeps</span><span class="p">)</span>
+    <span class="n">small</span> <span class="o">=</span> <span class="n">betaeps</span> <span class="o">&lt;</span> <span class="mi">700</span>
+    <span class="n">res</span><span class="p">[</span><span class="n">small</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">betaeps</span><span class="p">[</span><span class="n">small</span><span class="p">])</span>
+    <span class="c1"># avoid overflows for big numbers using negative exponents</span>
+    <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">small</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">betaeps</span><span class="p">[</span><span class="o">~</span><span class="n">small</span><span class="p">])</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="o">-</span><span class="n">betaeps</span><span class="p">[</span><span class="o">~</span><span class="n">small</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="fermi_fct"><a class="viewcode-back" href="../../generated/gftool.fermi_fct.html#gftool.fermi_fct">[docs]</a><span class="k">def</span> <span class="nf">fermi_fct</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the Fermi function `1/(exp(βϵ)+1)`.</span>
+
+<span class="sd">    For complex inputs the function is not as accurate as for real inputs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : complex or float or np.ndarray</span>
+<span class="sd">        The energy at which the Fermi function is evaluated.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fermi_fct : complex of float or np.ndarray</span>
+<span class="sd">        The Fermi function, same type as eps.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    fermi_fct_inv : The inverse of the Fermi function for real arguments</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-15, 15, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; fermi = gt.fermi_fct(eps, beta=1.0)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, fermi)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/\beta$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">eps</span><span class="o">*</span><span class="n">beta</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">expit</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">)</span>  <span class="c1"># = 0.5 * (1. + tanh(-0.5 * beta * eps))</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># complex arguments not handled by expit</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="o">~</span><span class="n">pos</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">exp_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
+    <span class="n">res</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp_m</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">exp_m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="fermi_fct_d1"><a class="viewcode-back" href="../../generated/gftool.fermi_fct_d1.html#gftool.fermi_fct_d1">[docs]</a><span class="k">def</span> <span class="nf">fermi_fct_d1</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the 1st derivative of the Fermi function.</span>
+
+<span class="sd">    .. math:: f&#39;(ϵ) = -β\exp(βϵ)/{[\exp(βϵ)+1]}^2 = -βf(ϵ)[1-f(ϵ)]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float or float np.ndarray</span>
+<span class="sd">        The energy at which the Fermi function is evaluated.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fermi_fct_d1 : float or float np.ndarray</span>
+<span class="sd">        The Fermi function, same type as eps.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    fermi_fct</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-15, 15, num=501)</span>
+<span class="sd">    &gt;&gt;&gt; fermi_d1 = gt.fermi_fct_d1(eps, beta=1.0)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, fermi_d1)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/\beta$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(top=0)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fermi</span> <span class="o">=</span> <span class="n">fermi_fct</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">beta</span><span class="o">*</span><span class="n">fermi</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">fermi</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fermi_fct_inv"><a class="viewcode-back" href="../../generated/gftool.fermi_fct_inv.html#gftool.fermi_fct_inv">[docs]</a><span class="k">def</span> <span class="nf">fermi_fct_inv</span><span class="p">(</span><span class="n">fermi</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inverse of the Fermi function.</span>
+
+<span class="sd">    This is e.g. useful for integrals over the derivative of the Fermi function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fermi : float or float np.ndarray</span>
+<span class="sd">        The values of the Fermi function</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fermi_fct_inv : float or float np.ndarray</span>
+<span class="sd">        The inverse of the Fermi function `fermi_fct(fermi_fct_inv, beta)=fermi`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    fermi_fct</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-15, 15, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; fermi = gt.fermi_fct(eps, beta=1)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(eps, gt.fermi_fct_inv(fermi, beta=1))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">logit</span><span class="p">(</span><span class="n">fermi</span><span class="p">)</span><span class="o">/</span><span class="n">beta</span></div>
+
+
+<div class="viewcode-block" id="matsubara_frequencies"><a class="viewcode-back" href="../../generated/gftool.matsubara_frequencies.html#gftool.matsubara_frequencies">[docs]</a><span class="k">def</span> <span class="nf">matsubara_frequencies</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_points : int array_like</span>
+<span class="sd">        Points for which the Matsubara frequencies :math:`iω_n` are returned.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matsubara_frequencies : complex np.ndarray</span>
+<span class="sd">        Array of the imaginary Matsubara frequencies</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; gt.matsubara_frequencies(range(1024), beta=1)</span>
+<span class="sd">    array([0.+3.14159265e+00j, 0.+9.42477796e+00j, 0.+1.57079633e+01j, ...,</span>
+<span class="sd">           0.+6.41827379e+03j, 0.+6.42455698e+03j, 0.+6.43084016e+03j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">n_points</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;safe&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">beta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n_points</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="matsubara_frequencies_b"><a class="viewcode-back" href="../../generated/gftool.matsubara_frequencies_b.html#gftool.matsubara_frequencies_b">[docs]</a><span class="k">def</span> <span class="nf">matsubara_frequencies_b</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return *bosonic* Matsubara frequencies :math:`iν_n` for the points `n_points`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_points : int array_like</span>
+<span class="sd">        Points for which the Matsubara frequencies :math:`iν_n` are returned.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matsubara_frequencies : complex np.ndarray</span>
+<span class="sd">        Array of the imaginary Matsubara frequencies</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; gt.matsubara_frequencies_b(range(1024), beta=1)</span>
+<span class="sd">    array([0.+0.00000000e+00j, 0.+6.28318531e+00j, 0.+1.25663706e+01j, ...,</span>
+<span class="sd">           0.+6.41513220e+03j, 0.+6.42141538e+03j, 0.+6.42769857e+03j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">n_points</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;safe&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">n_points</span></div>
+
+
+<span class="k">def</span> <span class="nf">_pade_frequencies</span><span class="p">(</span><span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Temperature independent part, useful for caching.&quot;&quot;&quot;</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">num</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">num</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">eig</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite_b</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eig</span><span class="p">)</span>
+    <span class="n">izp</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">eig</span><span class="p">[</span><span class="n">sort</span><span class="p">]</span>
+    <span class="n">resids</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.25</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">eig</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="n">sort</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">izp</span><span class="p">[:</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">izp</span><span class="p">[</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">resids</span><span class="p">[:</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">resids</span><span class="p">[</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">resids</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">izp</span><span class="p">[</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">:],</span> <span class="n">resids</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">num</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+
+
+<div class="viewcode-block" id="pade_frequencies"><a class="viewcode-back" href="../../generated/gftool.pade_frequencies.html#gftool.pade_frequencies">[docs]</a><span class="k">def</span> <span class="nf">pade_frequencies</span><span class="p">(</span><span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return `num` *fermionic* Padé frequencies :math:`iz_p`.</span>
+
+<span class="sd">    The Padé frequencies are the poles of the approximation of the Fermi</span>
+<span class="sd">    function with `2*num` poles [ozaki2007]_.</span>
+<span class="sd">    This gives an non-equidistant mesh on the imaginary axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num : int</span>
+<span class="sd">        Number of positive Padé frequencies.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    izp : (num) complex np.ndarray</span>
+<span class="sd">        Positive Padé frequencies.</span>
+<span class="sd">    resids : (num) float np.ndarray</span>
+<span class="sd">        Residue of the Fermi function corresponding to `izp`. The residue is</span>
+<span class="sd">        given relative to the true residue of the Fermi function `-1/beta`</span>
+<span class="sd">        corresponding to the poles at Matsubara frequencies.</span>
+<span class="sd">        This allows to use Padé frequencies as drop-in replacement.</span>
+<span class="sd">        The actual residues are `-resids/beta`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [ozaki2007] Ozaki, Taisuke. Continued Fraction Representation of the</span>
+<span class="sd">       Fermi-Dirac Function for Large-Scale Electronic Structure Calculations.</span>
+<span class="sd">       Physical Review B 75, no. 3 (January 23, 2007): 035123.</span>
+<span class="sd">       https://doi.org/10.1103/PhysRevB.75.035123.</span>
+
+<span class="sd">    .. [hu2010] J. Hu, R.-X. Xu, and Y. Yan, “Communication: Padé spectrum</span>
+<span class="sd">       decomposition of Fermi function and Bose function,” J. Chem. Phys., vol.</span>
+<span class="sd">       133, no. 10, p.  101106, Sep. 2010, https://doi.org/10.1063/1.3484491</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Comparing Padé frequency to Matsubara frequencies:</span>
+
+<span class="sd">    &gt;&gt;&gt; izp, rp = gt.pade_frequencies(5, beta=1)</span>
+<span class="sd">    &gt;&gt;&gt; izp.imag</span>
+<span class="sd">    array([ 3.14159265,  9.42478813, 15.76218003, 24.87650795, 70.52670981])</span>
+<span class="sd">    &gt;&gt;&gt; gt.matsubara_frequencies(range(5), beta=1).imag</span>
+<span class="sd">    array([ 3.14159265,  9.42477796, 15.70796327, 21.99114858, 28.27433388])</span>
+
+<span class="sd">    Relative residue:</span>
+
+<span class="sd">    &gt;&gt;&gt; rp</span>
+<span class="sd">    array([ 1.        ,  1.00002021,  1.04839303,  2.32178225, 22.12980451])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">izp</span><span class="p">,</span> <span class="n">resids</span> <span class="o">=</span> <span class="n">_pade_frequencies</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">beta</span> <span class="o">*</span> <span class="n">izp</span><span class="p">,</span> <span class="n">resids</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

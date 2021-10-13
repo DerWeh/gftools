@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.beb.SpecDec &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.beb.SpecDec.__init__" href="gftool.beb.SpecDec.__init__.html" />
+    <link rel="prev" title="gftool.beb.solve_root" href="gftool.beb.solve_root.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gftool.beb.html">gftool.beb</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gftool.beb.html#physical-quantities">Physical quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gftool.beb.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gftool.beb.html#examples">Examples</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gftool.beb.html#api">API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.gf_loc_z.html">gftool.beb.gf_loc_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.restrict_self_root_eq.html">gftool.beb.restrict_self_root_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.self_root_eq.html">gftool.beb.self_root_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.solve_root.html">gftool.beb.solve_root</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gftool.beb.SpecDec</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.__init__.html">gftool.beb.SpecDec.__init__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.count.html">gftool.beb.SpecDec.count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.from_gf.html">gftool.beb.SpecDec.from_gf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.from_hamiltonian.html">gftool.beb.SpecDec.from_hamiltonian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.index.html">gftool.beb.SpecDec.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.partition.html">gftool.beb.SpecDec.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.reconstruct.html">gftool.beb.SpecDec.reconstruct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.truncate.html">gftool.beb.SpecDec.truncate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.eig.html">gftool.beb.SpecDec.eig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.is_trunacted.html">gftool.beb.SpecDec.is_trunacted</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.rv.html">gftool.beb.SpecDec.rv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.rv_inv.html">gftool.beb.SpecDec.rv_inv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.s.html">gftool.beb.SpecDec.s</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.u.html">gftool.beb.SpecDec.u</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gftool.beb.SpecDec.uh.html">gftool.beb.SpecDec.uh</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+          <li><a href="gftool.beb.html">gftool.beb</a> &raquo;</li>
+      <li>gftool.beb.SpecDec</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.beb.SpecDec.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gftool-beb-specdec">
+<h1>gftool.beb.SpecDec<a class="headerlink" href="#gftool-beb-specdec" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gftool.beb.SpecDec">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">gftool.beb.</span></code><code class="sig-name descname"><span class="pre">SpecDec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eig</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rv_inv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gftool/beb.html#SpecDec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gftool.beb.SpecDec" title="Permalink to this definition">¶</a></dt>
+<dd><p>SVD like spectral decomposition.</p>
+<p>Works only for N×N matrices unlike the <code class="xref py py-obj docutils literal notranslate"><span class="pre">UDecomposition</span></code> base class.</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eig</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rv_inv</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">np.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><span class="pre">None</span></a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.__init__.html#gftool.beb.SpecDec.__init__" title="gftool.beb.SpecDec.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(rv, eig, rv_inv)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.count.html#gftool.beb.SpecDec.count" title="gftool.beb.SpecDec.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.from_gf.html#gftool.beb.SpecDec.from_gf" title="gftool.beb.SpecDec.from_gf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gf</span></code></a>(gf)</p></td>
+<td><p>Decompose the inverse Green’s function matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.from_hamiltonian.html#gftool.beb.SpecDec.from_hamiltonian" title="gftool.beb.SpecDec.from_hamiltonian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hamiltonian</span></code></a>(hamilton)</p></td>
+<td><p>Decompose the Hamiltonian matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.index.html#gftool.beb.SpecDec.index" title="gftool.beb.SpecDec.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value, [start, [stop]])</p></td>
+<td><p>Raises ValueError if the value is not present.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.partition.html#gftool.beb.SpecDec.partition" title="gftool.beb.SpecDec.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code></a>([return_sqrts])</p></td>
+<td><p>Symmetrically partition the spectral decomposition as <em class="xref py py-obj">u * eig**0.5, eig**0.5 * uh</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.reconstruct.html#gftool.beb.SpecDec.reconstruct" title="gftool.beb.SpecDec.reconstruct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reconstruct</span></code></a>([eig, kind])</p></td>
+<td><p>Get matrix back from <em class="xref py py-obj">Decomposition</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.truncate.html#gftool.beb.SpecDec.truncate" title="gftool.beb.SpecDec.truncate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncate</span></code></a>([rcond])</p></td>
+<td><p>Return the truncated spectral decomposition.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.eig.html#gftool.beb.SpecDec.eig" title="gftool.beb.SpecDec.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eig</span></code></a></p></td>
+<td><p>The vector of eigenvalues.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.is_trunacted.html#gftool.beb.SpecDec.is_trunacted" title="gftool.beb.SpecDec.is_trunacted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_trunacted</span></code></a></p></td>
+<td><p>Check if SVD of square matrix is truncated/compact or full.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.rv.html#gftool.beb.SpecDec.rv" title="gftool.beb.SpecDec.rv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv</span></code></a></p></td>
+<td><p>The matrix of right eigenvectors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.rv_inv.html#gftool.beb.SpecDec.rv_inv" title="gftool.beb.SpecDec.rv_inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv_inv</span></code></a></p></td>
+<td><p>The inverse of <a class="reference internal" href="gftool.beb.SpecDec.rv.html#gftool.beb.SpecDec.rv" title="gftool.beb.SpecDec.rv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.s.html#gftool.beb.SpecDec.s" title="gftool.beb.SpecDec.s"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s</span></code></a></p></td>
+<td><p>Singular values in descending order, different from order of <a class="reference internal" href="gftool.beb.SpecDec.eig.html#gftool.beb.SpecDec.eig" title="gftool.beb.SpecDec.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eig</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.SpecDec.u.html#gftool.beb.SpecDec.u" title="gftool.beb.SpecDec.u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u</span></code></a></p></td>
+<td><p>Unitary matrix of right eigenvectors, same as <a class="reference internal" href="gftool.beb.SpecDec.rv.html#gftool.beb.SpecDec.rv" title="gftool.beb.SpecDec.rv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.uh.html#gftool.beb.SpecDec.uh" title="gftool.beb.SpecDec.uh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uh</span></code></a></p></td>
+<td><p>Hermitian conjugate of unitary matrix <a class="reference internal" href="gftool.beb.SpecDec.rv.html#gftool.beb.SpecDec.rv" title="gftool.beb.SpecDec.rv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv</span></code></a>, same as <a class="reference internal" href="gftool.beb.SpecDec.rv_inv.html#gftool.beb.SpecDec.rv_inv" title="gftool.beb.SpecDec.rv_inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rv_inv</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.beb.solve_root.html" class="btn btn-neutral float-left" title="gftool.beb.solve_root" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.beb.SpecDec.__init__.html" class="btn btn-neutral float-right" title="gftool.beb.SpecDec.__init__" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

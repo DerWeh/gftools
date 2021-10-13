@@ -1,0 +1,6 @@
+gftool.lattice.sc.dos
+=====================
+
+.. currentmodule:: gftool.lattice.sc
+
+.. autofunction:: dos

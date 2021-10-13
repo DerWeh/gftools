@@ -1,0 +1,6 @@
+gftool.lattice.onedim.dos\_moment
+=================================
+
+.. currentmodule:: gftool.lattice.onedim
+
+.. autofunction:: dos_moment

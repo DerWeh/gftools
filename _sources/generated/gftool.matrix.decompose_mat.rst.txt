@@ -1,0 +1,6 @@
+gftool.matrix.decompose\_mat
+============================
+
+.. currentmodule:: gftool.matrix
+
+.. autofunction:: decompose_mat

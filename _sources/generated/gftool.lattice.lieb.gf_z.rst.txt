@@ -1,0 +1,6 @@
+gftool.lattice.lieb.gf\_z
+=========================
+
+.. currentmodule:: gftool.lattice.lieb
+
+.. autofunction:: gf_z

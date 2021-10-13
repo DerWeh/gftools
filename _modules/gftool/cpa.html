@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.cpa &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.cpa</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.cpa</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Coherent cluster approximation (CPA) to substitutional disorder.</span>
+
+<span class="sd">For a high-level interface use `solve_root` to solve the CPA problem for</span>
+<span class="sd">arbitrary frequencies `z`.</span>
+<span class="sd">Solutions for fixed occupation `occ` can be obtained on the imaginary axis only</span>
+<span class="sd">using `solve_fxdocc_root`.</span>
+
+<span class="sd">Fixed occupation on the real axis is currently not support. We recommend</span>
+<span class="sd">obtaining the chemical potential `mu` for the given `occ` using</span>
+<span class="sd">`solve_fxdocc_root` on the imaginary axis, and then run `solve_root` with the</span>
+<span class="sd">given `mu` on the real axis. In fact, we expect this to be more stable than</span>
+<span class="sd">fixing the charge on the real axis directly.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=too-many-locals</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">NamedTuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="kn">from</span> <span class="nn">gftool.density</span> <span class="kn">import</span> <span class="n">density_iw</span><span class="p">,</span> <span class="n">chemical_potential</span>
+
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Join arguments to 1D array for use in `optimize`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    args : array_like</span>
+<span class="sd">        Arrays to join together.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    joined : np.ndarray</span>
+<span class="sd">        1D array containing all flattened elements of `args`.</span>
+<span class="sd">    shapes : list of tuple of int</span>
+<span class="sd">        Shapes of all `args`. This is necessary to perform the inverse</span>
+<span class="sd">        operation `_split`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span> <span class="k">for</span> <span class="n">ar</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="n">joined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">ar</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">ar</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ar</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">ar</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">joined</span><span class="p">,</span> <span class="n">shapes</span>
+
+
+<span class="k">def</span> <span class="nf">_split</span><span class="p">(</span><span class="n">joined</span><span class="p">,</span> <span class="n">shapes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inverse operation to `_join` separating arrays.&quot;&quot;&quot;</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span> <span class="k">for</span> <span class="n">sh</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">splited</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">joined</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sizes</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span><span class="p">,</span> <span class="n">sh</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">splited</span><span class="p">,</span> <span class="n">shapes</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="gf_cmpt_z"><a class="viewcode-back" href="../../generated/gftool.cpa.gf_cmpt_z.html#gftool.cpa.gf_cmpt_z">[docs]</a><span class="k">def</span> <span class="nf">gf_cmpt_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">self_cpa_z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Green&#39;s function for the components embedded in `self_cpa_z`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z, self_cpa_z : (...) complex np.ndarray</span>
+<span class="sd">        Frequency points and corresponding CPA self-energy.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float of complex np.ndarray</span>
+<span class="sd">        On-site energy of the components. This can also include a local</span>
+<span class="sd">        frequency dependent self-energy of the component sites.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the coherent Green&#39;s</span>
+<span class="sd">        function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_cmpt_z : (..., N_cmpt) complex np.ndarray</span>
+<span class="sd">        The Green&#39;s function of the components embedded in `self_cpa_z`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gf_coher_z</span> <span class="o">=</span> <span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">self_cpa_z</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gf_coher_z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">e_onsite</span> <span class="o">-</span> <span class="n">self_cpa_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span><span class="o">*</span><span class="n">gf_coher_z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="self_root_eq"><a class="viewcode-back" href="../../generated/gftool.cpa.self_root_eq.html#gftool.cpa.self_root_eq">[docs]</a><span class="k">def</span> <span class="nf">self_root_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span>
+                 <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Root equation r(Σ)=0 for CPA.</span>
+
+<span class="sd">    The root equation writes `r(Σ, z) = T(z) / (1 + T(z)*hilbert_trafo(z-Σ))`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    self_cpa_z : (...) complex np.ndarray</span>
+<span class="sd">        CPA self-energy.</span>
+<span class="sd">    z : (...) complex array_like</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float or complex np.ndarray</span>
+<span class="sd">        On-site energy of the components. This can also include a local</span>
+<span class="sd">        frequency dependent self-energy of the component sites.</span>
+<span class="sd">    concentration : (..., N_cmpt) float array_like</span>
+<span class="sd">        Concentration of the different components used for the average.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the coherent Green&#39;s</span>
+<span class="sd">        function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    remainder : (...) complex np.ndarray</span>
+<span class="sd">        The result of r(Σ), if it is `0` and hence a root, `self_cpa_z` is the</span>
+<span class="sd">        correct CPA self-energy.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gf_coher_z</span> <span class="o">=</span> <span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">self_cpa_z</span><span class="p">)</span>
+    <span class="n">energy_diff</span> <span class="o">=</span> <span class="n">e_onsite</span> <span class="o">-</span> <span class="n">self_cpa_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">concentration</span> <span class="o">*</span> <span class="n">energy_diff</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">energy_diff</span><span class="o">*</span><span class="n">gf_coher_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">T</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">T</span><span class="o">*</span><span class="n">gf_coher_z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="self_fxdpnt_eq"><a class="viewcode-back" href="../../generated/gftool.cpa.self_fxdpnt_eq.html#gftool.cpa.self_fxdpnt_eq">[docs]</a><span class="k">def</span> <span class="nf">self_fxdpnt_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span>
+                   <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Fixed-point equation f(Σ)=Σ for CPA.</span>
+
+<span class="sd">    The fixed-point equation writes `f(Σ, z) = Σ + T(z) / (1 + T(z)*hilbert_trafo(z-Σ))`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    self_cpa_z : (...) complex np.ndarray</span>
+<span class="sd">        CPA self-energy.</span>
+<span class="sd">    z : (...) complex array_like</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float complex np.ndarray</span>
+<span class="sd">        On-site energy of the components. This can also include a local</span>
+<span class="sd">        frequency dependent self-energy of the component sites.</span>
+<span class="sd">    concentration : (..., N_cmpt) float array_like</span>
+<span class="sd">        Concentration of the different components used for the average.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the coherent Green&#39;s</span>
+<span class="sd">        function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    self_cpa_z_new : (..., N_z) complex np.ndarray</span>
+<span class="sd">        The new self-energy f(Σ), if it is Σ again and hence a fixed-point,</span>
+<span class="sd">        `self_cpa_z_new` is the correct CPA self-energy.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">self_cpa_z</span> <span class="o">+</span> <span class="n">self_root_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="o">=</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
+                                     <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert_trafo</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="restrict_self_root_eq"><a class="viewcode-back" href="../../generated/gftool.cpa.restrict_self_root_eq.html#gftool.cpa.restrict_self_root_eq">[docs]</a><span class="k">def</span> <span class="nf">restrict_self_root_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrap `self_root_eq` to restrict the solutions to `self_cpa_z.imag &gt; 0`.&quot;&quot;&quot;</span>
+    <span class="n">unphysical</span> <span class="o">=</span> <span class="n">self_cpa_z</span><span class="o">.</span><span class="n">imag</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">~</span><span class="n">unphysical</span><span class="p">):</span>  <span class="c1"># no need for restrictions</span>
+        <span class="k">return</span> <span class="n">self_root_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">self_cpa_z</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># distance to physical solution</span>
+    <span class="c1"># print(&#39;&gt;&#39;, max(distance))</span>
+    <span class="n">self_cpa_z</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">self_root_eq</span><span class="p">(</span><span class="n">self_cpa_z</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">))</span>
+    <span class="n">root</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">distance</span><span class="p">)</span>  <span class="c1"># linearly enlarge residues</span>
+    <span class="c1"># kill unphysical roots</span>
+    <span class="n">root</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">real</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">root</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">imag</span><span class="p">[</span><span class="n">unphysical</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">root</span></div>
+
+
+<div class="viewcode-block" id="solve_root"><a class="viewcode-back" href="../../generated/gftool.cpa.solve_root.html#gftool.cpa.solve_root">[docs]</a><span class="k">def</span> <span class="nf">solve_root</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">],</span>
+               <span class="n">self_cpa_z0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restricted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determine the CPA self-energy by solving the root problem.</span>
+
+<span class="sd">    Note that the result should be checked, whether the obtained solution is</span>
+<span class="sd">    physical.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex array_like</span>
+<span class="sd">        Frequency points.</span>
+<span class="sd">    e_onsite : (..., N_cmpt) float or complex np.ndarray</span>
+<span class="sd">        On-site energy of the components. This can also include a local</span>
+<span class="sd">        frequency dependent self-energy of the component sites.</span>
+<span class="sd">    concentration : (..., N_cmpt) float array_like</span>
+<span class="sd">        Concentration of the different components used for the average.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the coherent Green&#39;s</span>
+<span class="sd">        function.</span>
+<span class="sd">    self_cpa_z0 : (...) complex np.ndarray, optional</span>
+<span class="sd">        Starting guess for CPA self-energy.</span>
+<span class="sd">    restricted : bool, optional</span>
+<span class="sd">        Whether `self_cpa_z` is restricted to `self_cpa_z.imag &lt;= 0`. (default: True)</span>
+<span class="sd">        Note, that even if `restricted=True`, the imaginary part can get negative</span>
+<span class="sd">        within tolerance. This should be removed by hand if necessary.</span>
+<span class="sd">    root_kwds</span>
+<span class="sd">        Additional arguments passed to `scipy.optimize.root`.</span>
+<span class="sd">        `method` can be used to choose a solver.</span>
+<span class="sd">        `options=dict(fatol=tol)` can be specified to set the desired tolerance</span>
+<span class="sd">        `tol`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    self_cpa_z : (...) complex np.ndarray</span>
+<span class="sd">        The CPA self-energy as the root of `self_root_eq`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If unable to find a solution.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from functools import partial</span>
+<span class="sd">    &gt;&gt;&gt; parameter = dict(</span>
+<span class="sd">    ...     e_onsite=[-0.3, 0.3],</span>
+<span class="sd">    ...     concentration=[0.3, 0.7],</span>
+<span class="sd">    ...     hilbert_trafo=partial(gt.bethe_gf_z, half_bandwidth=1),</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.5, 1.5, num=5000) + 1e-10j</span>
+<span class="sd">    &gt;&gt;&gt; self_cpa_ww = gt.cpa.solve_root(ww, **parameter)</span>
+<span class="sd">    &gt;&gt;&gt; del parameter[&#39;concentration&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; gf_cmpt_ww = gt.cpa.gf_cmpt_z(ww, self_cpa_ww, **parameter)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 0].imag)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 1].imag)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For `restricted=True` root-serach, we made good experince with the methods</span>
+<span class="sd">    `&#39;anderson&#39;`, `&#39;krylov&#39;` and `&#39;df-sane&#39;`.</span>
+<span class="sd">    For `restricted=False`, we made made good experince with the method `&#39;broyden2&#39;`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">concentration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">concentration</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">self_cpa_z0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># static average + 0j to make it complex array</span>
+        <span class="n">self_cpa_z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">e_onsite</span> <span class="o">*</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">0</span><span class="n">j</span>
+        <span class="n">self_cpa_z0</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">self_cpa_z0</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># make sure that `self_cpa_z0` has right shape of output for root</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">concentration</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">self_cpa_z0</span><span class="p">)</span>
+        <span class="n">self_cpa_z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">self_cpa_z0</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">root_eq</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">restrict_self_root_eq</span> <span class="k">if</span> <span class="n">restricted</span> <span class="k">else</span> <span class="n">self_root_eq</span><span class="p">,</span>
+                      <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="o">=</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
+                      <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert_trafo</span><span class="p">)</span>
+
+    <span class="n">root_kwds</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;anderson&quot;</span> <span class="k">if</span> <span class="n">restricted</span> <span class="k">else</span> <span class="s2">&quot;broyden2&quot;</span><span class="p">)</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">root_eq</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">self_cpa_z0</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="RootFxdocc"><a class="viewcode-back" href="../../generated/gftool.cpa.RootFxdocc.html#gftool.cpa.RootFxdocc">[docs]</a><span class="k">class</span> <span class="nc">RootFxdocc</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CPA solution for the self-energy root-equation for fixed occupation.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    self_cpa : np.ndarray or complex</span>
+<span class="sd">        The CPA self-energy.</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        Chemical potential.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">self_cpa</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+<div class="viewcode-block" id="solve_fxdocc_root"><a class="viewcode-back" href="../../generated/gftool.cpa.solve_fxdocc_root.html#gftool.cpa.solve_fxdocc_root">[docs]</a><span class="k">def</span> <span class="nf">solve_fxdocc_root</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">complex</span><span class="p">],</span> <span class="nb">complex</span><span class="p">],</span>
+                      <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">occ</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">self_cpa_iw0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                      <span class="n">weights</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_fit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">restricted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RootFxdocc</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Determine the CPA self-energy by solving the root problem for fixed `occ`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    iws : (N_iw) complex array_like</span>
+<span class="sd">        Positive fermionic Matsubara frequencies.</span>
+<span class="sd">    e_onsite : (N_cmpt) float or (..., N_iw, N_cmpt) complex np.ndarray</span>
+<span class="sd">        On-site energy of the components. This can also include a local</span>
+<span class="sd">        frequency dependent self-energy of the component sites.</span>
+<span class="sd">        If multiple non-frequency dependent on-site energies should be</span>
+<span class="sd">        considered simultaneously, pass an on-site energy with `N_z=1`:</span>
+<span class="sd">        `e_onsite[..., np.newaxis, :]`.</span>
+<span class="sd">    concentration : (..., N_cmpt) float array_like</span>
+<span class="sd">        Concentration of the different components used for the average.</span>
+<span class="sd">    hilbert_trafo : Callable[[complex], complex]</span>
+<span class="sd">        Hilbert transformation of the lattice to calculate the coherent Green&#39;s</span>
+<span class="sd">        function.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Inverse temperature.</span>
+<span class="sd">    occ : float</span>
+<span class="sd">        Total occupation.</span>
+<span class="sd">    self_cpa_iw0, mu0 : (..., N_iw) complex np.ndarray and float, optional</span>
+<span class="sd">        Starting guess for CPA self-energy and chemical potential.</span>
+<span class="sd">        `self_cpa_iw0` implicitly contains the chemical potential `mu0`,</span>
+<span class="sd">        thus they should match.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    root.self_cpa : (..., N_iw) complex np.ndarray</span>
+<span class="sd">        The CPA self-energy as the root of `self_root_eq`.</span>
+<span class="sd">    root.mu : float</span>
+<span class="sd">        Chemical potential for the given occupation `occ`.</span>
+
+<span class="sd">    Other Parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    weights : (N_iw) float np.ndarray, optional</span>
+<span class="sd">        Passed to `gftool.density_iw`.</span>
+<span class="sd">        Residues of the frequencies with respect to the residues of the</span>
+<span class="sd">        Matsubara frequencies `1/beta`. (default: 1.)</span>
+<span class="sd">        For Padé frequencies this needs to be provided.</span>
+<span class="sd">    n_fit : int, optional</span>
+<span class="sd">        Passed to `gftool.density_iw`.</span>
+<span class="sd">        Number of additionally fitted moments. If Padé frequencies</span>
+<span class="sd">        are used, this is typically not necessary. (default: 0)</span>
+<span class="sd">    restricted : bool, optional</span>
+<span class="sd">        Whether `self_cpa_z` is restricted to `self_cpa_z.imag &lt;= 0`. (default: True)</span>
+<span class="sd">        Note, that even if `restricted=True`, the imaginary part can get negative</span>
+<span class="sd">        within tolerance. This should be removed by hand if necessary.</span>
+<span class="sd">    root_kwds</span>
+<span class="sd">        Additional arguments passed to `scipy.optimize.root`.</span>
+<span class="sd">        `method` can be used to choose a solver.</span>
+<span class="sd">        `options=dict(fatol=tol)` can be specified to set the desired tolerance</span>
+<span class="sd">        `tol`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If unable to find a solution.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    solve_root</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from functools import partial</span>
+<span class="sd">    &gt;&gt;&gt; beta = 30</span>
+<span class="sd">    &gt;&gt;&gt; e_onsite = [-0.3, 0.3]</span>
+<span class="sd">    &gt;&gt;&gt; conc = [0.3, 0.7]</span>
+<span class="sd">    &gt;&gt;&gt; hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)</span>
+<span class="sd">    &gt;&gt;&gt; occ = 0.5,</span>
+
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range(1024), beta=30)</span>
+<span class="sd">    &gt;&gt;&gt; self_cpa_iw, mu = gt.cpa.solve_fxdocc_root(iws, e_onsite, conc,</span>
+<span class="sd">    ...                                            hilbert, occ=occ, beta=beta)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(iws.imag, self_cpa_iw.imag, &#39;+--&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.axhline(np.average(e_onsite, weights=conc) - mu)</span>
+<span class="sd">    &gt;&gt;&gt; __ = plt.plot(iws.imag, self_cpa_iw.real, &#39;x--&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    check occupation</span>
+
+<span class="sd">    &gt;&gt;&gt; gf_coher_iw = hilbert(iws - self_cpa_iw)</span>
+<span class="sd">    &gt;&gt;&gt; gt.density_iw(iws, gf_coher_iw, beta=beta, moments=[1, self_cpa_iw[-1].real])</span>
+<span class="sd">    0.499999...</span>
+
+<span class="sd">    check CPA</span>
+
+<span class="sd">    &gt;&gt;&gt; self_compare = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, conc,</span>
+<span class="sd">    ...                                  hilbert_trafo=hilbert)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(self_cpa_iw, self_compare, atol=1e-5)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">concentration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">concentration</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">e_onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">self_cpa_iw0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># static average + 0j to make it complex array</span>
+        <span class="n">self_cpa_iw0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">e_onsite</span> <span class="o">*</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu0</span> <span class="o">+</span> <span class="mi">0</span><span class="n">j</span>
+        <span class="n">self_cpa_iw0</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">self_cpa_iw0</span><span class="p">,</span> <span class="n">iws</span><span class="p">)</span>
+    <span class="n">self_cpa_nomu</span> <span class="o">=</span> <span class="n">self_cpa_iw0</span> <span class="o">+</span> <span class="n">mu0</span>  <span class="c1"># strip contribution of mu</span>
+
+    <span class="c1"># TODO: use on-site energy to estimate m2+mu, which only has to be adjusted by mu</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">self_cpa_iw0</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_occ_diff</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">gf_coher_iw</span> <span class="o">=</span> <span class="n">hilbert_trafo</span><span class="p">(</span><span class="n">iws</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>  <span class="c1"># for large iws, real part should static part</span>
+        <span class="n">occ_root</span> <span class="o">=</span> <span class="n">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="o">=</span><span class="n">gf_coher_iw</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
+                              <span class="n">moments</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">n_fit</span><span class="o">=</span><span class="n">n_fit</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">occ_root</span> <span class="o">-</span> <span class="n">occ</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">chemical_potential</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mu</span><span class="p">:</span> <span class="n">_occ_diff</span><span class="p">(</span><span class="n">self_cpa_nomu</span> <span class="o">-</span> <span class="n">mu</span><span class="p">),</span> <span class="n">mu0</span><span class="o">=</span><span class="n">mu0</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;VCA chemical potential: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+    <span class="c1"># one iteration gives the ATA: average t-matrix approximation</span>
+    <span class="n">self_cpa_nomu</span> <span class="o">=</span> <span class="n">self_fxdpnt_eq</span><span class="p">(</span><span class="n">self_cpa_nomu</span> <span class="o">-</span> <span class="n">mu</span><span class="p">,</span> <span class="n">iws</span><span class="p">,</span> <span class="n">e_onsite</span> <span class="o">-</span> <span class="n">mu</span><span class="p">,</span>
+                                   <span class="n">concentration</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="p">)</span> <span class="o">+</span> <span class="n">mu</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">chemical_potential</span><span class="p">(</span><span class="k">lambda</span> <span class="n">mu</span><span class="p">:</span> <span class="n">_occ_diff</span><span class="p">(</span><span class="n">self_cpa_nomu</span> <span class="o">-</span> <span class="n">mu</span><span class="p">),</span> <span class="n">mu0</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ATA chemical potential: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+
+    <span class="n">x0</span><span class="p">,</span> <span class="n">shapes</span> <span class="o">=</span> <span class="n">_join</span><span class="p">([</span><span class="n">mu</span><span class="p">],</span> <span class="n">self_cpa_nomu</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">self_cpa_nomu</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+    <span class="n">self_root_eq_</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">restrict_self_root_eq</span> <span class="k">if</span> <span class="n">restricted</span> <span class="k">else</span> <span class="n">self_root_eq</span><span class="p">,</span>
+                            <span class="n">z</span><span class="o">=</span><span class="n">iws</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert_trafo</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">root_eq</span><span class="p">(</span><span class="n">mu_selfcpa</span><span class="p">):</span>
+        <span class="n">mu</span><span class="p">,</span> <span class="n">self_cpa_re</span><span class="p">,</span> <span class="n">self_cpa_im</span> <span class="o">=</span> <span class="n">_split</span><span class="p">(</span><span class="n">mu_selfcpa</span><span class="p">,</span> <span class="n">shapes</span><span class="p">)</span>
+        <span class="n">self_cpa</span> <span class="o">=</span> <span class="n">self_cpa_re</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">self_cpa_im</span> <span class="o">-</span> <span class="n">mu</span>  <span class="c1"># add contribution of mu</span>
+        <span class="n">self_root</span> <span class="o">=</span> <span class="n">self_root_eq_</span><span class="p">(</span><span class="n">self_cpa</span><span class="p">,</span> <span class="n">e_onsite</span><span class="o">=</span><span class="n">e_onsite</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="n">occ_root</span> <span class="o">=</span> <span class="n">_occ_diff</span><span class="p">(</span><span class="n">self_cpa</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_join</span><span class="p">([</span><span class="n">self_root</span><span class="o">.</span><span class="n">size</span><span class="o">*</span><span class="n">occ_root</span><span class="p">],</span>
+                     <span class="n">self_root</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">self_root</span><span class="o">.</span><span class="n">imag</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">root_kwds</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;krylov&quot;</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Search CPA self-energy root&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;callback&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root_kwds</span> <span class="ow">and</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+        <span class="c1"># setup LOGGER if no &#39;callback&#39; is provided</span>
+        <span class="n">root_kwds</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s1">&#39;Residue: mu=</span><span class="si">%+6g</span><span class="s1">   cpa=</span><span class="si">%6g</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="p">)</span>
+
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">root_eq</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="o">**</span><span class="n">root_kwds</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CPA self-energy root found after </span><span class="si">%s</span><span class="s2"> iterations.&quot;</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">nit</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">mu</span><span class="p">,</span> <span class="n">self_cpa_re</span><span class="p">,</span> <span class="n">self_cpa_im</span> <span class="o">=</span> <span class="n">_split</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">shapes</span><span class="p">)</span>
+    <span class="n">self_cpa</span> <span class="o">=</span> <span class="n">self_cpa_re</span> <span class="o">-</span> <span class="n">mu</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">self_cpa_im</span>  <span class="c1"># add contribution of mu</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;CPA chemical potential: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mu</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">RootFxdocc</span><span class="p">(</span><span class="n">self_cpa</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="o">.</span><span class="n">item</span><span class="p">())</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

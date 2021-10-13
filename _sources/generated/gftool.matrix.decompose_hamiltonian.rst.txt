@@ -1,0 +1,6 @@
+gftool.matrix.decompose\_hamiltonian
+====================================
+
+.. currentmodule:: gftool.matrix
+
+.. autofunction:: decompose_hamiltonian

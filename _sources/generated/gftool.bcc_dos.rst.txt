@@ -1,0 +1,6 @@
+﻿gftool.bcc\_dos
+===============
+
+.. currentmodule:: gftool
+
+.. autofunction:: bcc_dos

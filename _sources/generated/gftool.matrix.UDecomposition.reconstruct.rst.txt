@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.reconstruct
+========================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: UDecomposition.reconstruct

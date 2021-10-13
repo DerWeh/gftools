@@ -1,0 +1,6 @@
+﻿gftool.fermi\_fct
+=================
+
+.. currentmodule:: gftool
+
+.. autofunction:: fermi_fct

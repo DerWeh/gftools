@@ -1,0 +1,6 @@
+gftool.pade.KindSelector.islice
+===============================
+
+.. currentmodule:: gftool.pade
+
+.. automethod:: KindSelector.islice

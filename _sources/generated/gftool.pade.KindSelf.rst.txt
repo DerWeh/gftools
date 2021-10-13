@@ -1,0 +1,32 @@
+gftool.pade.KindSelf
+====================
+
+.. currentmodule:: gftool.pade
+
+.. autoclass:: KindSelf
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~KindSelf.__init__
+      ~KindSelf.islice
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~KindSelf.slice
+   
+   

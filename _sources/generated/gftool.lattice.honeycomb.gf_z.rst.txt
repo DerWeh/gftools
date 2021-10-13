@@ -1,0 +1,6 @@
+gftool.lattice.honeycomb.gf\_z
+==============================
+
+.. currentmodule:: gftool.lattice.honeycomb
+
+.. autofunction:: gf_z

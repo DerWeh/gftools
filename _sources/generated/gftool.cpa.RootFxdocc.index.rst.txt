@@ -1,0 +1,6 @@
+gftool.cpa.RootFxdocc.index
+===========================
+
+.. currentmodule:: gftool.cpa
+
+.. automethod:: RootFxdocc.index

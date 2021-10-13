@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.density &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.density</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.density</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Calculate density from Green&#39;s function.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_gu_sum</span>
+<span class="kn">from</span> <span class="nn">gftool.basis.pole</span> <span class="kn">import</span> <span class="n">PoleGf</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="density_iw"><a class="viewcode-back" href="../../generated/gftool.density_iw.html#gftool.density_iw">[docs]</a><span class="k">def</span> <span class="nf">density_iw</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,),</span> <span class="n">n_fit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the number density of the Green&#39;s function `gf_iw` at finite temperature `beta`.</span>
+
+<span class="sd">    This function can be used for fermionic Matsubara frequencies `matsubara_frequencies`,</span>
+<span class="sd">    as well as fermionic Padé frequencies `pade_frequencies`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    iws, gf_iw : (..., N_iw) complex np.ndarray</span>
+<span class="sd">        Positive Matsubara frequencies :math:`iω_n` (or Padé :math:`iz_p`)</span>
+<span class="sd">        and the Green&#39;s function at these frequencies.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+<span class="sd">    weights : (..., N_iw) float np.ndarray, optional</span>
+<span class="sd">        Residues of the frequencies with respect to the residues of the</span>
+<span class="sd">        Matsubara frequencies `1/beta`. (default: 1.)</span>
+<span class="sd">        For Padé frequencies this needs to be provided.</span>
+<span class="sd">    moments : (..., M) float array_like, optional</span>
+<span class="sd">        Moments of the high-frequency expansion, where</span>
+<span class="sd">        `G(z) = np.sum(moments / z**np.arange(N))` for large `z`.</span>
+<span class="sd">    n_fit : int, optional</span>
+<span class="sd">        Number of additionally to `moments` fitted moments. If Padé frequencies</span>
+<span class="sd">        are used, this is typically not necessary. (default: 0)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    occ : float</span>
+<span class="sd">        The number density of the given Green&#39;s function `gf_iw`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    matsubara_frequencies : Method generating Matsubara frequencies `iws`.</span>
+<span class="sd">    pade_frequencies : Method generating Padé frequencies `iws` with `weights`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 50</span>
+<span class="sd">    &gt;&gt;&gt; iws = gt.matsubara_frequencies(range(1024), beta=BETA)</span>
+
+<span class="sd">    Example Green&#39;s function</span>
+
+<span class="sd">    &gt;&gt;&gt; np.random.seed(0)  # to have deterministic results</span>
+<span class="sd">    &gt;&gt;&gt; poles = 2*np.random.random(10) - 1  # partially filled</span>
+<span class="sd">    &gt;&gt;&gt; residues = np.random.random(10); residues = residues / np.sum(residues)</span>
+<span class="sd">    &gt;&gt;&gt; pole_gf = gt.basis.PoleGf(poles=poles, residues=residues)</span>
+<span class="sd">    &gt;&gt;&gt; gf_iw = pole_gf.eval_z(iws)</span>
+<span class="sd">    &gt;&gt;&gt; exact = pole_gf.occ(BETA)</span>
+<span class="sd">    &gt;&gt;&gt; exact</span>
+<span class="sd">    0.17858151698239388</span>
+
+<span class="sd">    Numerical calculation of the occupation number,</span>
+<span class="sd">    using Matsubara frequency</span>
+
+<span class="sd">    &gt;&gt;&gt; occ = gt.density_iw(iws, gf_iw, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; m2 = pole_gf.moments(2)  # additional high-frequency moment</span>
+<span class="sd">    &gt;&gt;&gt; occ_m2 = gt.density_iw(iws, gf_iw, beta=BETA, moments=[1., m2])</span>
+<span class="sd">    &gt;&gt;&gt; occ_fit2 = gt.density_iw(iws, gf_iw, beta=BETA, n_fit=1)</span>
+<span class="sd">    &gt;&gt;&gt; exact, occ, occ_m2, occ_fit2</span>
+<span class="sd">    (0.17858151..., 0.17934437..., 0.17858150..., 0.17858198...)</span>
+<span class="sd">    &gt;&gt;&gt; abs(occ - exact), abs(occ_m2 - exact), abs(occ_fit2 - exact)</span>
+<span class="sd">    (0.00076286..., 8.18...e-09, 4.72...e-07)</span>
+
+<span class="sd">    using more accurate Padé frequencies</span>
+
+<span class="sd">    &gt;&gt;&gt; izp, rp = gt.pade_frequencies(100, beta=BETA)</span>
+<span class="sd">    &gt;&gt;&gt; gf_izp = pole_gf.eval_z(izp)</span>
+<span class="sd">    &gt;&gt;&gt; occ_izp = gt.density_iw(izp, gf_izp, beta=BETA, weights=rp)</span>
+<span class="sd">    &gt;&gt;&gt; occ_izp</span>
+<span class="sd">    0.17858151...</span>
+<span class="sd">    &gt;&gt;&gt; abs(occ_izp - exact) &lt; 1e-14</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># add axis for iws, remove it later at occupation</span>
+    <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">moments</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="n">n_fit</span><span class="p">:</span>
+        <span class="n">n_mom</span> <span class="o">=</span> <span class="n">moments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">iws</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="p">(</span><span class="n">n_mom</span><span class="o">+</span><span class="n">n_fit</span><span class="p">)</span>
+        <span class="n">mom_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_z</span><span class="p">(</span><span class="n">iws</span><span class="p">,</span> <span class="n">gf_iw</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="n">n_pole</span><span class="o">=</span><span class="n">n_fit</span><span class="o">+</span><span class="n">n_mom</span><span class="p">,</span>
+                               <span class="n">moments</span><span class="o">=</span><span class="n">moments</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mom_gf</span> <span class="o">=</span> <span class="n">PoleGf</span><span class="o">.</span><span class="n">from_moments</span><span class="p">(</span><span class="n">moments</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">delta_gf_iw</span> <span class="o">=</span> <span class="n">gf_iw</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">mom_gf</span><span class="o">.</span><span class="n">eval_z</span><span class="p">(</span><span class="n">iws</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="mf">2.</span><span class="o">/</span><span class="n">beta</span><span class="o">*</span><span class="n">_gu_sum</span><span class="p">(</span><span class="n">weights</span> <span class="o">*</span> <span class="n">delta_gf_iw</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="o">+</span> <span class="n">mom_gf</span><span class="o">.</span><span class="n">occ</span><span class="p">(</span><span class="n">beta</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="chemical_potential"><a class="viewcode-back" href="../../generated/gftool.chemical_potential.html#gftool.chemical_potential">[docs]</a><span class="k">def</span> <span class="nf">chemical_potential</span><span class="p">(</span><span class="n">occ_root</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">mu0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">step0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Search chemical potential for a given occupation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    occ_root : callable</span>
+<span class="sd">        Function `occ_root(mu_i) -&gt; occ_i - occ`, which returns the difference</span>
+<span class="sd">        in occupation to the desired occupation `occ` for a chemical potential</span>
+<span class="sd">        `mu_i`.</span>
+<span class="sd">        Note that the sign is important, `occ_i - occ` has to be returned!</span>
+<span class="sd">    mu0 : float, optional</span>
+<span class="sd">        The starting guess for the chemical potential. (default: 0)</span>
+<span class="sd">    step0 : float, optional</span>
+<span class="sd">        Starting step-width for the bracket search. A reasonable guess is of</span>
+<span class="sd">        the order of the band-width. (default: 1)</span>
+<span class="sd">    kwds</span>
+<span class="sd">        Additional keyword arguments passed to `scipy.optimize.root_scalar`.</span>
+<span class="sd">        Common arguments might be `xtol` or `rtol` for absolute or relative</span>
+<span class="sd">        tolerance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        The chemical potential given the correct charge `occ_root(mu)=0`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If either no bracket can be found (this should only happen for the</span>
+<span class="sd">        complete empty or completely filled case),</span>
+<span class="sd">        or if the scalar root search in the bracket fails.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The search for a chemical potential is a two-step procedure:</span>
+<span class="sd">    *First*, we search for a bracket `[mua, mub]` with</span>
+<span class="sd">    `occ_root(mua) &lt; 0 &lt; occ_root(mub)`. We use that the occupation is a</span>
+<span class="sd">    monotonous increasing function of the chemical potential `mu`.</span>
+<span class="sd">    *Second*, we perform a standard root-search in `[mua, mub]` which is done</span>
+<span class="sd">    using `scipy.optimize.root_scalar`, Brent&#39;s method is currently used as</span>
+<span class="sd">    default.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We search for the occupation of a simple 3-level system, where the</span>
+<span class="sd">    occupation of each level is simply given by the Fermi function:</span>
+
+<span class="sd">    &gt;&gt;&gt; occ = 1.67  # desired total occupation</span>
+<span class="sd">    &gt;&gt;&gt; BETA = 100  # inverse temperature</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.random.random(3)</span>
+<span class="sd">    &gt;&gt;&gt; def occ_fct(mu):</span>
+<span class="sd">    ...     return gt.fermi_fct(eps - mu, beta=BETA).sum()</span>
+<span class="sd">    &gt;&gt;&gt; mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)</span>
+<span class="sd">    &gt;&gt;&gt; occ_fct(mu), occ</span>
+<span class="sd">    (1.67000..., 1.67)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># find a bracket</span>
+    <span class="n">delta_occ0</span> <span class="o">=</span> <span class="n">occ_root</span><span class="p">(</span><span class="n">mu0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">delta_occ0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># has already correct occupation</span>
+        <span class="k">return</span> <span class="n">mu0</span>
+    <span class="n">sign0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">delta_occ0</span><span class="p">)</span>  <span class="c1"># whether occupation is too large or too small</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="n">step0</span> <span class="o">*</span> <span class="n">delta_occ0</span>
+
+    <span class="n">mu1</span> <span class="o">=</span> <span class="n">mu0</span>
+    <span class="n">loops</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">occ_root</span><span class="p">(</span><span class="n">mu0</span> <span class="o">+</span> <span class="n">step</span><span class="p">))</span> <span class="o">==</span> <span class="n">sign0</span><span class="p">:</span>
+        <span class="n">mu1</span> <span class="o">=</span> <span class="n">mu0</span> <span class="o">+</span> <span class="n">step</span>
+        <span class="n">step</span> <span class="o">*=</span> <span class="mi">2</span>  <span class="c1"># increase step width exponentially till a bounds are found</span>
+        <span class="n">loops</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">loops</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No bracket `occ_root(mua) &lt; 0 &lt; occ_root(mub)` could be found.&quot;</span><span class="p">)</span>
+    <span class="n">bracket</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">mu1</span><span class="p">,</span> <span class="n">mu0</span><span class="o">+</span><span class="n">step</span><span class="p">]))</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Bracket found after </span><span class="si">%s</span><span class="s2"> iterations.&quot;</span><span class="p">,</span> <span class="n">loops</span><span class="p">)</span>
+    <span class="n">root_res</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">root_scalar</span><span class="p">(</span><span class="n">occ_root</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="n">bracket</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">root_res</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+        <span class="n">runtime_err</span> <span class="o">=</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Root-search for chemical potential failed after </span><span class="si">{</span><span class="n">root_res</span><span class="o">.</span><span class="n">iterations</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Cause of failure: </span><span class="si">{</span><span class="n">root_res</span><span class="o">.</span><span class="n">flag</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">runtime_err</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">root_res</span><span class="o">.</span><span class="n">root</span>
+        <span class="k">raise</span> <span class="n">runtime_err</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Root found after </span><span class="si">%s</span><span class="s2"> additional evaluations.&quot;</span><span class="p">,</span> <span class="n">root_res</span><span class="o">.</span><span class="n">function_calls</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">root_res</span><span class="o">.</span><span class="n">root</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

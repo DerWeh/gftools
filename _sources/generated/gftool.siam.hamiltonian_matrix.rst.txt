@@ -1,0 +1,6 @@
+gftool.siam.hamiltonian\_matrix
+===============================
+
+.. currentmodule:: gftool.siam
+
+.. autofunction:: hamiltonian_matrix

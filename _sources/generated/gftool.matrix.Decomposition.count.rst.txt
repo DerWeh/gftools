@@ -1,0 +1,6 @@
+gftool.matrix.Decomposition.count
+=================================
+
+.. currentmodule:: gftool.matrix
+
+.. automethod:: Decomposition.count

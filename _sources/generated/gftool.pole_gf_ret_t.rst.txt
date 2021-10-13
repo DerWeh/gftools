@@ -1,0 +1,6 @@
+﻿gftool.pole\_gf\_ret\_t
+=======================
+
+.. currentmodule:: gftool
+
+.. autofunction:: pole_gf_ret_t

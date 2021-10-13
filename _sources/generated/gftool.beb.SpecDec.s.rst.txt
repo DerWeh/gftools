@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.s
+====================
+
+.. currentmodule:: gftool.beb
+
+.. autoproperty:: SpecDec.s

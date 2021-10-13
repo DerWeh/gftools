@@ -1,0 +1,6 @@
+gftool.lattice.honeycomb.dos\_moment
+====================================
+
+.. currentmodule:: gftool.lattice.honeycomb
+
+.. autofunction:: dos_moment

@@ -1,0 +1,6 @@
+gftool.cpa.solve\_root
+======================
+
+.. currentmodule:: gftool.cpa
+
+.. autofunction:: solve_root

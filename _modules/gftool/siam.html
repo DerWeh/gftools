@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.siam &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.siam</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.siam</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Basic functions for the (non-interacting) single impurity Anderson model (SIAM).</span>
+
+<span class="sd">The Hamiltonian for the SIAM reads</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">   H = ∑_σ ϵ_σ c^†_σ c_σ + U n_↓ n_↑</span>
+<span class="sd">     + ∑_{kσ} (V_{kσ} c^†_σ c_{kσ} + H.c.)</span>
+<span class="sd">     + ∑_{kσ} ϵ_{kσ} n_{kσ}</span>
+
+<span class="sd">The first to terms describe the interacting single impurity,</span>
+<span class="sd">the thirds term is the hopping (or hybridization) between impurity and bath-sites,</span>
+<span class="sd">the last term is the on-site energy of the non-interacting bath sites.</span>
+
+<span class="sd">In the action formalism, the bath degrees of freedom can be readily integrated out,</span>
+<span class="sd">as the action is quadratic in these degrees.</span>
+<span class="sd">The local action of the impurity reads</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">   S_{imp}[c^+_σ, c_σ]  = -∑_{nσ} c^+_σ [iω_n - ϵ_σ - Δ(iω_n)] c_σ + U ∫_0^β dτ n_↑(τ) n_↓(τ)</span>
+
+<span class="sd">with the hybridization function</span>
+
+<span class="sd">.. math:: Δ_σ(z) = ∑_{kσ} |V_{kσ}|^2 / (z - ϵ_{kσ}).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">gftool._util</span> <span class="kn">import</span> <span class="n">_gu_sum</span>
+<span class="kn">from</span> <span class="nn">gftool.matrix</span> <span class="kn">import</span> <span class="n">decompose_her</span>
+<span class="kn">from</span> <span class="nn">gftool.basis.pole</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_single_pole_gf_gr_t</span><span class="p">,</span> <span class="n">_single_pole_gf_le_t</span><span class="p">,</span>
+                               <span class="n">_single_pole_gf_ret_t</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="gf0_loc_z"><a class="viewcode-back" href="../../generated/gftool.siam.gf0_loc_z.html#gftool.siam.gf0_loc_z">[docs]</a><span class="k">def</span> <span class="nf">gf0_loc_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping_sqr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Noninteracting local Green&#39;s function for the impurity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex np.ndarray</span>
+<span class="sd">        Complex frequency variable.</span>
+<span class="sd">    e_onsite : (...) float np.ndarray</span>
+<span class="sd">        On-site energy of the impurity site.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping_sqr : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Absolute square of hopping matrix element between impurity and the bath</span>
+<span class="sd">        sites.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf0_loc_z : (...) complex np.ndarray</span>
+<span class="sd">        Green&#39;s function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">e_onsite</span> <span class="o">-</span> <span class="n">hybrid_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_bath</span><span class="o">=</span><span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping_sqr</span><span class="o">=</span><span class="n">hopping_sqr</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="gf0_loc_ret_t"><a class="viewcode-back" href="../../generated/gftool.siam.gf0_loc_ret_t.html#gftool.siam.gf0_loc_ret_t">[docs]</a><span class="k">def</span> <span class="nf">gf0_loc_ret_t</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Noninteracting retarded local Green&#39;s function for the impurity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (...) float np.ndarray</span>
+<span class="sd">        Time variable. Note that the retarded Green&#39;s function is `0` for `tt&lt;0`.</span>
+<span class="sd">    e_onsite : (...) float np.ndarray</span>
+<span class="sd">        On-site energy of the impurity site.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Hopping matrix element between impurity and the bath sites.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf0_loc_ret_t : (...) complex np.ndarray</span>
+<span class="sd">        Retarded Green&#39;s function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">hamiltonian_matrix</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="o">=</span><span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="o">=</span><span class="n">hopping</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_her</span><span class="p">(</span><span class="n">ham</span><span class="p">)</span>
+    <span class="c1"># calculate only elements [..., 0] corresponding to the local impurity site</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">,</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">eig_exp</span> <span class="o">=</span> <span class="n">_single_pole_gf_ret_t</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">)</span>
+    <span class="n">gf0_t</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">eig</span><span class="o">=</span><span class="n">eig_exp</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gf0_t</span></div>
+
+
+<div class="viewcode-block" id="gf0_loc_gr_t"><a class="viewcode-back" href="../../generated/gftool.siam.gf0_loc_gr_t.html#gftool.siam.gf0_loc_gr_t">[docs]</a><span class="k">def</span> <span class="nf">gf0_loc_gr_t</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Noninteracting greater local Green&#39;s function for the impurity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (...) float np.ndarray</span>
+<span class="sd">        Time variable. Note that the retarded Green&#39;s function is `0` for `tt&lt;0`.</span>
+<span class="sd">    e_onsite : (...) float np.ndarray</span>
+<span class="sd">        On-site energy of the impurity site.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Hopping matrix element between impurity and the bath sites.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf0_loc_gr_t : (...) complex np.ndarray</span>
+<span class="sd">        Greater Green&#39;s function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">hamiltonian_matrix</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="o">=</span><span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="o">=</span><span class="n">hopping</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_her</span><span class="p">(</span><span class="n">ham</span><span class="p">)</span>
+    <span class="c1"># calculate only elements [..., 0] corresponding to the local impurity site</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">,</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">eig_exp</span> <span class="o">=</span> <span class="n">_single_pole_gf_gr_t</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">gf0_t</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">eig</span><span class="o">=</span><span class="n">eig_exp</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gf0_t</span></div>
+
+
+<div class="viewcode-block" id="gf0_loc_le_t"><a class="viewcode-back" href="../../generated/gftool.siam.gf0_loc_le_t.html#gftool.siam.gf0_loc_le_t">[docs]</a><span class="k">def</span> <span class="nf">gf0_loc_le_t</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Noninteracting lesser local Green&#39;s function for the impurity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tt : (...) float np.ndarray</span>
+<span class="sd">        Time variable. Note that the retarded Green&#39;s function is `0` for `tt&lt;0`.</span>
+<span class="sd">    e_onsite : (...) float np.ndarray</span>
+<span class="sd">        On-site energy of the impurity site.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Hopping matrix element between impurity and the bath sites.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        The inverse temperature :math:`beta = 1/k_B T`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf0_loc_le_t : (...) complex np.ndarray</span>
+<span class="sd">        Lesser Green&#39;s function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">hamiltonian_matrix</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="o">=</span><span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="o">=</span><span class="n">hopping</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">decompose_her</span><span class="p">(</span><span class="n">ham</span><span class="p">)</span>
+    <span class="c1"># calculate only elements [..., 0] corresponding to the local impurity site</span>
+    <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">,</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv_inv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">rv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">eig_exp</span> <span class="o">=</span> <span class="n">_single_pole_gf_le_t</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">dec</span><span class="o">.</span><span class="n">eig</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">gf0_t</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">eig</span><span class="o">=</span><span class="n">eig_exp</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;diag&#39;</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">gf0_t</span></div>
+
+
+<div class="viewcode-block" id="hamiltonian_matrix"><a class="viewcode-back" href="../../generated/gftool.siam.hamiltonian_matrix.html#gftool.siam.hamiltonian_matrix">[docs]</a><span class="k">def</span> <span class="nf">hamiltonian_matrix</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;One-particle Hamiltonian matrix of the SIAM.</span>
+
+<span class="sd">    The non-interacting Hamiltonian can be written in the form</span>
+
+<span class="sd">    .. math:: \hat{H} = ∑_{ijσ} c^†_{iσ} H_{ijσ} c_{jσ}.</span>
+
+<span class="sd">    The Hamiltonian matrix is :math:`H_{ij}`, where we fixed the spin σ.</span>
+<span class="sd">    The element `H_{00}` corresponds to the impurity site.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    e_onsite : (...) float np.ndarray</span>
+<span class="sd">        On-site energy of the impurity site.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Hopping matrix element between impurity and the bath sites.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ham_mat : (..., Nb+1, Nb+1) complex np.ndarray</span>
+<span class="sd">        Lesser Green&#39;s function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">broadcast</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">e_onsite</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping</span><span class="p">)</span>
+    <span class="n">n_bath</span> <span class="o">=</span> <span class="n">broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="o">*</span><span class="n">broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_bath</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_bath</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">hopping</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">ham</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_onsite</span>
+    <span class="n">ham</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">hopping</span>
+    <span class="n">ham</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">hopping</span><span class="p">)</span>
+    <span class="n">ham</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_bath</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_bath</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">e_bath</span>
+    <span class="k">return</span> <span class="n">ham</span></div>
+
+
+<div class="viewcode-block" id="hybrid_z"><a class="viewcode-back" href="../../generated/gftool.siam.hybrid_z.html#gftool.siam.hybrid_z">[docs]</a><span class="k">def</span> <span class="nf">hybrid_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">e_bath</span><span class="p">,</span> <span class="n">hopping_sqr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hybridization function of the impurity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : (...) complex np.ndarray</span>
+<span class="sd">        Complex frequency variable.</span>
+<span class="sd">    e_bath : (..., Nb) float np.ndarray</span>
+<span class="sd">        On-site energy of the bath sites.</span>
+<span class="sd">    hopping_sqr : (..., Nb) complex np.ndarray</span>
+<span class="sd">        Absolute square of hopping matrix element between impurity and the bath</span>
+<span class="sd">        sites.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hybrid_z : (...) complex np.ndarray</span>
+<span class="sd">        Hybridization function of the impurity site.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_gu_sum</span><span class="p">(</span><span class="n">hopping_sqr</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">-</span> <span class="n">e_bath</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿gftool.onedim\_dos\_moment
+==========================
+
+.. currentmodule:: gftool
+
+.. autofunction:: onedim_dos_moment

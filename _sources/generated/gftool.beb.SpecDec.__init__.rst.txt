@@ -1,0 +1,6 @@
+gftool.beb.SpecDec.\_\_init\_\_
+===============================
+
+.. currentmodule:: gftool.beb
+
+.. automethod:: SpecDec.__init__

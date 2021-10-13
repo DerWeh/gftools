@@ -1,0 +1,6 @@
+gftool.lattice.bethe.dos
+========================
+
+.. currentmodule:: gftool.lattice.bethe
+
+.. autofunction:: dos

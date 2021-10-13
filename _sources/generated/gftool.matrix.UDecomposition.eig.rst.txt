@@ -1,0 +1,6 @@
+gftool.matrix.UDecomposition.eig
+================================
+
+.. currentmodule:: gftool.matrix
+
+.. autoattribute:: UDecomposition.eig

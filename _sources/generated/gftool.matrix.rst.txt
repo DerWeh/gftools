@@ -1,0 +1,49 @@
+﻿gftool.matrix
+=============
+
+.. module:: gftool.matrix
+
+.. automodule:: gftool.matrix
+   :noindex:
+
+API
+---
+
+.. 
+.. .. inheritance-diagram:: gftool.matrix
+..    :parts: 1
+
+
+
+
+
+.. rubric:: Functions
+
+.. autosummary::
+  :toctree:
+
+  construct_gf
+  decompose_gf
+  decompose_hamiltonian
+  decompose_her
+  decompose_mat
+  decompose_sym
+  gf_2x2_z
+
+
+
+
+
+
+.. rubric:: Classes
+
+.. autosummary::
+  :toctree:
+
+  Decomposition
+  UDecomposition
+
+
+
+
+

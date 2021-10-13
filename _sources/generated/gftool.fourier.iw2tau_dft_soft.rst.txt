@@ -1,0 +1,6 @@
+gftool.fourier.iw2tau\_dft\_soft
+================================
+
+.. currentmodule:: gftool.fourier
+
+.. autofunction:: iw2tau_dft_soft

@@ -1,0 +1,6 @@
+﻿gftool.fcc\_gf\_z
+=================
+
+.. currentmodule:: gftool
+
+.. autofunction:: fcc_gf_z

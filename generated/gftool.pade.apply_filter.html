@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.pade.apply_filter &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.pade.averaged" href="gftool.pade.averaged.html" />
+    <link rel="prev" title="gftool.pade.Mod_Averager" href="gftool.pade.Mod_Averager.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gftool.pade.html">gftool.pade</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gftool.pade.html#references">References</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gftool.pade.html#api">API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.Averager.html">gftool.pade.Averager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.FilterHighVariance.html">gftool.pade.FilterHighVariance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.FilterNegImag.html">gftool.pade.FilterNegImag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.FilterNegImagNum.html">gftool.pade.FilterNegImagNum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.Mod_Averager.html">gftool.pade.Mod_Averager</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gftool.pade.apply_filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.averaged.html">gftool.pade.averaged</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.avg_no_neg_imag.html">gftool.pade.avg_no_neg_imag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.calc_iterator.html">gftool.pade.calc_iterator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.coefficients.html">gftool.pade.coefficients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.KindGf.html">gftool.pade.KindGf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.KindSelector.html">gftool.pade.KindSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.pade.KindSelf.html">gftool.pade.KindSelf</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+          <li><a href="gftool.pade.html">gftool.pade</a> &raquo;</li>
+      <li>gftool.pade.apply_filter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.pade.apply_filter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gftool-pade-apply-filter">
+<h1>gftool.pade.apply_filter<a class="headerlink" href="#gftool-pade-apply-filter" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="gftool.pade.apply_filter">
+<code class="sig-prename descclassname"><span class="pre">gftool.pade.</span></code><code class="sig-name descname"><span class="pre">apply_filter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validity_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gftool/pade.html#apply_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gftool.pade.apply_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle usage of filters for Pade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filters</strong><span class="classifier">callable</span></dt><dd><p>Functions to determine which continuations to keep.</p>
+</dd>
+<dt><strong>validity_iter</strong><span class="classifier">iterable of (…, N_z) complex np.ndarray</span></dt><dd><p>The iterable of analytic continuations as generated by <a class="reference internal" href="gftool.pade.calc_iterator.html#gftool.pade.calc_iterator" title="gftool.pade.calc_iterator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_iterator</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>is_valid</strong><span class="classifier">(…) bool np.ndarray</span></dt><dd><p>Array to index which continuations are good.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.pade.Mod_Averager.html" class="btn btn-neutral float-left" title="gftool.pade.Mod_Averager" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.pade.averaged.html" class="btn btn-neutral float-right" title="gftool.pade.averaged" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

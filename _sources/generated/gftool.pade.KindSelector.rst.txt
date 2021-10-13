@@ -1,0 +1,32 @@
+gftool.pade.KindSelector
+========================
+
+.. currentmodule:: gftool.pade
+
+.. autoclass:: KindSelector
+
+   
+   .. automethod:: __init__
+      :noindex:
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      ~KindSelector.__init__
+      ~KindSelector.islice
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ~KindSelector.slice
+   
+   

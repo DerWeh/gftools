@@ -1,0 +1,6 @@
+﻿gftool.pole\_gf\_z
+==================
+
+.. currentmodule:: gftool
+
+.. autofunction:: pole_gf_z

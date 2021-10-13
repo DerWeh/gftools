@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.fourier.tt2z &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.fourier.tt2z_lin" href="gftool.fourier.tt2z_lin.html" />
+    <link rel="prev" title="gftool.fourier.tau2izp" href="gftool.fourier.tau2izp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gftool.fourier.html#definitions">Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gftool.fourier.html#glossary">Glossary</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gftool.fourier.html#api">API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau.html">gftool.fourier.iw2tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau_dft.html">gftool.fourier.iw2tau_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.iw2tau_dft_soft.html">gftool.fourier.iw2tau_dft_soft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.izp2tau.html">gftool.fourier.izp2tau</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv.html">gftool.fourier.tau2iv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv_dft.html">gftool.fourier.tau2iv_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iv_ft_lin.html">gftool.fourier.tau2iv_ft_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw.html">gftool.fourier.tau2iw</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw_dft.html">gftool.fourier.tau2iw_dft</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2iw_ft_lin.html">gftool.fourier.tau2iw_ft_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tau2izp.html">gftool.fourier.tau2izp</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gftool.fourier.tt2z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tt2z_lin.html">gftool.fourier.tt2z_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.fourier.tt2z_trapz.html">gftool.fourier.tt2z_trapz</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+          <li><a href="gftool.fourier.html">gftool.fourier</a> &raquo;</li>
+      <li>gftool.fourier.tt2z</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.fourier.tt2z.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="gftool-fourier-tt2z">
+<h1>gftool.fourier.tt2z<a class="headerlink" href="#gftool-fourier-tt2z" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="gftool.fourier.tt2z">
+<code class="sig-prename descclassname"><span class="pre">gftool.fourier.</span></code><code class="sig-name descname"><span class="pre">tt2z</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tt</span></em>, <em class="sig-param"><span class="pre">gf_t</span></em>, <em class="sig-param"><span class="pre">z</span></em>, <em class="sig-param"><span class="pre">laplace=&lt;function</span> <span class="pre">tt2z_lin&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gftool/fourier.html#tt2z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gftool.fourier.tt2z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Laplace transform of the real-time Green’s function <em class="xref py py-obj">gf_t</em>.</p>
+<p>Calculate the Laplace transform</p>
+<div class="math notranslate nohighlight">
+\[G(z) = ∫dt G(t) \exp(izt)\]</div>
+<p>For the Laplace transform to be well defined,
+it should either be <em class="xref py py-obj">tt&gt;=0 and z.imag&gt;=0</em> for the retarded Green’s function,
+or <em class="xref py py-obj">tt&lt;=0 and z.imag&lt;=0</em> for the advance Green’s function.</p>
+<p>The retarded (advanced) Green’s function can in principle be evaluated for
+any frequency point <em class="xref py py-obj">z</em> in the upper (lower) complex half-plane.</p>
+<p>The accented contours for <em class="xref py py-obj">tt</em> and <em class="xref py py-obj">z</em> depend on the specific used back-end
+<em class="xref py py-obj">laplace</em>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>tt</strong><span class="classifier">(Nt) float np.ndarray</span></dt><dd><p>The points for which the Green’s function <em class="xref py py-obj">gf_t</em> is given.</p>
+</dd>
+<dt><strong>gf_t</strong><span class="classifier">(…, Nt) complex np.ndarray</span></dt><dd><p>Green’s function and time points <em class="xref py py-obj">tt</em>.</p>
+</dd>
+<dt><strong>z</strong><span class="classifier">(…, Nz) complex np.ndarray</span></dt><dd><p>Frequency points for which the Laplace transformed Green’s function
+should be evaluated.</p>
+</dd>
+<dt><strong>laplace</strong><span class="classifier">{<a class="reference internal" href="gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin" title="gftool.fourier.tt2z_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_lin</span></code></a>, <a class="reference internal" href="gftool.fourier.tt2z_trapz.html#gftool.fourier.tt2z_trapz" title="gftool.fourier.tt2z_trapz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_trapz</span></code></a>}, optional</span></dt><dd><p>Back-end to perform the actual Fourier transformation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>gf_z</strong><span class="classifier">(…, Nz) complex np.ndarray</span></dt><dd><p>Laplace transformed Green’s function for complex frequencies <em class="xref py py-obj">z</em>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If neither the condition for retarded or advanced Green’s function is
+fulfilled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gftool.fourier.tt2z_trapz.html#gftool.fourier.tt2z_trapz" title="gftool.fourier.tt2z_trapz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_trapz</span></code></a></dt><dd><p>Back-end: approximate integral by trapezoidal rule</p>
+</dd>
+<dt><a class="reference internal" href="gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin" title="gftool.fourier.tt2z_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_lin</span></code></a></dt><dd><p>Back-end: approximate integral by Filon’s method</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">1501</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">501</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-1j</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">poles</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># partially filled</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ret_t</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">pole_gf_ret_t</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ft</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_ret_t</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">ww</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">pole_gf_z</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ww</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;exact Im&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ft</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;DFT Im&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;exact Re&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ft</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;DFT Re&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-fourier-tt2z-1_00_00.png">png</a>, <a class="reference external" href="../generated/gftool-fourier-tt2z-1_00_00.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-fourier-tt2z-1_00_00.png" class="plot-directive" src="../_images/gftool-fourier-tt2z-1_00_00.png" />
+</div>
+<p>The function Laplace transform can be evaluated at abitrary contours,
+e.g. for a semi-ceircle in the the upper half-plane.
+Note, that close to the real axis the accuracy is bad, due to the
+truncation at <em class="xref py py-obj">max(tt)</em></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">51</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_ft</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_ret_t</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gf_z</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">pole_gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_z</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;exact Im&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ft</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;DFT Im&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;exact Re&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">gf_ft</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;DFT Re&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-fourier-tt2z-1_01_00.png">png</a>, <a class="reference external" href="../generated/gftool-fourier-tt2z-1_01_00.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-fourier-tt2z-1_01_00.png" class="plot-directive" src="../_images/gftool-fourier-tt2z-1_01_00.png" />
+</div>
+<p>Accuracy of the different back-ends:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For large <em class="xref py py-obj">z.imag</em>, <a class="reference internal" href="gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin" title="gftool.fourier.tt2z_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_lin</span></code></a> performs better.</p></li>
+<li><p>For intermediate <em class="xref py py-obj">z.imag</em>, the quality depends on the relevant <em class="xref py py-obj">z.real</em>.
+For small <em class="xref py py-obj">z.real</em>, the error of <a class="reference internal" href="gftool.fourier.tt2z_trapz.html#gftool.fourier.tt2z_trapz" title="gftool.fourier.tt2z_trapz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_trapz</span></code></a> is more uniform;
+for big <em class="xref py py-obj">z.real</em>, <a class="reference internal" href="gftool.fourier.tt2z_lin.html#gftool.fourier.tt2z_lin" title="gftool.fourier.tt2z_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tt2z_lin</span></code></a> is a good approximation.</p></li>
+<li><p>For small <em class="xref py py-obj">z.imag</em>, the methods are almost identical,
+the truncation of <em class="xref py py-obj">tt</em> dominates the error.</p></li>
+</ul>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">eta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">]):</span>
+<span class="gp">... </span>    <span class="n">ww</span><span class="o">.</span><span class="n">imag</span> <span class="o">=</span> <span class="n">eta</span>
+<span class="gp">... </span>    <span class="n">gf_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">pole_gf_z</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">gf_trapz</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_ret_t</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">ww</span><span class="p">,</span> <span class="n">laplace</span><span class="o">=</span><span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z_trapz</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">gf_lin</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">gf_ret_t</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">ww</span><span class="p">,</span> <span class="n">laplace</span><span class="o">=</span><span class="n">gt</span><span class="o">.</span><span class="n">fourier</span><span class="o">.</span><span class="n">tt2z_lin</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">gf_ww</span> <span class="o">-</span> <span class="n">gf_trapz</span><span class="p">)</span><span class="o">/</span><span class="n">gf_ww</span><span class="p">),</span>
+<span class="gp">... </span>                  <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;z.imag=</span><span class="si">{</span><span class="n">eta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="nb">abs</span><span class="p">((</span><span class="n">gf_ww</span> <span class="o">-</span> <span class="n">gf_lin</span><span class="p">)</span><span class="o">/</span><span class="n">gf_ww</span><span class="p">),</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-fourier-tt2z-1_02_00.png">png</a>, <a class="reference external" href="../generated/gftool-fourier-tt2z-1_02_00.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-fourier-tt2z-1_02_00.png" class="plot-directive" src="../_images/gftool-fourier-tt2z-1_02_00.png" />
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gftool.fourier.tau2izp.html" class="btn btn-neutral float-left" title="gftool.fourier.tau2izp" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.fourier.tt2z_lin.html" class="btn btn-neutral float-right" title="gftool.fourier.tt2z_lin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

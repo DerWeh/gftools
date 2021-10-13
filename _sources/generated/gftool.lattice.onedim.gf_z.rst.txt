@@ -1,0 +1,6 @@
+gftool.lattice.onedim.gf\_z
+===========================
+
+.. currentmodule:: gftool.lattice.onedim
+
+.. autofunction:: gf_z

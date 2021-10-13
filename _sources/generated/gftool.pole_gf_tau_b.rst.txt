@@ -1,0 +1,6 @@
+﻿gftool.pole\_gf\_tau\_b
+=======================
+
+.. currentmodule:: gftool
+
+.. autofunction:: pole_gf_tau_b

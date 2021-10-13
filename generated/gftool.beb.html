@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.beb &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/toggleprompt.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gftool.beb.gf_loc_z" href="gftool.beb.gf_loc_z.html" />
+    <link rel="prev" title="gftool" href="../gftool.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gftool.html">gftool</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gftool.beb</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#physical-quantities">Physical quantities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.gf_loc_z.html">gftool.beb.gf_loc_z</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.restrict_self_root_eq.html">gftool.beb.restrict_self_root_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.self_root_eq.html">gftool.beb.self_root_eq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.solve_root.html">gftool.beb.solve_root</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gftool.beb.SpecDec.html">gftool.beb.SpecDec</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.beb</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/gftool.beb.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-gftool.beb">
+<span id="gftool-beb"></span><h1>gftool.beb<a class="headerlink" href="#module-gftool.beb" title="Permalink to this headline">¶</a></h1>
+<p>Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.</p>
+<p>It extends CPA allowing for random hopping amplitudes. <a class="reference internal" href="#r8992d2442e0d-blackman1971" id="id1">[blackman1971]</a></p>
+<p>The implementation is based on a SVD of the <em class="xref py py-obj">hopping</em> matrix,
+which is the dimensionless scaling of the hopping of the components. <a class="reference internal" href="#r8992d2442e0d-weh2021" id="id2">[weh2021]</a>
+However, we use the unitary eigendecomposition instead of the SVD.</p>
+<div class="section" id="physical-quantities">
+<h2>Physical quantities<a class="headerlink" href="#physical-quantities" title="Permalink to this headline">¶</a></h2>
+<p>The main quantity of interest is the average local Green’s function <em class="xref py py-obj">gf</em>.</p>
+<p>First the effective medium <em class="xref py py-obj">self_beb_z</em> has to be calculated using <a class="reference internal" href="gftool.beb.solve_root.html#gftool.beb.solve_root" title="gftool.beb.solve_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_root</span></code></a>.
+With this result the Green’s function can be calculated by the function <a class="reference internal" href="gftool.beb.gf_loc_z.html#gftool.beb.gf_loc_z" title="gftool.beb.gf_loc_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gf_loc_z</span></code></a>.</p>
+<p>In the BEB formalism, the local Green’s function <em class="xref py py-obj">gf</em> is a matrix in the components.
+The self-consistent Green’s function <em class="xref py py-obj">gf</em> is diagonal, its trace is the average
+physical Green’s function.
+If only the non-vanishing diagonal elements have been calculated <em class="xref py py-obj">gf=gf_loc_z(…, diag=True)</em>,
+the average Green’s function is <em class="xref py py-obj">np.sum(gf, axis=-1)</em>.
+The diagonal elements of <em class="xref py py-obj">gf</em> are the average for a specific component
+(conditional average) multiplied by the concentration of that component.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="citation">
+<dt class="label" id="r8992d2442e0d-blackman1971"><span class="brackets"><a class="fn-backref" href="#id1">blackman1971</a></span></dt>
+<dd><p>Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.
+Generalized Locator—Coherent-Potential Approach to Binary Alloys.
+Phys. Rev. B 4, 2412–2428. <a class="reference external" href="https://doi.org/10.1103/PhysRevB.4.2412">https://doi.org/10.1103/PhysRevB.4.2412</a></p>
+</dd>
+<dt class="label" id="r8992d2442e0d-weh2021"><span class="brackets"><a class="fn-backref" href="#id2">weh2021</a></span></dt>
+<dd><p>Weh, A., Zhang, Y., Östlin, A., Terletska, H., Bauernfeind, D.,
+Tam, K.-M., Evertz, H.G., Byczuk, K., Vollhardt, D., Chioncel, L., 2021.
+Dynamical mean-field theory of the Anderson–Hubbard model with local and
+nonlocal disorder in tensor formulation. Phys. Rev. B 104, 045127.
+<a class="reference external" href="https://doi.org/10.1103/PhysRevB.104.045127">https://doi.org/10.1103/PhysRevB.104.045127</a></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>We consider a Bethe lattice with two components ‘A’ and ‘B’.
+The have the on-site energies <em class="xref py py-obj">-0.5</em> and <em class="xref py py-obj">0.5</em> respectively,
+the concentrations <em class="xref py py-obj">0.3</em> and <em class="xref py py-obj">0.7</em>.
+Furthermore, we assume that the hopping amplitude between ‘A’ and ‘B’ is only
+<em class="xref py py-obj">0.3</em> times the hopping between two ‘A’ sites,
+while the hopping between two ‘B’ sites is <em class="xref py py-obj">1.2</em> times the hopping between two
+‘A’ sites.</p>
+<p>Then the following code calculates the local Green’s function for component ‘A’
+and ‘B’ (conditionally averaged) as well as the average Green’s function of the
+system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">gftool</span> <span class="k">as</span> <span class="nn">gt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]])</span>
+<span class="n">hilbert</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">gt</span><span class="o">.</span><span class="n">bethe_hilbert_transform</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-4j</span>
+<span class="n">self_beb_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">beb</span><span class="o">.</span><span class="n">solve_root</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">e_onsite</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">hopping</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+                                <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert</span><span class="p">)</span>
+<span class="n">gf_loc_ww</span> <span class="o">=</span> <span class="n">gt</span><span class="o">.</span><span class="n">beb</span><span class="o">.</span><span class="n">gf_loc_z</span><span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">self_beb_ww</span><span class="p">,</span> <span class="n">hopping</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">hilbert_trafo</span><span class="o">=</span><span class="n">hilbert</span><span class="p">)</span>
+
+<span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">gf_loc_ww</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+<span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">gf_loc_ww</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;B&#39;</span><span class="p">)</span>
+<span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ww</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gf_loc_ww</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;avg&#39;</span><span class="p">)</span>
+<span class="n">__</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="../generated/gftool-beb-1.png">png</a>, <a class="reference external" href="../generated/gftool-beb-1.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="../_images/gftool-beb-1.png" class="plot-directive" src="../_images/gftool-beb-1.png" />
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.gf_loc_z.html#gftool.beb.gf_loc_z" title="gftool.beb.gf_loc_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gf_loc_z</span></code></a>(z, self_beb_z, hopping, hilbert_trafo)</p></td>
+<td><p>Calculate average local Green’s function matrix in components.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.restrict_self_root_eq.html#gftool.beb.restrict_self_root_eq" title="gftool.beb.restrict_self_root_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restrict_self_root_eq</span></code></a>(self_beb_z, *args, **kwds)</p></td>
+<td><p>Wrap <a class="reference internal" href="gftool.beb.self_root_eq.html#gftool.beb.self_root_eq" title="gftool.beb.self_root_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">self_root_eq</span></code></a> to restrict the solutions to <em class="xref py py-obj">diagonal(self_beb_z).imag &gt; 0</em>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.self_root_eq.html#gftool.beb.self_root_eq" title="gftool.beb.self_root_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">self_root_eq</span></code></a>(self_beb_z, z, e_onsite, …)</p></td>
+<td><p>Root equation r(Σ)=0 for BEB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gftool.beb.solve_root.html#gftool.beb.solve_root" title="gftool.beb.solve_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_root</span></code></a>(z, e_onsite, concentration, …)</p></td>
+<td><p>Determine the BEB self-energy by solving the root problem.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gftool.beb.SpecDec.html#gftool.beb.SpecDec" title="gftool.beb.SpecDec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpecDec</span></code></a>(rv, eig, rv_inv)</p></td>
+<td><p>SVD like spectral decomposition.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../gftool.html" class="btn btn-neutral float-left" title="gftool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gftool.beb.gf_loc_z.html" class="btn btn-neutral float-right" title="gftool.beb.gf_loc_z" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

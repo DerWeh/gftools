@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gftool.lattice.bethez &mdash; GfTool 0+untagged.5.ga123c3d documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/toggleprompt.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GfTool
+          </a>
+              <div class="version">
+                0+untagged.5.ga123c3d
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gftool.html">gftool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.beb.html">gftool.beb</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.cpa.html">gftool.cpa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.fourier.html">gftool.fourier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.lattice.html">gftool.lattice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.matrix.html">gftool.matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.pade.html">gftool.pade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/gftool.siam.html">gftool.siam</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats-new.html">What’s New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GfTool</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+          <li><a href="../../gftool.html">gftool</a> &raquo;</li>
+      <li>gftool.lattice.bethez</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gftool.lattice.bethez</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Bethe lattice for general coordination number Z.</span>
+
+<span class="sd">In the limit of infinite coordination number `Z=∞`, this becomes `gftool.lattice.bethe`,</span>
+<span class="sd">in the opposite limit of minimal coordination number `Z=2``, this is `gftool.lattice.onedim`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="gf_z"><a class="viewcode-back" href="../../../generated/gftool.lattice.bethez.gf_z.html#gftool.lattice.bethez.gf_z">[docs]</a><span class="k">def</span> <span class="nf">gf_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">coordination</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Local Green&#39;s function of Bethe lattice for `coordination`.</span>
+
+<span class="sd">    .. math:: G(z) = 2 (Z - 1) / z / ((Z - 2) + Z\sqrt{1 - D^2/z^2})</span>
+
+<span class="sd">    where :math:`D` is the `half_bandwidth` and :math:`Z` the`coordination`.</span>
+<span class="sd">    See [economou2006]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z : complex ndarray or complex</span>
+<span class="sd">        Green&#39;s function is evaluated at complex frequency `z`</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS of the Bethe lattice.</span>
+<span class="sd">    coordination : int</span>
+<span class="sd">        Coordination number of the Bethe lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gf_z : complex ndarray or complex</span>
+<span class="sd">        Value of the Bethe Green&#39;s function</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.bethe.gf_z : case for `coordination=np.infty`</span>
+<span class="sd">    gftool.lattice.onedim.gf_z : case for `coordination=2`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [economou2006] Economou, E. N. Green&#39;s Functions in Quantum Physics.</span>
+<span class="sd">       Springer, 2006.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ww = np.linspace(-1.5, 1.5, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; gf_ww = gt.lattice.bethez.gf_z(ww, half_bandwidth=1, coordination=9)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww, gf_ww.real, label=r&quot;$\Re G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(ww, gf_ww.imag, &#39;--&#39;, label=r&quot;$\Im G$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\omega/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;$G*D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axhline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=ww.min(), right=ww.max())</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">coordination</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="n">z_rel_inv</span> <span class="o">=</span> <span class="n">half_bandwidth</span> <span class="o">/</span> <span class="n">z</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">coordination</span>
+    <span class="n">sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">scimath</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">z_rel_inv</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">half_bandwidth</span> <span class="o">*</span> <span class="n">z_rel_inv</span> <span class="o">/</span> <span class="p">((</span><span class="n">Z</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">Z</span><span class="o">*</span><span class="n">sqrt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dos"><a class="viewcode-back" href="../../../generated/gftool.lattice.bethez.dos.html#gftool.lattice.bethez.dos">[docs]</a><span class="k">def</span> <span class="nf">dos</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="n">half_bandwidth</span><span class="p">,</span> <span class="n">coordination</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;DOS of non-interacting Bethe lattice for `coordination`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    eps : float ndarray or float</span>
+<span class="sd">        DOS is evaluated at points `eps`.</span>
+<span class="sd">    half_bandwidth : float</span>
+<span class="sd">        Half-bandwidth of the DOS, DOS(| `eps` | &gt; `half_bandwidth`) = 0.</span>
+<span class="sd">    coordination : int</span>
+<span class="sd">        Coordination number of the Bethe lattice.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dos : float ndarray or float</span>
+<span class="sd">        The value of the DOS.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gftool.lattice.bethe.dos : case for `coordination=np.infty`</span>
+<span class="sd">    gftool.lattice.onedim.dos : case for `coordination=2`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; eps = np.linspace(-1.1, 1.1, num=500)</span>
+<span class="sd">    &gt;&gt;&gt; dos = gt.lattice.bethez.dos(eps, half_bandwidth=1, coordination=9)</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.plot(eps, dos)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlabel(r&quot;$\epsilon/D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylabel(r&quot;DOS * $D$&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.axvline(0, color=&#39;black&#39;, linewidth=0.8)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.ylim(bottom=0)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.xlim(left=eps.min(), right=eps.max())</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">coordination</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="n">eps_rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eps</span> <span class="o">/</span> <span class="n">half_bandwidth</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">coordination</span>
+    <span class="n">dos_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span>
+    <span class="n">nonzero</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eps_rel</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
+    <span class="n">eps2</span> <span class="o">=</span> <span class="n">eps_rel</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">Z</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">half_bandwidth</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">dos_</span><span class="p">[</span><span class="n">nonzero</span><span class="p">]</span> <span class="o">=</span> <span class="n">factor</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Z</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">eps2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dos_</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, Weh Andreas.
+      <span class="lastupdated">Last updated on 2021-13-10.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

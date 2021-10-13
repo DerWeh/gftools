@@ -1,0 +1,6 @@
+gftool.beb.solve\_root
+======================
+
+.. currentmodule:: gftool.beb
+
+.. autofunction:: solve_root

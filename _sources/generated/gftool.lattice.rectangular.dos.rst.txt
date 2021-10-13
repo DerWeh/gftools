@@ -1,0 +1,6 @@
+gftool.lattice.rectangular.dos
+==============================
+
+.. currentmodule:: gftool.lattice.rectangular
+
+.. autofunction:: dos
