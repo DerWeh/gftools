@@ -1,4 +1,3 @@
-# encoding: utf-8
 """Pade analytic continuation for Green's functions and self-energies.
 
 The main aim of this module is to provide analytic continuation based on
