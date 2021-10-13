@@ -222,7 +222,7 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
 
     """
     if kind not in ('+', '-'):
-        raise ValueError("invalid literal for `kind`: '{}'".format(kind))
+        raise ValueError(f"invalid literal for `kind`: '{kind}'")
     s = 1 if kind == '+' else -1
     t = hopping
     U = interaction
