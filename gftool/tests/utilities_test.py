@@ -1,6 +1,4 @@
 """Test the utility functions related to Green's functions."""
-from __future__ import absolute_import, unicode_literals
-
 from functools import partial
 
 import pytest
