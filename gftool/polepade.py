@@ -26,11 +26,11 @@ from typing import NamedTuple
 
 import numpy as np
 
-from numpy.polynomial import polynomial
 from scipy import linalg
+from numpy.polynomial import polynomial
 
-import gftool as gt
-from gftool.basis import ZeroPole, PoleFct
+from gftool.basis import PoleFct, ZeroPole
+from gftool.linalg import lstsq_ec, orth_compl
 
 LOGGER = logging.getLogger(__name__)
 
@@ -225,11 +225,11 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
 
     if weight is not None:
         scaling *= weight[..., np.newaxis]
-    q_numer, __ = np.linalg.qr(scaling*numer, mode='complete')
+    perp_numer = orth_compl(scaling*numer)
     q_fct_denom, __ = np.linalg.qr(scaling*fct_z[..., np.newaxis]*denom, mode='reduced')
     # q_fct_denom, *__ = spla.qr(D*B1, mode='economic', pivoting=True)
-    qtilde_z_fct_denom = q_numer[..., n+1:].T.conj() @ (z[..., np.newaxis] * q_fct_denom)
-    qtilde_fct_denom = q_numer[..., n+1:].T.conj() @ q_fct_denom
+    qtilde_z_fct_denom = perp_numer @ (z[..., np.newaxis] * q_fct_denom)
+    qtilde_fct_denom = perp_numer @ q_fct_denom
     __, __, vh = np.linalg.svd(np.concatenate((qtilde_z_fct_denom, qtilde_fct_denom), axis=-1))
     return linalg.eig(vh[:m, :m], vh[:m, m:], right=False)
 
@@ -280,10 +280,10 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
                                 axis=-1, keepdims=True)
     if weight is not None:
         scaling *= weight[..., np.newaxis]
-    q_fct_denom, __ = np.linalg.qr(scaling*(fct_z*denom)[:, np.newaxis], mode='complete')
+    perp_fct_z_denom = orth_compl(scaling*(fct_z*denom)[:, np.newaxis])
     q_numer, __ = np.linalg.qr(scaling*numer, mode='reduced')
-    qtilde_z_numer = q_fct_denom[:, 1:].T.conj() @ (z[..., np.newaxis] * q_numer)
-    qtilde_numer = q_fct_denom[:, 1:].T.conj() @ q_numer
+    qtilde_z_numer = perp_fct_z_denom @ (z[..., np.newaxis] * q_numer)
+    qtilde_numer = perp_fct_z_denom @ q_numer
     __, __, vh = np.linalg.svd(np.concatenate((qtilde_z_numer, qtilde_numer), axis=-1))
     return linalg.eig(vh[:n, :n], vh[:n, n:], right=False)
 
@@ -354,7 +354,7 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
         raise ValueError("Too many poles given, system is over constrained. "
                          f"poles: {poles.size}, moments: {moments.shape[-1]}")
     constrain_mat = polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
-    resid = gt.linalg.lstsq_ec(polematrix, fct_z, constrain_mat, moments)
+    resid = lstsq_ec(polematrix, fct_z, constrain_mat, moments)
     return resid, [np.linalg.norm(np.sum(polematrix*resid, axis=-1) - fct_z, ord=2)]
 
 
