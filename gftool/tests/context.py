@@ -13,6 +13,7 @@ import gftool.cpa
 import gftool.hermpade
 import gftool.matrix
 import gftool.fourier
+import gftool.polepade
 import gftool.pade as gt_pade
 import gftool.linalg
 import gftool.basis.pole as pole
