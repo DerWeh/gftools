@@ -1,7 +1,7 @@
-"""Pade analytic continuation for Green's functions and self-energies.
+"""Padé analytic continuation for Green's functions and self-energies.
 
 The main aim of this module is to provide analytic continuation based on
-averaging over multiple Pade approximates (similar to [1]_).
+averaging over multiple Padé approximants (similar to [1]_).
 
 In most cases the following high level function should be used:
 
@@ -13,7 +13,7 @@ In most cases the following high level function should be used:
 
 References
 ----------
-.. [1] Schött et al. “Analytic Continuation by Averaging Pade Approximants”.
+.. [1] Schött et al. “Analytic Continuation by Averaging Padé Approximants”.
    Phys Rev B 93, no. 7 (2016): 075104.
    https://doi.org/10.1103/PhysRevB.93.075104.
 
@@ -38,7 +38,7 @@ _nan_std = partial(np.nanstd, ddof=1, axis=0)
 
 
 class KindSelector(ABC):
-    """Abstract filter class to determine high-frequency behavior of Pade.
+    """Abstract filter class to determine high-frequency behavior of Padé.
 
     We denote approximants with the corresponding high frequency behavior as
     *valid*.
@@ -120,12 +120,12 @@ def FilterNegImag(threshold=1e-8):
     This methods is designed to create `valid_pades` for `Averager`.
     The imaginary part of retarded Green's functions and self-energies must be
     negative, this is checked by this filter.
-    A threshold is given as Pade overshoots when the function goes sharply to 0.
+    A threshold is given as Padé overshoots when the function goes sharply to 0.
     See for example the semi-circular spectral function of the Bethe lattice
     with infinite Coordination number as example.
     """
     def filter_neg_imag(pade_iter):
-        r"""Check which Pade approximants have a negative imaginary part.
+        r"""Check which Padé approximants have a negative imaginary part.
 
         Parameters
         ----------
@@ -139,7 +139,7 @@ def FilterNegImag(threshold=1e-8):
 
         """
         is_valid = np.array([np.all(pade.imag < threshold, axis=-1) for pade in pade_iter])
-        LOGGER.debug("Filter Pades with positive imaginary part (threshold: %s): %s",
+        LOGGER.debug("Filter Padés with positive imaginary part (threshold: %s): %s",
                      threshold, np.count_nonzero(is_valid, axis=0))
         return is_valid
 
@@ -162,11 +162,12 @@ def FilterNegImagNum(abs_num=None, rel_num=None):
     """
     assert abs_num is None or rel_num is None
     assert abs_num is not None or rel_num is not None
+
     def filter_neg_imag_num(pade_iter):
         badness = np.array([np.max(pade.imag, axis=-1) for pade in pade_iter])
         abs_num_ = rel_num * badness.shape[0] if abs_num is None else abs_num
         if abs_num_ >= badness.shape[0]:
-            LOGGER.warning("Skipping filter, not enough Pades (#Pades = %s)",
+            LOGGER.warning("Skipping filter, not enough Padés (#Padés = %s)",
                            badness.shape[0])
             return np.ones_like(badness, dtype=bool)
 
@@ -174,7 +175,7 @@ def FilterNegImagNum(abs_num=None, rel_num=None):
         is_valid = np.zeros_like(badness, dtype=bool)
         is_valid[keep] = True
         is_valid[badness <= 0] = True
-        LOGGER.debug("Filter Pades with positive imaginary part (keep best %s): %s",
+        LOGGER.debug("Filter Padés with positive imaginary part (keep best %s): %s",
                      abs_num_, np.count_nonzero(is_valid, axis=0))
         assert np.all(np.count_nonzero(is_valid, axis=0) >= abs_num_)
         return is_valid
@@ -203,6 +204,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         assert 0. < rel_num < 1.
     if abs_num is not None:
         assert abs_num > 0
+
     def filter_high_variance(pade_iter):
         """Remove the continuations with highest variance.
 
@@ -220,9 +222,9 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         pade = np.array(list(pade_iter))
         pade_sum = np.sum(pade, axis=0)
         N_pades = pade.shape[0]
-        # iteratively remove Pades with larges deviation
+        # iteratively remove Padés with larges deviation
         # why iterative?
-        # Awful Pades might give wrong features in average, so it should be corrected
+        # Awful Padés might give wrong features in average, so it should be corrected
         if abs_num is None:
             abs_num_ = int(rel_num*N_pades)
         bad = []  # isin needs list not set
@@ -236,7 +238,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         try:
             is_valid = np.ones_like(distance, dtype=bool)
         except UnboundLocalError:
-            LOGGER.warning("Not enough pades to filter (#Pades = %s)", N_pades)
+            LOGGER.warning("Not enough Padés to filter (#Padés = %s)", N_pades)
             return np.ones_like(pade[..., 0], dtype=bool)
         is_valid[badness[:-abs_num_]] = False
         # assert set(badness[:-abs_num_]) == set(bad)  # FIXME
@@ -251,7 +253,7 @@ def _contains_nan(array) -> bool:
 
 
 def coefficients(z, fct_z) -> np.ndarray:
-    """Calculate the coefficients for the Pade continuation.
+    """Calculate the coefficients for the Padé continuation.
 
     Parameters
     ----------
@@ -263,7 +265,7 @@ def coefficients(z, fct_z) -> np.ndarray:
     Returns
     -------
     coefficients : (..., N_z) complex ndarray
-        Array of Pade coefficients, needed to perform Pade continuation.
+        Array of Padé coefficients, needed to perform Padé continuation.
         Has the same same shape as `fct_z`.
 
     Raises
@@ -341,7 +343,7 @@ def masked_coefficients(z, fct_z):
 
 
 def calc_iterator(z_out, z_in, coeff):
-    r"""Calculate Pade continuation of function at points `z_out`.
+    r"""Calculate Padé continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
     into account, where the number is in [n_min, n_max].
@@ -354,7 +356,7 @@ def calc_iterator(z_out, z_in, coeff):
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
-        coefficients for Pade, calculated from `pade.coefficients`
+        coefficients for Padé, calculated from `pade.coefficients`
 
     Yields
     ------
@@ -368,7 +370,7 @@ def calc_iterator(z_out, z_in, coeff):
     References
     ----------
     .. [2] Vidberg, H. J., and J. W. Serene. “Solving the Eliashberg Equations
-       by Means of N-Point Pade Approximants.” Journal of Low Temperature
+       by Means of N-Point Padé Approximants.” Journal of Low Temperature
        Physics 29, no. 3-4 (November 1, 1977): 179-92.
        https://doi.org/10.1007/BF00655090.
 
@@ -396,20 +398,20 @@ def calc_iterator(z_out, z_in, coeff):
 
 
 def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
-    """Create function for averaging Pade scheme.
+    """Create function for averaging Padé scheme.
 
     Parameters
     ----------
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
-        coefficients for Pade, calculated from `pade.coefficients`
+        coefficients for Padé, calculated from `pade.coefficients`
     valid_pades : list_like of bool
-        Mask which continuations are correct, all Pades where `valid_pades`
+        Mask which continuations are correct, all Padés where `valid_pades`
         evaluates to false will be ignored for the average.
     kind : {KindGf, KindSelf}
         Defines the asymptotic of the continued function and the number of
-        minimum and maximum input points used for Pade. For `KindGf` the
+        minimum and maximum input points used for Padé. For `KindGf` the
         function goes like :math:`1/z` for large `z`, for `KindSelf` the
         function behaves like a constant for large `z`.
 
@@ -432,14 +434,14 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
                         "Expected `bool`.")
     if not valid_pades.any(axis=0).all():
-        # for some axis no valid pade was found
-        raise RuntimeError("No Pade fulfills is valid.\n"
+        # for some axis no valid Padé was found
+        raise RuntimeError("No Padé fulfills is valid.\n"
                            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
                            f"{np.argwhere(~valid_pades.any(axis=0))}")
-    LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
+    LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def average(z) -> Result:
-        """Calculate Pade continuation of function at points `z`.
+        """Calculate Padé continuation of function at points `z`.
 
         The continuation is calculated for different numbers of coefficients
         taken into account, where the number is in [n_min, n_max]. The function
@@ -473,11 +475,11 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
             if _contains_nan(pades):
                 # check if fct_z already contained nans
-                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
         else:
             pades = np.array(list(pade_iter))
             if _contains_nan(pades):
-                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
             pades[~valid_pades] = np.nan + 1j*np.nan
 
         pade_avg = np.nanmean(pades, axis=0)
@@ -488,7 +490,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
 
 
 def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vectorized=True):
-    r"""Create function for averaging Pade scheme using `mod_fct` before the average.
+    r"""Create function for averaging Padé scheme using `mod_fct` before the average.
 
     This function behaves like `Averager` just that `mod_fct` is applied before
     taking the averages. This should be used, if not the analytic continuation
@@ -499,24 +501,24 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
     coeff : (..., N_in) complex ndarray
-        coefficients for Pade, calculated from `pade.coefficients`
+        coefficients for Padé, calculated from `pade.coefficients`
     mod_fct : callable
         Modification of the analytic continuation. The signature of the function
         should be `mod_fct` (z, pade_z, \*args, \*\*kwds), the tow first
-        arguments are the point of evaluation `z` and the single Pade approximants.
+        arguments are the point of evaluation `z` and the single Padé approximants.
     valid_pades : list_like of bool
-        Mask which continuations are correct, all Pades where `valid_pades`
+        Mask which continuations are correct, all Padés where `valid_pades`
         evaluates to false will be ignored for the average.
     kind : {KindGf, KindSelf}
         Defines the asymptotic of the continued function and the number of
-        minumum and maximum input points used for Pade. For `KindGf` the
+        minimum and maximum input points used for Padé. For `KindGf` the
         function goes like :math:`1/z` for large `z`, for `KindSelf` the
         function behaves like a constant for large `z`.
     vectorized : bool, optional
-        If `vectorized`, all approximants are given to the function simultaniously
+        If `vectorized`, all approximants are given to the function simultaneously
         where the first dimension corresponds to the approximants.
         If not `vectorized`, `mod_fct` will be called for every approximant
-        seperately. (default: True)
+        separately. (default: True)
 
     Returns
     -------
@@ -538,13 +540,13 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
                         "Expected `bool`.")
     if not valid_pades.any(axis=0).all():
         # for some axis no valid pade was found
-        raise RuntimeError("No Pade fulfills is valid.\n"
+        raise RuntimeError("No Padé fulfills is valid.\n"
                            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
                            f"{np.argwhere(~valid_pades.any(axis=0))}")
-    LOGGER.info("Number of valid Pade approximants: %s", np.count_nonzero(valid_pades, axis=0))
+    LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def mod_average(z, *args, **kwds) -> Result:
-        """Calculate modified Pade continuation of function at points `z`.
+        """Calculate modified Padé continuation of function at points `z`.
 
         Calculate the averaged continuation of `mod_fct(f_z, *args, **kwds)`
         The continuation is calculated for different numbers of coefficients
@@ -581,11 +583,11 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
             if _contains_nan(pades):
                 # check if fct_z already contained nans
-                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
         else:
             pades = np.array(list(pade_iter))
             if _contains_nan(pades):
-                raise RuntimeError("Calculation of Pades failed, results contains NaNs")
+                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
             pades[~valid_pades] = np.nan + 1j*np.nan
 
         if vectorized:
@@ -606,7 +608,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
 
 
 def apply_filter(*filters, validity_iter):
-    r"""Handle usage of filters for Pade.
+    r"""Handle usage of filters for Padé.
 
     Parameters
     ----------
@@ -633,7 +635,7 @@ def apply_filter(*filters, validity_iter):
             i_valid[i_valid] = is_valid_filt
             if np.count_nonzero(i_valid) == 0:
                 raise RuntimeError(
-                    f"No Pade is valid due to filter {filt}.\n"
+                    f"No Padé is valid due to filter {filt}.\n"
                     f"No solution found for coefficient (shape: {validity_iter.shape[1:-1]}) axes "
                     f"{np.argwhere(~is_valid.any(axis=0))}"
                 )
@@ -642,7 +644,7 @@ def apply_filter(*filters, validity_iter):
 
 def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
              filter_valid=None, kind: KindSelector):
-    """Return the averaged Pade continuation with its variance.
+    """Return the averaged Padé continuation with its variance.
 
     The output is checked to have an imaginary part smaller than `threshold`,
     as retarded Green's functions and self-energies have a negative imaginary
@@ -657,13 +659,13 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     z_in : (N_in,) complex ndarray
         complex mesh used to calculate `coeff`
     valid_z : (N_out,) complex ndarray, optional
-        The output range according to which the Pade approximation is validated
+        The output range according to which the Padé approximation is validated
         (compared to the `threshold`).
     fct_z : (N_z, ) complex ndarray, optional
         Function at points `z` from which the coefficients will be calculated.
         Can be omitted if `coeff` is directly given.
     coeff : (N_in,) complex ndarray, optional
-        Coefficients for Pade, calculated from `pade.coefficients`. Can be given
+        Coefficients for Padé, calculated from `pade.coefficients`. Can be given
         instead of `fct_z`.
     filter_valid : callable or iterable of callable
         Function determining which approximants to keep. The signature should
@@ -673,7 +675,7 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
         Look into the implemented for details to create new filters.
     kind : {KindGf, KindSelf}
         Defines the asymptotic of the continued function and the number of
-        minimum and maximum input points used for Pade. For `KindGf` the
+        minimum and maximum input points used for Padé. For `KindGf` the
         function goes like :math:`1/z` for large `z`, for `KindSelf` the
         function behaves like a constant for large `z`.
 
@@ -710,7 +712,7 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
 
 def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
                     threshold=1e-8, kind: KindSelector):
-    """Average Pade filtering approximants with non-negative imaginary part.
+    """Average Padé filtering approximants with non-negative imaginary part.
 
     This function wraps `averaged`, see `averaged` for the parameters.
 
