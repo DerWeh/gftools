@@ -1119,7 +1119,7 @@ def tt2z_trapz(tt, gf_t, z):
     tt : (Nt) float np.ndarray
         The points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
-        Green's function and time points `tt`.
+        Green's function at time points `tt`.
     z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
@@ -1167,7 +1167,7 @@ def tt2z_lin(tt, gf_t, z):
     tt : (Nt) float np.ndarray
         The equidistant points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
-        Green's function and time points `tt`.
+        Green's function at time points `tt`.
     z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
@@ -1289,7 +1289,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     tt : (Nt) float np.ndarray
         The points for which the Green's function `gf_t` is given.
     gf_t : (..., Nt) complex np.ndarray
-        Green's function and time points `tt`.
+        Green's function at time points `tt`.
     z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
