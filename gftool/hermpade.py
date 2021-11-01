@@ -3,7 +3,6 @@ from typing import Tuple
 
 import numpy as np
 
-# requires 1.6.0
 from scipy.linalg import toeplitz, matmul_toeplitz
 
 Polynomial = np.polynomial.polynomial.Polynomial
