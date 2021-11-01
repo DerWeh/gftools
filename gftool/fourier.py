@@ -81,6 +81,7 @@ import numpy as np
 from numpy import newaxis
 
 from gftool._util import _gu_matvec
+from gftool.hermpade import pade
 from gftool.statistics import matsubara_frequencies, matsubara_frequencies_b
 from gftool.basis.pole import PoleFct, PoleGf
 
@@ -1219,6 +1220,51 @@ def tt2z_lin(tt, gf_t, z):
     if np.any(zero):
         gf_z[..., zero] = np.trapz(gf_t, x=tt)[..., np.newaxis]
     return gf_z
+
+
+def tt2z_pade(tt, gf_t, z):
+    r"""Fourier-Padé transform of the real-time Green's function `gf_t`.
+
+    The function requires an equidistant `tt`.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The equidistant points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function at time points `tt`.
+    z : (..., Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    Raises
+    ------
+    ValueError
+        If the time points `tt` are not equidistant.
+
+    See Also
+    --------
+    tt2z_trapz : Plain implementation using trapezoidal rule.
+    tt2z_lin : Laplace integration using Filon's method
+
+    """
+    delta_tt = tt[1] - tt[0]
+    if not np.allclose(tt[1:] - tt[:-1], delta_tt):
+        raise ValueError("Equidistant `tt` required for current implementation.")
+    assert tt[0] == 0, "If not, we need to fix the phase"
+    coeffs = delta_tt * gf_t
+    # trapeze rule -> correct boundaries with 1/2
+    coeffs[..., 0] *= 0.5
+    coeffs[..., -1] *= 0.5
+    deg = coeffs.size//2
+    p, q = pade(coeffs, den_deg=deg, num_deg=deg-1)
+    y = np.exp(1j*z*delta_tt)
+    return p(y)/q(y)
 
 
 def tt2z(tt, gf_t, z, laplace=tt2z_lin):
