@@ -866,6 +866,19 @@ def test_bethe_inverse(z, D):
     assert gt.lattice.bethe.gf_z_inv(gf, half_bandwidth=D) == pytest.approx(z)
 
 
+@pytest.mark.parametrize("D", [1/3, 1.0, 2.0])
+@pytest.mark.parametrize("center", [-1/3, 0, 0.5])
+def test_bethe_retarded(D, center):
+    """Compare retarded-time Green's function via Laplace transform."""
+    tt = np.linspace(0, 100/D, 1500)
+    gf_ret_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=center)
+    # use large shift to make Laplace transform good
+    ww = np.linspace(-2*D, 2*D, num=501) + 10j
+    gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
+    gf_ww = gt.bethe_gf_z(ww - D*center, half_bandwidth=D)
+    assert np.allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
+
+
 def test_hilbert_equals_integral():
     """Compare *bethe_hilbert_transform* with explicit calculation of integral.
 

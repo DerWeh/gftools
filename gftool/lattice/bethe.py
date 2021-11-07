@@ -10,8 +10,11 @@ DOS.
 import numpy as np
 
 from mpmath import mp
+from scipy.special import jv
 
 from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
+
+_SMALL = np.finfo(np.float64).eps**0.25
 
 
 def gf_z(z, half_bandwidth):
@@ -359,3 +362,57 @@ def dos_mp(eps, half_bandwidth=1):
     if mp.fabs(eps) > half_bandwidth:
         return mp.mpf('0')
     return 2 / (mp.pi * half_bandwidth) * mp.sqrt(-mp.powm1(eps / half_bandwidth, mp.mpf('2')))
+
+
+def gf_ret_t(tt, half_bandwidth, center=0):
+    r"""Retarded-time local Green's function of Bethe lattice with Z=∞.
+
+    .. math:: G(t) = -2j * Θ(t) * J_1(Dt)/(Dt)
+
+    where :math:`D` is the half bandwidth and :math:`J_1(t)` is the Bessel
+    function of first kind.
+
+    Parameters
+    ----------
+    tt : float array_like or float
+        Green's function is evaluated at time `tt`.
+    half_bandwidth : float
+        Half-bandwidth of the DOS of the Bethe lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+    center : float
+        Position of the center of the center of the Bethe DOS.
+        This parameter is **not** given in units of `half_bandwidth`.
+
+    Returns
+    -------
+    gf_ret_t : complex np.ndarray or complex
+        Value of the retarded-time Bethe Green's function
+
+    Examples
+    --------
+    >>> tt = np.linspace(0, 50, 1500)
+    >>> gf_tt = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=1)
+
+    >>> import matplotlib.pyplot as plt
+    >>> _ = plt.axhline(0, color='black', linewidth=0.8)
+    >>> _ = plt.plot(tt, gf_tt.real, label=r"$\Re G$")
+    >>> _ = plt.plot(tt, gf_tt.imag, '--', label=r"$\Im G$")
+    >>> _ = plt.xlabel(r"$t*D$")
+    >>> _ = plt.ylabel(r"$G$")
+    >>> _ = plt.xlim(left=tt.min(), right=tt.max())
+    >>> _ = plt.legend()
+    >>> plt.show()
+
+    """
+    tt = half_bandwidth*tt
+    gf = np.zeros_like(tt, dtype=complex)
+    retard = tt.real >= 0
+    small = retard & (abs(tt) < _SMALL)
+    # Taylor expansion for small tt, to avoid 1/tt
+    tt2 = tt[small]**2
+    gf[small] = -1j*(1 - 1/8*tt2 + 1/192*tt2**2)
+    big = retard & ~small
+    gf[big] = -2j * jv(1, tt[big]) / tt[big]
+    if center:
+        return gf*np.exp(-1j*center*tt)
+    return gf
