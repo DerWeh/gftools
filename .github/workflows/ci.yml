@@ -6,6 +6,9 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.7", "3.9"]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -26,7 +29,12 @@ jobs:
       - name: Pylint
         run: pylint --rcfile=.auto_pylintrc gftool
       - name: Test code
-        run: pytest --cov=gftool --cov-report=html -v
+        run: pytest --cov=gftool --cov-report=xml -v
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          env_vars: OS,PYTHON
+          verbose: True
       - name: Test documentation
         run: |
           sphinx-build -d docs/build/doctrees docs/source docs/build/html
