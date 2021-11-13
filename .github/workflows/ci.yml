@@ -28,7 +28,18 @@ jobs:
           find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pyflakes {} +
       - name: Pylint
         run: pylint --rcfile=.auto_pylintrc gftool
+  code-change:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths_ignore: '["docs/**"]'  # skip unit-tests if only docs were changed
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
   tests:
+    needs: code-change
+    if: ${{ needs.code-change.outputs.should_skip != 'true'}}
     strategy:
       matrix:
         os: [ubuntu-latest]
