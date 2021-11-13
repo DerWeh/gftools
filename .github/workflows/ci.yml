@@ -1,0 +1,97 @@
+name: Continuous Integration
+on:
+  push:
+    paths:
+      - 'gftool/**'
+      - 'docs/**'
+  pull_request:
+    types: [opened]
+  workflow_dispatch:
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+          python setup.py install
+      - name: Basic Lint
+        run: |
+          find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pydocstyle -v {} +
+          find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pyflakes {} +
+      - name: Pylint
+        run: pylint --rcfile=.auto_pylintrc gftool
+  code-change:
+    runs-on: ubuntu-latest
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths_ignore: '["docs/**"]'  # skip unit-tests if only docs were changed
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+  tests:
+    needs: code-change
+    if: ${{ needs.code-change.outputs.should_skip != 'true'}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.7", "3.9"]  # check oldest and latest supported version
+        other-os: [false]
+        include:  # checking one version in the middle is enough
+          - os: windows-latest
+            python-version: "3.8"
+            other-os: true
+          - os: macos-latest
+            python-version: "3.8"
+            other-os: true
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.other-os }}  # don't cancel due to OS specific failures
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+          python setup.py install
+      - name: Test code
+        run: pytest --cov=gftool --cov-report=xml -v
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          env_vars: OS,PYTHON
+          verbose: True
+      - name: Coverage
+        run: codecov
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements-doc.txt
+          pip install -r requirements.txt
+          python setup.py install
+      - name: Test documentation
+        run: |
+          sphinx-build -d docs/build/doctrees docs/source docs/build/html
+          sphinx-build -b doctest -d docs/build/doctrees docs/source docs/build/doctest

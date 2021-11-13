@@ -55,7 +55,12 @@ def lstsq_ec(a, b, c, d, rcond=None):
     constrains = d.shape[-1]
     q_ct, r_ct = np.linalg.qr(transpose(c).conj(), mode='complete')
     r_ct = r_ct[..., :constrains, :]
-    y = spla.solve_triangular(r_ct, d, trans='C')
+    try:
+        y = spla.solve_triangular(r_ct, d, trans='C')
+    except np.linalg.LinAlgError as lin_err:  # try fall back to pseudo-inverse for singular values
+        y, err, *__ = np.linalg.lstsq(transpose(r_ct).conj(), d, rcond=None)
+        if not np.allclose(err, 0):
+            raise np.linalg.LinAlgError from lin_err
     aq = a @ q_ct
     z = np.linalg.lstsq(aq[:, constrains:], b - _gu_sum(aq[:, :constrains]*y),
                         rcond=rcond)[0]

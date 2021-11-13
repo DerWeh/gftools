@@ -2,5 +2,4 @@ sphinx>=3.0.0,<4.0.0
 numpydoc
 matplotlib
 sphinx_rtd_theme
-travis-sphinx
 sphinx-toggleprompt
