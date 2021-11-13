@@ -32,7 +32,7 @@ def test_lstsq_ce(args):
     if a.shape[-1] > 0 and a.shape[-2]:  # make sure matrices are reasonable
         assume(np.all(np.linalg.cond(a) < 1e8))
     if b.shape[-1] < d.shape[-1]:  # overconstrained
-        max_l = b.shape[-1] -1
+        max_l = b.shape[-1] - 1
         c = c[..., :max_l, :]
         d = d[..., :max_l]
     if c.shape[-1] < c.shape[-2]:  # overconstrained
@@ -43,6 +43,22 @@ def test_lstsq_ce(args):
         assume(np.all(np.linalg.cond(c) < 1e4))
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
     assert np.allclose(np.sum(c*lstsq, axis=-1), d, atol=1e-6)
+
+
+def test_singular_constraint():
+    """Check extreme edge case of singular constraints."""
+    M, N, L, = 20, 7, 3
+    RNG = np.random.default_rng(0)
+    a = RNG.random([M, N])
+    b = RNG.random([M])
+    crt = np.array([[1, 2, 3],
+                    [0, 4, 5]]
+                   + [[0]*3]*(N-2)
+                   )
+    c = (np.eye(N) @ crt).T
+    d = np.arange(1, L+1)
+    lstsq = gt.linalg.lstsq_ec(a, b, c, d)
+    assert np.allclose(np.sum(c*lstsq, axis=-1), d)
 
 
 @given(gufunc_args('(m,n),(m)->(n)', dtype=np.complex_, elements=easy_complex,
