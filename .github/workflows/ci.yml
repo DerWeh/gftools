@@ -6,6 +6,7 @@ on:
       - 'docs/**'
   pull_request:
     types: [opened]
+  workflow_dispatch:
 jobs:
   lint:
     runs-on: ubuntu-latest
