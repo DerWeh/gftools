@@ -82,7 +82,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> occ_izp = gt.density_iw(izp, gf_izp, beta=BETA, weights=rp)
     >>> occ_izp
     0.17858151...
-    >>> abs(occ_izp - exact) < 1e-14
+    >>> abs(occ_izp - exact) < 1e-12
     True
 
     """
