@@ -1,14 +1,14 @@
 """Hermite-Padé approximants from Taylor expansion."""
-from typing import Tuple
-
 import numpy as np
 
 from scipy.linalg import toeplitz, matmul_toeplitz
 
-Polynomial = np.polynomial.polynomial.Polynomial
+from gftool.basis import RatPol
+
+Polynom = np.polynomial.polynomial.Polynomial
 
 
-def pade(an, num_deg: int, den_deg: int) -> Tuple[Polynomial, Polynomial]:
+def pade(an, num_deg: int, den_deg: int) -> RatPol:
     """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
     We set the coefficient `q[N] = 1`
@@ -65,4 +65,4 @@ def pade(an, num_deg: int, den_deg: int) -> Tuple[Polynomial, Polynomial]:
     qcoeff = np.r_[qcoeff, 1]
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
-    return Polynomial(pcoeff), Polynomial(qcoeff)
+    return RatPol(Polynom(pcoeff), Polynom(qcoeff))
