@@ -156,6 +156,8 @@ def test_2x2_gf(z, eps0, eps1, hopping):
     dec = gt.matrix.decompose_hamiltonian(ham)
     gf_num = dec.reconstruct(1/(z - dec.eig), kind='diag')
     assert np.allclose(gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping), gf_num)
+    if not gt.precision.HAS_QUAD:  # extreme cases require quad, not available for Windows
+        assume(abs(z) < 1e100)
     g0 = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
     gf_num = dec.reconstruct(g0(z - dec.eig), kind='diag')
     gf_2x2 = gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping, hilbert_trafo=g0)
