@@ -1,4 +1,12 @@
-"""Hermite-Padé approximants from Taylor expansion."""
+"""Hermite-Padé approximants from Taylor expansion.
+
+References
+----------
+.. [fasondini2019] Fasondini, M., Hale, N., Spoerer, R. & Weideman, J. A. C.
+   Quadratic Padé Approximation: Numerical Aspects and Applications.
+   Computer research and modeling 11, 1017–1031 (2019).
+   https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
+"""
 import numpy as np
 
 from scipy.linalg import toeplitz, matmul_toeplitz
