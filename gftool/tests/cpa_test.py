@@ -11,6 +11,7 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+HAS_QUAD = gt.precision.HAS_QUAD
 
 ignore_close_to_root = pytest.mark.filterwarnings(
     "ignore:(invalid value encountered in double_scalars):RuntimeWarning"
@@ -20,8 +21,11 @@ ignore_illconditioned = pytest.mark.filterwarnings(
 )
 
 
-@given(gufunc_args('(n)->(n)', dtype=np.complex_,
-                   elements=st.complex_numbers(allow_infinity=False, allow_nan=False)))
+@given(gufunc_args(
+    '(n)->(n)', dtype=np.complex_,
+    elements=st.complex_numbers(allow_infinity=False, allow_nan=False,
+                                max_magnitude=None if HAS_QUAD else 1e100)
+))
 def test_trival_cmpt_gf(args):
     """Test component Green's function for trivial case `concentration=1`."""
     z, = args
