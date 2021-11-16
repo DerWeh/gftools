@@ -858,8 +858,8 @@ def test_bethe_derivative_2(z, D):
     assert np.allclose(gf_d1, fct_d1(z))
 
 
-@given(z=st.complex_numbers(max_magnitude=1e4),
-       D=st.floats(min_value=1e-2, max_value=1e2))
+@given(z=st.complex_numbers(max_magnitude=1e4 if HAS_QUAD else 1e3),
+       D=st.floats(min_value=1e-2 if HAS_QUAD else 1e-1, max_value=1e2))
 def test_bethe_inverse(z, D):
     """Check inverse."""
     if HAS_QUAD:
