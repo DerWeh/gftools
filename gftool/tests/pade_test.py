@@ -29,7 +29,10 @@ def test_regression():
     # FIXME: look into different counting
     gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
     gf_bethe = list(kind.islice(gt_pade.calc_iterator(omega, z_in=iws, coeff=coeff)))[-1]
-    assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
+    if gt.precision.HAS_QUAD:
+        assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
+    else:  # reduce test accuracy for Windows
+        assert np.allclose(gf_bethe_old, gf_bethe, rtol=1e-12, atol=1e-14)
 
 
 def test_coeff_type_reduction():
