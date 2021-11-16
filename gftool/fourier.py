@@ -1261,10 +1261,15 @@ def tt2z_pade(tt, gf_t, z):
     # trapeze rule -> correct boundaries with 1/2
     coeffs[..., 0] *= 0.5
     coeffs[..., -1] *= 0.5
-    deg = coeffs.size//2
-    p, q = pade(coeffs, den_deg=deg, num_deg=deg-1)
+    deg = coeffs.shape[-1]//2
     y = np.exp(1j*z*delta_tt)
-    return p(y)/q(y)
+
+    def pade_val(y_, coeffs_):
+        return pade(coeffs_, den_deg=deg, num_deg=deg-1).eval(y_)
+
+    approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
+
+    return approx
 
 
 def tt2z(tt, gf_t, z, laplace=tt2z_lin):
@@ -1377,8 +1382,9 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     if not (retarded or advanced):
         raise ValueError("Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
                          " or `tt<=0 and z.imag<=0`")
-    if z.size == 0:  # consistent behavior for gufuncs
-        return np.empty_like(z)
+    if z.size == 0 or gf_t.size == 0:  # consistent behavior for gufuncs
+        return np.full(np.broadcast_shapes(z.shape, gf_t.shape[:-1]+(1, )),
+                       fill_value=np.nan)
     return laplace(tt, gf_t, z)
 
 

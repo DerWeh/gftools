@@ -323,6 +323,19 @@ def test_tt2z_single_pole(spole):
     assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
 
 
+@given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
+def test_tt2z_pade_single_pole(spole):
+    """Test of `tt2z_pade` on a single pole."""
+    tt = np.linspace(0, 10, 201)
+    ww = np.linspace(-1.5, 1.5, num=201) + 1e-4j
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
+    gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
+
+    gf_pf = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_pade)
+    assert np.allclose(gf_z, gf_pf, atol=1e-3, rtol=1e-8)
+
+
 @pytest.mark.skipif(not gt.fourier._HAS_NUMEXPR,
                     reason="Only fall-back available, already tested.")
 @given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
@@ -400,3 +413,26 @@ def test_tt2z_gufuncz(args):
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_trapz)
     assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+
+
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+                   elements=[st.floats(min_value=-1,  max_value=1),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=0, max_value=10), ],
+                   max_dims_extra=2, max_side=3),)
+def test_tt2z_gufuncz_pade(args):
+    """Test `tt2z` for different shapes of `z`."""
+    ww, poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    # ensure sufficient large imaginary part
+    z = ww + 1e-3j
+    tt = np.linspace(0, 10, 201)
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :])
+    gf_z = gt.pole_gf_z(z, poles=poles[..., np.newaxis, :],
+                        weights=resids[..., np.newaxis, :])
+
+    gf_pf = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_pade)
+    assert np.allclose(gf_z, gf_pf, rtol=1e-5, atol=1e-3)
