@@ -8,6 +8,7 @@ What's New
 
 New Features
 ~~~~~~~~~~~~
+* Officially support Python 3.10
 * Add retarded-time Bethe Green's function (:commit:`6ffc7c91`)
 
 Internal improvements
