@@ -18,6 +18,7 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+HAS_QUAD = gt.precision.HAS_QUAD
 
 nonneg_float = st.floats(min_value=0.)
 pos_float = st.floats(min_value=0., exclude_min=True)
@@ -861,7 +862,10 @@ def test_bethe_derivative_2(z, D):
        D=st.floats(min_value=1e-2, max_value=1e2))
 def test_bethe_inverse(z, D):
     """Check inverse."""
-    assume(z.imag != 0)  # Gf have poles on real axis
+    if HAS_QUAD:
+        assume(z.imag != 0)  # Gf have poles on real axis
+    else:
+        assume(abs(z.imag) > 1e-8)
     gf = gt.lattice.bethe.gf_z(z, half_bandwidth=D)
     assert gt.lattice.bethe.gf_z_inv(gf, half_bandwidth=D) == pytest.approx(z)
 
