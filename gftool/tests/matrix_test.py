@@ -13,6 +13,8 @@ from .context import gftool as gt
 
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
+HAS_QUAD = gt.precision.HAS_QUAD
+
 
 class TestDecompositionGeneral:
     """Tests for the function `gftool.matrix.decompose_gf`.
@@ -146,7 +148,8 @@ def test_decomposition_inverse(args):
 @given(hopping=st.floats(min_value=-1e6, max_value=1e6),
        eps1=st.floats(min_value=-1e6, max_value=1e6),
        eps0=st.floats(min_value=-1e6, max_value=1e6),
-       z=st.complex_numbers(allow_nan=False, allow_infinity=False))
+       z=st.complex_numbers(allow_nan=False, allow_infinity=False,
+                            max_magnitude=None if HAS_QUAD else 1e64))
 def test_2x2_gf(z, eps0, eps1, hopping):
     """Compare analytic 2x2 Gf vs numeric diagonalization."""
     assume(abs(z.imag) > 1e-6)
