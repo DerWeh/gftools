@@ -864,10 +864,12 @@ def test_bethe_inverse(z, D):
     """Check inverse."""
     if HAS_QUAD:
         assume(z.imag != 0)  # Gf have poles on real axis
+        approx = pytest.approx
     else:
         assume(abs(z.imag) > 1e-8)
+        approx = partial(pytest.approx, rel=1e-4)
     gf = gt.lattice.bethe.gf_z(z, half_bandwidth=D)
-    assert gt.lattice.bethe.gf_z_inv(gf, half_bandwidth=D) == pytest.approx(z)
+    assert gt.lattice.bethe.gf_z_inv(gf, half_bandwidth=D) == approx(z)
 
 
 @pytest.mark.parametrize("D", [1/3, 1.0, 2.0])
