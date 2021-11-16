@@ -95,8 +95,8 @@ matrix
 pade
    * analytic continuation via the Padé algorithm
 
-.. |build-status-master| image:: https://app.travis-ci.com/DerWeh/gftools.svg?branch=master
-   :target: https://app.travis-ci.com/DerWeh/gftools
+.. |build-status-master| image:: https://github.com/DerWeh/gftools/actions/workflows/ci.yml/badge.svg?branch=master
+   :target: https://github.com/DerWeh/gftools/actions/workflows/ci.yml?query=branch%3Amaster
    :alt: Build status master
 .. |codecov-master| image:: https://codecov.io/gh/DerWeh/gftools/branch/master/graph/badge.svg
    :target: https://app.codecov.io/gh/DerWeh/gftools/branch/master
@@ -104,8 +104,8 @@ pade
 .. |rtd-master| image:: https://readthedocs.org/projects/gftools/badge/?version=master
    :target: https://gftools.readthedocs.io/en/master/?badge=master
    :alt: Documentation Status master
-.. |build-status-develop| image:: https://app.travis-ci.com/DerWeh/gftools.svg?branch=develop
-   :target: https://app.travis-ci.com/DerWeh/gftools
+.. |build-status-develop| image:: https://github.com/DerWeh/gftools/actions/workflows/ci.yml/badge.svg?branch=develop
+   :target: https://github.com/DerWeh/gftools/actions/workflows/ci.yml?query=branch%3Adevelop
    :alt: Build status develop
 .. |codecov-develop| image:: https://codecov.io/gh/DerWeh/gftools/branch/develop/graph/badge.svg
    :target: https://app.codecov.io/gh/DerWeh/gftools/branch/develop

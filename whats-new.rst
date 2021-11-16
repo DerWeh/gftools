@@ -3,6 +3,28 @@
 What's New
 ==========
 
+0.10.1 (not released)
+---------------------
+
+New Features
+~~~~~~~~~~~~
+* Add retarded-time Bethe Green's function (:commit:`6ffc7c91`)
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+* Switch from Travis to GitHub actions #20 (:commit:`23ba0a34`)
+  - This adds test for Mac and Windows
+
+Documentation
+~~~~~~~~~~~~~
+* Fix various errors using `Velin <https://github.com/Carreau/velin>`_ (:commit:`03ff6c8e`)
+
+
+Bug fixes
+~~~~~~~~~
+* Accept singular constrains in `~gftool.linalg.lstsq_ec` (:commit:`167e7886`)
+
+
 0.10.0 (2021-09-19)
 -------------------
 
