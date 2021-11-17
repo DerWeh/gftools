@@ -9,16 +9,19 @@ What's New
 New Features
 ~~~~~~~~~~~~
 * Officially support Python 3.10
-* Add retarded-time Bethe Green's function (:commit:`6ffc7c91`)
+* Add retarded-time Bethe Green's `~gftool.lattice.bethe.gf_ret_t` function
+  (:commit:`6ffc7c91`)
 
 Internal improvements
 ~~~~~~~~~~~~~~~~~~~~~
 * Switch from Travis to GitHub actions #20 (:commit:`23ba0a34`)
+
   - This adds test for Mac and Windows
 
 Documentation
 ~~~~~~~~~~~~~
-* Fix various errors using `Velin <https://github.com/Carreau/velin>`_ (:commit:`03ff6c8e`)
+* Fix various errors using `Velin <https://github.com/Carreau/velin>`_
+  (:commit:`03ff6c8e`)
 
 
 Bug fixes
