@@ -10,6 +10,7 @@ path.insert(0, os.path.join(PATH, os.pardir, os.pardir))
 import gftool
 import gftool.beb
 import gftool.cpa
+import gftool.hermpade
 import gftool.matrix
 import gftool.fourier
 import gftool.pade as gt_pade

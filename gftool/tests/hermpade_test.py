@@ -5,6 +5,7 @@ import pytest
 
 from hypothesis import given
 from scipy import interpolate
+from scipy.special import binom
 
 from .context import gftool as gt
 
@@ -40,3 +41,17 @@ def test_pade_vs_scipy(num_deg, den_deg):
     # # it also truncates trailing zeros
     # assert np.allclose(pade.numer.coef, factor*pade_sp[0].coef[::-1])
     # assert np.allclose(pade.denom.coef, factor*pade_sp[1].coef[::-1])
+
+
+@ignore_illconditioned
+@given(num_deg=st.integers(0, 10), den_deg=st.integers(0, 10))
+@pytest.mark.parametrize("fast", [True, False])
+def test_pade_for_cubic(num_deg, den_deg, fast):
+    """Compare for cubic root function, where there are no issues for Padé."""
+    deg = num_deg + den_deg + 1
+    an = binom(1/3, np.arange(deg))  # Taylor of (1+x)**(1/3)
+    pade = gt.hermpade.pade(an, num_deg=num_deg, den_deg=den_deg, fast=fast)
+    pade_sp = interpolate.pade(an, m=den_deg, n=num_deg)
+
+    test_values = np.array([0, 1, np.pi, np.sqrt(2), np.e])
+    assert np.allclose(pade.eval(test_values), pade_sp[0](test_values)/pade_sp[1](test_values))

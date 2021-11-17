@@ -6,20 +6,19 @@ References
    Quadratic Padé Approximation: Numerical Aspects and Applications.
    Computer research and modeling 11, 1017–1031 (2019).
    https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
+
 """
 import numpy as np
 
-from scipy.linalg import toeplitz, matmul_toeplitz
+from scipy.linalg import toeplitz, matmul_toeplitz, solve_toeplitz
 
 from gftool.basis import RatPol
 
 Polynom = np.polynomial.polynomial.Polynomial
 
 
-def pade(an, num_deg: int, den_deg: int) -> RatPol:
+def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
-
-    We set the coefficient `q[N] = 1`
 
     Parameters
     ----------
@@ -28,6 +27,9 @@ def pade(an, num_deg: int, den_deg: int) -> RatPol:
     num_deg, den_deg : int
         The order of the return approximating numerator/denominator polynomial.
         Must the sum must be at most `L`: `L >= n + m + 1`.
+    fast : bool, optional
+        If `fast`, use faster `~scipy.linalg.solve_toeplitz` algorithm.
+        Else use SVD and calculate null-vector (default: False).
 
     Returns
     -------
@@ -66,11 +68,16 @@ def pade(an, num_deg: int, den_deg: int) -> RatPol:
     if an.size < l_max:
         raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
     an = an[:l_max]
-    # first solve the Toeplitz system for q, we set q[N] = 1
-    rhs = np.r_[np.zeros(den_deg), -an[:-den_deg]]
-    amat = toeplitz(an[num_deg+1:], an[num_deg+1:num_deg+1-den_deg:-1])
-    qcoeff = np.linalg.solve(amat, rhs[num_deg+1:])
-    qcoeff = np.r_[qcoeff, 1]
+    if den_deg == 0:  # trival case: no rational polynomial
+        return RatPol(Polynom(an), Polynom(np.array([1])))
+    # first solve the Toeplitz system for q, first row contains tailing zeros
+    top = np.r_[an[num_deg+1::-1][:den_deg+1], [0]*(den_deg-num_deg-1)]
+    if fast:  # use sparseness of Toeplitz matrix, we set q[N] = 1
+        qcoeff = np.r_[solve_toeplitz((an[num_deg+1:], top[:-1]), b=-top[:0:-1]), 1]
+    else:  # build full matrix and determine null-vector
+        amat = toeplitz(an[num_deg+1:], top)
+        __, __, vh = np.linalg.svd(amat)
+        qcoeff = vh[-1].conj()
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
     return RatPol(Polynom(pcoeff), Polynom(qcoeff))
