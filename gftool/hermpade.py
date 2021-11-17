@@ -81,3 +81,80 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
     return RatPol(Polynom(pcoeff), Polynom(qcoeff))
+
+
+def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
+    """Robust version of Padé approximant to polynomial `an`.
+
+    Implements more or less [gonnet2013]_.
+
+    Parameters
+    ----------
+    an : (L,) array_like
+        Taylor series coefficients representing polynomial of order `L-1`
+    num_deg, den_deg : int
+        The order of the return approximating numerator/denominator polynomial.
+        Must the sum must be at most `L`: `L >= n + m + 1`.
+        Depending on `rcond` the degrees can be reduced.
+    rcond : float, optional
+
+
+    Returns
+    -------
+    p, q : Polynomial class
+        The Padé approximation of the polynomial defined by `an` is
+        ``p(x)/q(x)``.
+
+    References
+    ----------
+    .. [gonnet2013] 1.Gonnet, P., Güttel, S. & Trefethen, L. N.
+       Robust Padé Approximation via SVD. SIAM Rev. 55, 101–117 (2013).
+       https://doi.org/10.1137/110853236
+
+    """
+    an = np.asarray(an)
+    assert an.ndim == 1
+    l_max = num_deg + den_deg + 1
+    if an.size < l_max:
+        raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
+    an = an[:l_max]
+    # TODO: do rescaling, haven't found it in the reference
+    tol = rcond * np.linalg.norm(an)
+    if np.all(an[:num_deg] <= tol):  # up to tolerance function is 0
+        return RatPol(Polynom([0]), Polynom([1]))
+    row = np.r_[an[0], np.zeros(den_deg)]
+    col = an
+    while True:
+        if den_deg == 0:
+            pcoeff, qcoeff = an[:den_deg], np.array([1])
+            break
+        # top = np.r_[an[num_deg+1:num_deg+1-den_deg:-1], [0]*(den_deg-num_deg)]
+        # amat = toeplitz(an[num_deg+1:], top)
+        amat = toeplitz(col[:num_deg+den_deg+1], row[:den_deg+1])
+        amat = amat[num_deg+1:num_deg+den_deg+1]
+        assert amat.shape[-1] == amat.shape[-2] + 1, amat.shape
+        s = np.linalg.svd(amat, compute_uv=False)
+        rho = np.count_nonzero(s > rcond*s[0])
+        # step 5
+        if rho < den_deg:  # reduce degrees
+            num_deg, den_deg = num_deg - (den_deg - rho), rho
+            an = an[:num_deg + den_deg + 1]
+            # tol = rcond * np.linalg.norm(an)
+            # print(num_deg, den_deg, rcond*s[0])
+            continue
+        # TODO: code uses weird QR calculation which I don't understand
+        _, s, vh = np.linalg.svd(amat)
+        qcoeff = vh[-1].conj()
+        assert qcoeff.size == den_deg + 1
+        pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
+        break
+    leading_zeros = np.argmax(qcoeff != 0)
+    pcoeff, qcoeff = pcoeff[leading_zeros:], qcoeff[leading_zeros:]
+    trailing_zerosq = np.argmax(qcoeff[::1] != 0)
+    if trailing_zerosq:
+        qcoeff = qcoeff[:-trailing_zerosq]
+    trailing_zerosp = np.argmax(pcoeff[::1] != 0) + 1
+    if trailing_zerosq:
+        pcoeff = pcoeff[:-trailing_zerosp]
+    # we skip normalization of `b[0] = 1`
+    return RatPol(Polynom(pcoeff), Polynom(qcoeff))
