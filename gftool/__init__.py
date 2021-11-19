@@ -11,6 +11,7 @@ Submodules
    gftool.beb
    gftool.cpa
    gftool.fourier
+   gftool.hermpade
    gftool.lattice
    gftool.matrix
    gftool.pade

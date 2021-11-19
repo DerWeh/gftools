@@ -23,10 +23,10 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     Parameters
     ----------
     an : (L,) array_like
-        Taylor series coefficients representing polynomial of order `L-1`
+        Taylor series coefficients representing polynomial of order ``L-1``.
     num_deg, den_deg : int
         The order of the return approximating numerator/denominator polynomial.
-        Must the sum must be at most `L`: `L >= n + m + 1`.
+        Must the sum must be at most ``L``: ``L >= n + m + 1``.
     fast : bool, optional
         If `fast`, use faster `~scipy.linalg.solve_toeplitz` algorithm.
         Else use SVD and calculate null-vector (default: False).
@@ -39,25 +39,38 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
 
     Examples
     --------
-    >>> e_exp = [1.0, 1.0, 1.0/2.0, 1.0/6.0, 1.0/24.0, 1.0/120.0]
-    >>> p, q = gt.hermpade.pade(e_exp, den_deg=2, num_deg=len(e_exp)-3)
+    Let's approximate the cubic root ``f(z) = (1 + z)**(1/3)`` by the ``[8/8]``
+    Padé approximant:
 
-    >>> e_poly = np.poly1d(e_exp[::-1])
+    >>> from scipy.special import binom
+    >>> an = binom(1/3, np.arange(8+8+1))  # Taylor of (1+x)**(1/3)
+    >>> def f(z):
+    ...     return np.emath.power(1+z, 1/3)
 
-    Compare ``e_poly(x)`` and the Pade approximation ``p(x)/q(x)``
-
-    >>> np.exp(1)
-    2.718281828459045
-    >>> e_poly(1)
-    2.7166666666666668
-    >>> p(1)/q(1)
-    2.7179487179487181
+    >>> x = np.linspace(-1, 3, num=500)
+    >>> pade = gt.hermpade.pade(an, num_deg=8, den_deg=8)
 
     >>> import matplotlib.pyplot as plt
-    >>> xx = np.linspace(0, 5, num=100)
-    >>> __, plt.plot(xx, np.exp(xx))
-    >>> __, plt.plot(xx, e_poly(xx), '--')
-    >>> __, plt.plot(xx, p(xx)/q(xx), ':')
+    >>> __ = plt.plot(x, f(x), label='exact', color='black')
+    >>> __ = plt.plot(x, np.polynomial.Polynomial(an)(x), '--', label='Taylor')
+    >>> __ = plt.plot(x, pade.eval(x), ':', label='Pade')
+    >>> __ = plt.ylim(ymin=0, ymax=2)
+    >>> __ = plt.legend(loc='upper left')
+    >>> plt.show()
+
+    The Padé approximation is able to approximate the function even for larger
+    ``x``.
+
+    Using ``fast=True``, the Padé approximant more perform at using the
+    Toeplitz structure. This might, however, be less accurate.
+
+    >>> padef = gt.hermpade.pade(an, num_deg=8, den_deg=8, fast=True)
+    >>> __ = plt.plot(x, abs(np.polynomial.Polynomial(an)(x) - f(x)), label='Taylor')
+    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='SVD')
+    >>> __ = plt.plot(x, abs(padef.eval(x) - f(x)), label='Levinson')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
 
     """
     # TODO: allow to fix asymptotic by fixing `p[-1]`
