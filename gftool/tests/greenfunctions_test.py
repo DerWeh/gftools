@@ -1044,3 +1044,70 @@ def test_hubbard_I_self_hfm():
     m1 = occ * (1 - occ) * U**2
     limit_1p = fp.limit(hubbard_dyn, np.infty, exp=True, steps=[25])
     assert limit_1p == pytest.approx(m1)
+
+
+class TestBoxGf(GfProperties):
+    """Check properties of Box Gf."""
+
+    D = 1.2
+    z_mesh = np.mgrid[-2*D:2*D:5j, -2*D:2*D:4j]
+    z_mesh = np.ravel(z_mesh[0] + 1j*z_mesh[1])
+
+    gf = method(gt.lattice.box.gf_z)
+
+    @staticmethod
+    @pytest.fixture(params=[0.7, 1.2, ])
+    def params(request):
+        """Parameters for Box Green's function."""
+        return (), {'half_bandwidth': request.param}
+
+
+class TestBox(SymLattice):
+    """Check basic properties of `gftool.box.lattice`."""
+
+    lattice = gt.lattice.box
+
+    @pytest.fixture(params=[0.5, 1., 2.], scope="class")
+    def kwds(self, request):
+        """Half-bandwidth of Box lattice."""
+        return {"half_bandwidth": request.param}
+
+    @staticmethod
+    def band_edges(half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
+    @pytest.mark.skip(reason="No multi-precision necessary for constant.")
+    def test_dos_vs_dos_mp(self, eps, kwds):
+        """Compare multi-precision and `numpy` implementation of DOS."""
+
+    @pytest.mark.skip(reason="Not implemented as redundant.")
+    def test_hilbert_transform(self, z, kwds):
+        """Hilbert transform is same as non-interacting local Green's function."""
+        pass
+
+    def test_dos_moment(self, kwds):
+        """Moment is integral over ϵ^m DOS."""
+        # check influence of bandwidth, as they are calculated for D=1 and normalized
+        dos = partial(self.lattice.dos, **kwds)
+        dos_moment = partial(self.lattice.dos_moment, **kwds)
+        left, right = self.band_edges(**kwds)
+        points = [left, *self.singularities(**kwds), right]
+        for mm in range(0, 21, 2):
+            # pytint: disable=cell-var-from-loop
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            assert moment == pytest.approx(dos_moment(mm))
+
+
+@pytest.mark.parametrize("D", [1/3, 1.0, 2.0])
+@pytest.mark.parametrize("center", [-1/3, 0, 0.5])
+def test_box_retarded(D, center):
+    """Compare retarded-time Green's function via Laplace transform."""
+    tt = np.linspace(0, 50/D, 3000)
+    gf_ret_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=center)
+    # use large shift to make Laplace transform good
+    eta = 0.1
+    ww = np.linspace(-2*D, 2*D, num=501) + 5j*eta
+    gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
+    gf_ww = gt.lattice.box.gf_z(ww - D*center, half_bandwidth=D)
+    assert np.allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
