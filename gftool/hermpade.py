@@ -110,7 +110,14 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
         Must the sum must be at most `L`: `L >= n + m + 1`.
         Depending on `rcond` the degrees can be reduced.
     rcond : float, optional
+        Cut-off ratio for small singular values. For the purposes of rank
+        determination, singular values are treated as zero if they are smaller
+        than `rcond` times the largest singular value. (default: 1e-14)
+        The default is appropriate for round error due to machine precision.
 
+    See also
+    --------
+    pade
 
     Returns
     -------
@@ -123,6 +130,31 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     .. [gonnet2013] 1.Gonnet, P., Güttel, S. & Trefethen, L. N.
        Robust Padé Approximation via SVD. SIAM Rev. 55, 101–117 (2013).
        https://doi.org/10.1137/110853236
+
+    Examples
+    --------
+
+    The robust version can avoid over fitting for high-order Padé approximants.
+    Choosing an appropriate `rcond`, is however a delicate task in practice.
+    We consider an example with random noise on the Taylor coefficients `an`:
+
+    >>> from scipy.special import binom
+    >>> deg = 50
+    >>> an = binom(1/3, np.arange(2*deg + 1))  # Taylor of (1+x)**(1/3)
+    >>> an += np.random.default_rng().normal(scale=1e-9, size=2*deg + 1)
+    >>> def f(z):
+    >>>     return np.emath.power(1+z, 1/3)
+
+    >>> x = np.linspace(-1, 3, num=1000)
+    >>> pade = gt.hermpade.pade(an, num_deg=deg, den_deg=deg)
+    >>> pader = gt.hermpade.pader(an, num_deg=deg, den_deg=deg, rcond=1e-8)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='standard Padé')
+    >>> __ = plt.plot(x, abs(pader.eval(x) - f(x)), label='robust Padé')
+    >>> plt.yscale('log')
+    >>> __ = plt.legend()
+    >>> plt.show()
 
     """
     an = np.asarray(an)
