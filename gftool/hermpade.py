@@ -8,6 +8,10 @@ References
    https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
 
 """
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Tuple
+
 import numpy as np
 
 from scipy.linalg import toeplitz, matmul_toeplitz, solve_toeplitz
@@ -203,3 +207,70 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
         pcoeff = pcoeff[:-trailing_zerosp]
     # we skip normalization of `b[0] = 1`
     return RatPol(Polynom(pcoeff), Polynom(qcoeff))
+
+
+def hermite_sqr_eq(an, r_deg: int, q_deg: int, p_deg: int
+                   ) -> Tuple[Polynom, Polynom, Polynom]:
+    """Return the polynomials `r`, `q`, `p` for the quadratic Hermite-Padé."""
+    an = np.asarray(an)
+    assert an.ndim == 1
+    l_max = r_deg + q_deg + p_deg + 1
+    if an.size < l_max:
+        raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
+    an = an[:l_max]
+    full_amat = toeplitz(an, r=np.zeros_like(an))
+    amat2 = (full_amat@full_amat)[:, :r_deg+1]
+    amat = full_amat[:, :q_deg+1]
+    lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
+    _, _, vh = np.linalg.svd(lower)
+    qr = vh[-1].conj()
+    assert qr.size == r_deg + q_deg + 2
+    upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
+    pcoeff = -upper@qr
+    return Polynom(qr[q_deg+1:]), Polynom(qr[:q_deg+1]), Polynom(pcoeff)
+
+
+@dataclass
+class SqHermPadeGf(Sequence):
+    """Retarded Green's function given by square Hermite-Padé approximant."""
+
+    r: Polynom
+    q: Polynom
+    p: Polynom
+
+    def eval(self, z):
+        """Evaluate the retarded branch of the square Hermite-Padé approximant.
+
+        The branch is chosen based on the imaginary part.
+        """
+        rz, qz, pz = self.r(z), self.q(z), self.p(z)
+        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
+        # use the branch with positive spectral weight
+        p_branch = 0.5*(-qz + discriminant) / rz
+        m_branch = 0.5*(-qz - discriminant) / rz
+        p_is_ret = p_branch.imag <= 0
+        m_is_ret = m_branch.imag <= 0
+        branch = np.select(
+            [p_is_ret & ~m_is_ret,  # only p retarded
+             ~p_is_ret & m_is_ret,  # only m retarded
+             p_is_ret & m_is_ret & (p_branch.imag >= m_branch.imag),  # both retarded
+             p_is_ret & m_is_ret & (m_branch.imag >= p_branch.imag),  # both retarded
+             ~p_is_ret & ~m_is_ret & (p_branch.imag <= m_branch.imag),  # neither is retarded
+             ~p_is_ret & ~m_is_ret & (m_branch.imag <= p_branch.imag),  # neither is retard
+             ],
+            [p_branch, m_branch, p_branch, m_branch, p_branch, m_branch]
+        )
+        return branch
+
+    @classmethod
+    def from_taylor(cls, an, deg_r: int, deg_q: int, deg_p: int):
+        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        r, q, p = hermite_sqr_eq(an=an, r_deg=deg_r, q_deg=deg_q, p_deg=deg_p)
+        return cls(r=r, q=q, p=p)
+
+    def __getitem__(self, key: int):
+        """Make `Decomposition` behave like the tuple `(rv, eig, rv_inv)`."""
+        return (self.r, self.q, self.p)[key]
+
+    def __len__(self) -> int:
+        return 3
