@@ -13,8 +13,7 @@ from dataclasses import dataclass
 from typing import Tuple, Type, TypeVar
 
 import numpy as np
-
-from scipy.linalg import toeplitz, matmul_toeplitz, solve_toeplitz
+from scipy.linalg import matmul_toeplitz, qr, solve_toeplitz, toeplitz
 
 from gftool.basis import RatPol
 
@@ -33,7 +32,7 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         Must the sum must be at most ``L``: ``L >= n + m + 1``.
     fast : bool, optional
         If `fast`, use faster `~scipy.linalg.solve_toeplitz` algorithm.
-        Else use SVD and calculate null-vector (default: False).
+        Else use QR and calculate null-vector (default: False).
 
     Returns
     -------
@@ -70,7 +69,7 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
 
     >>> padef = gt.hermpade.pade(an, num_deg=8, den_deg=8, fast=True)
     >>> __ = plt.plot(x, abs(np.polynomial.Polynomial(an)(x) - f(x)), label='Taylor')
-    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='SVD')
+    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='QR')
     >>> __ = plt.plot(x, abs(padef.eval(x) - f(x)), label='Levinson')
     >>> __ = plt.legend()
     >>> plt.yscale('log')
@@ -93,8 +92,8 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         qcoeff = np.r_[solve_toeplitz((an[num_deg+1:], top[:-1]), b=-top[:0:-1]), 1]
     else:  # build full matrix and determine null-vector
         amat = toeplitz(an[num_deg+1:], top)
-        __, __, vh = np.linalg.svd(amat)
-        qcoeff = vh[-1].conj()
+        q_, __ = qr(amat.conj().T, mode='full')
+        qcoeff = q_[:, -1]
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
     return RatPol(Polynom(pcoeff), Polynom(qcoeff))
@@ -192,8 +191,8 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
             # print(num_deg, den_deg, rcond*s[0])
             continue
         # TODO: code uses weird QR calculation which I don't understand
-        _, s, vh = np.linalg.svd(amat)
-        qcoeff = vh[-1].conj()
+        q_, __ = qr(amat.conj().T, mode='full')
+        qcoeff = q_[:, -1]
         assert qcoeff.size == den_deg + 1
         pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
         break
@@ -219,15 +218,15 @@ def hermite_sqr_eq(an, r_deg: int, q_deg: int, p_deg: int
         raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
     an = an[:l_max]
     full_amat = toeplitz(an, r=np.zeros_like(an))
-    amat2 = (full_amat@full_amat)[:, :r_deg+1]
+    amat2 = (full_amat@full_amat[:, :r_deg+1])
     amat = full_amat[:, :q_deg+1]
     lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
     _, _, vh = np.linalg.svd(lower)
-    qr = vh[-1].conj()
-    assert qr.size == r_deg + q_deg + 2
+    qrcoeff = vh[-1].conj()
+    assert qrcoeff.size == r_deg + q_deg + 2
     upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
-    pcoeff = -upper@qr
-    return Polynom(qr[q_deg+1:]), Polynom(qr[:q_deg+1]), Polynom(pcoeff)
+    pcoeff = -upper@qrcoeff
+    return Polynom(qrcoeff[q_deg+1:]), Polynom(qrcoeff[:q_deg+1]), Polynom(pcoeff)
 
 
 TSqHermPade = TypeVar("TSqHermPade", bound='SqHermPade')
