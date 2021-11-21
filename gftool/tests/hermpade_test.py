@@ -68,6 +68,17 @@ def test_cubic_root():
     assert np.allclose(herm.eval(x), fx, rtol=1e-10)
 
 
+def test_single_pole():
+    """Test approximants against a single pole."""
+    an = (-1)**np.arange(17)
+    x = np.linspace(-3, 3, num=500)
+    fx = 1 / (x + 1)
+    pade = gt.hermpade.pade(an, den_deg=8, num_deg=8)
+    assert np.allclose(pade.eval(x), fx, rtol=1e-14, atol=1e-12)
+    herm = gt.hermpade.SqHermPade.from_taylor(an, 5, 5, 5)
+    assert np.allclose(herm.eval(x), fx, rtol=1e-11, atol=1e-12)
+
+
 def test_square_root():
     """Square Hermite-Padé should be exact for the right branch."""
     an = binom(1/2, np.arange(17))  # Taylor of (1+x)**(1/3)

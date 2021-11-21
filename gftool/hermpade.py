@@ -327,20 +327,27 @@ class SqHermPade:
 
         The branch is chosen based on the Padé approximant.
         """
+        p_branch, m_branch = self.eval_branches(z)
+        pade_ = self.pade.eval(z)
+        approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
+        return approx
+
+    def eval_branches(self, z) -> Tuple[np.ndarray, np.ndarray]:
+        """Evaluate the two branches."""
         rz, qz, pz = self.r(z), self.q(z), self.p(z)
         discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
         p_branch = 0.5*(-qz + discriminant) / rz
         m_branch = 0.5*(-qz - discriminant) / rz
-        pade_ = self.pade.eval(z)
-        approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
-        return approx
+        p_stable = np.where(abs(p_branch) >= abs(m_branch), p_branch, pz / (rz*m_branch))
+        m_stable = np.where(abs(m_branch) >= abs(p_branch), m_branch, pz / (rz*p_branch))
+        return p_stable, m_stable
 
     @classmethod
     def from_taylor(cls: Type[TSqHermPade], an, deg_r: int, deg_q: int, deg_p: int) -> TSqHermPade:
         """Construct square Hermite-Padé from Taylor expansion `an`."""
         r, q, p = hermite_sqr_eq(an=an, r_deg=deg_r, q_deg=deg_q, p_deg=deg_p)
         deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
-        length = deg_r + deg_q + deg_p + 1
+        length = deg_r + deg_q + deg_p
         den_deg = (length - deg_diff) // 2
         pade_ = pade(an=an, num_deg=den_deg+deg_diff, den_deg=den_deg)
         return cls(r=r, q=q, p=p, pade=pade_)
