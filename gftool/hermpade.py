@@ -10,7 +10,7 @@ References
 """
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Type, TypeVar
 
 import numpy as np
 
@@ -228,6 +228,103 @@ def hermite_sqr_eq(an, r_deg: int, q_deg: int, p_deg: int
     upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
     pcoeff = -upper@qr
     return Polynom(qr[q_deg+1:]), Polynom(qr[:q_deg+1]), Polynom(pcoeff)
+
+
+TSqHermPade = TypeVar("TSqHermPade", bound='SqHermPade')
+
+
+# TODO: sort alphabetically p, q, r
+@dataclass
+class SqHermPade:
+    r"""Square Hermite-Padé approximant with branch selection according to Padé.
+
+    A function :math:`f(z)` with known Taylor coefficients `an` is approximated
+    using
+
+    .. math: p(z) + q(z)f(z) + r(z) f^2(z) = 𝒪(z^{N_p + N_q + N_r + 2})
+
+    where :math:`N_x` are the degrees of the polynomials.
+    The approximant has two branches
+
+    .. math: F^±(z) = (-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}) / 2r(z)
+
+    The function `SqHermPade.eval` chooses the branch which is locally closer
+    to the Padé approximant, as proposed by [fasondini2019]_.
+
+    Parameters
+    ----------
+    r, q, p : Polynom
+        The polynomials.
+    pade : RatPol
+        The Padé approximant.
+
+    References
+    ----------
+    .. [fasondini2019] Fasondini, M., Hale, N., Spoerer, R. & Weideman, J. A. C.
+       Quadratic Padé Approximation: Numerical Aspects and Applications.
+       Computer research and modeling 11, 1017–1031 (2019).
+       https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
+
+    Examples
+    --------
+    Let's approximate the cubic root ``f(z) = (1 + z)**(1/3)`` by the ``[8/8]``
+    Padé approximant:
+
+    >>> from scipy.special import binom
+    >>> an = binom(1/3, np.arange(8+8+1))  # Taylor of (1+x)**(1/3)
+    >>> def f(z):
+    ...     return np.emath.power(1+z, 1/3)
+
+    >>> x = np.linspace(-1, 2, num=500)
+    >>> herm = gt.hermpade.SqHermPade.from_taylor(an, 5, 5, 5)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.plot(x, f(x), label='exact', color='black')
+    >>> __ = plt.plot(x, np.polynomial.Polynomial(an)(x), '--', label='Taylor')
+    >>> __ = plt.plot(x, herm.pade.eval(x), '-.', label='Padé')
+    >>> __ = plt.plot(x, herm.eval(x).real, ':', label='Square')
+    >>> __ = plt.ylim(ymin=0, ymax=1.75)
+    >>> __ = plt.legend(loc='upper left')
+    >>> plt.show()
+
+    The improvement becomes more clear showing the error:
+
+    >>> __ = plt.plot(x, abs(np.polynomial.Polynomial(an)(x) - f(x)), '--', label='Taylor')
+    >>> __ = plt.plot(x, abs(herm.pade.eval(x) - f(x)), '-.', label='Padé')
+    >>> __ = plt.plot(x, abs(herm.eval(x) - f(x)), ':', label='Square')
+    >>> __ = plt.legend()
+    >>> plt.yscale('log')
+    >>> plt.show()
+
+    """
+
+    r: Polynom
+    q: Polynom
+    p: Polynom
+    pade: RatPol
+
+    def eval(self, z):
+        """Evaluate the retarded branch of the square Hermite-Padé approximant.
+
+        The branch is chosen based on the Padé approximant.
+        """
+        rz, qz, pz = self.r(z), self.q(z), self.p(z)
+        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
+        p_branch = 0.5*(-qz + discriminant) / rz
+        m_branch = 0.5*(-qz - discriminant) / rz
+        pade_ = self.pade.eval(z)
+        approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
+        return approx
+
+    @classmethod
+    def from_taylor(cls: Type[TSqHermPade], an, deg_r: int, deg_q: int, deg_p: int) -> TSqHermPade:
+        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        r, q, p = hermite_sqr_eq(an=an, r_deg=deg_r, q_deg=deg_q, p_deg=deg_p)
+        deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
+        length = deg_r + deg_q + deg_p + 1
+        den_deg = (length - deg_diff) // 2
+        pade_ = pade(an=an, num_deg=den_deg+deg_diff, den_deg=den_deg)
+        return cls(r=r, q=q, p=p, pade=pade_)
 
 
 @dataclass

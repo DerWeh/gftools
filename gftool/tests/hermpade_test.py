@@ -55,3 +55,14 @@ def test_pade_for_cubic(num_deg, den_deg, fast):
 
     test_values = np.array([0, 1, np.pi, np.sqrt(2), np.e])
     assert np.allclose(pade.eval(test_values), pade_sp[0](test_values)/pade_sp[1](test_values))
+
+
+def test_cubic_root():
+    """Test approximants against cubic root function."""
+    an = binom(1/3, np.arange(17))  # Taylor of (1+x)**(1/3)
+    x = np.linspace(-0.5, 2, num=500)
+    fx = np.emath.power(1+x, 1/3)
+    pade = gt.hermpade.pade(an, den_deg=8, num_deg=8)
+    assert np.allclose(pade.eval(x), fx, rtol=1e-8)
+    herm = gt.hermpade.SqHermPade.from_taylor(an, 5, 5, 5)
+    assert np.allclose(herm.eval(x), fx, rtol=1e-10)
