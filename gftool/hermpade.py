@@ -296,6 +296,25 @@ class SqHermPade:
     >>> plt.yscale('log')
     >>> plt.show()
 
+    Mind, that the predication of the correct branch is far from safe:
+
+    >>> an = binom(1/2, np.arange(8+8+1))  # Taylor of (1+x)**(1/3)
+    >>> x = np.linspace(-3, 3, num=500)
+    >>> fx = np.emath.power(1+x, 1/3)
+    >>> herm = gt.hermpade.SqHermPade.from_taylor(an, 5, 5, 5)
+
+    >>> __ = plt.plot(x, f(x).real, label='exact', color='black')
+    >>> __ = plt.plot(x, herm.eval(x).real, label='Square', color='C0')
+    >>> __ = plt.plot(x, f(x).imag, '--', color='black')
+    >>> __ = plt.plot(x, herm.eval(x).imag, '--', color='C0')
+    >>> plt.show()
+
+    The positive branch, however, yields the exact result:
+
+    >>> p_branch, __ = herm.eval_branches(x)
+    >>> np.allclose(p_branch, f(x), rtol=1e-14, atol=1e-14)
+    True
+
     """
 
     r: Polynom
