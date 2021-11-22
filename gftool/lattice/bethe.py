@@ -380,7 +380,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
         Half-bandwidth of the DOS of the Bethe lattice.
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
     center : float
-        Position of the center of the center of the Bethe DOS.
+        Position of the center of the Bethe DOS.
         This parameter is **not** given in units of `half_bandwidth`.
 
     Returns

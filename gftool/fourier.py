@@ -1188,9 +1188,9 @@ def tt2z_lin(tt, gf_t, z):
 
     Notes
     -----
-    Internally this function evaluates the sum as a matrix product to leverage
-    the speed-up of BLAS. If `numexpr` is available, it is used for the speed
-    up it provides for transcendental equations.
+    If `numexpr` is available, it is used for the significant speed up it
+    provides for transcendental equations.  Internally this function evaluates
+    the sum as a matrix product to leverage the speed-up of BLAS.
 
     References
     ----------
