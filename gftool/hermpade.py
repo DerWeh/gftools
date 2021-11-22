@@ -1,4 +1,140 @@
-"""Hermite-Padé approximants from Taylor expansion.
+r"""Hermite-Padé approximants from Taylor expansion.
+
+See [fasondini2019]_ for practical applications and [baker1996]_ for the
+extensive theoretical basis.
+
+We present the example from [fasondini2019]_ showing the approximations.
+We consider the cubic root ``f(z) = (1 + z)**(1/3)``, the radius of convergence
+of its series is 1.
+
+Taylor series
+~~~~~~~~~~~~~
+Obviously the Taylor series fails for `z<=1` as it cannot represent a pole,
+but also for larger `z>=1` it fails:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> from scipy.special import binom
+   >>> an = binom(1/3, np.arange(17))  # Taylor of (1+x)**(1/3)
+   >>> def f(z):
+   ...     return np.emath.power(1+z, 1/3)
+   >>> taylor = np.polynomial.Polynomial(an)
+
+   >>> import matplotlib.pyplot as plt
+   >>> x = np.linspace(0, 3, num=500)
+   >>> __ = plt.plot(x, f(x), color='black')
+   >>> __ = plt.plot(x, taylor(x), color='C1')
+   >>> __ = plt.ylim(0, 1.75)
+   >>> plt.show()
+
+Padé approximant
+~~~~~~~~~~~~~~~~
+The Padé approximant can be used to improve the Taylor expansion and expands
+the applicability beyond the radius of convergence:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> x = np.linspace(-3, 3, num=501)
+   >>> pade = gt.hermpade.pade(an, num_deg=8, den_deg=8)
+   >>> __ = plt.plot(x, f(x).real, color='black')
+   >>> __ = plt.plot(x, pade.eval(x), color='C1')
+   >>> __ = plt.ylim(0, 1.75)
+   >>> plt.show()
+
+The Padé approximant provides a global approximation.
+For negative values, however, the Padé approximant still fails, as it cannot
+accurately represent a branch cut.  The Padé approximant is suitable for simple
+poles and tries to approximate the branch-cut by a finite number of poles.
+It is instructive to plot the error in the complex plane:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> y = np.linspace(-3, 3, num=501)
+   >>> z = x[:, None] + 1j*y[None, :]
+   >>> error = abs(pade.eval(z) - f(z))
+
+   >>> import matplotlib as mpl
+   >>> fmt = mpl.ticker.LogFormatterMathtext()
+   >>> __ = fmt.create_dummy_axis()
+   >>> norm = mpl.colors.LogNorm(vmin=1e-16, vmax=1)
+   >>> __ = plt.pcolormesh(x, y, error.T, shading='nearest', norm=norm)
+   >>> cbar = plt.colorbar(extend='both')
+   >>> levels = np.logspace(-15, 0, 16)
+   >>> cont = plt.contour(x, y, error.T, colors='black', linewidths=0.25, levels=levels)
+   >>> __ = plt.clabel(cont, cont.levels, fmt=fmt, fontsize='x-small')
+   >>> for ll in levels:
+   ...     __ = cbar.ax.axhline(ll, color='black', linewidth=0.25)
+   >>> __ = plt.xlabel(r"$\Re z$")
+   >>> __ = plt.ylabel(r"$\Im z$")
+   >>> plt.tight_layout()
+   >>> plt.gca().set_rasterization_zorder(1.5)  # avoid excessive files
+   >>> plt.show()
+
+Away from the branch-cut, the Padé approximant is a reasonable approximation.
+
+
+Square Hermite-Padé approximant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A further improvement is obtained by using the square Hermite-Padé approximant,
+which can represent square-root branch cuts:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> herm2 = gt.hermpade.Hermite2.from_taylor(an, deg_p=5, deg_q=5, deg_r=5)
+
+   >>> __ = plt.plot(x, f(x).real, color='black')
+   >>> __ = plt.plot(x, herm2.eval(x).real, color='C1')
+   >>> __ = plt.ylim(0, 1.75)
+   >>> plt.show()
+
+It nicely approximates the function almost everywhere. Let's compare the error
+to the Padé approximant:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label="Padé")
+   >>> __ = plt.plot(x, abs(herm2.eval(x) - f(x)), label="Herm2")
+   >>> __ = plt.yscale('log')
+   >>> __ = plt.legend()
+   >>> plt.show()
+
+Let's also compare the quality of the approximants in the complex plane:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> error2 = np.abs(herm2.eval(z) - f(z))
+
+   >>> __, axes = plt.subplots(ncols=2, sharex=True, sharey=True)
+   >>> __ = axes[0].set_title("Padé")
+   >>> __ = axes[1].set_title("Herm2")
+   >>> for ax, err in zip(axes, [error, error2]):
+   ...     pcm = ax.pcolormesh(x, y, err.T, shading='nearest', norm=norm)
+   ...     cont = ax.contour(x, y, err.T, colors='black', linewidths=0.25, levels=levels)
+   ...     __ = ax.clabel(cont, cont.levels, fmt=fmt, fontsize='x-small')
+   ...     __ = ax.set_xlabel(r"$\Re z$")
+   ...     ax.set_rasterization_zorder(1.5)
+   >>> __ = axes[0].set_ylabel(r"$\Im z$")
+   >>> plt.tight_layout()
+   >>> cbar = plt.colorbar(pcm, extend='both', ax=axes, fraction=0.08, pad=0.02)
+   >>> cbar.ax.tick_params(labelsize='x-small')
+   >>> for ll in levels:
+   ...     __ = cbar.ax.axhline(ll, color='black', linewidth=0.25)
+   >>> plt.show()
+
+Note, however, the square Hermite-Padé approximant contains the ambiguity which
+branch to choose. The heuristic can fail and should therefore be checked.
 
 References
 ----------
@@ -6,6 +142,8 @@ References
    Quadratic Padé Approximation: Numerical Aspects and Applications.
    Computer research and modeling 11, 1017–1031 (2019).
    https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
+.. [baker1996] Baker Jr, G. A. & Graves-Morris, Pade Approximants.
+   Second edition. (Cambridge University Press, 1996).
 
 """
 from collections.abc import Sequence
@@ -145,7 +283,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     >>> deg = 50
     >>> an = binom(1/3, np.arange(2*deg + 1))  # Taylor of (1+x)**(1/3)
     >>> an += np.random.default_rng().normal(scale=1e-9, size=2*deg + 1)
-    >>> x = np.linspace(-1, 3, num=1000)
+    >>> x = np.linspace(-1, 3, num=500)
     >>> fx = np.emath.power(1+x, 1/3)
 
     >>> pade = gt.hermpade.pade(an, num_deg=deg, den_deg=deg)
@@ -345,9 +483,9 @@ class Hermite2:
 
     Mind, that the predication of the correct branch is far from safe:
 
-    >>> an = binom(1/2, np.arange(8+8+1))  # Taylor of (1+x)**(1/3)
+    >>> an = binom(1/2, np.arange(8+8+1))  # Taylor of (1+x)**(1/2)
     >>> x = np.linspace(-3, 3, num=500)
-    >>> fx = np.emath.power(1+x, 1/3)
+    >>> fx = np.emath.power(1+x, 1/2)
     >>> herm = gt.hermpade.Hermite2.from_taylor(an, 5, 5, 5)
 
     >>> __ = plt.plot(x, fx.real, label='exact', color='black')
