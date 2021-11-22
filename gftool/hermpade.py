@@ -29,16 +29,16 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         Taylor series coefficients representing polynomial of order ``L-1``.
     num_deg, den_deg : int
         The order of the return approximating numerator/denominator polynomial.
-        Must the sum must be at most ``L``: ``L >= n + m + 1``.
+        The sum must be at most ``L``: ``L >= num_deg + den_deg + 1``.
     fast : bool, optional
         If `fast`, use faster `~scipy.linalg.solve_toeplitz` algorithm.
         Else use QR and calculate null-vector (default: False).
 
     Returns
     -------
-    p, q : Polynomial class
-        The Padé approximation of the polynomial defined by `an` is
-        ``p(x)/q(x)``.
+    RatPol
+        The rational polynomial with numerator `RatPol.numer`,
+        and denominator `RatPol.denom`.
 
     Examples
     --------
@@ -47,14 +47,13 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
 
     >>> from scipy.special import binom
     >>> an = binom(1/3, np.arange(8+8+1))  # Taylor of (1+x)**(1/3)
-    >>> def f(z):
-    ...     return np.emath.power(1+z, 1/3)
-
     >>> x = np.linspace(-1, 3, num=500)
+    >>> fx = np.emath.power(1+x, 1/3)
+
     >>> pade = gt.hermpade.pade(an, num_deg=8, den_deg=8)
 
     >>> import matplotlib.pyplot as plt
-    >>> __ = plt.plot(x, f(x), label='exact', color='black')
+    >>> __ = plt.plot(x, fx, label='exact', color='black')
     >>> __ = plt.plot(x, np.polynomial.Polynomial(an)(x), '--', label='Taylor')
     >>> __ = plt.plot(x, pade.eval(x), ':', label='Pade')
     >>> __ = plt.ylim(ymin=0, ymax=2)
@@ -64,13 +63,14 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     The Padé approximation is able to approximate the function even for larger
     ``x``.
 
-    Using ``fast=True``, the Padé approximant more perform at using the
-    Toeplitz structure. This might, however, be less accurate.
+    Using ``fast=True``, the Toeplitz structure is used to evaluate the `pade`
+    faster using Levinson recursion.  This might, however, be less accurate in
+    some cases.
 
     >>> padef = gt.hermpade.pade(an, num_deg=8, den_deg=8, fast=True)
-    >>> __ = plt.plot(x, abs(np.polynomial.Polynomial(an)(x) - f(x)), label='Taylor')
-    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='QR')
-    >>> __ = plt.plot(x, abs(padef.eval(x) - f(x)), label='Levinson')
+    >>> __ = plt.plot(x, abs(np.polynomial.Polynomial(an)(x) - fx), label='Taylor')
+    >>> __ = plt.plot(x, abs(pade.eval(x) - fx), label='QR')
+    >>> __ = plt.plot(x, abs(padef.eval(x) - fx), label='Levinson')
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
@@ -79,7 +79,6 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     # TODO: allow to fix asymptotic by fixing `p[-1]`
     an = np.asarray(an)
     assert an.ndim == 1
-    # we don't use `solve_toeplitz` as it is called less stable in the scipy doc
     l_max = num_deg + den_deg + 1
     if an.size < l_max:
         raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
@@ -96,21 +95,22 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         qcoeff = q_[:, -1]
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
-    return RatPol(Polynom(pcoeff), Polynom(qcoeff))
+    return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
 
 
 def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     """Robust version of Padé approximant to polynomial `an`.
 
-    Implements more or less [gonnet2013]_.
+    Implements more or less [gonnet2013]_. The degrees `num_deg` and `den_deg`
+    are automatically reduced to obtain a robust solution.
 
     Parameters
     ----------
     an : (L,) array_like
-        Taylor series coefficients representing polynomial of order `L-1`
+        Taylor series coefficients representing polynomial of order ``L-1``
     num_deg, den_deg : int
         The order of the return approximating numerator/denominator polynomial.
-        Must the sum must be at most `L`: `L >= n + m + 1`.
+        The sum must be at most ``L``: ``L >= n + m + 1``.
         Depending on `rcond` the degrees can be reduced.
     rcond : float, optional
         Cut-off ratio for small singular values. For the purposes of rank
@@ -118,15 +118,15 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
         than `rcond` times the largest singular value. (default: 1e-14)
         The default is appropriate for round error due to machine precision.
 
+    Returns
+    -------
+    RatPol
+        The rational polynomial with numerator `RatPol.numer`,
+        and denominator `RatPol.denom`.
+
     See also
     --------
     pade
-
-    Returns
-    -------
-    p, q : Polynomial class
-        The Padé approximation of the polynomial defined by `an` is
-        ``p(x)/q(x)``.
 
     References
     ----------
@@ -145,16 +145,15 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     >>> deg = 50
     >>> an = binom(1/3, np.arange(2*deg + 1))  # Taylor of (1+x)**(1/3)
     >>> an += np.random.default_rng().normal(scale=1e-9, size=2*deg + 1)
-    >>> def f(z):
-    >>>     return np.emath.power(1+z, 1/3)
-
     >>> x = np.linspace(-1, 3, num=1000)
+    >>> fx = np.emath.power(1+x, 1/3)
+
     >>> pade = gt.hermpade.pade(an, num_deg=deg, den_deg=deg)
     >>> pader = gt.hermpade.pader(an, num_deg=deg, den_deg=deg, rcond=1e-8)
 
     >>> import matplotlib.pyplot as plt
-    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label='standard Padé')
-    >>> __ = plt.plot(x, abs(pader.eval(x) - f(x)), label='robust Padé')
+    >>> __ = plt.plot(x, abs(pade.eval(x) - fx), label='standard Padé')
+    >>> __ = plt.plot(x, abs(pader.eval(x) - fx), label='robust Padé')
     >>> plt.yscale('log')
     >>> __ = plt.legend()
     >>> plt.show()
