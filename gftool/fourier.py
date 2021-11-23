@@ -28,8 +28,8 @@ The recommended high-level function to perform this Laplace transform is:
 
 Two different kind of algorithms are available
 
-* `tt2z_trapz` and `tt2z_lin` which are regular approximations of the integral
-* `tt2z_pade` which is a Padé-Fourier type transformation,
+* `tt2z_trapz` and `tt2z_lin` which approximate the integral,
+* `tt2z_pade` and `tt2z_herm2` which are Padé-Fourier type transformations.
 
 Currently, sub-functions can be used equivalently, the abstraction `tt2z` is
 mostly for consistency with the imaginary time ↔ Matsubara frequencies
@@ -86,7 +86,7 @@ import numpy as np
 from numpy import newaxis
 
 from gftool._util import _gu_matvec
-from gftool.hermpade import pade
+from gftool.hermpade import pade, Hermite2
 from gftool.statistics import matsubara_frequencies, matsubara_frequencies_b
 from gftool.basis.pole import PoleFct, PoleGf
 
@@ -1144,9 +1144,9 @@ def tt2z_trapz(tt, gf_t, z):
     -----
     The function is equivalent to the one-liner
     `np.trapz(np.exp(1j*z[:, None]*tt)*gf_t, x=tt)`.
-    Internally this function evaluates the sum as a matrix product to leverage
-    the speed-up of BLAS. If `numexpr` is available, it is used for the speed
-    up it provides for transcendental equations.
+    If `numexpr` is available, it is used for the significant speed up it
+    provides for transcendental equations.  Internally the sum is evaluated
+    as a matrix product to leverage the speed-up of BLAS.
 
     """
     phase = _phase(z[..., newaxis], tt[newaxis, :])
@@ -1196,8 +1196,8 @@ def tt2z_lin(tt, gf_t, z):
     Notes
     -----
     If `numexpr` is available, it is used for the significant speed up it
-    provides for transcendental equations.  Internally this function evaluates
-    the sum as a matrix product to leverage the speed-up of BLAS.
+    provides for transcendental equations.  Internally the sum is evaluated
+    as a matrix product to leverage the speed-up of BLAS.
 
     References
     ----------
@@ -1268,6 +1268,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     --------
     gftool.hermpade.pade
     gftool.hermpade.pader
+    tt2z_herm2 : Fourier-Padé using square Hermite-Padé approximant.
     tt2z_trapz : Plain implementation using trapezoidal rule.
     tt2z_lin : Laplace integration using Filon's method
 
@@ -1285,6 +1286,61 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
 
     def pade_val(y_, coeffs_):
         return pade(coeffs_, den_deg=deg, num_deg=deg+degree, **kwds).eval(y_)
+
+    approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
+
+    return approx
+
+
+def tt2z_herm2(tt, gf_t, z):
+    r"""Square Fourier-Padé transform of the real-time Green's function `gf_t`.
+
+    Uses a square Hermite-Padé approximant for the transform.
+    The function requires an equidistant `tt`.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The equidistant points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function at time points `tt`.
+    z : (..., Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    Raises
+    ------
+    ValueError
+        If the time points `tt` are not equidistant.
+
+    See Also
+    --------
+    gftool.hermpade.Hermite2
+    tt2z_pade : Fourier-Padé using regular rational Padé approximant
+    tt2z_trapz : Plain implementation using trapezoidal rule.
+    tt2z_lin : Laplace integration using Filon's method
+
+    """
+    delta_tt = tt[1] - tt[0]
+    if not np.allclose(tt[1:] - tt[:-1], delta_tt):
+        raise ValueError("Equidistant `tt` required for current implementation.")
+    assert tt[0] == 0, "If not, we need to fix the phase"
+    assert np.all(z.imag > 0), "Only implemented for retarded Green's function"
+    coeffs = delta_tt * gf_t
+    # trapeze rule -> correct boundaries with 1/2
+    coeffs[..., 0] *= 0.5
+    coeffs[..., -1] *= 0.5
+    deg = (coeffs.shape[-1] + 2) // 3
+    y = np.exp(1j*z*delta_tt)
+
+    def pade_val(y_, coeffs_):
+        herm = Hermite2.from_taylor(coeffs_, deg_r=deg, deg_q=deg-1, deg_p=deg-2)
+        return herm.eval(y_)
 
     approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
 
@@ -1317,7 +1373,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
-    laplace : {`tt2z_lin`, `tt2z_trapz`, `tt2z_pade`}, optional
+    laplace : {`tt2z_lin`, `tt2z_trapz`, `tt2z_pade`, `tt2z_herm2`}, optional
         Back-end to perform the actual Fourier transformation.
     kwds
         Key-word arguments forwarded to `laplace`.
@@ -1332,6 +1388,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     tt2z_trapz : Back-end: approximate integral by trapezoidal rule
     tt2z_lin : Back-end: approximate integral by Filon's method
     tt2z_pade : Back-end: use Fourier-Padé algorithm
+    tt2z_herm2 : Back-end: using square Hermite-Padé for Fourier
 
     Raises
     ------
@@ -1401,7 +1458,9 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
        standard transformations `tt2z_trapz` and `tt2z_lin`.
        It is especially suited to resolve poles. For large `tt.size`, spurious
        features can appear.
-     * `tt2z_trapz` vs `tt2z_lin``
+     * `tt2z_herm2` further improves on `tt2z_pade` and can resolve square-root
+       branch-cuts. Might be less stable as a wrong branch can be chosen.
+     * `tt2z_trapz` vs `tt2z_lin`:
         - For large `z.imag`, `tt2z_lin` performs better.
         - For intermediate `z.imag`, the quality depends on the relevant `z.real`.
           For small `z.real`, the error of `tt2z_trapz` is more uniform;

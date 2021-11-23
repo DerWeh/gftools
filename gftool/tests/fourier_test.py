@@ -490,3 +490,41 @@ def test_tt2z_pader_bethe():
     inner = (-1.5 < z.real) & (z.real < 1)
     assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
+
+
+def test_tt2z_herm2_bethe():
+    """Test `tt2z_herm2` against Bethe Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-4j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.bethe.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fh = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_herm2)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
+
+    # approximation is good globally
+    assert np.allclose(gf_fh, gf_ww, rtol=1e-3, atol=2e-3)
+    # better than Padé
+    assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
+
+
+def test_tt2z_herm2_box():
+    """Test `tt2z_herm2` against box Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.box.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fh = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_herm2)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
+
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 1)
+    assert np.allclose(gf_fh[inner], gf_ww[inner], rtol=1e-3)
+    assert np.allclose(gf_fh[inner], gf_ww[inner], rtol=0.05)
+    # better than Padé
+    assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
