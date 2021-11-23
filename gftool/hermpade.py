@@ -148,7 +148,7 @@ References
 """
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Tuple, Type, TypeVar
+from typing import Tuple
 
 import numpy as np
 from scipy.linalg import matmul_toeplitz, qr, solve_toeplitz, toeplitz
@@ -416,9 +416,6 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     return Polynom(pcoeff), Polynom(qrcoeff[:q_deg+1]), Polynom(qrcoeff[q_deg+1:])
 
 
-THermite2 = TypeVar("THermite2", bound='Hermite2')
-
-
 @dataclass
 class Hermite2:
     r"""Square Hermite-Padé approximant with branch selection according to Padé.
@@ -508,10 +505,7 @@ class Hermite2:
     pade: RatPol
 
     def eval(self, z):
-        """Evaluate the retarded branch of the square Hermite-Padé approximant.
-
-        The branch is chosen based on the Padé approximant.
-        """
+        """Evaluate square approximant choosing branch based on Padé."""
         p_branch, m_branch = self.eval_branches(z)
         pade_ = self.pade.eval(z)
         approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
@@ -528,7 +522,7 @@ class Hermite2:
         return p_stable, m_stable
 
     @classmethod
-    def from_taylor(cls: Type[THermite2], an, deg_p: int, deg_q: int, deg_r: int) -> THermite2:
+    def from_taylor(cls, an, deg_p: int, deg_q: int, deg_r: int) -> "Hermite2":
         """Construct square Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r)
         deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
