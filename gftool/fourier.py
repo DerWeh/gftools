@@ -26,7 +26,12 @@ The recommended high-level function to perform this Laplace transform is:
 
 * `tt2z` for both retarded and advanced Green's function
 
-Currently, to sub-functions can be used equivalently, the abstraction `tt2z` is
+Two different kind of algorithms are available
+
+* `tt2z_trapz` and `tt2z_lin` which are regular approximations of the integral
+* `tt2z_pade` which is a Padé-Fourier type transformation,
+
+Currently, sub-functions can be used equivalently, the abstraction `tt2z` is
 mostly for consistency with the imaginary time ↔ Matsubara frequencies
 Fourier transformations.
 
@@ -35,7 +40,7 @@ imaginary time → Matsubara frequencies
 
 The Fourier integral for the Matsubara Green's function is defined as:
 
-.. math:: G(iw_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iw_n τ)
+.. math:: G(iω_n) = 0.5 ∫_{-β}^{β}dτ G(τ) \exp(iω_n τ)
 
 with :math:`iw_n = iπn/β`. For fermionic Green's functions only odd frequencies
 are non-vanishing, for bosonic Green's functions only even.
@@ -50,7 +55,7 @@ Matsubara frequencies → imaginary time
 
 The Fourier sum for the imaginary time Green's function is defined as:
 
-.. math:: G(τ) = 1/β \sum_{n=-\infty}^{\infty} G(iw_n) \exp(-iw_n τ).
+.. math:: G(τ) = 1/β \sum_{n=-∞}^{∞} G(iω_n) \exp(-iω_n τ).
 
 The recommended high-level function to perform this Fourier transform is:
 
@@ -1222,7 +1227,7 @@ def tt2z_lin(tt, gf_t, z):
     return gf_z
 
 
-def tt2z_pade(tt, gf_t, z):
+def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     r"""Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     The function requires an equidistant `tt`.
@@ -1242,6 +1247,16 @@ def tt2z_pade(tt, gf_t, z):
     gf_z : (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
+    Other Parameters
+    ----------------
+    degree : int, optional
+        Asymptotic degree :math:`d` of the Green's function :math:`G(z)∼z^d`
+        for :math:`abs(z)→∞`. (default: -1)
+    pade : {gftool.hermpade.pade, gftool.hermpade.pader}
+        Padé algorithm that is used.
+    kwds
+        Optional key-word arguments passed to `pade`.
+
     Raises
     ------
     ValueError
@@ -1249,6 +1264,8 @@ def tt2z_pade(tt, gf_t, z):
 
     See Also
     --------
+    gftool.hermpade.pade
+    gftool.hermpade.pader
     tt2z_trapz : Plain implementation using trapezoidal rule.
     tt2z_lin : Laplace integration using Filon's method
 
@@ -1261,18 +1278,18 @@ def tt2z_pade(tt, gf_t, z):
     # trapeze rule -> correct boundaries with 1/2
     coeffs[..., 0] *= 0.5
     coeffs[..., -1] *= 0.5
-    deg = coeffs.shape[-1]//2
+    deg = (coeffs.shape[-1] - degree - 1)//2
     y = np.exp(1j*z*delta_tt)
 
     def pade_val(y_, coeffs_):
-        return pade(coeffs_, den_deg=deg, num_deg=deg-1).eval(y_)
+        return pade(coeffs_, den_deg=deg, num_deg=deg+degree, **kwds).eval(y_)
 
     approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
 
     return approx
 
 
-def tt2z(tt, gf_t, z, laplace=tt2z_lin):
+def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
     Calculate the Laplace transform
@@ -1298,8 +1315,10 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     z : (..., Nz) complex np.ndarray
         Frequency points for which the Laplace transformed Green's function
         should be evaluated.
-    laplace : {`tt2z_lin`, `tt2z_trapz`}, optional
+    laplace : {`tt2z_lin`, `tt2z_trapz`, `tt2z_pade`}, optional
         Back-end to perform the actual Fourier transformation.
+    kwds
+        Key-word arguments forwarded to `laplace`.
 
     Returns
     -------
@@ -1310,6 +1329,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     --------
     tt2z_trapz : Back-end: approximate integral by trapezoidal rule
     tt2z_lin : Back-end: approximate integral by Filon's method
+    tt2z_pade : Back-end: use Fourier-Padé algorithm
 
     Raises
     ------
@@ -1320,7 +1340,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     Examples
     --------
     >>> tt = np.linspace(0, 150, num=1501)
-    >>> ww = np.linspace(-2, 2, num=501) + 1e-1j
+    >>> ww = np.linspace(-1.5, 1.5, num=501) + 1e-1j
 
     >>> poles = 2*np.random.random(10) - 1  # partially filled
     >>> weights = np.random.random(10)
@@ -1330,11 +1350,13 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     >>> gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
 
     >>> import matplotlib.pyplot as plt
+    >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
     >>> __ = plt.plot(ww.real, gf_ww.imag, label='exact Im')
     >>> __ = plt.plot(ww.real, gf_ft.imag, '--', label='DFT Im')
     >>> __ = plt.plot(ww.real, gf_ww.real, label='exact Re')
     >>> __ = plt.plot(ww.real, gf_ft.real, '--', label='DFT Re')
     >>> __ = plt.legend()
+    >>> plt.tight_layout()
     >>> plt.show()
 
     The function Laplace transform can be evaluated at abitrary contours,
@@ -1352,17 +1374,41 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     >>> __ = plt.plot(z.real, gf_z.real, '+', label='exact Re')
     >>> __ = plt.plot(z.real, gf_ft.real, 'x', label='DFT Re')
     >>> __ = plt.legend()
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    For small `max(tt)` close to the real axis, `tt2z_pade` is often the
+    superior choice (it is taylored to resove poles):
+
+    >>> tt = np.linspace(0, 40, num=401)
+    >>> ww = np.linspace(-1.5, 1.5, num=501) + 1e-3j
+    >>> gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)
+    >>> gf_fp = gt.fourier.tt2z(tt, gf_ret_t, z=ww, laplace=gt.fourier.tt2z_pade)
+    >>> gf_ww = gt.pole_gf_z(ww, poles=poles, weights=weights)
+
+    >>> import matplotlib.pyplot as plt
+    >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
+    >>> __ = plt.plot(ww.real, gf_ww.real, label='exact Re')
+    >>> __ = plt.plot(ww.real, gf_fp.real, '--', label='DFT Re')
+    >>> __ = plt.legend()
+    >>> plt.tight_layout()
     >>> plt.show()
 
     Accuracy of the different back-ends:
+     * For small `z.imag` or small `tt[-1]`, `tt2z_pade` performs better than
+       standard transformations `tt2z_trapz` and `tt2z_lin`.
+       It is especially suited to resolve poles. For large `tt.size`, spurious
+       features can appear.
+     * `tt2z_trapz` vs `tt2z_lin``
+        - For large `z.imag`, `tt2z_lin` performs better.
+        - For intermediate `z.imag`, the quality depends on the relevant `z.real`.
+          For small `z.real`, the error of `tt2z_trapz` is more uniform;
+          for big `z.real`, `tt2z_lin` is a good approximation.
+        - For small `z.imag`, the methods are almost identical,
+          the truncation of `tt` dominates the error.
 
-     * For large `z.imag`, `tt2z_lin` performs better.
-     * For intermediate `z.imag`, the quality depends on the relevant `z.real`.
-       For small `z.real`, the error of `tt2z_trapz` is more uniform;
-       for big `z.real`, `tt2z_lin` is a good approximation.
-     * For small `z.imag`, the methods are almost identical,
-       the truncation of `tt` dominates the error.
-
+    >>> tt = np.linspace(0, 150, num=1501)
+    >>> gf_ret_t = gt.pole_gf_ret_t(tt, poles=poles, weights=weights)
     >>> import matplotlib.pyplot as plt
     >>> for ii, eta in enumerate([1.0, 0.5, 0.1, 0.03]):
     ...     ww.imag = eta
@@ -1374,6 +1420,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     ...     __ = plt.plot(ww.real, abs((gf_ww - gf_lin)/gf_ww), '--', color=f"C{ii}")
     ...     __ = plt.legend()
     >>> plt.yscale('log')
+    >>> plt.tight_layout()
     >>> plt.show()
 
     """
@@ -1385,7 +1432,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
     if z.size == 0 or gf_t.size == 0:  # consistent behavior for gufuncs
         return np.full(np.broadcast_shapes(z.shape, gf_t.shape[:-1]+(1, )),
                        fill_value=np.nan)
-    return laplace(tt, gf_t, z)
+    return laplace(tt, gf_t, z, **kwds)
 
 
 def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> PoleGf:
