@@ -189,7 +189,7 @@ def iw2tau_dft(gf_iw, beta):
     gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
     gf_tau = np.fft.hfft(1./beta * gf_iwall)
-    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]  # pylint: disable=unsubscriptable-object,C0301
+    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
     return gf_tau
 
 
@@ -942,9 +942,11 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     >>> noise = np.random.normal(scale=magnitude, size=gf_tau.size)
     >>> __, axes = plt.subplots(ncols=2, sharey=True)
     >>> for n, n_mom in enumerate(range(1, 20, 5)):
-    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=ft_lin)
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,),
+    ...                            beta=BETA, fourier=ft_lin)
     ...     __ = axes[0].plot(abs(gf_iw - gf), label=f'n_fit={n_mom}', color=f'C{n}')
-    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,), beta=BETA, fourier=dft)
+    ...     gf = gt.fourier.tau2iw(gf_tau + noise, n_pole=n_mom, moments=(1,),
+    ...                            beta=BETA, fourier=dft)
     ...     __ = axes[1].plot(abs(gf_iw - gf), '--', color=f'C{n}')
     >>> for ax in axes:
     ...     __ = ax.axhline(magnitude, color='black')
