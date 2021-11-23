@@ -274,7 +274,6 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
 
     Examples
     --------
-
     The robust version can avoid over fitting for high-order Padé approximants.
     Choosing an appropriate `rcond`, is however a delicate task in practice.
     We consider an example with random noise on the Taylor coefficients `an`:
