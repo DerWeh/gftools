@@ -62,7 +62,7 @@ def test_iw2tau_dft_single_pole(pole):
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=1, max_side=5),)
 def test_iw2tau_multi_pole(args):
     """Test `iw2tau` for a multi-pole Green's function."""
@@ -162,7 +162,7 @@ def test_tau2iw_dft_single_pole(pole):
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_multi_pole(args):
     """Test `tau2iw` for a multi-pole Green's function."""
@@ -191,7 +191,7 @@ def test_tau2iw_multi_pole(args):
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_multi_pole_hfm(args):
     """Test `tau2iw_dft` for a multi-pole Green's function."""
@@ -421,7 +421,7 @@ def test_tt2z_gufuncz(args):
                              st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=3),)
 def test_tt2z_gufuncz_pade(args):
-    """Test `tt2z` for different shapes of `z`."""
+    """Test `tt2z_pade` for different shapes of `z`."""
     ww, poles, resids = args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
@@ -436,3 +436,57 @@ def test_tt2z_gufuncz_pade(args):
 
     gf_pf = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_pade)
     assert np.allclose(gf_z, gf_pf, rtol=1e-5, atol=1e-3)
+
+
+@pytest.mark.parametrize("fast", [False, True])
+def test_tt2z_pade_bethe(fast):
+    """Test `tt2z_pade` against Bethe Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.bethe.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade, fast=fast)
+
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 1)
+    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=2e-3 if fast else 1e-3)
+    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
+
+
+@pytest.mark.parametrize("fast", [False, True])
+def test_tt2z_pade_box(fast):
+    """Test `tt2z_pade` against box Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.box.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade, fast=fast)
+
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 0.9)
+    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
+
+
+def test_tt2z_pader_bethe():
+    """Test robust `tt2z_pade` against Bethe Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 50, 501)
+    D = 1.5
+    mu = 0.2
+
+    noise = np.random.default_rng(0).normal(scale=1e-6, size=tt.size)
+    gf_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.bethe.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fp = gt.fourier.tt2z(tt, gf_t+noise, z=z, laplace=gt.fourier.tt2z_pade,
+                            pade=gt.hermpade.pader, rcond=1e-8)
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 1)
+    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
