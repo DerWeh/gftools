@@ -43,6 +43,26 @@ def test_pade_vs_scipy(num_deg, den_deg):
     # assert np.allclose(pade.denom.coef, factor*pade_sp[1].coef[::-1])
 
 
+def test_strip_coeffs():
+    """Check stripping of coefficients that are zero."""
+    # pylint: disable=protected-access
+    pc = np.array([0, 1, 0, 0, 0, 3, 0, 2])
+    qc = np.array([0, 1, 2, 0, 0, 3, 0, 0, 0])
+    pc, qc = gt.hermpade._strip_ceoffs(pc, qc)
+    assert np.allclose(pc, [1, 0, 0, 0, 3, 0, 2])
+    assert np.allclose(qc, [1, 2, 0, 0, 3])
+    pc = np.array([1, 0, 3, 0, 2, 0])
+    qc = np.array([1, 2, 0, 0, 3, 0, 0])
+    pc, qc = gt.hermpade._strip_ceoffs(pc, qc)
+    assert np.allclose(pc, [1, 0, 3, 0, 2])
+    assert np.allclose(qc, [1, 2, 0, 0, 3])
+    pc = np.array([1, 2, 3, 0])
+    qc = np.array([1, 2, 3, 4])
+    pc, qc = gt.hermpade._strip_ceoffs(pc, qc)
+    assert np.allclose(pc, [1, 2, 3])
+    assert np.allclose(qc, [1, 2, 3, 4])
+
+
 @ignore_illconditioned
 @given(num_deg=st.integers(0, 10), den_deg=st.integers(0, 10))
 @pytest.mark.parametrize("fast", [True, False])

@@ -158,6 +158,19 @@ from gftool.basis import RatPol
 Polynom = np.polynomial.polynomial.Polynomial
 
 
+def _strip_ceoffs(pcoeff, qcoeff):
+    """Strip leading/tailing zeros from coefficients."""
+    leading_zeros = np.argmax(qcoeff != 0)
+    pcoeff, qcoeff = pcoeff[leading_zeros:], qcoeff[leading_zeros:]
+    trailing_zerosq = np.argmax(qcoeff[::-1] != 0)
+    if trailing_zerosq:
+        qcoeff = qcoeff[:-trailing_zerosq]
+    trailing_zerosp = np.argmax(pcoeff[::-1] != 0)
+    if trailing_zerosp:
+        pcoeff = pcoeff[:-trailing_zerosp]
+    return pcoeff, qcoeff
+
+
 def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
@@ -332,14 +345,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
         assert qcoeff.size == den_deg + 1
         pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
         break
-    leading_zeros = np.argmax(qcoeff != 0)
-    pcoeff, qcoeff = pcoeff[leading_zeros:], qcoeff[leading_zeros:]
-    trailing_zerosq = np.argmax(qcoeff[::1] != 0)
-    if trailing_zerosq:
-        qcoeff = qcoeff[:-trailing_zerosq]
-    trailing_zerosp = np.argmax(pcoeff[::1] != 0) + 1
-    if trailing_zerosq:
-        pcoeff = pcoeff[:-trailing_zerosp]
+    pcoeff, qcoeff = _strip_ceoffs(pcoeff=pcoeff, qcoeff=qcoeff)
     # we skip normalization of `b[0] = 1`
     return RatPol(Polynom(pcoeff), Polynom(qcoeff))
 
