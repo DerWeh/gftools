@@ -111,14 +111,32 @@ def hilbert_transform(xi, half_bandwidth=1):
     return gf_z(xi, half_bandwidth)
 
 
+def _gen_dos_eps0_expansinon():
+    """Generate expansion for the DOS around ``eps=0``."""
+    # there is a factor 3 from half_bandwidth
+    km2 = 0.25 * (2 - np.sqrt(3))
+    dos0 = ((2 / np.pi**2) * _u_ellipk(km2) * _u_ellipk(1 - km2) / np.pi).real
+    d0 = np.array([1, 1/18, 11/648, 19/2_160])
+    d1 = np.array([0, 1, 7/18, 5/24])
+
+    def dos_eps0_expansion(eps, half_bandwidth=3):
+        """Expansion of DOS around ``eps=0``."""
+        d = half_bandwidth/3
+        eps_series = np.power.outer(d*eps, 2*np.arange(d0.size))
+        expansion = (dos0*d0 - 1/(3 * np.pi**4 * dos0)*d1) * eps_series
+        return expansion.sum(axis=-1)/d
+
+    return dos_eps0_expansion
+
+
+_dos_eps0_expansion = _gen_dos_eps0_expansinon()
+
+
 def dos(eps, half_bandwidth=1):
     r"""Local Green's function of 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `abs(eps) = D/3`.
-
-    Implements Eq. 7.37 from [joyce1973]_ for the special case of `eps = 0`,
-    otherwise identical to `-gf_z.imag/np.pi`.
 
     Parameters
     ----------
@@ -133,6 +151,11 @@ def dos(eps, half_bandwidth=1):
     -------
     dos : float np.ndarray or float
         The value of the DOS.
+
+    Notes
+    -----
+    Around ``eps=0`` the expansion Eq. (5.4) using Eq. (7.37) from [joyce1973]_
+    is used. Otherwise, it is identical to ``-gf_z.imag/np.pi``
 
     References
     ----------
@@ -162,7 +185,9 @@ def dos(eps, half_bandwidth=1):
     D_inv = 3 / half_bandwidth
     eps = np.asarray(abs(D_inv * eps))
     dos_ = np.zeros_like(eps)
-    finite = (eps > 0) & (eps < 3)  # 0 will be treated separately
+    small_eps = eps < np.finfo(eps.dtype).eps**(0.25)  # use expansion
+    dos_[small_eps] = _dos_eps0_expansion(eps[small_eps], half_bandwidth=3.0)
+    finite = ~small_eps & (eps < 3)
     # Green's function but avoid (1 ± 1/eps**2) for small eps
     eps2 = eps[finite]**2
     xi = sqrt(eps[finite] - sqrt(eps2 - 1)) / sqrt(eps[finite] + sqrt(eps2 - 9))
@@ -170,10 +195,6 @@ def dos(eps, half_bandwidth=1):
     k2 = 16 * xi**3 * denom_inv
     gf_ = (1 - 9*xi**4) * (2 / np.pi * _u_ellipk(k2))**2 * denom_inv / eps[finite]
     dos_[finite] = -1. / np.pi * gf_.imag
-    zero = eps == 0
-    if np.any(zero):
-        km2 = 0.25 * (2 - mp.sqrt(3))
-        dos_[zero] = (2 / mp.pi**2) * mp.ellipk(km2) * mp.ellipk(1 - km2) / mp.pi
     return D_inv * dos_
 
 
