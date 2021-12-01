@@ -3,8 +3,8 @@
 What's New
 ==========
 
-0.10.1 (not released)
----------------------
+0.10.1 (2021-12-01)
+-------------------
 
 New Features
 ~~~~~~~~~~~~
@@ -27,6 +27,8 @@ Documentation
 Bug fixes
 ~~~~~~~~~
 * Accept singular constrains in `~gftool.linalg.lstsq_ec` (:commit:`167e7886`)
+* Accurately calculate `gftool.lattice.sc.dos` around ``eps=0`` (:commit:`5693184e`).
+  Previously, DOS was incorrect for tiny values, e.g. ``eps=1e-16``.
 
 
 0.10.0 (2021-09-19)
