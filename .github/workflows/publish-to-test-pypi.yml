@@ -22,11 +22,11 @@ jobs:
       with:
         python-version: 3.9
     - name: Install pypa/build
-      run: >-
+      run: |
         python -m pip install --upgrade pip
         python -m pip install setuptools build wheel twine
     - name: Build a binary wheel and a source tarball
-      run: >-
+      run: |
         python -m build --sdist --wheel --outdir dist/ .
     - name: Check built artifacts
       run: |
@@ -35,7 +35,7 @@ jobs:
       with:
         name: releases
         path: dist
-        
+
   test-built-dist:
     needs: build
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --extra-index-url https://test.pypi.org/simple --upgrade gftool
           python -c "import gftool as gt; print(gt.__version__)"
-          
+
   upload-to-pypi:
     needs: test-built-dist
     if: github.event_name == 'release'
