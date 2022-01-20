@@ -13,8 +13,50 @@ from functools import partial
 
 import numpy as np
 
+from scipy.linalg import toeplitz
 
 _gusum = partial(np.sum, axis=-1)
+
+
+def pcoeff_covar(x, order: int, rcond=None, normal=False):
+    """Calculate linear prediction (LP) coefficients using covariance method.
+
+    The covariance method gives the equation
+
+    .. math:: Ra = X^†X a= = X^†x = -r
+
+    where :math:`R` is the covariance matrix and :math:`a` are the LP
+    coefficients.
+    We calculate solve :math:`Xa = x` using linear least-squares.
+
+    Parameters
+    ----------
+    x : (..., N) complex np.ndarray
+        Data of the (time) series to be predicted.
+    order : int
+        Prediction order, has to be smaller then `N`.
+    rcond : float, optional
+        Cut-off ratio for small singular values of `a`.
+        For the purposes of rank determination, singular values are treated
+        as zero if they are smaller than `rcond` times the largest singular
+        value of `a`.
+
+    Returns
+    -------
+    a : (..., order) complex np.ndarray
+        Prediction coefficients
+    rho : (...) float np.ndarray
+        Error estimate (not tested/working).
+
+    """
+    # TODO: find correct error or error estimate
+    Xmat = toeplitz(x[order-1:-1], x[order-1::-1])
+    xvec = x[order:]
+    # Xmat@a = -xvec
+    a, *__ = np.linalg.lstsq(Xmat, -xvec, rcond=rcond)
+    # error: xvec† (xvec + Xmat@a)
+    error = abs(np.vdot(xvec, xvec + Xmat@a))
+    return a, error
 
 
 def pcoeff_burg(x, order: int):
