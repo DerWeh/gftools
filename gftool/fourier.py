@@ -1157,6 +1157,72 @@ def tt2z_trapz(tt, gf_t, z):
     return 0.5*(boundary + trapz)
 
 
+def _trapz_weight(delta_tt, gf_t):
+    """Return weighted `gf_t` according to trapezoidal rule."""
+    coeffs = delta_tt * gf_t
+    # trapeze rule -> correct boundaries with 1/2
+    coeffs[..., 0] *= 0.5
+    coeffs[..., -1] *= 0.5
+    return coeffs
+
+
+def _simps_weight(delta_tt, gf_t):
+    """Return weighted `gf_t` according to Simpson rule.
+
+    For even number of points, we use the trapezoidal rule for the last interval,
+    as it is the least important one.
+    """
+    coeffs = delta_tt/3 * gf_t
+    # TODO: check if the code be be unified/simplified
+    if gf_t.shape[-1] % 2:  # odd, Simpson rule applies
+        coeffs[..., 1:-1:2] *= 4
+        coeffs[..., 2:-1:2] *= 2
+    else:  # even, use trapezoidal for last interval
+        coeffs[..., 1:-2:2] *= 4
+        coeffs[..., 2:-2:2] *= 2
+        coeffs[..., -2] *= 5/2
+        coeffs[..., -1] *= 3/2
+    return coeffs
+
+
+def tt2z_simps(tt, gf_t, z):
+    r"""Laplace transform of the real-time Green's function `gf_t`.
+
+    Approximate the Laplace integral using the Simpson rule.
+
+    Parameters
+    ----------
+    tt : (Nt) float np.ndarray
+        The equidistant points for which the Green's function `gf_t` is given.
+    gf_t : (..., Nt) complex np.ndarray
+        Green's function at time points `tt`.
+    z : (..., Nz) complex np.ndarray
+        Frequency points for which the Laplace transformed Green's function
+        should be evaluated.
+
+    Returns
+    -------
+    gf_z : (..., Nz) complex np.ndarray
+        Laplace transformed Green's function for complex frequencies `z`.
+
+    See Also
+    --------
+    tt2z_trapz : Plain implementation using trapezoidal rule
+    tt2z_lin : Laplace integration using Filon's method
+
+    Notes
+    -----
+    If `numexpr` is available, it is used for the significant speed up it
+    provides for transcendental equations.  Internally the sum is evaluated
+    as a matrix product to leverage the speed-up of BLAS.
+
+    """
+    delta_tt = tt[1] - tt[0]
+    coeffs = _simps_weight(delta_tt, gf_t)
+    phase = _phase(z[..., newaxis], tt[newaxis, :])
+    return _gu_matvec(phase, coeffs)
+
+
 def tt2z_lin(tt, gf_t, z):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
@@ -1277,10 +1343,8 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
         raise ValueError("Equidistant `tt` required for current implementation.")
     assert tt[0] == 0, "If not, we need to fix the phase"
-    coeffs = delta_tt * gf_t
-    # trapeze rule -> correct boundaries with 1/2
-    coeffs[..., 0] *= 0.5
-    coeffs[..., -1] *= 0.5
+    coeffs = _trapz_weight(delta_tt, gf_t)
+    # coeffs = _simps_weight(delta_tt, gf_t)
     deg = (coeffs.shape[-1] - degree - 1)//2
     y = np.exp(1j*z*delta_tt)
 
@@ -1331,10 +1395,8 @@ def tt2z_herm2(tt, gf_t, z):
         raise ValueError("Equidistant `tt` required for current implementation.")
     assert tt[0] == 0, "If not, we need to fix the phase"
     assert np.all(z.imag > 0), "Only implemented for retarded Green's function"
-    coeffs = delta_tt * gf_t
-    # trapeze rule -> correct boundaries with 1/2
-    coeffs[..., 0] *= 0.5
-    coeffs[..., -1] *= 0.5
+    coeffs = _trapz_weight(delta_tt, gf_t)
+    # coeffs = _simps_weight(delta_tt, gf_t)
     deg = (coeffs.shape[-1] + 2) // 3
     y = np.exp(1j*z*delta_tt)
 
