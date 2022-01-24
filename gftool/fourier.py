@@ -1409,6 +1409,23 @@ def tt2z_herm2(tt, gf_t, z):
     return approx
 
 
+def tt2z_lpz(tt, gf_t, z, order=None, **kwds):
+    """Linear prediction Z-transform ofr the real-time Green's function `gf_t`."""
+    if order is None:
+        order = tt.size // 2
+    delta_tt = tt[1] - tt[0]
+    coeffs = _trapz_weight(delta_tt, gf_t)
+    # coeffs = _simps_weight(delta_tt, gf_t)
+    pcoeff, __ = pcoeff_covar(coeffs, order=order, **kwds)
+    aa = np.r_[1, pcoeff]
+    convo = np.array([sum(aa[:ll+1]*coeffs[ll::-1]) for ll in range(order)])
+    phase = _phase(z[..., newaxis], tt[newaxis, :order+1])
+    numer = _gu_matvec(phase[:, :order], convo)
+    denom = _gu_matvec(phase, aa)
+    gf = numer / denom
+    return gf
+
+
 def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     r"""Laplace transform of the real-time Green's function `gf_t`.
 
