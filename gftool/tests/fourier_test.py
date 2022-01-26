@@ -331,16 +331,18 @@ def test_tt2z_single_pole(spole):
 
 
 @given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
-def test_tt2z_pade_single_pole(spole):
+@pytest.mark.parametrize("num", [4, 5, 100])  # test for even and odd numbers and overfitting
+def test_tt2z_pade_single_pole(spole, num):
     """Test of `tt2z_pade` on a single pole."""
-    tt = np.linspace(0, 10, 201)
+    dt = 0.01  # discretization determines error
+    tt = np.linspace(0, dt*(num - 1), num)
     ww = np.linspace(-1.5, 1.5, num=201) + 1e-4j
 
     gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
     gf_pf = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_pade)
-    assert np.allclose(gf_z, gf_pf, atol=1e-3, rtol=1e-8)
+    assert np.allclose(gf_z, gf_pf, atol=1e-4, rtol=1e-4)
 
 
 @pytest.mark.skipif(not gt.fourier._HAS_NUMEXPR,

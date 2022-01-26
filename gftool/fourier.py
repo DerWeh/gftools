@@ -1157,23 +1157,66 @@ def tt2z_trapz(tt, gf_t, z):
     return 0.5*(boundary + trapz)
 
 
-def _trapz_weight(delta_tt, gf_t):
-    """Return weighted `gf_t` according to trapezoidal rule."""
+def _trapz_weight(delta_tt: float, gf_t, endpoint=False):
+    """Return weighted `gf_t` according to trapezoidal rule.
+
+    Parameters
+    ----------
+    delta_tt : float
+        The spacing of time points.
+    gf_t : complex np.ndarray
+        The Green's function in time.
+    endpoint : bool, optional
+        Whether to treat the endpoint according to the quadrature rule.
+        Typically, the boundary correction at the endpoint is not wanted,
+        as the integration is truncated. (default: False)
+
+    Returns
+    -------
+    coeffs : complex np.ndarray
+        Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
+
+    """
     coeffs = delta_tt * gf_t
     # trapeze rule -> correct boundaries with 1/2
     coeffs[..., 0] *= 0.5
-    coeffs[..., -1] *= 0.5
+    if endpoint:
+        coeffs[..., -1] *= 0.5
     return coeffs
 
 
-def _simps_weight(delta_tt, gf_t):
+def _simps_weight(delta_tt, gf_t, endpoint=False):
     """Return weighted `gf_t` according to Simpson rule.
 
-    For even number of points, we use the trapezoidal rule for the last interval,
-    as it is the least important one.
+    If ``endpoint==False`` we can apply the Simpson rule also to even number of
+    points.
+    Else, for even number of points, we use the trapezoidal rule for the last
+    interval, as it is the least important one.
+
+    Parameters
+    ----------
+    delta_tt : float
+        The spacing of time points.
+    gf_t : complex np.ndarray
+        The Green's function in time.
+    endpoint : bool, optional
+        Whether to treat the endpoint according to the quadrature rule.
+        Typically, the boundary correction at the endpoint is not wanted,
+        as the integration is truncated. (default: False)
+
+    Returns
+    -------
+    coeffs : complex np.ndarray
+        Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
+
     """
     coeffs = delta_tt/3 * gf_t
     # TODO: check if the code be be unified/simplified
+    if not endpoint:
+        coeffs[..., 1::2] *= 4
+        coeffs[..., 2::2] *= 2
+        return coeffs
+
     if gf_t.shape[-1] % 2:  # odd, Simpson rule applies
         coeffs[..., 1:-1:2] *= 4
         coeffs[..., 2:-1:2] *= 2
