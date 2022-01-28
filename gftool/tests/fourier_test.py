@@ -501,10 +501,12 @@ def test_tt2z_pader_bethe():
     assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
 
-def test_tt2z_herm2_bethe():
+@pytest.mark.parametrize("num", [5, 6, 7, 100])  # test for minimum, and overfitting
+def test_tt2z_herm2_bethe(num):
     """Test `tt2z_herm2` against Bethe Green's function."""
     z = np.linspace(-2, 2, num=1001) + 1e-4j
-    tt = np.linspace(0, 20, 201)
+    dt = 0.01  # discretization determines error
+    tt = np.linspace(0, dt*(num - 1), num)
     D = 1.5
     mu = 0.2
 
@@ -514,7 +516,7 @@ def test_tt2z_herm2_bethe():
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
 
     # approximation is good globally
-    assert np.allclose(gf_fh, gf_ww, rtol=1e-3, atol=2e-3)
+    assert np.allclose(gf_fh, gf_ww, rtol=2e-4, atol=2e-4)
     # better than Padé
     assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
 

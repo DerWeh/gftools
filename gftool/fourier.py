@@ -1441,11 +1441,11 @@ def tt2z_herm2(tt, gf_t, z):
     assert np.all(z.imag > 0), "Only implemented for retarded Green's function"
     coeffs = _trapz_weight(delta_tt, gf_t)
     # coeffs = _simps_weight(delta_tt, gf_t)
-    deg = (coeffs.shape[-1] + 2) // 3
+    deg = (coeffs.shape[-1] - 2) // 3
     y = np.exp(1j*z*delta_tt)
 
     def pade_val(y_, coeffs_):
-        herm = Hermite2.from_taylor(coeffs_, deg_r=deg, deg_q=deg-1, deg_p=deg-2)
+        herm = Hermite2.from_taylor(coeffs_, deg_r=deg, deg_q=deg, deg_p=deg)
         return herm.eval(y_)
 
     approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
