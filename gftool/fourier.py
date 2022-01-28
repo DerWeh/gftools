@@ -1382,6 +1382,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     tt2z_lin : Laplace integration using Filon's method
 
     """
+    degree = degree + 1  # adding an additional zero reduces discretization error
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
         raise ValueError("Equidistant `tt` required for current implementation.")

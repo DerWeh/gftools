@@ -331,7 +331,7 @@ def test_tt2z_single_pole(spole):
 
 
 @given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
-@pytest.mark.parametrize("num", [4, 5, 100])  # test for even and odd numbers and overfitting
+@pytest.mark.parametrize("num", [3, 4, 100])  # test for even and odd numbers and overfitting
 def test_tt2z_pade_single_pole(spole, num):
     """Test of `tt2z_pade` on a single pole."""
     dt = 0.01  # discretization determines error
