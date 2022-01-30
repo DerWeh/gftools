@@ -9,13 +9,11 @@ References
    https://doi.org/10.2200/S00086ED1V01Y200712SPR003
 
 """
-from functools import partial
-
 import numpy as np
 
 from scipy.linalg import toeplitz
 
-_gusum = partial(np.sum, axis=-1)
+from gftool._util import _gu_sum
 
 
 def pcoeff_covar(x, order: int, rcond=None, normal=False):
@@ -88,18 +86,18 @@ def pcoeff_burg(x, order: int):
     """
     N = x.shape[-1]
     rho = np.full([*x.shape[:-1], order+1], np.nan)
-    rho[..., 0] = _gusum(abs(x)**2) / N
+    rho[..., 0] = _gu_sum(abs(x)**2) / N
     eforw = np.ascontiguousarray(x[..., 1:])
     eback = np.ascontiguousarray(x[..., :-1])
     a = np.full([*x.shape[:-1], order, order], np.nan, dtype=x.dtype)
     for k in range(1, order+1):
         # eq (7.38)
-        numer = -2*_gusum(eforw*np.conj(eback))
+        numer = -2*_gu_sum(eforw*np.conj(eback))
         # eq (7.42) for more efficient denom
         # if k > 1:
         #     denom = (1.0 -  np.abs(aa)**2)*denom - np.abs(eforw)
         # else:
-        denom = _gusum(abs(eforw)**2) + _gusum(abs(eback)**2)
+        denom = _gu_sum(abs(eforw)**2) + _gu_sum(abs(eback)**2)
         # eq (7.40)
         kk = a[..., k-1, k-1] = numer / denom
         rho[..., k] = (1.0 - abs(kk)**2) * rho[..., k-1]
@@ -137,5 +135,5 @@ def predict(x, pcoeff, num: int):
     order = pcoeff.shape[-1]
     xtended = np.concatenate([x, np.full([*x.shape[:-1], num], np.nan, dtype=x.dtype)], axis=-1)
     for ii in range(start, start+num):
-        xtended[..., ii] = -_gusum(pcoeff[..., ::-1] * xtended[..., ii-order:ii])
+        xtended[..., ii] = -_gu_sum(pcoeff[..., ::-1] * xtended[..., ii-order:ii])
     return xtended
