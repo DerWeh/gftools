@@ -229,3 +229,28 @@ def _predict_stable(x, pcoeff, num: int):
         residues *= eig
         xtended[..., ii] = _gu_sum(residues)
     return xtended
+
+
+def plot_roots(pcoeff, axis=None):
+    """Plot the roots corresponding to `pcoeff`.
+
+    Roots for the forward prediction should be inside the unit-circle.
+    """
+    import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel]
+    if axis is None:
+        axis = plt.gca()
+
+    axis.axhline(0, color='dimgray', linewidth=0.8)
+    axis.axvline(0, color='dimgray', linewidth=0.8)
+    unit_circle = plt.Circle((0, 0), radius=1, edgecolor='black', facecolor='None')
+    axis.add_patch(unit_circle)
+
+    comp = companion(np.r_[1, pcoeff])
+    eigs = np.linalg.eigvals(comp)
+    valid = abs(eigs) <= 1
+    axis.scatter(eigs[valid].real, eigs[valid].imag, marker='x')
+    axis.scatter(eigs[~valid].real, eigs[~valid].imag, marker='x', color='red')
+
+    axis.set_xlabel(r"$\Re y$")
+    axis.set_ylabel(r"$\Im y$")
+    return axis
