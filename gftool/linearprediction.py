@@ -14,6 +14,59 @@ import numpy as np
 from scipy.linalg import toeplitz
 
 from gftool._util import _gu_sum
+from gftool.matrix import decompose_mat
+
+
+def companion(a):
+    """Create a companion matrix.
+
+    Create the companion matrix [1]_ associated with the polynomial whose
+    coefficients are given in `a`.
+
+    Parameters
+    ----------
+    a : (N,) array_like
+        1-D array of polynomial coefficients. The length of `a` must be
+        at least two, and ``a[0]`` must not be zero.
+
+    Returns
+    -------
+    c : (N-1, N-1) ndarray
+        The first row of `c` is ``-a[1:]/a[0]``, and the first
+        sub-diagonal is all ones.  The data-type of the array is the same
+        as the data-type of ``1.0*a[0]``.
+
+    Raises
+    ------
+    ValueError
+        If any of the following are true: a) ``a.ndim != 1``;
+        b) ``a.size < 2``; c) ``a[0] == 0``.
+
+    Notes
+    -----
+    Modified version of SciPy, contribute it back
+
+    References
+    ----------
+    .. [1] R. A. Horn & C. R. Johnson, *Matrix Analysis*.  Cambridge, UK:
+        Cambridge University Press, 1999, pp. 146-7.
+
+    """
+    a = np.atleast_1d(a)
+
+    if a.size < 2:
+        raise ValueError("The length of `a` must be at least 2.")
+
+    if a[0] == 0:
+        raise ValueError("The first coefficient in `a` must not be zero.")
+
+    first_row = -a[1:] / (1.0 * a[0])
+    n = a.shape[-1]
+
+    c = np.zeros(a.shape[:-1] + (n - 1, n - 1), dtype=first_row.dtype)
+    c[..., 0, :] = first_row
+    c[..., list(range(1, n - 1)), list(range(0, n - 2))] = 1
+    return c
 
 
 def pcoeff_covar(x, order: int, rcond=None, normal=False):
@@ -112,7 +165,7 @@ def pcoeff_burg(x, order: int):
     return a, sig2
 
 
-def predict(x, pcoeff, num: int):
+def predict(x, pcoeff, num: int, stable=False):
     """Forward-predict a series additional `num` steps.
 
     Parameters
@@ -123,6 +176,9 @@ def predict(x, pcoeff, num: int):
         Prediction coefficients
     num : int
         Number of additional (time) steps.
+    stable : bool, optional
+        If `stable` exponentially growing terms are suppressed, by setting
+        roots outside the unit-circle to zero. (default: False)
 
     Returns
     -------
@@ -131,9 +187,45 @@ def predict(x, pcoeff, num: int):
         `px[:x.size] = x`.
 
     """
+    if stable:
+        return _predict_stable(x, pcoeff=pcoeff, num=num)
+
+    # Naive implementation of the sum
     start = x.shape[-1]
     order = pcoeff.shape[-1]
     xtended = np.concatenate([x, np.full([*x.shape[:-1], num], np.nan, dtype=x.dtype)], axis=-1)
     for ii in range(start, start+num):
         xtended[..., ii] = -_gu_sum(pcoeff[..., ::-1] * xtended[..., ii-order:ii])
+    return xtended
+
+
+def _predict_stable(x, pcoeff, num: int):
+    """Companion matrix implementation removing growing terms.
+
+    The roots of the `pcoeff` polynomial are related to poles in frequency.
+    If the root is outside the unit circle, it corresponds to a pole in the
+    upper complex half-plane resulting in exponential growth.
+    We remove such roots.
+
+    """
+    # calculate poles and residues
+    order = pcoeff.shape[-1]
+    comp_mat = companion(np.r_[1, pcoeff])
+    dec = decompose_mat(comp_mat)
+    right = dec.rv_inv @ x[..., -order:][..., ::-1]
+    left = dec.rv[..., 0, :]
+    residues = left*right
+
+    # drop exponential growing terms
+    bad = abs(dec.eig) > 1
+    # print(f'Bad {np.count_nonzero(bad)}/{bad.size}')
+    eig = dec.eig[~bad]
+    residues = residues[~bad]
+
+    # predict
+    start = x.shape[-1]
+    xtended = np.concatenate([x, np.full([*x.shape[:-1], num], np.nan, dtype=x.dtype)], axis=-1)
+    for ii in range(start, start+num):
+        residues *= eig
+        xtended[..., ii] = _gu_sum(residues)
     return xtended
