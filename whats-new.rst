@@ -114,7 +114,7 @@ New Features
 ~~~~~~~~~~~~
 
 The `gftool.lattice` module was extended, especially regarding two-dimensional lattice.
-There where also some enhancements, given DOS moments are now up to order 20,
+There were also some enhancements, given DOS moments are now up to order 20,
 and they should be accurate to machine precision.
 
 The following lattices where added with full interface:
@@ -163,7 +163,7 @@ Breaking Changes
 
 * The `gftool.pade` module had a minor rework.
   The behavior of filters changed. Future breaking changes are to be expected,
-  the module is not well structured.
+  the module is not well-structured.
 
 New Features
 ~~~~~~~~~~~~
