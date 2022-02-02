@@ -8,6 +8,8 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
+
 
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @given(gufunc_args('(n)->(n)', dtype=np.complex_, elements=st.complex_numbers()))
@@ -19,4 +21,4 @@ def test_zp_to_ratpol(args):
     zeros = np.array([0, 1j])
     zp = gt.basis.ZeroPole(zeros, poles, amplitude=0.33+1.7j)
     ratpol = zp.to_ratpol()
-    assert np.allclose(zp.eval(z), ratpol.eval(z), equal_nan=True)
+    assert_allclose(zp.eval(z), ratpol.eval(z), equal_nan=True)

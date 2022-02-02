@@ -11,15 +11,16 @@ import mpmath
 import pytest
 import numpy as np
 
-from mpmath import fp
-from scipy import integrate
 from hypothesis import assume, given, strategies as st
 from hypothesis_gufunc.gufunc import gufunc_args
+from mpmath import fp
+from scipy import integrate
 
 from .context import gftool as gt
 
 HAS_QUAD = gt.precision.HAS_QUAD
 
+assert_allclose = np.testing.assert_allclose
 nonneg_float = st.floats(min_value=0.)
 pos_float = st.floats(min_value=0., exclude_min=True)
 
@@ -67,16 +68,16 @@ class GfProperties:
 
     def test_complex(self, params):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
-        assert np.allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
-                           self.gf(np.conjugate(self.z_mesh), *params[0], **params[1]))
+        assert_allclose(np.conjugate(self.gf(self.z_mesh, *params[0], **params[1])),
+                        self.gf(np.conjugate(self.z_mesh), *params[0], **params[1]))
 
     def test_limit(self, params):
         r""":math:`\lim_{z→∞} zG(z) = 1`."""
-        assert np.allclose(  # along real axis
+        assert_allclose(  # along real axis
             fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
             rtol=1e-2
         )
-        assert np.allclose(  # along imaginary axis
+        assert_allclose(  # along imaginary axis
             fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
             rtol=1e-2
         )
@@ -144,8 +145,8 @@ class Lattice:
         omega = omega[1:-1]  # exclude endpoints...
         notsingular = np.all(abs(omega.real[:, None] - self.singularities(**kwds)) > 1e-6, axis=-1)
         omega = omega[notsingular]  # compare only away from singularities
-        assert np.allclose(-1/np.pi*self.lattice.gf_z(omega, **kwds).imag,
-                           self.lattice.dos(omega.real, **kwds), atol=1e-7)
+        assert_allclose(-1/np.pi*self.lattice.gf_z(omega, **kwds).imag,
+                        self.lattice.dos(omega.real, **kwds), atol=1e-7)
 
     def test_dos_moment(self, kwds):
         """Moment is integral over ϵ^m DOS."""
@@ -155,15 +156,15 @@ class Lattice:
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pytint: disable=cell-var-from-loop
+            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
             assert moment == pytest.approx(dos_moment(mm))
 
     @given(eps=st.floats(-1.5, +1.5))
     def test_dos_vs_dos_mp(self, eps, kwds):
         """Compare multi-precision and `numpy` implementation of DOS."""
-        assert np.allclose(self.lattice.dos(eps, **kwds),
-                           float(self.lattice.dos_mp(eps, **kwds)))
+        assert_allclose(self.lattice.dos(eps, **kwds),
+                        float(self.lattice.dos_mp(eps, **kwds)))
 
     def test_dos_support(self, kwds):
         """DOS should have no support for outside the band-edges."""
@@ -521,7 +522,7 @@ class TestKagome(Lattice):
         points = [left, *self.singularities(**kwds), right]
         D = kwds["half_bandwidth"]
         for mm in self.lattice.dos_moment_coefficients:
-            # pytint: disable=cell-var-from-loop
+            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
             moment += (-2*D/3)**mm / 3  # add delta peak by hand
             assert moment == pytest.approx(dos_moment(mm))
@@ -599,7 +600,7 @@ class TestLieb(Lattice):
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pytint: disable=cell-var-from-loop
+            # pylint: disable=cell-var-from-loop
             if kwds["half_bandwidth"] < 0.8 and mm > 10:
                 break  # small integrals are numerically inaccurate
             # moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
@@ -772,7 +773,7 @@ class TestFaceCenteredCubic(Lattice):
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pytint: disable=cell-var-from-loop
+            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
             assert moment == pytest.approx(dos_moment(mm), rel=1e-6, abs=1e-10)
 
@@ -825,11 +826,11 @@ class TestHubbardDimer(GfProperties):
 
     def test_limit(self, params):
         """Limit of Pols cannot be accurately determined, thus accuracy is reduced."""
-        assert np.allclose(  # along real axis
+        assert_allclose(  # along real axis
             fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
             rtol=1e-1
         )
-        assert np.allclose(  # along imaginary axis
+        assert_allclose(  # along imaginary axis
             fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
             rtol=1e-2
         )
@@ -840,10 +841,11 @@ class TestHubbardDimer(GfProperties):
 def test_bethe_derivative_1(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
+    z += np.sign(z.imag)*1e-6j  # keep reasonable distance from real axis
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(partial(gt.bethe_gf_z, half_bandwidth=D), z,
                         method='quad', radius=z.imag/2)
-    assert np.allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D))
+    assert_allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D), atol=1e-12)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -851,11 +853,12 @@ def test_bethe_derivative_1(z, D):
 def test_bethe_derivative_2(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
+    z += np.sign(z.imag)*1e-6j  # keep reasonable distance from real axis
     fct = partial(gt.bethe_gf_d1_z, half_bandwidth=D)
     fct_d1 = partial(gt.bethe_gf_d2_z, half_bandwidth=D)
     with mpmath.workdps(30):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(fct, z, method='quad', radius=z.imag/2)
-    assert np.allclose(gf_d1, fct_d1(z))
+    assert_allclose(gf_d1, fct_d1(z), atol=1e-12)
 
 
 @given(z=st.complex_numbers(max_magnitude=1e4 if HAS_QUAD else 1e3),
@@ -882,7 +885,7 @@ def test_bethe_retarded(D, center):
     ww = np.linspace(-2*D, 2*D, num=501) + 10j
     gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
     gf_ww = gt.bethe_gf_z(ww - D*center, half_bandwidth=D)
-    assert np.allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
+    assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
 def test_hilbert_equals_integral():
@@ -954,8 +957,8 @@ def test_rectangular_vs_square_gf(z):
 def test_simplecubic_gf_vs_gf_mp(z, D):
     """Compare multi-precision and numpy implementation of GF."""
     assume(abs(z.imag) > 1e-6)
-    assert np.allclose(gt.sc_gf_z(z, half_bandwidth=D),
-                       complex(gt.lattice.sc.gf_z_mp(z, half_bandwidth=D)))
+    assert_allclose(gt.sc_gf_z(z, half_bandwidth=D),
+                    complex(gt.lattice.sc.gf_z_mp(z, half_bandwidth=D)))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
@@ -967,15 +970,16 @@ def test_simplecubic_gf_vs_gf_mp(z, D):
 def test_pole_gf_z_gu(args):
     """Check that `gt.pole_gf_z` is a proper gu-function and ensure symmetry."""
     z, poles, weights = args
-    assert np.allclose(np.conjugate(gt.pole_gf_z(z, poles=poles, weights=weights)),
-                       gt.pole_gf_z(np.conjugate(z), poles=poles, weights=weights),
-                       equal_nan=True)
+    assert_allclose(np.conjugate(gt.pole_gf_z(z, poles=poles, weights=weights)),
+                    gt.pole_gf_z(np.conjugate(z), poles=poles, weights=weights),
+                    equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
                    dtype=[np.float_, np.float_, np.float_, np.float_],
-                   elements=[st.floats(min_value=0., max_value=1.), st.floats(), nonneg_float, nonneg_float],
+                   elements=[st.floats(min_value=0., max_value=1.),
+                             st.floats(), nonneg_float, nonneg_float],
                    max_dims_extra=3)
        )
 def test_pole_gf_tau_gu(args):
@@ -991,7 +995,8 @@ def test_pole_gf_tau_gu(args):
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
                    dtype=[np.float_, np.float_, np.float_, np.float_],
-                   elements=[st.floats(min_value=0., max_value=1.), pos_float, nonneg_float, pos_float],
+                   elements=[st.floats(min_value=0., max_value=1.),
+                             pos_float, nonneg_float, pos_float],
                    max_dims_extra=3)
        )
 def test_pole_gf_tau_b_gu(args):
@@ -1022,7 +1027,7 @@ def test_square_stress_trafo():
         # pylint: disable=cell-var-from-loop
         with mpmath.workdps(30):
             integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])
-        assert np.allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)
+        assert_allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)
 
 
 def test_hubbard_I_self_hfm():
