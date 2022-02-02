@@ -4,7 +4,7 @@ import versioneer
 
 
 def readme():
-    with open('README.rst') as file_:
+    with open('README.rst', encoding='utf-8') as file_:
         return file_.read()
 
 
