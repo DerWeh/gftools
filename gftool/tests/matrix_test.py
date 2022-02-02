@@ -164,4 +164,4 @@ def test_2x2_gf(z, eps0, eps1, hopping):
     g0 = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
     gf_num = dec.reconstruct(g0(z - dec.eig), kind='diag')
     gf_2x2 = gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping, hilbert_trafo=g0)
-    assert_allclose(gf_2x2, gf_num, atol=1e-14)
+    assert_allclose(gf_2x2, gf_num, rtol=1e-5, atol=1e-14)
