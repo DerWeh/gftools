@@ -1332,7 +1332,8 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin):
         raise ValueError("Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
                          " or `tt<=0 and z.imag<=0`")
     if z.size == 0:  # consistent behavior for gufuncs
-        return np.empty_like(z)
+        return np.empty(np.broadcast_shapes(z.shape[:-1], gf_t.shape[:-1]) + (z.shape[-1], ),
+                        dtype=np.result_type(z, gf_t))
     return laplace(tt, gf_t, z)
 
 

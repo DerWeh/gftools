@@ -11,6 +11,7 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 HAS_QUAD = gt.precision.HAS_QUAD
@@ -38,7 +39,7 @@ class TestDecompositionGeneral:
         for g0 in self.g0_loc_inv:
             g0_inv_full[idx, idx] = g0
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
-            assert np.allclose(rv.dot(rv_inv), np.identity(*h.shape))
+            assert_allclose(rv.dot(rv_inv), np.identity(*h.shape), atol=1e-14)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
@@ -56,10 +57,10 @@ class TestDecompositionGeneral:
             g0_inv_full[idx, idx] = g0
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
             g0 = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
-            assert np.allclose(g0.dot(g0_inv_full), np.identity(size))
-            assert np.allclose(g0, la.inv(g0_inv_full))
+            assert_allclose(g0.dot(g0_inv_full), np.identity(size), atol=1e-14)
+            assert_allclose(g0, la.inv(g0_inv_full))
             g0_alt = gt.matrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
-            assert np.allclose(g0, g0_alt)
+            assert_allclose(g0, g0_alt)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
@@ -75,7 +76,7 @@ class TestDecompositionGeneral:
         for g0 in self.g0_loc_inv:
             g0_inv_full[idx, idx] = g0
             _, h, _ = gt.matrix.decompose_gf(g0_inv_full)
-            assert np.allclose(np.sum(h), np.trace(g0_inv_full))
+            assert_allclose(np.sum(h), np.trace(g0_inv_full))
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -87,24 +88,24 @@ def test_decomposition_reconsturction(args):
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(mat) < 1e8))
     dec = gt.matrix.decompose_gf(mat)
-    assert np.allclose(dec.reconstruct(kind='full'), mat)
-    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), mat)
+    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
 
     # symmetric
     sym_mat = mat + gt.matrix.transpose(mat)
     if sym_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(sym_mat) < 1e8))
     dec = gt.matrix.decompose_sym(sym_mat)
-    assert np.allclose(dec.reconstruct(kind='full'), sym_mat)
-    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(sym_mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), sym_mat)
+    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(sym_mat, axis1=-2, axis2=-1))
 
     # Hermitian
     her_mat = mat + gt.matrix.transpose(mat).conj()
     if her_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(her_mat) < 1e8))
     dec = gt.matrix.decompose_hamiltonian(her_mat)
-    assert np.allclose(dec.reconstruct(kind='full'), her_mat)
-    assert np.allclose(dec.reconstruct(kind='diag'), np.diagonal(her_mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), her_mat)
+    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(her_mat, axis1=-2, axis2=-1))
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -118,9 +119,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_gf(mat)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                       np.diagonal(inverse, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
 
     # symmetric
     sym_mat = mat + gt.matrix.transpose(mat)
@@ -128,9 +129,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(sym_mat) < 1e8))
     inverse = np.linalg.inv(sym_mat)
     dec = gt.matrix.decompose_sym(sym_mat)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                       np.diagonal(inverse, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
 
     # Hermitian
     her_mat = mat + gt.matrix.transpose(mat).conj()
@@ -138,9 +139,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(her_mat) < 1e8))
     inverse = np.linalg.inv(her_mat)
     dec = gt.matrix.Decomposition.from_hamiltonian(her_mat)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse)
-    assert np.allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                       np.diagonal(inverse, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -158,8 +159,9 @@ def test_2x2_gf(z, eps0, eps1, hopping):
                     [hopping, eps1]])
     dec = gt.matrix.decompose_hamiltonian(ham)
     gf_num = dec.reconstruct(1/(z - dec.eig), kind='diag')
-    assert np.allclose(gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping), gf_num)
+    assert_allclose(gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping),
+                    gf_num, rtol=1e-6, atol=1e-14)
     g0 = partial(gt.bethe_hilbert_transform, half_bandwidth=1)
     gf_num = dec.reconstruct(g0(z - dec.eig), kind='diag')
     gf_2x2 = gt.matrix.gf_2x2_z(z, eps0=eps0, eps1=eps1, hopping=hopping, hilbert_trafo=g0)
-    assert np.allclose(gf_2x2, gf_num)
+    assert_allclose(gf_2x2, gf_num, atol=1e-14)

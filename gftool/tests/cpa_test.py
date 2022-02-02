@@ -11,6 +11,8 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
+
 HAS_QUAD = gt.precision.HAS_QUAD
 
 ignore_close_to_root = pytest.mark.filterwarnings(
@@ -39,8 +41,8 @@ def test_trival_cmpt_gf(args):
     self_cpa_z = gt.cpa.solve_root(z, e_onsite, concentration, hilbert_trafo=hilbert,
                                    options=dict(fatol=1e-14))
     gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo=hilbert)[..., 0]
-    assert np.allclose(gf_cmpt_z, hilbert(z - e_onsite[0]))
-    assert np.allclose(e_onsite[0], self_cpa_z)
+    assert_allclose(gf_cmpt_z, hilbert(z - e_onsite[0]))
+    assert_allclose(e_onsite[0], self_cpa_z)
 
 
 @given(z=st.complex_numbers(max_magnitude=1e-6))
@@ -55,7 +57,7 @@ def test_average(z):
     self_cpa_z = gt.cpa.solve_root(z, e_onsite, concentration, hilbert_trafo=hilbert)
     gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo=hilbert)
     gf_coher_z = hilbert(z - self_cpa_z)
-    assert np.allclose(np.average(gf_cmpt_z, weights=concentration, axis=-1), gf_coher_z)
+    assert_allclose(np.average(gf_cmpt_z, weights=concentration, axis=-1), gf_coher_z, rtol=1e-5)
 
 
 @pytest.mark.filterwarnings("ignore:Ill-conditioned matrix:scipy.linalg.LinAlgWarning")
@@ -92,7 +94,7 @@ def test_cpa_interface(args):
     self_cpa_z = gt.cpa.solve_root(z, e_onsite=eps, concentration=conc, hilbert_trafo=hilbert)
     gf_z = hilbert(z - self_cpa_z)
     gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, eps, hilbert_trafo=hilbert)
-    assert np.allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z)
+    assert_allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-5)
 
 
 @ignore_illconditioned
@@ -108,7 +110,7 @@ def test_cpa(z):
         self_cpa_z = gt.cpa.solve_root(z, eps, conc, hilbert_trafo=hilbert)
         gf_z = hilbert(z - self_cpa_z)
         gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, eps, hilbert_trafo=hilbert)
-        assert np.allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-4)
+        assert_allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-4)
 
 
 def test_cpa_occ_simple():
@@ -125,14 +127,14 @@ def test_cpa_occ_simple():
     gf_coher_iw = hilbert(iws - self_iw)
     pot = np.average(e_onsite, weights=concentration) - mu
     occ_coher = gt.density_iw(iws, gf_coher_iw, moments=[1.0, pot], beta=beta)
-    assert np.allclose(occ_coher, occ)
+    assert_allclose(occ_coher, occ)
     gf_cmpt_iw = gt.cpa.gf_cmpt_z(iws, self_iw, np.array(e_onsite)-mu, hilbert_trafo=hilbert).T
     occ_cmpt = gt.density_iw(iws, gf_cmpt_iw, moments=[1.0, pot], beta=beta)
-    assert np.allclose(np.average(occ_cmpt, weights=concentration), occ)
+    assert_allclose(np.average(occ_cmpt, weights=concentration), occ)
 
     self_iw_fxdmu = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, concentration,
                                       hilbert_trafo=hilbert, options=dict(fatol=1e-14))
-    assert np.allclose(self_iw_fxdmu, self_iw)
+    assert_allclose(self_iw_fxdmu, self_iw)
 
 
 @pytest.mark.parametrize("conc", [(0.5, 0.5), (0.3, 0.7), (0.1, 0.9)])
