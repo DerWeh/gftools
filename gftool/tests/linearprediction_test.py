@@ -5,6 +5,7 @@ import pytest
 from .context import gftool as gt
 
 lp = gt.linearprediction
+assert_allclose = np.testing.assert_allclose
 
 
 def test_pcoeff_burg_implementation():
@@ -57,8 +58,8 @@ def test_pcoeff_burg_implementation():
     A[9] = 0.37516 - 0.18268j
     SIG2 = 0.16930
     cmp_a, cmp_sig2 = lp.pcoeff_burg(x, 10)
-    assert np.allclose(A, cmp_a, atol=5e-4)
-    assert np.allclose(SIG2, cmp_sig2, atol=1e-4)
+    assert_allclose(A, cmp_a, atol=5e-4)
+    assert_allclose(SIG2, cmp_sig2, atol=1e-4)
 
 
 @pytest.mark.parametrize("method, atol", [(lp.pcoeff_burg, 5e-3),
@@ -73,6 +74,6 @@ def test_simple_extrapolation(method, atol: float):
     gf_ret_t = gt.siam.gf0_loc_ret_t(tt, eps_0, e_bath=eps_b, hopping=V)
     # try to extrapolate second half from first half
     gf_half = gf_ret_t[:tt.size//2+1]
-    pcoeff, __ = method(gf_half, order=tt.size//4)
-    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size//2)
-    np.allclose(gf_ret_t, gf_pred, atol=atol)
+    pcoeff, __ = method(gf_half, order=gf_half.size//2)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size)
+    assert_allclose(gf_ret_t, gf_pred, atol=atol)
