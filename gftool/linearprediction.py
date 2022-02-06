@@ -70,7 +70,7 @@ For example, if we add some noise:
 
    >>> noise = np.random.default_rng(0).normal(scale=1e-6, size=tt.size)
    >>> pcoeff, __ = lp.pcoeff_covar(gf_t + noise, order=gf_t.size//2)
-   >>> lp.plot_roots(pcoeff)
+   >>> __ = lp.plot_roots(pcoeff)
 
 The red crosses correspond to growing contributions. Prediction for long times
 produces exponentially growing errors:
@@ -336,7 +336,7 @@ def plot_roots(pcoeff, axis=None):
 
     Roots for the forward prediction should be inside the unit-circle.
     """
-    import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel]
+    import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
     if axis is None:
         axis = plt.gca()
 
