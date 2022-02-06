@@ -69,12 +69,12 @@ def companion(a):
     return c
 
 
-def pcoeff_covar(x, order: int, rcond=None, normal=False):
+def pcoeff_covar(x, order: int, rcond=None):
     """Calculate linear prediction (LP) coefficients using covariance method.
 
     The covariance method gives the equation
 
-    .. math:: Ra = X^†X a= = X^†x = -r
+    .. math:: Ra = X^†X a = X^†x = -r
 
     where :math:`R` is the covariance matrix and :math:`a` are the LP
     coefficients.
@@ -97,17 +97,20 @@ def pcoeff_covar(x, order: int, rcond=None, normal=False):
     a : (..., order) complex np.ndarray
         Prediction coefficients
     rho : (...) float np.ndarray
-        Error estimate (not tested/working).
+        Error estimate :math:`‖x - Xa‖_2`.
 
     """
-    # TODO: find correct error or error estimate
-    Xmat = toeplitz(x[order-1:-1], x[order-1::-1])
-    xvec = x[order:]
-    # Xmat@a = -xvec
-    a, *__ = np.linalg.lstsq(Xmat, -xvec, rcond=rcond)
-    # error: xvec† (xvec + Xmat@a)
-    error = abs(np.vdot(xvec, xvec + Xmat@a))
-    return a, error
+    def _covar(x_):
+        """Actual calculation to be vectorized."""
+        Xmat = toeplitz(x_[order-1:-1], x_[order-1::-1])
+        xvec = x_[order:]
+        # Xmat@coeff = -xvec
+        coeff, *__ = np.linalg.lstsq(Xmat, -xvec, rcond=rcond)
+        error = np.linalg.norm(xvec + Xmat@coeff)
+        return coeff, error
+
+    coeff, error = np.vectorize(_covar, signature="(n)->(l),()")(x)
+    return coeff, error
 
 
 def pcoeff_burg(x, order: int):
