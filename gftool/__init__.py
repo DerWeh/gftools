@@ -13,6 +13,7 @@ Submodules
    gftool.fourier
    gftool.hermpade
    gftool.lattice
+   gftool.linearprediction
    gftool.matrix
    gftool.pade
    gftool.siam
