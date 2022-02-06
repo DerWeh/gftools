@@ -175,7 +175,7 @@ def pcoeff_covar(x, order: int, rcond=None):
 
     where :math:`R` is the covariance matrix and :math:`a` are the LP
     coefficients.
-    We calculate solve :math:`Xa = x` using linear least-squares.
+    We solve :math:`Xa = x` using linear least-squares.
 
     Parameters
     ----------
@@ -213,6 +213,10 @@ def pcoeff_covar(x, order: int, rcond=None):
 def pcoeff_burg(x, order: int):
     """Burg's method for linear prediction (LP) coefficients.
 
+    .. warning::
+
+       We found this method to be instable, consider using `pcoeff_covar` instead.
+
     Burg's method calculates the coefficients from an estimate of the reflection
     coefficients using Levinson's method. Burg's method guarantees that poles
     are inside the unit circle [Kay1988]_, thus it is stable.
@@ -230,6 +234,10 @@ def pcoeff_burg(x, order: int):
         Prediction coefficients
     rho : (...) float np.ndarray
         Variance estimate.
+
+    See Also
+    --------
+    pcoeff_covar
 
     References
     ----------
@@ -286,6 +294,10 @@ def predict(x, pcoeff, num: int, stable=False):
         Data of the (time) series extended by `num` steps, with
         `px[:x.size] = x`.
 
+    See Also
+    --------
+    pcoeff_covar
+
     """
     if stable:
         return _predict_stable(x, pcoeff=pcoeff, num=num)
@@ -335,6 +347,23 @@ def plot_roots(pcoeff, axis=None):
     """Plot the roots corresponding to `pcoeff`.
 
     Roots for the forward prediction should be inside the unit-circle.
+
+    Parameters
+    ----------
+    pcoeff : (order, ) complex np.ndarray
+        Prediction coefficients
+    axis : matplotlib.axes.Axes , optional
+        Axis in which the roots are plotted. (default: ``plt.gca()``)
+
+    Returns
+    -------
+    axis : matplotlib.axes.Axes
+        The `axis` in which the roots were plotted.
+
+    See Also
+    --------
+    pcoeff_covar
+
     """
     import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
     if axis is None:
