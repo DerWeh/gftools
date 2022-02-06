@@ -97,11 +97,6 @@ def dos_moment(m, half_bandwidth):
     dos_moment : float
         The `m` th moment of the box DOS.
 
-    Raises
-    ------
-    NotImplementedError
-        Currently only implemented for a few specific moments `m`.
-
     See Also
     --------
     gftool.lattice.box.dos
