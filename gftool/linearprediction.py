@@ -1,12 +1,109 @@
 """Linear prediction to extrapolated retarded Green's function.
 
-A nice introductory description of linear prediction is found in [Vaidyanathan2007]_.
+A nice introductory description of linear prediction can be found in [Vaidyanathan2007]_;
+[Makhoul1975]_ gives a detailed review.
+
+Linear prediction allows to extend a time series by predicting future points
+:math:`x̂_l` as a linear combination of previous time points :math:`x`:
+
+.. math:: x̂_l = -∑_{k=1}^{K} x_{l-k} a_k
+
+where :math:`a_k` are the prediction coefficients and :math:`K` is the
+prediction order.
+**Recommended** method to obtain the prediction coefficients is `pcoeff_covar`,
+the results of `pcoeff_burg` seem to be rather **unreliable**.
 
 References
 ----------
 .. [Vaidyanathan2007] Vaidyanathan, P.P., 2007. The Theory of Linear Prediction.
    Synthesis Lectures on Signal Processing 2, 1–184.
    https://doi.org/10.2200/S00086ED1V01Y200712SPR003
+.. [Makhoul1975] Makhoul, J. Linear prediction: A tutorial review.
+   Proceedings of the IEEE 63, 561–580 (1975).
+   https://doi.org/10.1109/PROC.1975.9792
+
+Examples
+--------
+We consider the retarded-time Bethe Green's function with the known time points
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> tt = np.linspace(0, 10, 101)
+   >>> gf_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=1)
+
+We can predict future time points using linear prediction,
+let's check the next 100 time points
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> lp = gt.linearprediction
+   >>> pcoeff, __ = lp.pcoeff_covar(gf_t, order=gf_t.size//2)
+   >>> gf_pred = lp.predict(gf_t, pcoeff, num=100)
+
+and compare the results
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> import matplotlib.pyplot as plt
+   >>> tt_pred = np.linspace(0, 20, 201)
+   >>> gf_full = gt.lattice.bethe.gf_ret_t(tt_pred, half_bandwidth=1)
+   >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
+   >>> __ = plt.axvline(tt[-1], color='dimgray', linewidth=0.8)
+   >>> __ = plt.plot(tt_pred, gf_full.imag)
+   >>> __ = plt.plot(tt_pred, gf_pred.imag, '--')
+   >>> plt.show()
+
+The roots corresponding to the linear prediction polynomial should all lie in
+the unit circle, numerical inaccuracies can lead to roots outside the unit
+circle causing exponentially growing contributions.
+For example, if we add some noise:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> noise = np.random.default_rng(0).normal(scale=1e-6, size=tt.size)
+   >>> pcoeff, __ = lp.pcoeff_covar(gf_t + noise, order=gf_t.size//2)
+   >>> lp.plot_roots(pcoeff)
+
+The red crosses correspond to growing contributions. Prediction for long times
+produces exponentially growing errors:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> import matplotlib.pyplot as plt
+   >>> tt_pred = np.linspace(0, 30, 301)
+   >>> gf_full = gt.lattice.bethe.gf_ret_t(tt_pred, half_bandwidth=1)
+   >>> gf_pred = lp.predict(gf_t, pcoeff, num=200)
+   >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
+   >>> __ = plt.axvline(tt[-1], color='dimgray', linewidth=0.8)
+   >>> __ = plt.plot(tt_pred, gf_full.imag)
+   >>> __ = plt.plot(tt_pred, gf_pred.imag, '--')
+   >>> plt.show()
+
+This can be amended by setting `stable=True` in `~gftool.linearprediction.predict`:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> import matplotlib.pyplot as plt
+   >>> tt_pred = np.linspace(0, 30, 301)
+   >>> gf_full = gt.lattice.bethe.gf_ret_t(tt_pred, half_bandwidth=1)
+   >>> gf_pred = lp.predict(gf_t, pcoeff, num=200, stable=True)
+   >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
+   >>> __ = plt.axvline(tt[-1], color='dimgray', linewidth=0.8)
+   >>> __ = plt.plot(tt_pred, gf_full.imag)
+   >>> __ = plt.plot(tt_pred, gf_pred.imag, '--')
+   >>> plt.show()
 
 """
 import numpy as np
