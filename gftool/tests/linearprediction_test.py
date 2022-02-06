@@ -2,6 +2,9 @@
 import numpy as np
 import pytest
 
+from hypothesis import given, assume, strategies as st
+from hypothesis_gufunc.gufunc import gufunc_args
+
 from .context import gftool as gt
 
 lp = gt.linearprediction
@@ -64,7 +67,7 @@ def test_pcoeff_burg_implementation():
 
 @pytest.mark.parametrize("method, atol", [(lp.pcoeff_burg, 5e-3),
                                           (lp.pcoeff_covar, 1e-6)])
-def test_simple_extrapolation(method, atol: float):
+def test_simple_prediction(method, atol: float):
     """Extrapolate retarded Green's function of a box-like SIAM."""
     tt = np.linspace(0, 100, num=1001)
     # consider a box-like hybridization
@@ -77,3 +80,47 @@ def test_simple_extrapolation(method, atol: float):
     pcoeff, __ = method(gf_half, order=gf_half.size//2)
     gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size)
     assert_allclose(gf_ret_t, gf_pred, atol=atol)
+
+
+@pytest.mark.parametrize("fraction", [2, 3])
+@pytest.mark.parametrize("lattice", [gt.lattice.bethe, gt.lattice.box])
+@pytest.mark.parametrize("stable", [True, False])
+def test_lattice_prediction(fraction, lattice, stable):
+    """Test against continuous lattice Green's functions.
+
+    Make sure that `stable=True` prediction is correct in the trivial case.
+    """
+    tt = np.linspace(0, 100, num=1001)
+    gf_ret_t = lattice.gf_ret_t(tt, half_bandwidth=1, center=0.2)
+    # try to extrapolate second half from first half
+    gf_half = gf_ret_t[:tt.size//2+1]
+    pcoeff, __ = lp.pcoeff_covar(gf_half, order=gf_half.size//fraction)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size,
+                         stable=stable)
+    assert_allclose(gf_ret_t, gf_pred, atol=3e-5)
+
+
+@pytest.mark.parametrize("method, atol", [(lp.pcoeff_covar, 1e-6)])
+@given(gufunc_args('(n),(n)->()', dtype=np.float_,
+                   elements=[st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=0, max_value=10),
+                             ],
+                   max_dims_extra=2, max_side=3, min_side=1),)
+def test_predict_gufunc(method, atol, args):
+    """Test that `predict` behaves like a proper gu-function.
+
+    Currently uses `pcoeff_burg` as `pcoeff_covar` is not vectorized.
+    """
+    poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    # resids /= resids.sum(axis=-1, keepdims=True)
+    # ensure sufficient large imaginary part
+    tt = np.linspace(0, 20, 201)
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :])
+
+    gf_half = gf_t[..., :tt.size//2+1]
+    pcoeff, __ = method(gf_half, order=gf_half.shape[-1]//2)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.shape[-1])
+    assert_allclose(gf_t, gf_pred, atol=atol)
