@@ -1110,4 +1110,4 @@ def test_box_retarded(D, center):
     ww = np.linspace(-2*D, 2*D, num=501) + 5j*eta
     gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
     gf_ww = gt.lattice.box.gf_z(ww - D*center, half_bandwidth=D)
-    assert np.allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
+    assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
