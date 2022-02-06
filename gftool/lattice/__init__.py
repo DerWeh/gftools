@@ -35,6 +35,7 @@ Submodules
 
     bethe
     bethez
+    box
     onedim
     square
     rectangular
@@ -47,13 +48,14 @@ Submodules
     fcc
 
 """
-from . import (bcc, bethe, bethez, fcc, honeycomb, kagome, lieb, onedim,
+from . import (bcc, bethe, bethez, box, fcc, honeycomb, kagome, lieb, onedim,
                rectangular, sc, square, triangular)
 
 # silence warnings of unused imports
 assert bcc
 assert bethe
 assert bethez
+assert box
 assert fcc
 assert honeycomb
 assert kagome
