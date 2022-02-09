@@ -57,7 +57,7 @@ import numpy as np
 
 from numpy import newaxis
 
-from . import beb, cpa, fourier, lattice, matrix as gtmatrix, linearprediction
+from . import beb, cpa, fourier, lattice, matrix as gtmatrix, linearprediction, polepade
 from ._util import _gu_sum
 from ._version import get_versions
 
@@ -87,10 +87,10 @@ from .lattice.triangular import (dos as triangular_dos,
                                  hilbert_transform as triangular_hilbert_transform)
 
 # Honeycomb lattice
-from .lattice.honeycomb import(dos as honeycomb_dos,
-                               dos_moment as honeycomb_dos_moment,
-                               gf_z as honeycomb_gf_z,
-                               hilbert_transform as honeycomb_hilbert_transform)
+from .lattice.honeycomb import (dos as honeycomb_dos,
+                                dos_moment as honeycomb_dos_moment,
+                                gf_z as honeycomb_gf_z,
+                                hilbert_transform as honeycomb_hilbert_transform)
 
 # Simple cubic lattice
 from .lattice.sc import (dos as sc_dos,
@@ -131,7 +131,7 @@ __version__ = get_versions()['version']
 LOGGER = logging.getLogger(__name__)
 
 # silence warnings of unused imports
-assert all((beb, cpa, fourier, lattice, linearprediction))
+assert all((beb, cpa, fourier, lattice, linearprediction, polepade))
 assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
             bethe_gf_z, bethe_hilbert_transform))
 assert all((onedim_dos, onedim_dos_moment, onedim_gf_z, onedim_hilbert_transform))

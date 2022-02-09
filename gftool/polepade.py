@@ -1,10 +1,12 @@
-"""Padé based on robust pole finding.
+r"""Padé based on robust pole finding.
 
 Instead of fitting a rational polynomial, poles and zeros or poles and
 corresponding residues are fitted.
 
 The algorithm is based on [ito2018]_ and adjusted to Green's functions and self-
-energies. We assume that we know exactly the high-frequency behavior of the
+energies. A very short summary can of the algorithm can be found in the appendix
+of [weh2020]_.
+We assume that we know exactly the high-frequency behavior of the
 function we want to continue. Here, we will call it `degree` and we define it
 as the behavior of the function `f(z)` for large `abs(z)`:
 
@@ -18,6 +20,64 @@ References
 .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
    least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
    https://doi.org/10.1007/s00211-018-0948-4
+.. [weh2020] Weh, A. et al. Spectral properties of heterostructures containing
+   half-metallic ferromagnets in the presence of local many-body correlations.
+   Phys. Rev. Research 2, 043263 (2020).
+   https://doi.org/10.1103/PhysRevResearch.2.043263
+
+Examples
+--------
+The function `continuation` provides a high-level interface which can be used
+for convenience. Let's consider an optimal example: We know the Green's
+function for complex frequencies on the unit (half-)circle. We consider the
+Bethe Green's function.
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> z = np.exp(1j*np.linspace(np.pi, 0, num=252)[1:-1])
+   >>> gf_z = gt.bethe_gf_z(z, half_bandwidth=1)
+   >>> pade = gt.polepade.continuation(z, gf_z, degree=-1, moments=[1])
+   >>> print(f"[{pade.zeros.size}/{pade.poles.size}]")
+   [14/15]
+
+We obtain a ``[14/15](z)`` Padé approximant. Let's compare it on the real axis:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> import matplotlib.pyplot as plt
+   >>> ww = np.linspace(-1.1, 1.1, num=500) + 1e-6j
+   >>> gf_ww = gt.bethe_gf_z(ww, half_bandwidth=1)
+   >>> pade_ww = pade.eval_polefct(ww)
+   >>> __ = plt.axhline(0, color='dimgray', linewidth=0.8)
+   >>> __ = plt.axvline(0, color='dimgray', linewidth=0.8)
+   >>> __ = plt.plot(ww.real, -gf_ww.imag/np.pi)
+   >>> __ = plt.plot(ww.real, -pade_ww.imag/np.pi, '--')
+   >>> __ = plt.xlabel(r"$\omega$")
+   >>> plt.show()
+
+Beside the band-edge, we get a nice fit. We can also investigate the pole
+structure of the fit:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> pade.plot()
+   >>> plt.show()
+
+Using a grid on the imaginary axis, the fit is of course worse.
+Note, that its typically better to continue the self-energy instead of the
+Green's function, see appendix of [weh2020]_.
+For more control, instead of using `continuation` the elementary functions can
+be used:
+
+* `number_poles` to determine the degree of the Padé approximant
+* `poles`, `zeros` to calculate the poles and zeros of the approximant
+* `residues_ols` to calculate the residues
 
 """
 import logging
@@ -38,11 +98,12 @@ LOGGER = logging.getLogger(__name__)
 class PadeApprox(NamedTuple):
     """Representation of the Padé approximation based on poles.
 
-    Basically the approximation is obtained as `PoleFct` as well as as `ZeroPole`.
-    Not however that those to approximations will in general no agree. For a
-    good approximation however, they should be very similar.
+    Basically the approximation is obtained as `~gftool.basis.PoleFct` as well
+    as `~gftool.basis.ZeroPole`. Note however, that those to approximations
+    will in general not agree. Nevertheless, for a good approximation they
+    should be very similar.
 
-    Attributes
+    Parameters
     ----------
     zeros : (..., Nz) complex np.ndarray
         Zeros of the represented function.
