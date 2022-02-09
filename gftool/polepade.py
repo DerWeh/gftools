@@ -76,8 +76,8 @@ class PadeApprox(NamedTuple):
 
     def plot(self, residue=False, axis=None):
         """Represent the function as scatter plot."""
-        import matplotlib as mpl  # pylint: disable=[import-outside-toplevel]
-        import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel]
+        import matplotlib as mpl  # pylint: disable=[import-outside-toplevel,import-error]
+        import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
         if axis is None:
             axis = plt.gca()
         axis.axhline(0, color='.3')
@@ -138,6 +138,7 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
        https://doi.org/10.1007/s00211-018-0948-4
 
     """
+    # pylint: disable=too-many-locals
     tol = np.finfo(fct_z.dtype).eps
     max_n_poles = abs_max_n_poles = (z.size - degree)//2
     if n_poles0 is None:
@@ -215,6 +216,7 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
        https://doi.org/10.1007/s00211-018-0948-4
 
     """
+    # pylint: disable=too-many-locals
     if n is None:
         n = m - 1
     fct_z = fct_z/np.median(fct_z)
@@ -269,9 +271,8 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
        https://doi.org/10.1007/s00211-018-0948-4
 
     """
-    m = poles.size
     if n is None:
-        n = m - 1
+        n = poles.size - 1
     fct_z = fct_z/np.median(fct_z)
     denom = np.prod(np.subtract.outer(z, poles), axis=-1)
     numer = vandermond(z, deg=n-1)
@@ -433,8 +434,8 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
     asymp, std = asymptotic(z, fct_z, zeros=zrs, poles=pls, weight=weight)
     LOGGER.info("Asymptotic for z**%s: %s ± %s", degree, asymp, std)
     asymp = asymp.real if real_asymp else asymp
-    const = asymp if degree == 0 else 0
-    fct_z_pole = fct_z - const  # constant has to be treated separately
-    residues, err = residues_ols(z, fct_z_pole, pls, weight=weight, moments=moments)
+    if degree == 0:  # constant has to be treated separately
+        fct_z = fct_z - asymp
+    residues, err = residues_ols(z, fct_z, pls, weight=weight, moments=moments)
     LOGGER.info("Sum of residues (z**-1): %s; residual %s", residues.sum(), err)
     return PadeApprox(zeros=zrs, poles=pls, residues=residues, amplitude=asymp)
