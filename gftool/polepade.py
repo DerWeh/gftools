@@ -82,7 +82,7 @@ be used:
 """
 import logging
 
-from typing import NamedTuple
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -95,7 +95,8 @@ from gftool.linalg import lstsq_ec, orth_compl
 LOGGER = logging.getLogger(__name__)
 
 
-class PadeApprox(NamedTuple):
+@dataclass
+class PadeApprox:
     """Representation of the Padé approximation based on poles.
 
     Basically the approximation is obtained as `~gftool.basis.PoleFct` as well
