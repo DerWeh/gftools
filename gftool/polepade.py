@@ -483,16 +483,18 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
     """
     if degree > 0:
         raise ValueError(f"`degree` must be smaller or equal 0 (given: {degree}).")
+    if rotate is None:  # meant for Matsubara frequencies on imaginary axis
+        rotate = np.allclose(z.real, 0)
+    if rotate:  # rotate frequencies
+        z = z / 1j
+        if np.all(~np.iscomplex(z)):
+            z = z.real
     m = number_poles(z, fct_z, degree=degree, weight=weight, vandermond=vandermond)
     LOGGER.info("Number of Poles: %s", m)
-    if rotate is None:
-        rotate = np.allclose(z.real, 0)
-    pls = poles(z.imag if rotate else z, fct_z, n=m+degree, m=m,
-                weight=weight, vandermond=vandermond)
-    zrs = zeros(z.imag if rotate else z, fct_z, poles=pls, n=m+degree,
-                weight=weight, vandermond=vandermond)
-    if rotate:
-        pls, zrs = 1j * pls, 1j * zrs
+    pls = poles(z, fct_z, n=m+degree, m=m, weight=weight, vandermond=vandermond)
+    zrs = zeros(z, fct_z, poles=pls, n=m+degree, weight=weight, vandermond=vandermond)
+    if rotate:  # rotate back
+        z, pls, zrs = 1j * z, 1j * pls, 1j * zrs
     asymp, std = asymptotic(z, fct_z, zeros=zrs, poles=pls, weight=weight)
     LOGGER.info("Asymptotic for z**%s: %s ± %s", degree, asymp, std)
     asymp = asymp.real if real_asymp else asymp
