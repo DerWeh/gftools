@@ -442,9 +442,6 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
         `f(z) = moments / z**np.arange(1, N+1)` for large `z`. This only
         affects the calculated `pade.residues`, and constrains them to fulfill
         the `moments`.
-    vandermond : Callable, optional
-        Function giving the Vandermond matrix of the chosen polynomial basis.
-        Defaults to simple polynomials.
 
     Returns
     -------
@@ -454,9 +451,16 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
 
     Other Parameters
     ----------------
-    rotate : bool, optional
+    vandermond : Callable, optional
+        Function giving the Vandermond matrix of the chosen polynomial basis.
+        Defaults to simple polynomials.
+    rotate : bool or None, optional
         Whether to rotate the coordinate to calculated zeros and poles.
         (Default: rotate if `z` is purely imaginary)
+    real_asymp : bool, optional
+        Whether to consider only the real part of the asymptote, or treat it
+        as complex number. Physically, to asymptote should typically be real.
+        (Default: True)
 
     Examples
     --------
