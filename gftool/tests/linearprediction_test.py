@@ -124,3 +124,25 @@ def test_predict_gufunc(method, atol, args):
     pcoeff, __ = method(gf_half, order=gf_half.shape[-1]//2)
     gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.shape[-1])
     assert_allclose(gf_t, gf_pred, atol=atol)
+
+
+def test_prediction_stability():
+    """Test stability for box Green's functions.
+
+    We add noise to generate growing exponentially growing terms.
+    Prediction with `stable=True` should filter it and produce a somewhat
+    reasonable prediction that doesn't explode.
+    """
+    lattice = gt.lattice.box
+    tt = np.linspace(0, 100, num=1001)
+    gf_ret_t = lattice.gf_ret_t(tt, half_bandwidth=1, center=0.2)
+    # try to extrapolate second half from first half
+    gf_half = gf_ret_t[:tt.size//2+1]
+    noise = np.random.default_rng(0).normal(scale=1e-4, size=gf_half.size)
+    pcoeff, __ = lp.pcoeff_covar(gf_half+noise, order=gf_half.size//2)
+    # lp.plot_roots(pcoeff)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size)
+    assert np.any(gf_pred > 1e3), "Make sure test is good, that is prediction grows"
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size, stable=True)
+    assert np.all(abs(gf_pred) <= 1), "Stable prediction should not grow"
+    assert_allclose(gf_ret_t, gf_pred, atol=1e-2)
