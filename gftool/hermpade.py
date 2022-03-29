@@ -249,6 +249,60 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
 
 
+def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None) -> RatPol:
+    """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
+
+    Same as `pade`, however all elements of `an` are taken into account.
+    Instead of finding the null-vector of the underdetermined system,
+    the parameter ``RatPol.denom.coeff[0]=1`` is fixed and the system is solved
+    truncating small singular values.
+
+    Parameters
+    ----------
+    an : (L,) array_like
+        Taylor series coefficients representing polynomial of order ``L-1``.
+    num_deg, den_deg : int
+        The order of the return approximating numerator/denominator polynomial.
+        The sum must be at most ``L``: ``L >= num_deg + den_deg + 1``.
+    rcond : float, optional
+        Cut-off ratio for small singular values for the denominator polynomial.
+        For the purposes of rank determination, singular values are treated
+        as zero if they are smaller than `rcond` times the largest singular
+        value. (default: machine precision times `den_deg`)
+
+    Returns
+    -------
+    RatPol
+        The rational polynomial with numerator `RatPol.numer`,
+        and denominator `RatPol.denom`.
+
+    See Also
+    --------
+    pade
+    numpy.linalg.lstsq
+
+    """
+    an = np.asarray(an)
+    assert an.ndim == 1
+    l_max = num_deg + den_deg + 1
+    if an.size < l_max:
+        raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
+    if den_deg == 0:  # trivial case: no rational polynomial
+        return RatPol(Polynom(an), Polynom(np.array([1])))
+    # first solve the Toeplitz system for q, first row contains tailing zeros
+    top = np.r_[an[num_deg+1::-1][:den_deg+1], [0]*(den_deg-num_deg-1)]
+    amat = toeplitz(an[num_deg+1:], top)
+    # fix: q[0] = 1
+    qcoeff, *__ = np.linalg.lstsq(amat[:, 1:], -amat[:, 0], rcond=rcond)
+    qcoeff = np.r_[1, qcoeff]
+    # # q[-1] = 1
+    # qcoeff, *__ = np.linalg.lstsq(amat[:, :-1], -amat[:, -1], rcond=rcond)
+    # qcoeff = np.r_[qcoeff, 1]
+    assert qcoeff.size == den_deg + 1
+    pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
+    return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
+
+
 def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     """Robust version of Padé approximant to polynomial `an`.
 
