@@ -87,6 +87,7 @@ from numpy import newaxis
 
 from gftool._util import _gu_matvec
 from gftool.hermpade import pade, Hermite2
+from gftool.linearprediction import pcoeff_covar
 from gftool.statistics import matsubara_frequencies, matsubara_frequencies_b
 from gftool.basis.pole import PoleFct, PoleGf
 
