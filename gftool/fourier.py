@@ -1338,7 +1338,7 @@ def tt2z_lin(tt, gf_t, z):
     return gf_z
 
 
-def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
+def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     r"""Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     The function requires an equidistant `tt`.
@@ -1386,9 +1386,12 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
         raise ValueError("Equidistant `tt` required for current implementation.")
+    if quad not in ('trapz', 'simps'):
+        raise ValueError(f"Unknown quadrature scheme {quad}")
+    weight = _trapz_weight if quad == 'trapz' else _simps_weight
     assert tt[0] == 0, "If not, we need to fix the phase"
-    coeffs = _trapz_weight(delta_tt, gf_t)
-    # coeffs = _simps_weight(delta_tt, gf_t)
+    assert tt.size == gf_t.shape[-1]  # TODO: test that tt matches gf_t
+    coeffs = weight(delta_tt, gf_t, endpoint=False)
     deg = (coeffs.shape[-1] - degree - 1)//2
     y = np.exp(1j*z*delta_tt)
 
@@ -1400,7 +1403,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, **kwds):
     return approx
 
 
-def tt2z_herm2(tt, gf_t, z):
+def tt2z_herm2(tt, gf_t, z, quad='trapz'):
     r"""Square Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     Uses a square Hermite-Padé approximant for the transform.
@@ -1437,10 +1440,12 @@ def tt2z_herm2(tt, gf_t, z):
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
         raise ValueError("Equidistant `tt` required for current implementation.")
+    if quad not in ('trapz', 'simps'):
+        raise ValueError(f"Unknown quadrature scheme {quad}")
+    weight = _trapz_weight if quad == 'trapz' else _simps_weight
     assert tt[0] == 0, "If not, we need to fix the phase"
     assert np.all(z.imag > 0), "Only implemented for retarded Green's function"
-    coeffs = _trapz_weight(delta_tt, gf_t)
-    # coeffs = _simps_weight(delta_tt, gf_t)
+    coeffs = weight(delta_tt, gf_t, endpoint=False)
     deg = (coeffs.shape[-1] - 2) // 3
     y = np.exp(1j*z*delta_tt)
 
@@ -1453,13 +1458,15 @@ def tt2z_herm2(tt, gf_t, z):
     return approx
 
 
-def tt2z_lpz(tt, gf_t, z, order=None, **kwds):
-    """Linear prediction Z-transform ofr the real-time Green's function `gf_t`."""
+def tt2z_lpz(tt, gf_t, z, order=None, quad='trapz', **kwds):
+    """Linear prediction Z-transform of the real-time Green's function `gf_t`."""
     if order is None:
         order = tt.size // 2
+    if quad not in ('trapz', 'simps'):
+        raise ValueError(f"Unknown quadrature scheme {quad}")
+    weight = _trapz_weight if quad == 'trapz' else _simps_weight
     delta_tt = tt[1] - tt[0]
-    coeffs = _trapz_weight(delta_tt, gf_t)
-    # coeffs = _simps_weight(delta_tt, gf_t)
+    coeffs = weight(delta_tt, gf_t, endpoint=False)
     pcoeff, __ = pcoeff_covar(coeffs, order=order, **kwds)
     aa = np.r_[1, pcoeff]
     convo = np.array([sum(aa[:ll+1]*coeffs[ll::-1]) for ll in range(order)])
