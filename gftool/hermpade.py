@@ -405,7 +405,7 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     """
     an = np.asarray(an)
     assert an.ndim == 1
-    l_max = r_deg + q_deg + p_deg + 1
+    l_max = r_deg + q_deg + p_deg + 2
     if an.size < l_max:
         raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
     an = an[:l_max]
