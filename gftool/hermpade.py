@@ -171,6 +171,45 @@ def _strip_ceoffs(pcoeff, qcoeff):
     return pcoeff, qcoeff
 
 
+def _nullvec_lst(mat, fix: int, rcond=None):
+    """Determine the null-vector of `mat` in a least-squares sense.
+
+    Typically the null-vector is found as the singular vector corresponding to
+    the smallest singular vector.
+
+    Instead, we set the component `fix` to 1, and solve the equations using
+    `~numpy.linalg.lstsq`.
+
+    Parameters
+    ----------
+    mat : (M, N) np.ndarray
+        The matrix for which we calculate the null-vector.
+    fix : int
+        The index of the component we fix to 1. Negative values are allowed.
+    rcond : float, optional
+        Cut-off ratio for small singular values of a`mat`. For the purposes of
+        rank determination, singular values are treated as zero if they are
+        smaller than `rcond` times the largest singular value of `mat`.
+        (default: machine precision times `max(M, N)`)
+
+    Returns
+    -------
+    nullvec : (N) np.ndarray
+        The approximate null-vector corresponding to `mat`.
+
+    """
+    if fix < 0:  # handle negative indices as we use fix+1
+        fix = mat.shape[-1] + fix
+    if fix >= mat.shape[-1]:
+        raise ValueError
+    vec, *__ = np.linalg.lstsq(
+        np.concatenate((mat[:, :fix], mat[:, fix+1:]), axis=-1),
+        -mat[:, fix], rcond=rcond,
+    )
+    vec = np.r_[vec[:fix], 1, vec[fix:]]
+    return vec
+
+
 def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
@@ -292,12 +331,7 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None) -> RatPol:
     # first solve the Toeplitz system for q, first row contains tailing zeros
     top = np.r_[an[num_deg+1::-1][:den_deg+1], [0]*(den_deg-num_deg-1)]
     amat = toeplitz(an[num_deg+1:], top)
-    # fix: q[0] = 1
-    qcoeff, *__ = np.linalg.lstsq(amat[:, 1:], -amat[:, 0], rcond=rcond)
-    qcoeff = np.r_[1, qcoeff]
-    # # q[-1] = 1
-    # qcoeff, *__ = np.linalg.lstsq(amat[:, :-1], -amat[:, -1], rcond=rcond)
-    # qcoeff = np.r_[qcoeff, 1]
+    qcoeff = _nullvec_lst(amat, fix=0, rcond=rcond)
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
     return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
@@ -469,6 +503,72 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
     _, _, vh = np.linalg.svd(lower)
     qrcoeff = vh[-1].conj()
+    assert qrcoeff.size == r_deg + q_deg + 2
+    upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
+    pcoeff = -upper@qrcoeff
+    return Polynom(pcoeff), Polynom(qrcoeff[:q_deg+1]), Polynom(qrcoeff[q_deg+1:])
+
+
+def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int, rcond=None
+                   ) -> Tuple[Polynom, Polynom, Polynom]:
+    r"""Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
+
+    Same as `hermite2`, however all elements of `an` are taken into account.
+    Instead of finding the null-vector of the underdetermined system,
+    the parameter ``q.coeff[0]=1`` is fixed and the system is solved truncating
+    small singular values.
+
+    The polynomials fulfill the equation
+
+    .. math:: p(x) + q(x) f(x) + r(x) f^2(x) = 𝒪(x^{N_p + N_q + N_r + 2})
+
+    where :math:`f(x)` is the function with Taylor coefficients `an`,
+    and :math:`N_x` are the degrees of the polynomials.
+    The approximant has two branches
+
+    .. math:: F^±(z) = (-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}) / 2r(z)
+
+    Parameters
+    ----------
+    an : (L,) array_like
+        Taylor series coefficients representing polynomial of order ``L-1``.
+    p_deg, q_deg, r_deg : int
+        The order of the polynomials of the quadratic Hermite-Padé approximant.
+        The sum must be at most ``p_deg + q_deg + r_deg + 2 <= L``.
+
+    Returns
+    -------
+    p, q, r : Polynom
+        The polynomials `p`, `q`, and `r` building the quadratic Hermite-Padé
+        approximant.
+
+    See Also
+    --------
+    hermite2
+    Hermite2 : high level interface, guessing the correct branch
+    nunpy.linalg.lstsq
+
+    """
+    an = np.asarray(an)
+    assert an.ndim == 1
+    l_max = r_deg + q_deg + p_deg + 2
+    if an.size < l_max:
+        raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
+    full_amat = toeplitz(an, r=np.zeros_like(an))
+    amat2 = (full_amat@full_amat[:, :r_deg+1])
+    amat = full_amat[:, :q_deg+1]
+    # # fix: q[0] = 1 (seemed to be best for Padé-Fourier)
+    # lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
+    # qrcoeff, *__ = np.linalg.lstsq(lower[:, 1:], -lower[:, 0], rcond=rcond)
+    # qrcoeff = np.r_[1, qrcoeff]  # add coefficient r₀=1 back in
+    # set r[0] = 1
+    lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, 1:]), axis=-1)
+    qrcoeff, *__ = np.linalg.lstsq(lower, -amat2[p_deg+1:, 0], rcond=rcond)
+    qrcoeff = np.r_[qrcoeff[:q_deg+1], 1, qrcoeff[q_deg+1:]]  # add coefficient r₀=1 back in
+    # # set r[-1] = 1
+    # lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
+    # qrcoeff, *__ = np.linalg.lstsq(lower[:, :-1], -lower[:, -1], rcond=rcond)
+    # qrcoeff = np.r_[qrcoeff, 1]  # add coefficient r₀=1 back in
     assert qrcoeff.size == r_deg + q_deg + 2
     upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
     pcoeff = -upper@qrcoeff

@@ -94,6 +94,8 @@ def test_cubic_root():
     assert_allclose(pade.eval(x), fx, rtol=1e-8)
     herm = gt.hermpade.Hermite2.from_taylor(an, 5, 5, 5)
     assert_allclose(herm.eval(x), fx, rtol=3e-10)
+    herm = gt.hermpade.Hermite2.from_taylor_lstsq(an, 5, 5, 5)
+    assert_allclose(herm.eval(x), fx, rtol=3e-10)
 
 
 def test_single_pole():
@@ -107,6 +109,8 @@ def test_single_pole():
     assert_allclose(pade.eval(x), fx, rtol=1e-12, atol=2e-12)
     herm = gt.hermpade.Hermite2.from_taylor(an, 5, 5, 5)
     assert_allclose(herm.eval(x), fx, rtol=1e-11, atol=1e-12)
+    herm = gt.hermpade.Hermite2.from_taylor_lstsq(an, 5, 5, 5)
+    assert_allclose(herm.eval(x), fx, rtol=1e-11, atol=1e-12)
 
 
 def test_square_root():
@@ -115,5 +119,8 @@ def test_square_root():
     x = np.linspace(-3, 3, num=500)
     fx = np.emath.sqrt(1+x)
     herm = gt.hermpade.Hermite2.from_taylor(an, 5, 5, 5)
+    p_branch, __ = herm.eval_branches(x)
+    assert_allclose(p_branch, fx, rtol=1e-14)
+    herm = gt.hermpade.Hermite2.from_taylor_lstsq(an, 5, 5, 5)
     p_branch, __ = herm.eval_branches(x)
     assert_allclose(p_branch, fx, rtol=1e-14)
