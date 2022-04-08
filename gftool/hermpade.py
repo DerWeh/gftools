@@ -288,7 +288,7 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
 
 
-def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None) -> RatPol:
+def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol:
     """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
     Same as `pade`, however all elements of `an` are taken into account.
@@ -331,6 +331,10 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None) -> RatPol:
     # first solve the Toeplitz system for q, first row contains tailing zeros
     top = np.r_[an[num_deg+1::-1][:den_deg+1], [0]*(den_deg-num_deg-1)]
     amat = toeplitz(an[num_deg+1:], top)
+    if fix_q is None:
+        _, _, vh = np.linalg.svd(amat)
+        qcoeff = vh[0].conj()
+        fix_q = np.argmin(abs(qcoeff))
     qcoeff = _nullvec_lst(amat, fix=0, rcond=rcond)
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
