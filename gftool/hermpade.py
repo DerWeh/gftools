@@ -509,8 +509,8 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     return Polynom(pcoeff), Polynom(qrcoeff[:q_deg+1]), Polynom(qrcoeff[q_deg+1:])
 
 
-def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int, rcond=None
-                   ) -> Tuple[Polynom, Polynom, Polynom]:
+def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
+                   rcond=None, fix_qr=None) -> Tuple[Polynom, Polynom, Polynom]:
     r"""Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
 
     Same as `hermite2`, however all elements of `an` are taken into account.
@@ -535,6 +535,16 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int, rcond=None
     p_deg, q_deg, r_deg : int
         The order of the polynomials of the quadratic Hermite-Padé approximant.
         The sum must be at most ``p_deg + q_deg + r_deg + 2 <= L``.
+    rcond : float, optional
+        Cut-off ratio for small singular values. For the purposes of rank
+        determination, singular values are treated as zero if they are
+        smaller than `rcond` times the largest singular value.
+        (default: machine precision times maximum of matrix dimensions)
+    fix_qr : int, optional
+        The coefficient which is fixed to 1. The values ``0 <= fix_qr <= q_deg``
+        corresponds to the coefficients of the polynomial `q`,
+        the values ``q_deg + 1 <= fix_qr <= q_deg + r_deg + 1`` correspond to
+        the coefficients of the polynomial `r`.
 
     Returns
     -------
@@ -546,7 +556,7 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int, rcond=None
     --------
     hermite2
     Hermite2 : high level interface, guessing the correct branch
-    nunpy.linalg.lstsq
+    numpy.linalg.lstsq
 
     """
     an = np.asarray(an)
@@ -557,18 +567,13 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int, rcond=None
     full_amat = toeplitz(an, r=np.zeros_like(an))
     amat2 = (full_amat@full_amat[:, :r_deg+1])
     amat = full_amat[:, :q_deg+1]
-    # # fix: q[0] = 1 (seemed to be best for Padé-Fourier)
-    # lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
-    # qrcoeff, *__ = np.linalg.lstsq(lower[:, 1:], -lower[:, 0], rcond=rcond)
-    # qrcoeff = np.r_[1, qrcoeff]  # add coefficient r₀=1 back in
-    # set r[0] = 1
-    lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, 1:]), axis=-1)
-    qrcoeff, *__ = np.linalg.lstsq(lower, -amat2[p_deg+1:, 0], rcond=rcond)
-    qrcoeff = np.r_[qrcoeff[:q_deg+1], 1, qrcoeff[q_deg+1:]]  # add coefficient r₀=1 back in
-    # # set r[-1] = 1
-    # lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
-    # qrcoeff, *__ = np.linalg.lstsq(lower[:, :-1], -lower[:, -1], rcond=rcond)
-    # qrcoeff = np.r_[qrcoeff, 1]  # add coefficient r₀=1 back in
+    lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
+    if fix_qr is None:
+        _, _, vh = np.linalg.svd(lower)
+        # heuristic: choose most important vector according to SVD, i.e. the
+        # complete opposite of the null-vector, and fix its smallest element
+        fix_qr = np.argmin(abs(vh[0]))
+    qrcoeff = _nullvec_lst(lower, fix=fix_qr, rcond=rcond)
     assert qrcoeff.size == r_deg + q_deg + 2
     upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
     pcoeff = -upper@qrcoeff
@@ -688,6 +693,18 @@ class Hermite2:
         length = deg_r + deg_q + deg_p
         den_deg = (length - deg_diff) // 2
         pade_ = pade(an=an, num_deg=den_deg+deg_diff, den_deg=den_deg)
+        return cls(r=r, q=q, p=p, pade=pade_)
+
+    @classmethod
+    def from_taylor_lstsq(cls, an, deg_p: int, deg_q: int, deg_r: int,
+                          rcond=None, fix_qr=None) -> "Hermite2":
+        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        p, q, r = hermite2_lstsq(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r,
+                                 rcond=rcond, fix_qr=fix_qr)
+        deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
+        length = deg_r + deg_q + deg_p
+        den_deg = (length - deg_diff) // 2
+        pade_ = pade_lstsq(an=an, num_deg=den_deg+deg_diff, den_deg=den_deg, rcond=rcond)
         return cls(r=r, q=q, p=p, pade=pade_)
 
 
