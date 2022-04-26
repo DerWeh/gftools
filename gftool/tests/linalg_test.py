@@ -12,6 +12,17 @@ assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 
+@given(gufunc_args('(m,n)->(k,m)', dtype=np.complex_, elements=easy_complex,
+                   max_dims_extra=0, max_side=10),)
+def test_orth_compl(args):
+    """Test that orthogonal complement is orthogonal."""
+    mat, = args  # unpack
+    dim0, dim1 = mat.shape[-2:]
+    assume(dim0 > dim1)
+    perp = gt.linalg.orth_compl(mat)
+    assert np.allclose(perp@mat, 0)
+
+
 @given(gufunc_args('(m,n),(m),(n,n),(n)->(n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=0, max_side=5),)
 def test_lstsq_ce_constraints(args):

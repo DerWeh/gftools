@@ -21,7 +21,7 @@ def test_gf_form_moments(args):
     mom, = args
     gf = pole.gf_from_moments(mom, width=1)
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
-    assert_allclose(mom, gf_mom, equal_nan=True)
+    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-16)
 
 
 def test_gf_form_moments_nan():
@@ -292,7 +292,7 @@ def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
     mom = gf_pole.moments(order=range(1, 4))
     occ = gf_pole.occ(BETA)
     gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp, moments=mom, occ=occ)
-    assert_allclose(gf_izp, gf_ft, rtol=1e-6)
+    assert_allclose(gf_izp, gf_ft, rtol=1e-6, atol=1e-8)
     # check why atol is necessary, example below (seems empty)
     # poles=array([-8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211,
     #        -8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211]),
