@@ -338,9 +338,7 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
     fct_z = fct_z/np.median(fct_z)
     denom = np.prod(np.subtract.outer(z, poles), axis=-1)
     numer = vandermond(z, deg=n-1)
-    scaling = 1./np.linalg.norm(numer, axis=-1, keepdims=True)  # <- by far best
-    scaling = 1./np.linalg.norm(np.concatenate((denom[..., np.newaxis], numer), axis=-1),
-                                axis=-1, keepdims=True)
+    scaling = 1./np.linalg.norm(numer, axis=-1, keepdims=True)
     if weight is not None:
         scaling *= weight[..., np.newaxis]
     perp_fct_z_denom = orth_compl(scaling*(fct_z*denom)[:, np.newaxis])
