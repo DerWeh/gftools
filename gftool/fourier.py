@@ -1404,7 +1404,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     return approx
 
 
-def tt2z_herm2(tt, gf_t, z, quad='trapz'):
+def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
     r"""Square Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     Uses a square Hermite-Padé approximant for the transform.
@@ -1451,7 +1451,7 @@ def tt2z_herm2(tt, gf_t, z, quad='trapz'):
     y = np.exp(1j*z*delta_tt)
 
     def pade_val(y_, coeffs_):
-        herm = Hermite2.from_taylor(coeffs_, deg_r=deg, deg_q=deg, deg_p=deg)
+        herm = herm2(coeffs_, deg_r=deg, deg_q=deg, deg_p=deg, **kwds)
         return herm.eval(y_)
 
     approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
