@@ -12,6 +12,8 @@ from hypothesis import given, assume
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
+
 
 # test for some random handpicked values as it is expensive
 @pytest.mark.parametrize("t", [
@@ -46,7 +48,7 @@ def test_gf_loc(t, self_beb_z):
 
     gf_cmp, __ = integrate.quad_vec(dos_gf_eps, -D, D)
 
-    assert np.allclose(gf_z, gf_cmp)
+    assert_allclose(gf_z, gf_cmp)
 
 
 @pytest.mark.parametrize("t", [
@@ -66,11 +68,11 @@ def test_selfconsistency(t, z):
     self_beb_z = gt.beb.solve_root(np.array(z), eps, concentration=c, hopping=t,
                                    hilbert_trafo=hilbert, restricted=False)
     gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=False)
-    assert np.allclose(gf_loc_z[..., 0, 1], 0)
-    assert np.allclose(gf_loc_z[..., 1, 0], 0)
+    assert_allclose(gf_loc_z[..., 0, 1], 0, atol=1e-8)
+    assert_allclose(gf_loc_z[..., 1, 0], 0, atol=1e-8)
     # Gf_loc diagonal -> inverse is 1/diagonal
     gf_avg = c / (1./gt.beb.diagonal(gf_loc_z) + gt.beb.diagonal(self_beb_z) - eps)
-    assert np.allclose(gt.beb.diagonal(gf_loc_z), gf_avg)
+    assert_allclose(gt.beb.diagonal(gf_loc_z), gf_avg)
 
 
 @given(z=st.complex_numbers(max_magnitude=1e-6))
@@ -91,8 +93,8 @@ def test_cpa_limit(z):
     gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=True)
     self_cpa_z = gt.cpa.solve_root(z, eps, concentration=c, hilbert_trafo=hilbert)
     gf_cpa_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite=eps, hilbert_trafo=hilbert)
-    assert np.allclose(gf_loc_z, c*gf_cpa_z)
-    assert np.allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z))
+    assert_allclose(gf_loc_z, c*gf_cpa_z)
+    assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z))
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value encountered in double_scalars):RuntimeWarning")
@@ -111,10 +113,10 @@ def test_resuming():
                          hilbert_trafo=hilbert, options=dict(fatol=1e-8))
     self_beb_ww = solve_root()
     self_beb_resume = solve_root(self_beb_z0=self_beb_ww)
-    assert np.allclose(self_beb_ww, self_beb_resume)
+    assert_allclose(self_beb_ww, self_beb_resume)
     # too slow
     # self_beb_0 = solve_root(self_beb_z0=self_beb_ww[0, 0])
-    # assert np.allclose(self_beb_ww, self_beb_0)
+    # assert_allclose(self_beb_ww, self_beb_0)
 
 
 def test_basic_logging(caplog):

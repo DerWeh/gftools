@@ -35,7 +35,7 @@ Typically, a shorthand for these functions exist in the top-level module e.g.
 True
 
 The corresponding Green's functions are also available.
-The Green's functions can be evaluate for any complex frequency,
+The Green's functions can be evaluated for any complex frequency,
 excluding the real axis, where it might become singular.
 E.g. the `~gftool.lattice.fcc.gf_z` of the face-centered cubic (fcc) lattice,
 `~gftool.lattice.fcc`, on a contour parallel to the real axis:
@@ -172,7 +172,7 @@ Single site approximation of disorder
 -------------------------------------
 
 We also offer the single site approximation for disordered Hamiltonians,
-namely `~gftool.cpa` and it extension to off-diagonal disorder `~gftool.beb`.
+namely `~gftool.cpa` and its extension to off-diagonal disorder `~gftool.beb`.
 These methods treat substitutional disorder.
 A multi-component system is considered, where each lattice site is randomly
 occupied by one of the components.
@@ -182,7 +182,7 @@ The concentration of the components is known.
 Coherent potential approximation (CPA)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We first consider the `~gftool.cpa`, where only the on-site energies depend on the component.
-As example we consider a system of three components.
+As example, we consider a system of three components.
 We choose the on-site energies and concentrations (which should add to `1`),
 as lattice we consider a Bethe lattice with half-bandwidth `1`:
 
@@ -197,7 +197,7 @@ as lattice we consider a Bethe lattice with half-bandwidth `1`:
    >>> g0 = partial(gt.bethe_gf_z, half_bandwidth=1)
 
 The average local Green's function and the component Green's functions
-(conditional average for local site fixed to a specific component) are calculate
+(conditional average for local site fixed to a specific component) are calculated
 in CPA using an effective medium.
 The self-consistent effective medium is obtained via a root search
 using `~gftool.cpa.solve_root`:

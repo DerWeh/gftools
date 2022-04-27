@@ -8,7 +8,19 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
+
+
+@given(gufunc_args('(m,n)->(k,m)', dtype=np.complex_, elements=easy_complex,
+                   max_dims_extra=0, max_side=10),)
+def test_orth_compl(args):
+    """Test that orthogonal complement is orthogonal."""
+    mat, = args  # unpack
+    dim0, dim1 = mat.shape[-2:]
+    assume(dim0 > dim1)
+    perp = gt.linalg.orth_compl(mat)
+    assert np.allclose(perp@mat, 0)
 
 
 @given(gufunc_args('(m,n),(m),(n,n),(n)->(n)', dtype=np.complex_, elements=easy_complex,
@@ -20,7 +32,7 @@ def test_lstsq_ce_constraints(args):
         assume(np.all(np.linalg.cond(c) < 1e8))
     sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert np.allclose(lstsq, sol)
+    assert_allclose(lstsq, sol, atol=1e-14)
 
 
 @pytest.mark.skip("Can't get this test working...")
@@ -42,7 +54,7 @@ def test_lstsq_ce(args):
     if c.shape[-1] > 0 and c.shape[-2]:  # make sure matrices are reasonable
         assume(np.all(np.linalg.cond(c) < 1e4))
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert np.allclose(np.sum(c*lstsq, axis=-1), d, atol=1e-6)
+    assert_allclose(np.sum(c*lstsq, axis=-1), d, atol=1e-6)
 
 
 def test_singular_constraint():
@@ -58,7 +70,7 @@ def test_singular_constraint():
     c = (np.eye(N) @ crt).T
     d = np.arange(1, L+1)
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert np.allclose(np.sum(c*lstsq, axis=-1), d)
+    assert_allclose(np.sum(c*lstsq, axis=-1), d)
 
 
 @given(gufunc_args('(m,n),(m)->(n)', dtype=np.complex_, elements=easy_complex,
@@ -73,4 +85,4 @@ def test_lstsq_ce_is_lstq(args):
     c = np.eye(n//2, n)
     d = lstsq[..., :n//2]
     lstsq_ec = gt.linalg.lstsq_ec(a, b, c, d)
-    assert np.allclose(lstsq_ec, lstsq)
+    assert_allclose(lstsq_ec, lstsq, atol=1e-14)

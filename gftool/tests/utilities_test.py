@@ -13,9 +13,11 @@ from mpmath import fp
 from .context import gftool as gt, pole
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
+assert_allclose = np.testing.assert_allclose
 
 
 def test_bose_edge_cases():
+    """Check exact limits at `0` and `np.infty`."""
     assert gt.bose_fct(0., 1) == np.infty
     assert gt.bose_fct(np.infty, 1) == 0
 
@@ -30,7 +32,7 @@ def test_complex_bose(z, n, beta):
     iv_n = gt.matsubara_frequencies_b(n, beta=beta)
     bose_cmpx = gt.bose_fct(z+iv_n, beta=beta)
     bose_real = gt.bose_fct(z, beta=beta)
-    assert np.allclose(bose_cmpx.real, bose_real)
+    assert_allclose(bose_cmpx.real, bose_real)
     assert bose_cmpx.imag < 1e-6*max(1, bose_real)
 
 
@@ -89,8 +91,8 @@ def test_fermi_derivative_1(z):
         dist = min(zimag_per, 2*np.pi - zimag_per)
     else:
         dist = abs(z.real) / 2
-    assert np.allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad', radius=dist/2),
-                       gt.fermi_fct_d1(z, beta=1))
+    assert_allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad', radius=dist/2),
+                    gt.fermi_fct_d1(z, beta=1), atol=1e-12)
 
 
 @given(eps=st.floats(min_value=-1e4, max_value=1e4),
@@ -108,7 +110,7 @@ def test_chemical_potential_single_pole(eps, occ):
         return gt.fermi_fct(eps-mu, beta=BETA)
 
     mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
-    assert np.allclose(occ_fct(mu), occ)
+    assert_allclose(occ_fct(mu), occ)
 
 
 def test_density():
@@ -128,18 +130,19 @@ def test_density():
     # Bethe lattice almost filled (depends on small temperature)
     bethe_full = gt.bethe_gf_z(iws+large_shift, half_bandwidth=D)
     assert gt.density(bethe_full, potential=large_shift, beta=beta)[0] == pytest.approx(1.0)
-    assert np.allclose(gt.density_iw(iws, bethe_full, moments=[1., -large_shift], beta=beta), 1.)
+    assert_allclose(gt.density_iw(iws, bethe_full, moments=[1., -large_shift], beta=beta), 1.)
     # Bethe lattice almost empty (depends on small temperature)
     bethe_empty = gt.bethe_gf_z(iws-large_shift, half_bandwidth=D)
     assert gt.density(bethe_empty, potential=-large_shift, beta=beta)[0] \
         == pytest.approx(0.0, abs=1e-6)
-    assert np.allclose(gt.density_iw(iws, bethe_empty, moments=[1., +large_shift], beta=beta), 0.)
+    assert_allclose(gt.density_iw(iws, bethe_empty, moments=[1., +large_shift], beta=beta),
+                    0., atol=1e-8)
 
     #
     # single site
     #
     assert gt.density(1./iws, potential=0, beta=beta)[0] == pytest.approx(0.5)
-    assert np.allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
+    assert_allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
 @given(args=gufunc_args('(n),(n)->(n)', dtype=np.float_,
@@ -159,10 +162,10 @@ def test_density_iw(args):
     moments = gf_poles.moments([1, 2, 3, 4])
     occ_ref = gf_poles.occ(beta)
     occ = gt.density_iw(iw, gf_iw, beta=beta, moments=moments)
-    assert np.allclose(occ, occ_ref, atol=1e-5)
+    assert_allclose(occ, occ_ref, atol=1e-5)
     # add moment
     occ = gt.density_iw(iw, gf_iw, beta=beta, moments=moments, n_fit=4)
-    assert np.allclose(occ, occ_ref, atol=1e-6)
+    assert_allclose(occ, occ_ref, atol=1e-6)
 
 
 @pytest.fixture(scope="module")
@@ -195,9 +198,9 @@ def test_density_izp(args, pade_frequencies):
     occ_ref = gf_poles.occ(beta)
     occ = gt.density_iw(izp, gf_izp, weights=rp, beta=beta,
                         moments=residues.sum(axis=-1, keepdims=True))
-    assert np.allclose(occ, occ_ref)
+    assert_allclose(occ, occ_ref, atol=1e-12)
     # add moment
     moments = gf_poles.moments([1, 2, 3])
     occ = gt.density_iw(izp, gf_izp, weights=rp, beta=beta,
                         moments=moments)
-    assert np.allclose(occ, occ_ref, atol=1e-5)
+    assert_allclose(occ, occ_ref, atol=1e-5)
