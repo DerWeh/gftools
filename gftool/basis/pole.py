@@ -29,11 +29,6 @@ from gftool._util import _gu_sum
 polyvander = np.polynomial.polynomial.polyvander
 
 
-def _get_otype(*args):
-    """Determine the resulting type if arrays are broadcasted."""
-    return sum(np.asarray(arg).reshape(-1)[:1] for arg in args).dtype
-
-
 def _chebyshev_points(num: int) -> np.ndarray:
     """Return `num` Chebyshev points."""
     return np.sin(0.5 * np.pi / num * np.arange(-num+1, num+1, 2))
@@ -565,7 +560,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     gf_sp_mat = _gf_z(z[..., newaxis], poles[..., newaxis, :, newaxis], weights=1)
     gf_sp_mat = np.concatenate([gf_sp_mat.real, gf_sp_mat.imag], axis=-2)
     gf_z = np.concatenate([gf_z.real, gf_z.imag], axis=-1)
-    otype = _get_otype(gf_z, moments, poles)
+    otype = np.result_type(gf_z, moments, poles)
     if weight is not None:
         weight = np.concatenate([weight, weight], axis=-1)
         gf_sp_mat *= weight[..., np.newaxis]
@@ -636,7 +631,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     gf_sp_mat = _single_pole_gf_tau(tau[..., newaxis], poles, beta=beta)
     moments = np.asarray(moments)
-    otype = _get_otype(gf_tau, moments, poles)
+    otype = np.result_type(gf_tau, moments, poles)
     if weight is not None:
         gf_sp_mat *= weight[..., np.newaxis]
         gf_tau = gf_tau * weight

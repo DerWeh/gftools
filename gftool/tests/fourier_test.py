@@ -10,6 +10,8 @@ from hypothesis_gufunc.gufunc import gufunc_args
 from .context import gftool as gt
 from .context import pole
 
+assert_allclose = np.testing.assert_allclose
+
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
                    elements=st.floats(min_value=-1e6, max_value=1e6),
@@ -19,7 +21,7 @@ def test_gf_form_moments(args):
     mom, = args
     gf = pole.gf_from_moments(mom, width=1)
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
-    assert np.allclose(mom, gf_mom, equal_nan=True)
+    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-16)
 
 
 def test_gf_form_moments_nan():
@@ -27,7 +29,7 @@ def test_gf_form_moments_nan():
     mom = [np.nan]
     gf = pole.gf_from_moments(mom)
     gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.residues, order=1)
-    assert np.allclose(mom, gf_mom, equal_nan=True)
+    assert_allclose(mom, gf_mom, equal_nan=True)
 
 
 @given(pole=st.floats(-10, 10))  # necessary Matsubaras depend on Bandwidth!
@@ -42,7 +44,7 @@ def test_iw2tau_dft_soft_single_pole(pole):
     gf_dft = gt.fourier.iw2tau_dft_soft(gf_iw - 1./iws, beta=BETA) - .5
     gf_tau = gt.pole_gf_tau(tau, poles=[pole], weights=[1.], beta=BETA)
 
-    assert np.allclose(gf_tau, gf_dft, atol=2e-3, rtol=2e-4)
+    assert_allclose(gf_tau, gf_dft, atol=2e-3, rtol=2e-4)
 
 
 @given(pole=st.floats(-10, 10))  # necessary Matsubaras depend on Bandwidth!
@@ -57,12 +59,12 @@ def test_iw2tau_dft_single_pole(pole):
     gf_dft = gt.fourier.iw2tau_dft(gf_iw - 1./iws, beta=BETA) - .5
     gf_tau = gt.pole_gf_tau(tau, poles=[pole], weights=[1.], beta=BETA)
 
-    assert np.allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
+    assert_allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
 def test_iw2tau_multi_pole(args):
     """Test `iw2tau` for a multi-pole Green's function."""
@@ -80,16 +82,16 @@ def test_iw2tau_multi_pole(args):
     gf_ft = gt.fourier.iw2tau(gf_iw, beta=BETA)
     gf_dft = gt.fourier.iw2tau_dft(gf_iw - m0/iws, beta=BETA) - m0*.5
     # without additional information tau2iw should match back-end
-    assert np.allclose(gf_ft, gf_dft)
+    assert_allclose(gf_ft, gf_dft)
 
     gf_tau = gt.pole_gf_tau(tau, poles=poles[..., np.newaxis, :],
                             weights=resids[..., np.newaxis, :], beta=BETA)
     # using many moments should give exact result
     mom = gt.pole_gf_moments(poles, resids, order=range(1, 6))
     gf_ft = gt.fourier.iw2tau(gf_iw, moments=mom, beta=BETA)
-    assert np.allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft, atol=1e-10)
     gf_ft = gt.fourier.iw2tau(gf_iw, moments=mom[..., :2], beta=BETA, n_fit=2)
-    assert np.allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft, atol=1e-10)
 
 
 # TODO: check if there is a way to improve result for pole↘0
@@ -106,7 +108,7 @@ def test_tau2iv_ft_lin_single_pole(pole):
     gf_ft_lin = gt.fourier.tau2iv_ft_lin(gf_tau, beta=BETA)
     gf_iv = gt.pole_gf_z(ivs, poles=[pole], weights=[1.])
 
-    assert np.allclose(gf_iv, gf_ft_lin, atol=2e-4)
+    assert_allclose(gf_iv, gf_ft_lin, atol=2e-4)
 
 
 @pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
@@ -141,7 +143,7 @@ def test_tau2iw_ft_lin_single_pole(pole):
     gf_ft_lin = gt.fourier.tau2iw_ft_lin(gf_tau + .5, beta=BETA) + 1/iws
     gf_iw = gt.pole_gf_z(iws, poles=[pole], weights=[1.])
 
-    assert np.allclose(gf_iw, gf_ft_lin, atol=2e-4)
+    assert_allclose(gf_iw, gf_ft_lin, atol=2e-4)
 
 
 @pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
@@ -157,12 +159,12 @@ def test_tau2iw_dft_single_pole(pole):
     gf_dft = gt.fourier.tau2iw_dft(gf_tau + .5, beta=BETA) + 1/iws
     gf_iw = gt.pole_gf_z(iws, poles=[pole], weights=[1.])
 
-    assert np.allclose(gf_iw, gf_dft, atol=1e-4)
+    assert_allclose(gf_iw, gf_dft, atol=1e-4)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_multi_pole(args):
     """Test `tau2iw` for a multi-pole Green's function."""
@@ -181,17 +183,17 @@ def test_tau2iw_multi_pole(args):
 
     gf_ft_lin = gt.fourier.tau2iw_ft_lin(gf_tau + m0*.5, beta=BETA) + m0/iws
     # without additional information tau2iw should match back-end
-    assert np.allclose(gf_ft, gf_ft_lin)
+    assert_allclose(gf_ft, gf_ft_lin)
     gf_iw = gt.pole_gf_z(iws, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
 
     # fitting many poles it should get very good
     gf_ft = gt.fourier.tau2iw(gf_tau, n_pole=25, beta=BETA)
-    assert np.allclose(gf_iw, gf_ft, rtol=1e-4)
+    assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10),],
+                             st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
 def test_tau2iw_multi_pole_hfm(args):
     """Test `tau2iw_dft` for a multi-pole Green's function."""
@@ -209,7 +211,7 @@ def test_tau2iw_multi_pole_hfm(args):
     mom = gt.pole_gf_moments(poles, resids, order=range(1, 3))
     gf_ft = gt.fourier.tau2iw(gf_tau, n_pole=25, moments=mom, beta=BETA)
     gf_iw = gt.pole_gf_z(iws, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
-    assert np.allclose(gf_iw, gf_ft, rtol=1e-4)
+    assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
 @given(gufunc_args('(n)->(n)', dtype=np.float_,
@@ -225,12 +227,12 @@ def test_pole_from_gftau_exact(args):
     tau = np.linspace(0, beta, num=1024)
     gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=resids[..., np.newaxis, :], beta=beta)
     pole_gf = pole.gf_from_tau(gf_tau, n_poles, beta=beta)
-    assert np.allclose(pole_gf.poles, poles)
+    assert_allclose(pole_gf.poles, poles, atol=1e-12)
     try:
         atol = max(1e-8, abs(resids).max())
     except ValueError:
         atol = 1e-8
-    assert np.allclose(pole_gf.residues, resids, atol=atol)
+    assert_allclose(pole_gf.residues, resids, atol=atol)
 
 
 @pytest.fixture(scope="module")
@@ -261,12 +263,12 @@ def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
 
     gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA)
     gf_tau = gf_pole.eval_tau(tau, beta=BETA)
-    assert np.allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft)
 
     # using many moments should give exact result
     mom = gf_pole.moments(order=range(1, 4))
     gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA, moments=mom)
-    assert np.allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft)
 
 
 @given(poles=arrays(float, 10, elements=st.floats(-10, 10)),
@@ -284,13 +286,18 @@ def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
 
     gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp)
     gf_izp = gf_pole.eval_z(izp)
-    assert np.allclose(gf_izp, gf_ft)
+    assert_allclose(gf_izp, gf_ft)
 
     # using many moments should give exact result
     mom = gf_pole.moments(order=range(1, 4))
     occ = gf_pole.occ(BETA)
     gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp, moments=mom, occ=occ)
-    assert np.allclose(gf_izp, gf_ft)
+    assert_allclose(gf_izp, gf_ft, rtol=1e-6, atol=1e-8)
+    # check why atol is necessary, example below (seems empty)
+    # poles=array([-8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211,
+    #        -8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211]),
+    # resids=array([8.11071633, 8.11071633, 8.11071633, 8.11071633, 3.29058834,
+    #        3.11249264, 8.11071633, 8.11071633, 8.11071633, 8.11071633]),
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
@@ -305,7 +312,7 @@ def test_tt2z_trapz_naive_gubehaviour(args):
     gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
     gf_ft = gt.fourier.tt2z_trapz(tt, gf_t, ww)
     naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
-    assert np.allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
+    assert_allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
 
 
 @given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
@@ -318,9 +325,9 @@ def test_tt2z_single_pole(spole):
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
     gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
-    assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
+    assert_allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
     gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
-    assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
+    assert_allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
 
 
 @pytest.mark.skipif(not gt.fourier._HAS_NUMEXPR,
@@ -328,8 +335,8 @@ def test_tt2z_single_pole(spole):
 @given(spole=st.floats(-1, 1))  # oscillation speed depends on bandwidth
 def test_tt2z_single_pole_nonumexpr(spole):
     """Low accuracy test of `tt2z` on a single pole."""
-    tt = np.linspace(0, 50, 3001)
-    ww = np.linspace(-2, 2, num=101) + 2e-1j
+    tt = np.linspace(0, 50, 1001)
+    ww = np.linspace(-2, 2, num=51) + 2e-1j
 
     gf_t = gt.pole_gf_ret_t(tt, poles=[spole], weights=[1.])
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
@@ -338,9 +345,9 @@ def test_tt2z_single_pole_nonumexpr(spole):
         gt.fourier._phase = gt.fourier._phase_numpy
         gt.fourier._HAS_NUMEXPR = False
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
-        assert np.allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
+        assert_allclose(gf_z, gf_dft, atol=3e-3, rtol=3e-4)
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
-        assert np.allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
+        assert_allclose(gf_z, gf_dft, atol=2e-3, rtol=3e-4)
     finally:
         gt.fourier._phase = gt.fourier._phase_numexpr
 
@@ -363,10 +370,10 @@ def test_tt2z_multi_pole(args):
                         weights=resids[..., np.newaxis, :])
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_lin)
-    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_trapz)
-    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     # test if zero handles gu-structure correctly
     ww[ww.size//2] = 0
@@ -396,7 +403,7 @@ def test_tt2z_gufuncz(args):
                         weights=resids[..., np.newaxis, :])
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_lin)
-    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_trapz)
-    assert np.allclose(gf_z, gf_ft, rtol=1e-3)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)

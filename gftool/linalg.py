@@ -10,6 +10,45 @@ from gftool._util import _gu_sum
 transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 
+def orth_compl(mat):
+    """Calculate the orthogonal complement of a rectangular matrix using QR.
+
+    For a tall N×M, N>M, matrix `mat` the complete QR-decomposition gives
+
+    .. math:: A = QR = (Q_1, Q_2) {(R_1, 0)}^2.
+
+    The N×(N-M) matrix `Q_2` gives the orthogonal complement `A_⟂ = Q_2.T.conj()`
+    with the property
+
+    .. math:: A_⟂ A = 0.
+
+    Parameters
+    ----------
+    mat : (N, M) complex array_like
+        Tall input matrix.
+
+    Returns
+    -------
+    mat_perp : (N-M, N) complex np.ndarray
+        orthogonal complement of `mat`, such that `mat_perp@mat=0`.
+
+    Examples
+    --------
+    >>> RNG = np.random.default_rng()
+    >>> mat = RNG.random((10, 5))
+    >>> mat_perp = orth_compl(mat)
+    >>> np.allclose(mat_perp@mat, 0)
+    True
+
+    """
+    dim0, dim1 = mat.shape[-2:]
+    if dim0 <= dim1:
+        raise ValueError(f"`mat` needs to be tall, (given: shape={mat.shape})")
+    q_mat, _ = np.linalg.qr(mat, mode="complete")
+    q2_mat = q_mat[..., dim1:]
+    return transpose(q2_mat).conj()
+
+
 def lstsq_ec(a, b, c, d, rcond=None):
     """Least-squares solution with equality constraint for linear matrix eq.
 

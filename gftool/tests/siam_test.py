@@ -7,6 +7,8 @@ from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 
+assert_allclose = np.testing.assert_allclose
+
 
 @given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
                    elements=[st.floats(min_value=-1, max_value=1),
@@ -24,7 +26,7 @@ def test_gf_loc_z_vs_resolvent(args, z):
     gf0_loc_z = gt.siam.gf0_loc_z(z, e_onsite, e_bath, abs(hopping)**2)
     ham = gt.siam.hamiltonian_matrix(e_onsite, e_bath, hopping)
     resolvent = np.linalg.inv(z*np.eye(*ham.shape[-2:]) - ham)
-    assert np.allclose(gf0_loc_z, resolvent[..., 0, 0])
+    assert_allclose(gf0_loc_z, resolvent[..., 0, 0])
 
 
 @given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
@@ -43,7 +45,7 @@ def test_consistency_gf_loc_z_vs_ret_t(args):
     gf0_loc_ret_t = gt.siam.gf0_loc_ret_t(tt, e_onsite[..., None], e_bath[..., None, :],
                                           hopping[..., None, :])
     gf0_ft_z = gt.fourier.tt2z(tt, gf0_loc_ret_t, z=ww)
-    assert np.allclose(gf0_loc_z, gf0_ft_z, rtol=1e-3, atol=1e-4)
+    assert_allclose(gf0_loc_z, gf0_ft_z, rtol=1e-3, atol=1e-4)
 
 
 @given(gufunc_args('(),(),(n),(n)->(l)', dtype=np.float_,
@@ -60,4 +62,4 @@ def test_consistency_gf_loc_ret_vs_grle(args, beta):
     gf0_loc_ret_t = gt.siam.gf0_loc_ret_t(tt, e_onsite, e_bath, hopping)
     gf0_loc_gr_t = gt.siam.gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta=beta)
     gf0_loc_le_t = gt.siam.gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta=beta)
-    assert np.allclose(gf0_loc_ret_t, gf0_loc_gr_t - gf0_loc_le_t)
+    assert_allclose(gf0_loc_ret_t, gf0_loc_gr_t - gf0_loc_le_t)
