@@ -342,7 +342,7 @@ def test_tt2z_pade_single_pole(spole, num):
     gf_z = gt.pole_gf_z(ww, poles=[spole], weights=[1.])
 
     gf_pf = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_pade)
-    assert np.allclose(gf_z, gf_pf, atol=1e-4, rtol=1e-4)
+    assert_allclose(gf_z, gf_pf, atol=1e-4, rtol=1e-4)
 
 
 @pytest.mark.skipif(not gt.fourier._HAS_NUMEXPR,
@@ -444,7 +444,7 @@ def test_tt2z_gufuncz_pade(args):
                         weights=resids[..., np.newaxis, :])
 
     gf_pf = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_pade)
-    assert np.allclose(gf_z, gf_pf, rtol=1e-5, atol=1e-3)
+    assert_allclose(gf_z, gf_pf, rtol=1e-5, atol=1e-3)
 
 
 @pytest.mark.parametrize("fast", [False, True])
@@ -461,8 +461,8 @@ def test_tt2z_pade_bethe(fast):
 
     # error should be local to the band edges
     inner = (-1.5 < z.real) & (z.real < 1)
-    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=2e-3 if fast else 1e-3)
-    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
+    assert_allclose(gf_fp[inner], gf_ww[inner], rtol=2e-3 if fast else 1e-3)
+    assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
 
 @pytest.mark.parametrize("fast", [False, True])
@@ -479,8 +479,8 @@ def test_tt2z_pade_box(fast):
 
     # error should be local to the band edges
     inner = (-1.5 < z.real) & (z.real < 0.9)
-    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
-    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
+    assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
 
 
 def test_tt2z_pader_bethe():
@@ -497,8 +497,8 @@ def test_tt2z_pader_bethe():
                             pade=gt.hermpade.pader, rcond=1e-8)
     # error should be local to the band edges
     inner = (-1.5 < z.real) & (z.real < 1)
-    assert np.allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
-    assert np.allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
+    assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
 
 @pytest.mark.parametrize("num", [5, 6, 7, 100])  # test for minimum, and overfitting
@@ -516,7 +516,7 @@ def test_tt2z_herm2_bethe(num):
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
 
     # approximation is good globally
-    assert np.allclose(gf_fh, gf_ww, rtol=2e-4, atol=2e-4)
+    assert_allclose(gf_fh, gf_ww, rtol=2e-4, atol=2e-4)
     # better than Padé
     assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
 
@@ -535,7 +535,7 @@ def test_tt2z_herm2_box():
 
     # error should be local to the band edges
     inner = (-1.5 < z.real) & (z.real < 1)
-    assert np.allclose(gf_fh[inner], gf_ww[inner], rtol=1e-3)
-    assert np.allclose(gf_fh[inner], gf_ww[inner], rtol=0.05)
+    assert_allclose(gf_fh[inner], gf_ww[inner], rtol=1e-3)
+    assert_allclose(gf_fh[inner], gf_ww[inner], rtol=0.05)
     # better than Padé
     assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
