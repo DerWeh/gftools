@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: GfTool
+message: >-
+  If you use more advanced features of this software,
+  please consider to cite it as below.
+type: software
+authors:
+  - family-names: Weh
+    given-names: Andreas
+    orcid: 'https://orcid.org/0000-0003-1213-2919'
+  - family-names: Östlin
+    given-names: Andreas
+    orcid: 'https://orcid.org/0000-0003-1225-1635'
