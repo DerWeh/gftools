@@ -1461,21 +1461,21 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
 
 def tt2z_lpz(tt, gf_t, z, order=None, quad='trapz', **kwds):
     """Linear prediction Z-transform of the real-time Green's function `gf_t`."""
+    delta_tt = tt[1] - tt[0]
+    if not np.allclose(tt[1:] - tt[:-1], delta_tt):
+        raise ValueError("Equidistant `tt` required for current implementation.")
     if order is None:
         order = tt.size // 2
     if quad not in ('trapz', 'simps'):
         raise ValueError(f"Unknown quadrature scheme {quad}")
     weight = _trapz_weight if quad == 'trapz' else _simps_weight
-    delta_tt = tt[1] - tt[0]
     coeffs = weight(delta_tt, gf_t, endpoint=False)
-    pcoeff, __ = pcoeff_covar(coeffs, order=order, **kwds)
-    aa = np.r_[1, pcoeff]
+    aa = np.r_[1, pcoeff_covar(coeffs, order=order, **kwds)[0]]
     convo = np.array([sum(aa[:ll+1]*coeffs[ll::-1]) for ll in range(order)])
     phase = _phase(z[..., newaxis], tt[newaxis, :order+1])
     numer = _gu_matvec(phase[:, :order], convo)
     denom = _gu_matvec(phase, aa)
-    gf = numer / denom
-    return gf
+    return numer / denom
 
 
 def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):

@@ -565,8 +565,7 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     """
     an = np.asarray(an)
     assert an.ndim == 1
-    l_max = r_deg + q_deg + p_deg + 2
-    if an.size < l_max:
+    if an.size < r_deg + q_deg + p_deg + 2:
         raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
     if np.all(an == 0):  # cannot handle this edge case
         return Polynom([0]*(p_deg+1)), Polynom([0]*(q_deg+1)), Polynom([1]+[0]*r_deg)
