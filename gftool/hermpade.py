@@ -171,6 +171,24 @@ def _strip_ceoffs(pcoeff, qcoeff):
     return pcoeff, qcoeff
 
 
+def _nullvec(mat):
+    """Determine a single null-vector of `mat` using QR decomposition.
+
+    Parameters
+    ----------
+    mat : (N-1, N) complex np.ndarray
+        The matrix for which we calculate the null-vector.
+
+    Returns
+    -------
+    nullvec : (N) complex np.ndarray
+        The approximate null-vector corresponding to `mat`.
+
+    """
+    q_, __ = qr(mat.conj().T, mode='full')
+    return q_[:, -1]
+
+
 def _nullvec_lst(mat, fix: int, rcond=None):
     """Determine the null-vector of `mat` in a least-squares sense.
 
@@ -281,8 +299,7 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         qcoeff = np.r_[solve_toeplitz((an[num_deg+1:], top[:-1]), b=-top[:0:-1]), 1]
     else:  # build full matrix and determine null-vector
         amat = toeplitz(an[num_deg+1:], top)
-        q_, __ = qr(amat.conj().T, mode='full')
-        qcoeff = q_[:, -1]
+        qcoeff = _nullvec(amat)
     assert qcoeff.size == den_deg + 1
     pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
     return RatPol(numer=Polynom(pcoeff), denom=Polynom(qcoeff))
@@ -432,8 +449,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
             # print(num_deg, den_deg, rcond*s[0])
             continue
         # TODO: code uses weird QR calculation which I don't understand
-        q_, __ = qr(amat.conj().T, mode='full')
-        qcoeff = q_[:, -1]
+        qcoeff = _nullvec(amat)
         assert qcoeff.size == den_deg + 1
         pcoeff = matmul_toeplitz((an[:num_deg+1], np.zeros(den_deg+1)), qcoeff)
         break
@@ -505,8 +521,7 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     amat2 = (full_amat@full_amat[:, :r_deg+1])
     amat = full_amat[:, :q_deg+1]
     lower = np.concatenate((amat[p_deg+1:, :], amat2[p_deg+1:, :]), axis=-1)
-    _, _, vh = np.linalg.svd(lower)
-    qrcoeff = vh[-1].conj()
+    qrcoeff = _nullvec(lower)
     assert qrcoeff.size == r_deg + q_deg + 2
     upper = np.concatenate((amat[:p_deg+1, :], amat2[:p_deg+1, :]), axis=-1)
     pcoeff = -upper@qrcoeff
