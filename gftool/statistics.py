@@ -72,7 +72,7 @@ def fermi_fct(eps, beta):
 
     See Also
     --------
-    fermi_fct_inv : The inverse of the Fermi function for real arguments
+    fermi_fct_inv : The inverse of the Fermi function for real arguments.
 
     Examples
     --------
@@ -186,7 +186,7 @@ def matsubara_frequencies(n_points, beta):
     Returns
     -------
     matsubara_frequencies : complex np.ndarray
-        Array of the imaginary Matsubara frequencies
+        Array of the imaginary Matsubara frequencies.
 
     Examples
     --------
@@ -212,7 +212,7 @@ def matsubara_frequencies_b(n_points, beta):
     Returns
     -------
     matsubara_frequencies : complex np.ndarray
-        Array of the imaginary Matsubara frequencies
+        Array of the imaginary Matsubara frequencies.
 
     Examples
     --------

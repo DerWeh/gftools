@@ -169,7 +169,7 @@ def surface_gf_zeps(z, eps, hopping_nn):
     Returns
     -------
     surface_gf_zeps : complex
-        Value of the surface Green's function
+        Value of the surface Green's function.
 
     References
     ----------
@@ -299,14 +299,14 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     pole_gf_tau_b : (...) float np.ndarray
         Imaginary time Green's function.
 
-    See Also
-    --------
-    pole_gf_z : corresponding commutator Green's function
-
     Raises
     ------
     ValueError
         If any `poles.real <= 0`.
+
+    See Also
+    --------
+    pole_gf_z : Corresponding commutator Green's function.
 
     Examples
     --------

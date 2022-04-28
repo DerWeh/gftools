@@ -18,7 +18,7 @@ def gf_z(z, half_bandwidth, coordination):
     Parameters
     ----------
     z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the Bethe lattice.
     coordination : int
@@ -27,12 +27,12 @@ def gf_z(z, half_bandwidth, coordination):
     Returns
     -------
     gf_z : complex ndarray or complex
-        Value of the Bethe Green's function
+        Value of the Bethe Green's function.
 
     See Also
     --------
-    gftool.lattice.bethe.gf_z : case for `coordination=np.infty`
-    gftool.lattice.onedim.gf_z : case for `coordination=2`
+    gftool.lattice.bethe.gf_z : Case for `coordination=np.infty`.
+    gftool.lattice.onedim.gf_z : Case for `coordination=2`.
 
     References
     ----------
@@ -81,8 +81,8 @@ def dos(eps, half_bandwidth, coordination):
 
     See Also
     --------
-    gftool.lattice.bethe.dos : case for `coordination=np.infty`
-    gftool.lattice.onedim.dos : case for `coordination=2`
+    gftool.lattice.bethe.dos : Case for `coordination=np.infty`.
+    gftool.lattice.onedim.dos : Case for `coordination=2`.
 
     Examples
     --------

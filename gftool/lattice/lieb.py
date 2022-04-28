@@ -33,7 +33,7 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the Lieb lattice Green's function
+        Value of the Lieb lattice Green's function.
 
     See Also
     --------
@@ -95,7 +95,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.lieb.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.lieb.dos_mp : Multi-precision version suitable for integration.
     gftool.lattice.square.dos
 
     References
@@ -138,24 +138,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 2D lieb lattice
+        Half-bandwidth of the DOS of the 2D lieb lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.lieb.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: t = D 2^{3/2}
-
-    See Also
-    --------
-    gftool.lattice.lieb.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -255,7 +255,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.lieb.dos : vectorized version suitable for array evaluations
+    gftool.lattice.lieb.dos : Vectorized version suitable for array evaluations.
     gftool.lattice.square.dos_mp
 
     References

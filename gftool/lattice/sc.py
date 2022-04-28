@@ -88,24 +88,24 @@ def hilbert_transform(xi, half_bandwidth=1):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 3D simple cubic lattice
+        Half-bandwidth of the DOS of the 3D simple cubic lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.sc.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 6t = D
-
-    See Also
-    --------
-    gftool.lattice.sc.gf_z
 
     """
     return gf_z(xi, half_bandwidth)

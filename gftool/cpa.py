@@ -205,6 +205,12 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     RuntimeError
         If unable to find a solution.
 
+    Notes
+    -----
+    For `restricted=True` root-serach, we made good experince with the methods
+    `'anderson'`, `'krylov'` and `'df-sane'`.
+    For `restricted=False`, we made made good experince with the method `'broyden2'`.
+
     Examples
     --------
     >>> from functools import partial
@@ -223,12 +229,6 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     >>> __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 0].imag)
     >>> __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 1].imag)
     >>> plt.show()
-
-    Notes
-    -----
-    For `restricted=True` root-serach, we made good experince with the methods
-    `'anderson'`, `'krylov'` and `'df-sane'`.
-    For `restricted=False`, we made made good experince with the method `'broyden2'`.
 
     """
     concentration = np.array(concentration)

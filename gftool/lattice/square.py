@@ -38,7 +38,7 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the square lattice Green's function
+        Value of the square lattice Green's function.
 
     References
     ----------
@@ -80,24 +80,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 2D square lattice
+        Half-bandwidth of the DOS of the 2D square lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.square.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 4t = D
-
-    See Also
-    --------
-    gftool.lattice.square.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -123,7 +123,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.square.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.square.dos_mp : Multi-precision version suitable for integration.
 
     References
     ----------
@@ -232,7 +232,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.square.dos : vectorized version suitable for array evaluations
+    gftool.lattice.square.dos : Vectorized version suitable for array evaluations.
 
     References
     ----------
@@ -288,6 +288,11 @@ def stress_trafo(xi, half_bandwidth):
         Point of evaluation of the transformation
     half_bandwidth : float
         Half-bandwidth of the square lattice.
+
+    Returns
+    -------
+    complex or complex np.ndarray
+        Stress tensor function at `xi`.
 
     References
     ----------

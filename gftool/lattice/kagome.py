@@ -39,7 +39,7 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the kagome lattice Green's function
+        Value of the kagome lattice Green's function.
 
     See Also
     --------
@@ -107,7 +107,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.kagome.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.kagome.dos_mp : Multi-precision version suitable for integration.
     gftool.lattice.triangular.dos
     gftool.lattice.honeycomb.dos
 
@@ -153,24 +153,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 2D kagome lattice
+        Half-bandwidth of the DOS of the 2D kagome lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.kagome.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 3t/2 = D
-
-    See Also
-    --------
-    gftool.lattice.kagome.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -267,7 +267,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.kagome.dos_mp : vectorized version suitable for array evaluations
+    gftool.lattice.kagome.dos_mp : Vectorized version suitable for array evaluations.
     gftool.lattice.triangular.dos_mp
     gftool.lattice.honeycomb.dos_mp
 

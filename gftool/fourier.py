@@ -138,7 +138,7 @@ def iw2tau_dft(gf_iw, beta):
 
     See Also
     --------
-    iw2tau_dft_soft : Fourier transform with artificial softening of oszillations
+    iw2tau_dft_soft : Fourier transform with artificial softening of oszillations.
 
     Notes
     -----
@@ -222,7 +222,7 @@ def iw2tau_dft_soft(gf_iw, beta):
 
     See Also
     --------
-    iw2tau_dft : Plain implementation of Fourier transform
+    iw2tau_dft : Plain implementation of Fourier transform.
 
     Notes
     -----
@@ -313,9 +313,9 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
 
     See Also
     --------
-    iw2tau_dft : Back-end: plain implementation of Fourier transform
-    iw2tau_dft_soft : Back-end: Fourier transform with artificial softening of oszillations
-    pole_gf_from_moments : Function handling the given `moments`
+    iw2tau_dft : Back-end: plain implementation of Fourier transform.
+    iw2tau_dft_soft : Back-end: Fourier transform with artificial softening of oszillations.
+    pole_gf_from_moments : Function handling the given `moments`.
 
     Notes
     -----
@@ -418,7 +418,7 @@ def tau2iv_dft(gf_tau, beta):
 
     See Also
     --------
-    tau2iv_ft_lin : Fourier integration using Filon's method
+    tau2iv_ft_lin : Fourier integration using Filon's method.
 
     Examples
     --------
@@ -685,7 +685,7 @@ def tau2iw_dft(gf_tau, beta):
 
     See Also
     --------
-    tau2iw_ft_lin : Fourier integration using Filon's method
+    tau2iw_ft_lin : Fourier integration using Filon's method.
 
     Examples
     --------
@@ -858,7 +858,7 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
         The inverse temperature :math:`beta = 1/k_B T`.
     n_pole : int, optional
         Number of poles used to fit `gf_tau`. Needs to be at least as large as
-        the number of given moments `m`. (default: no fitting is performed)
+        the number of given moments `m` (default: no fitting is performed).
     moments : (..., m) float array_like, optional
         High-frequency moments of `gf_iw`. If none are given, the first moment
         is chosen to remove the discontinuity at :math:`τ=0^{±}`.
@@ -873,9 +873,9 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
 
     See Also
     --------
-    tau2iw_ft_lin : Back-end: Fourier integration using Filon's method
+    tau2iw_ft_lin : Back-end: Fourier integration using Filon's method.
     tau2iw_dft : Back-end: plain implementation using Riemann sum.
-    pole_gf_from_tau : Function handling the fitting of `gf_tau`
+    pole_gf_from_tau : Function handling the fitting of `gf_tau`.
 
     Examples
     --------
@@ -1042,7 +1042,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     See Also
     --------
     iw2tau : Fourier transform from fermionic Matsubara frequencies.
-    _z2polegf : Function handling the fitting of `gf_izp`
+    _z2polegf : Function handling the fitting of `gf_izp`.
 
     Notes
     -----
@@ -1139,7 +1139,7 @@ def tt2z_trapz(tt, gf_t, z):
 
     See Also
     --------
-    tt2z_lin : Laplace integration using Filon's method
+    tt2z_lin : Laplace integration using Filon's method.
 
     Notes
     -----
@@ -1514,18 +1514,18 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     gf_z : (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
-    See Also
-    --------
-    tt2z_trapz : Back-end: approximate integral by trapezoidal rule
-    tt2z_lin : Back-end: approximate integral by Filon's method
-    tt2z_pade : Back-end: use Fourier-Padé algorithm
-    tt2z_herm2 : Back-end: using square Hermite-Padé for Fourier
-
     Raises
     ------
     ValueError
         If neither the condition for retarded or advanced Green's function is
         fulfilled.
+
+    See Also
+    --------
+    tt2z_trapz : Back-end: approximate integral by trapezoidal rule.
+    tt2z_lin : Back-end: approximate integral by Filon's method.
+    tt2z_pade : Back-end: use Fourier-Padé algorithm.
+    tt2z_herm2 : Back-end: using square Hermite-Padé for Fourier.
 
     Examples
     --------
@@ -1691,7 +1691,7 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     See Also
     --------
     tau2iw : Fourier transform to fermionic Matsubara frequencies.
-    pole_gf_from_tau : Function handling the fitting of `gf_tau`
+    pole_gf_from_tau : Function handling the fitting of `gf_tau`.
 
     Notes
     -----
