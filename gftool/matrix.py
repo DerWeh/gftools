@@ -132,7 +132,7 @@ class Decomposition(Sequence):
         Parameters
         ----------
         gf : (..., N, N) complex np.ndarray
-            matrix to be decomposed
+            Matrix to be decomposed.
 
         Returns
         -------
@@ -273,16 +273,16 @@ def decompose_mat(mat) -> Decomposition:
     Parameters
     ----------
     mat : (..., N, N) complex np.ndarray
-        matrix to be decomposed
+        Matrix to be decomposed.
 
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`P`
+        The right eigenvectors :math:`P`.
     Decomposition.eig : (..., N) complex np.ndarray
-        The complex eigenvalues of `mat`
+        The complex eigenvalues of `mat`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
-        The *inverse* of the right eigenvectors :math:`P`
+        The *inverse* of the right eigenvectors :math:`P`.
 
     Examples
     --------
@@ -327,18 +327,18 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
     Parameters
     ----------
     sym_mat : (..., N, N) complex np.ndarray
-        matrix to be decomposed
+        Matrix to be decomposed.
     check : bool, optional
-        If `check`, raise an error if `sym_mat` is not symmetric. (default: True)
+        If `check`, raise an error if `sym_mat` is not symmetric (default: True).
 
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`O`
+        The right eigenvectors :math:`O`.
     Decomposition.eig : (..., N) complex np.ndarray
-        The complex eigenvalues of `sym_mat`
+        The complex eigenvalues of `sym_mat`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
-        The *inverse* of the right eigenvectors :math:`O`
+        The *inverse* of the right eigenvectors :math:`O`.
 
     Raises
     ------
@@ -401,18 +401,18 @@ def decompose_her(her_mat, check=True) -> UDecomposition:
     Parameters
     ----------
     her_mat : (..., N, N) complex np.ndarray
-        matrix to be decomposed
+        Matrix to be decomposed.
     check : bool, optional
-        If `check`, raise an error if `her_mat` is not Hermitian. (default: True)
+        If `check`, raise an error if `her_mat` is not Hermitian (default: True).
 
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`U`
+        The right eigenvectors :math:`U`.
     Decomposition.eig : (..., N) complex np.ndarray
-        The complex eigenvalues of `her_mat`
+        The complex eigenvalues of `her_mat`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
-        The *inverse* of the right eigenvectors :math:`U`
+        The *inverse* of the right eigenvectors :math:`U`.
 
     Raises
     ------
@@ -462,11 +462,11 @@ def decompose_gf(g_inv) -> Decomposition:
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`P`
+        The right eigenvectors :math:`P`.
     Decomposition.h : (..., N) complex np.ndarray
-        The complex eigenvalues of `g_inv`
+        The complex eigenvalues of `g_inv`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
-        The *inverse* of the right eigenvectors :math:`P`
+        The *inverse* of the right eigenvectors :math:`P`.
 
     """
     warnings.warn("`decompose_gf` is deprecated; use `decompose_mat` or `decompose_sym` instead.",
@@ -492,12 +492,12 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
     Returns
     -------
     Decomposition.rv : (..., N, N) complex np.ndarray
-        The right eigenvectors :math:`U`
+        The right eigenvectors :math:`U`.
     Decomposition.h : (..., N) float np.ndarray
-        The eigenvalues of `hamilton`
+        The eigenvalues of `hamilton`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
         The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
-        hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`
+        hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`.
 
     """
     warnings.warn("`decompose_hamiltonian` is deprecated; use `decompose_her` instead.",
@@ -514,17 +514,17 @@ def construct_gf(rv, diag_inv, rv_inv):
 
     Parameters
     ----------
-    rv_inv : (N, N) complex np.ndarray
-        The inverse of the matrix of right eigenvectors (:math:`P^{-1}`)
-    diag_inv : (N) array_like
-        The eigenvalues (:math:`h`)
     rv : (N, N) complex np.ndarray
-        The matrix of right eigenvectors (:math:`P`)
+        The matrix of right eigenvectors (:math:`P`).
+    diag_inv : (N) array_like
+        The eigenvalues (:math:`h`).
+    rv_inv : (N, N) complex np.ndarray
+        The inverse of the matrix of right eigenvectors (:math:`P^{-1}`).
 
     Returns
     -------
     gf : (N, N) complex np.ndarray
-        The Green's function
+        The Green's function.
 
     """
     return rv.dot(np.diagflat(diag_inv)).dot(rv_inv)

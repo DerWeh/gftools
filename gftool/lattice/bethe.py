@@ -28,15 +28,15 @@ def gf_z(z, half_bandwidth):
     Parameters
     ----------
     z : complex array_like or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the Bethe lattice.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the Bethe Green's function
+        Value of the Bethe Green's function.
 
     References
     ----------
@@ -74,15 +74,15 @@ def gf_d1_z(z, half_bandwidth):
     Parameters
     ----------
     z : complex array_like or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        Half-bandwidth of the DOS of the Bethe lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
     gf_d1_z : complex np.ndarray or complex
-        Value of the derivative of the Green's function
+        Value of the derivative of the Green's function.
 
     See Also
     --------
@@ -105,15 +105,15 @@ def gf_d2_z(z, half_bandwidth):
     Parameters
     ----------
     z : complex array_like or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        Half-bandwidth of the DOS of the Bethe lattice.
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
     gf_d2_z : complex np.ndarray or complex
-        Value of the Green's function
+        Value of the Green's function.
 
     See Also
     --------
@@ -143,7 +143,7 @@ def gf_z_inv(gf, half_bandwidth):
         Value of the local Green's function.
     half_bandwidth : float
         Half-bandwidth of the DOS of the Bethe lattice.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
@@ -183,24 +183,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex array_like or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the Bethe lattice
+        Half-bandwidth of the DOS of the Bethe lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.bethe.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`:
 
     .. math:: 2t = D
-
-    See Also
-    --------
-    gftool.lattice.bethe.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -215,7 +215,7 @@ def dos(eps, half_bandwidth):
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
@@ -224,7 +224,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.bethe.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.bethe.dos_mp : Multi-precision version suitable for integration.
 
     References
     ----------
@@ -320,7 +320,7 @@ def dos_mp(eps, half_bandwidth=1):
         DOS is evaluated at points `eps`.
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
 
     Returns
     -------
@@ -329,7 +329,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.bethe.dos : vectorized version suitable for array evaluations
+    gftool.lattice.bethe.dos : Vectorized version suitable for array evaluations.
 
     References
     ----------
@@ -378,7 +378,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
         Green's function is evaluated at time `tt`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the Bethe lattice.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`.
     center : float
         Position of the center of the center of the Bethe DOS.
         This parameter is **not** given in units of `half_bandwidth`.
@@ -386,7 +386,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
     Returns
     -------
     gf_ret_t : complex np.ndarray or complex
-        Value of the retarded-time Bethe Green's function
+        Value of the retarded-time Bethe Green's function.
 
     Examples
     --------

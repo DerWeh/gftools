@@ -352,11 +352,11 @@ def calc_iterator(z_out, z_in, coeff):
     Parameters
     ----------
     z_out : complex ndarray
-        points at with the functions will be evaluated
+        Points at with the functions will be evaluated.
     z_in : (N_in,) complex ndarray
-        complex mesh used to calculate `coeff`
+        Complex mesh used to calculate `coeff`.
     coeff : (..., N_in) complex ndarray
-        coefficients for Padé, calculated from `pade.coefficients`
+        Coefficients for Padé, calculated from `pade.coefficients`.
 
     Yields
     ------
@@ -403,9 +403,9 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     Parameters
     ----------
     z_in : (N_in,) complex ndarray
-        complex mesh used to calculate `coeff`
+        Complex mesh used to calculate `coeff`.
     coeff : (..., N_in) complex ndarray
-        coefficients for Padé, calculated from `pade.coefficients`
+        Coefficients for Padé, calculated from `pade.coefficients`.
     valid_pades : list_like of bool
         Mask which continuations are correct, all Padés where `valid_pades`
         evaluates to false will be ignored for the average.
@@ -499,9 +499,9 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     Parameters
     ----------
     z_in : (N_in,) complex ndarray
-        complex mesh used to calculate `coeff`
+        Complex mesh used to calculate `coeff`.
     coeff : (..., N_in) complex ndarray
-        coefficients for Padé, calculated from `pade.coefficients`
+        Coefficients for Padé, calculated from `pade.coefficients`.
     mod_fct : callable
         Modification of the analytic continuation. The signature of the function
         should be `mod_fct` (z, pade_z, \*args, \*\*kwds), the tow first
@@ -655,9 +655,9 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     Parameters
     ----------
     z_out : (N_out,) complex ndarray
-        points at with the functions will be evaluated
+        Points at with the functions will be evaluated.
     z_in : (N_in,) complex ndarray
-        complex mesh used to calculate `coeff`
+        Complex mesh used to calculate `coeff`.
     valid_z : (N_out,) complex ndarray, optional
         The output range according to which the Padé approximation is validated
         (compared to the `threshold`).
@@ -682,9 +682,9 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     Returns
     -------
     averaged.x : (N_in, N_out) complex ndarray
-        function evaluated at points `z`
+        Function evaluated at points `z`.
     averaged.err : (N_in, N_out) complex ndarray
-        variance associated with the function values `pade.x` at points `z`
+        Variance associated with the function values `pade.x` at points `z`.
 
     """
     assert fct_z is None or coeff is None
@@ -716,18 +716,18 @@ def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
 
     This function wraps `averaged`, see `averaged` for the parameters.
 
+    Returns
+    -------
+    averaged.x : (N_in, N_out) complex ndarray
+        Function evaluated at points `z`.
+    averaged.err : (N_in, N_out) complex ndarray
+        Variance associated with the function values `pade.x` at points `z`.
+
     Other Parameters
     ----------------
     threshold : float, optional
         The numerical threshold, how large of an positive imaginary part is
         tolerated (default: 1e-8). `np.infty` can be given to accept all.
-
-    Returns
-    -------
-    averaged.x : (N_in, N_out) complex ndarray
-        function evaluated at points `z`
-    averaged.err : (N_in, N_out) complex ndarray
-        variance associated with the function values `pade.x` at points `z`
 
     """
     filter_neg_imag = FilterNegImag(threshold)

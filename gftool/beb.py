@@ -316,7 +316,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     Returns
     -------
     self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray
-        The BEB self-energy as the root of `self_root_eq`
+        The BEB self-energy as the root of `self_root_eq`.
 
     Raises
     ------

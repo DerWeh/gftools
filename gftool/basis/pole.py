@@ -295,9 +295,9 @@ def gf_z(z, poles, weights):
 
     See Also
     --------
-    gf_d1_z : First derivative of the Green's function
-    gf_tau : corresponding fermionic imaginary time Green's function
-    gt.pole_gf_tau_b : corresponding bosonic imaginary time Green's function
+    gf_d1_z : First derivative of the Green's function.
+    gf_tau : Corresponding fermionic imaginary time Green's function.
+    gt.pole_gf_tau_b : Corresponding bosonic imaginary time Green's function.
 
     """
     poles = np.atleast_1d(poles)
@@ -363,7 +363,7 @@ def gf_tau(tau, poles, weights, beta):
 
     See Also
     --------
-    pole_gf_z : corresponding commutator Green's function
+    pole_gf_z : Corresponding commutator Green's function.
 
     """
     assert np.all((tau >= 0.) & (tau <= beta))
@@ -395,7 +395,7 @@ def gf_ret_t(tt, poles, weights):
 
     See Also
     --------
-    pole_gf_z : corresponding commutator Green's function
+    pole_gf_z : Corresponding commutator Green's function.
 
     """
     poles = np.atleast_1d(poles)

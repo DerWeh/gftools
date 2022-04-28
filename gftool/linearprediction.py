@@ -192,7 +192,7 @@ def pcoeff_covar(x, order: int, rcond=None):
     Returns
     -------
     a : (..., order) complex np.ndarray
-        Prediction coefficients
+        Prediction coefficients.
     rho : (...) float np.ndarray
         Error estimate :math:`‖x - Xa‖_2`.
 
@@ -231,7 +231,7 @@ def pcoeff_burg(x, order: int):
     Returns
     -------
     a : (..., order) complex np.ndarray
-        Prediction coefficients
+        Prediction coefficients.
     rho : (...) float np.ndarray
         Variance estimate.
 

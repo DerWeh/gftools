@@ -31,6 +31,11 @@ def gf_z(z, half_bandwidth):
         Half-bandwidth of the DOS of the 1D lattice.
         The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/2`
 
+    Returns
+    -------
+    gf_z : complex np.ndarray or complex
+        Value of the square lattice Green's function.
+
     References
     ----------
     .. [economou2006] Economou, E. N. Green's Functions in Quantum Physics.
@@ -69,24 +74,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 1D lattice
+        Half-bandwidth of the DOS of the 1D lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.onedim.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 2t = D
-
-    See Also
-    --------
-    gftool.lattice.onedim.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -112,7 +117,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.onedim.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.onedim.dos_mp : Multi-precision version suitable for integration.
 
     References
     ----------
@@ -226,7 +231,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.onedim.dos : vectorized version suitable for array evaluations
+    gftool.lattice.onedim.dos : Vectorized version suitable for array evaluations.
 
     References
     ----------

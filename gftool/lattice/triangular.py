@@ -44,7 +44,7 @@ def gf_z(z, half_bandwidth):
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the triangular lattice Green's function
+        Value of the triangular lattice Green's function.
 
     References
     ----------
@@ -103,24 +103,24 @@ def hilbert_transform(xi, half_bandwidth):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
-        half-bandwidth of the DOS of the 2D triangular lattice
+        Half-bandwidth of the DOS of the 2D triangular lattice.
 
     Returns
     -------
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform of `xi`.
 
+    See Also
+    --------
+    gftool.lattice.triangular.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 9t = 4D
-
-    See Also
-    --------
-    gftool.lattice.triangular.gf_z
 
     """
     return gf_z(xi, half_bandwidth)
@@ -150,7 +150,7 @@ def dos(eps, half_bandwidth):
 
     See Also
     --------
-    gftool.lattice.triangular.dos_mp : multi-precision version suitable for integration
+    gftool.lattice.triangular.dos_mp : Multi-precision version suitable for integration.
 
     References
     ----------
@@ -283,7 +283,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     See Also
     --------
-    gftool.lattice.triangular.dos : vectorized version suitable for array evaluations
+    gftool.lattice.triangular.dos : Vectorized version suitable for array evaluations.
 
     References
     ----------

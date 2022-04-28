@@ -44,11 +44,11 @@ def gf_z(z, half_bandwidth, scale):
     Returns
     -------
     gf_z : complex np.ndarray or complex
-        Value of the rectangular lattice Green's function
+        Value of the rectangular lattice Green's function.
 
     See Also
     --------
-    gftool.lattice.square.gf_z : Green's function in the limit `scale=1`
+    gftool.lattice.square.gf_z : Green's function in the limit `scale=1`.
 
     References
     ----------
@@ -111,15 +111,15 @@ def hilbert_transform(xi, half_bandwidth, scale):
     hilbert_transform : complex np.ndarray or complex
         Hilbert transform at `xi`.
 
+    See Also
+    --------
+    gftool.lattice.rectangular.gf_z
+
     Notes
     -----
     Relation between nearest neighbor hopping `t`, scale `γ` and half-bandwidth `D`
 
     .. math:: 2(γ+1)t = D
-
-    See Also
-    --------
-    gftool.lattice.rectangular.gf_z
 
     """
     return gf_z(xi, half_bandwidth, scale=scale)

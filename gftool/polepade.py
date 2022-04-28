@@ -402,6 +402,7 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
     residues : (M) complex np.ndarray
         The residues corresponding to the `poles`.
     residual : (1)
+        Norm of the residual.
 
     """
     polematrix = 1./np.subtract.outer(z, poles)
