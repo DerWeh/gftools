@@ -3,6 +3,44 @@
 What's New
 ==========
 
+0.11.0 (2022-04-29)
+-------------------
+
+New Features
+~~~~~~~~~~~~
+* Add pole-base Padé analytic continuation `~gftool.polepade`
+  (:commit:`41d57537`).
+
+   - Allows determining number of poles avoiding overfitting.
+   - Least-squares based approach allowing to include uncertainties of input
+     data.
+
+* Add `~gftool.linearprediction` module (:commit:`b1c8f636`).
+
+   - Linear prediction can be used to extend retarded-time Green's functions.
+
+* Add Padé-Fourier approach to Laplace transform (:commit:`fe1ac173`).
+
+   - Padé-Fourier allows to significantly reduce the truncation error.
+     This allows for contours closer to real-axis for a given maximal time.
+   - Linear Padé approximant `~gftool.fourier.tt2z_pade` based on simple poles
+   - Quadratic Hermite-Padé approximant `~gftool.fourier.tt2z_herm2` including
+     quadratic branch cuts but introducing ambiguity which branch to choose.
+   - Module `~gftool.hermpade` implements the necessary approximants.
+
+* Add lattice `~gftool.lattice.box` with box-shaped DOS (:commit:`09974a09`).
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+* Use `numpy.testing.assert_allclose` for tests, providing more verbose output
+  (:commit:`dbb8fd7c`).
+
+Documentation
+~~~~~~~~~~~~~
+* Start to adhere more closely to `numpydoc` (:commit:`40d57d45`).
+
+
+
 0.10.1 (2021-12-01)
 -------------------
 
