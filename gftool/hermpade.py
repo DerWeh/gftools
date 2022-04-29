@@ -453,7 +453,7 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     and :math:`N_x` are the degrees of the polynomials.
     The approximant has two branches
 
-    .. math: F^±(z) = (-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}) / 2r(z)
+    .. math:: F^±(z) = [-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}] / 2r(z)
 
     Parameters
     ----------
@@ -530,7 +530,7 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     and :math:`N_x` are the degrees of the polynomials.
     The approximant has two branches
 
-    .. math:: F^±(z) = (-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}) / 2r(z)
+    .. math:: F^±(z) = [-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}] / 2r(z)
 
     Parameters
     ----------
@@ -593,13 +593,13 @@ class Hermite2:
     A function :math:`f(z)` with known Taylor coefficients `an` is approximated
     using
 
-    .. math: p(z) + q(z)f(z) + r(z) f^2(z) = 𝒪(z^{N_p + N_q + N_r + 2})
+    .. math:: p(z) + q(z)f(z) + r(z) f^2(z) = 𝒪(z^{N_p + N_q + N_r + 2})
 
     where :math:`f(z)` is the function with Taylor coefficients `an`,
     and :math:`N_x` are the degrees of the polynomials.
     The approximant has two branches
 
-    .. math: F^±(z) = (-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}) / 2r(z)
+    .. math:: F^±(z) = [-q(z) ± \sqrt{q^2(z) - 4p(z)r(z)}] / 2r(z)
 
     The function `Hermite2.eval` chooses the branch which is locally closer
     to the Padé approximant, as proposed by [fasondini2019]_.
