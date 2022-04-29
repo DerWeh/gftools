@@ -20,7 +20,7 @@ def test_orth_compl(args):
     dim0, dim1 = mat.shape[-2:]
     assume(dim0 > dim1)
     perp = gt.linalg.orth_compl(mat)
-    assert np.allclose(perp@mat, 0)
+    assert_allclose(perp@mat, 0, atol=1e-12)
 
 
 @given(gufunc_args('(m,n),(m),(n,n),(n)->(n)', dtype=np.complex_, elements=easy_complex,

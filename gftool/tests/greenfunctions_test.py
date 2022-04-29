@@ -292,12 +292,12 @@ class TestSquareGf(GfProperties):
     @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(request):
-        """Parameters for Bethe Green's function."""
+        """Parameters for square Green's function."""
         return (), {'half_bandwidth': request.param}
 
 
 class TestSquare(SymLattice):
-    """Check basic properties of `gftool.bethe.lattice`."""
+    """Check basic properties of `gftool.square.lattice`."""
 
     lattice = gt.lattice.square
 
@@ -332,7 +332,7 @@ class TestRectangularGf(GfProperties):
     @pytest.fixture(params=[{'half_bandwidth': D, 'scale': gamma}
                             for D, gamma in product([0.7, 1.2], [1.3, 2.0])])
     def params(request):
-        """Parameters for Bethe Green's function."""
+        """Parameters for rectangular Green's function."""
         return (), request.param
 
     @staticmethod
@@ -361,7 +361,7 @@ class TestTriangularGf(GfProperties):
     @staticmethod
     @pytest.fixture(params=[0.7, 1.2, ])
     def params(request):
-        """Parameters for Bethe Green's function."""
+        """Parameters for triangular Green's function."""
         return (), {'half_bandwidth': request.param}
 
     @staticmethod
@@ -789,7 +789,7 @@ class TestSurfaceGf(GfProperties):
     @staticmethod
     @pytest.fixture(params=[-.8, -.4, 0., .5, .7])
     def params(request):
-        """Parameters for the Surface Bethe Green's function."""
+        """Parameters for the Surface Green's function."""
         return (), {'eps': request.param,
                     'hopping_nn': .2,
                     }
