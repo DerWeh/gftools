@@ -1,4 +1,7 @@
 """Test the Fourier transformation of Green's functions."""
+# pylint: disable=protected-access
+from functools import partial
+
 import numpy as np
 import pytest
 import hypothesis.strategies as st
@@ -6,6 +9,7 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 from hypothesis.extra.numpy import arrays
 from hypothesis_gufunc.gufunc import gufunc_args
+from scipy.integrate import simpson
 
 from .context import gftool as gt
 from .context import pole
@@ -298,6 +302,37 @@ def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
     #        -8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211]),
     # resids=array([8.11071633, 8.11071633, 8.11071633, 8.11071633, 3.29058834,
     #        3.11249264, 8.11071633, 8.11071633, 8.11071633, 8.11071633]),
+
+
+@pytest.mark.parametrize("test_fct", [
+    partial(gt.lattice.bethe.gf_ret_t, half_bandwidth=1, center=0.2),
+    np.ones_like,
+])
+def test_trapz_weights(test_fct):
+    """Test weights for trapezoidal rule."""
+    tt, dt = np.linspace(0, 10, 101, retstep=True)
+    gf = test_fct(tt)
+    coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=True)
+    assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
+    gf[-1] = 0
+    coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=False)
+    assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
+
+
+@pytest.mark.parametrize("test_fct", [
+    partial(gt.lattice.bethe.gf_ret_t, half_bandwidth=1, center=0.2),
+    np.ones_like,
+])
+def test_simps_weights(test_fct):
+    """Test weights for Simpson rule."""
+    for num in [100, 101]:  # test even as well as odd!
+        tt, dt = np.linspace(0, 10, num, retstep=True)
+        gf = test_fct(tt)
+        coeff = gt.fourier._simps_weight(dt, gf_t=gf, endpoint=True)
+        assert_allclose(coeff.sum(), simpson(gf, dx=dt, even='first'), rtol=1e-14)
+        gf[-2:] = 0
+        coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=False)
+        assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
