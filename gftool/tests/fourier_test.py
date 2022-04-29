@@ -12,7 +12,6 @@ from hypothesis_gufunc.gufunc import gufunc_args
 from scipy.integrate import simpson
 
 from .context import gftool as gt
-from .context import pole
 
 assert_allclose = np.testing.assert_allclose
 
@@ -23,7 +22,7 @@ assert_allclose = np.testing.assert_allclose
 def test_gf_form_moments(args):
     """Check that the Gfs constructed from moments have the correct moment."""
     mom, = args
-    gf = pole.gf_from_moments(mom, width=1)
+    gf = gt.basis.pole.gf_from_moments(mom, width=1)
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
     assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-12)
 
@@ -31,7 +30,7 @@ def test_gf_form_moments(args):
 def test_gf_form_moments_nan():
     """Check that the Gfs constructed from moments handle NaN."""
     mom = [np.nan]
-    gf = pole.gf_from_moments(mom)
+    gf = gt.basis.pole.gf_from_moments(mom)
     gf_mom = gt.pole_gf_moments(poles=gf.poles, weights=gf.residues, order=1)
     assert_allclose(mom, gf_mom, equal_nan=True)
 
@@ -230,7 +229,7 @@ def test_pole_from_gftau_exact(args):
     beta = 13.78
     tau = np.linspace(0, beta, num=1024)
     gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=resids[..., np.newaxis, :], beta=beta)
-    pole_gf = pole.gf_from_tau(gf_tau, n_poles, beta=beta)
+    pole_gf = gt.basis.pole.gf_from_tau(gf_tau, n_poles, beta=beta)
     assert_allclose(pole_gf.poles, poles, atol=1e-12)
     try:
         atol = max(1e-8, abs(resids).max())
