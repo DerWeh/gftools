@@ -146,7 +146,6 @@ References
    Second edition. (Cambridge University Press, 1996).
 
 """
-from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -601,7 +600,26 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
 
 
 @dataclass
-class Hermite2:
+class _Hermite2Base:
+    """Basic container for square Hermite-Padé approximant."""
+
+    p: Polynom
+    q: Polynom
+    r: Polynom
+
+    def eval_branches(self, z) -> Tuple[np.ndarray, np.ndarray]:
+        """Evaluate the two branches."""
+        pz, qz, rz = self.p(z), self.q(z), self.r(z)
+        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
+        p_branch = 0.5*(-qz + discriminant) / rz
+        m_branch = 0.5*(-qz - discriminant) / rz
+        p_stable = np.where(abs(p_branch) >= abs(m_branch), p_branch, pz / (rz*m_branch))
+        m_stable = np.where(abs(m_branch) >= abs(p_branch), m_branch, pz / (rz*p_branch))
+        return p_stable, m_stable
+
+
+@dataclass
+class Hermite2(_Hermite2Base):
     r"""Square Hermite-Padé approximant with branch selection according to Padé.
 
     A function :math:`f(z)` with known Taylor coefficients `an` is approximated
@@ -695,16 +713,6 @@ class Hermite2:
         approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
         return approx
 
-    def eval_branches(self, z) -> Tuple[np.ndarray, np.ndarray]:
-        """Evaluate the two branches."""
-        pz, qz, rz = self.p(z), self.q(z), self.r(z)
-        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
-        p_branch = 0.5*(-qz + discriminant) / rz
-        m_branch = 0.5*(-qz - discriminant) / rz
-        p_stable = np.where(abs(p_branch) >= abs(m_branch), p_branch, pz / (rz*m_branch))
-        m_stable = np.where(abs(m_branch) >= abs(p_branch), m_branch, pz / (rz*p_branch))
-        return p_stable, m_stable
-
     @classmethod
     def from_taylor(cls, an, deg_p: int, deg_q: int, deg_r: int) -> "Hermite2":
         """Construct square Hermite-Padé from Taylor expansion `an`."""
@@ -729,27 +737,20 @@ class Hermite2:
 
 
 @dataclass
-class _SqHermPadeGf(Sequence):
+class _Hermite2Ret(_Hermite2Base):
     """Retarded Green's function given by square Hermite-Padé approximant.
 
     .. warning:: highly experimental and will probably vanish.
 
     """
 
-    r: Polynom
-    q: Polynom
-    p: Polynom
-
     def eval(self, z):
         """Evaluate the retarded branch of the square Hermite-Padé approximant.
 
         The branch is chosen based on the imaginary part.
         """
-        rz, qz, pz = self.r(z), self.q(z), self.p(z)
-        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
+        p_branch, m_branch = self.eval_branches(z)
         # use the branch with positive spectral weight
-        p_branch = 0.5*(-qz + discriminant) / rz
-        m_branch = 0.5*(-qz - discriminant) / rz
         p_is_ret = p_branch.imag <= 0
         m_is_ret = m_branch.imag <= 0
         branch = np.select(
@@ -764,22 +765,16 @@ class _SqHermPadeGf(Sequence):
         )
         return branch
 
-    def eval_branch(self, z, s):
-        """Evaluate selected branch."""
-        rz, qz, pz = self.r(z), self.q(z), self.p(z)
-        discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
-        branch = 0.5*(-qz + s*discriminant) / rz
-        return branch
-
     @classmethod
     def from_taylor(cls, an, deg_r: int, deg_q: int, deg_p: int):
         """Construct square Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r)
-        return cls(r=r, q=q, p=p)
+        return cls(p=p, q=q, r=r)
 
-    def __getitem__(self, key: int):
-        """Make `Decomposition` behave like the tuple `(rv, eig, rv_inv)`."""
-        return (self.r, self.q, self.p)[key]
-
-    def __len__(self) -> int:
-        return 3
+    @classmethod
+    def from_taylor_lstsq(cls, an, deg_p: int, deg_q: int, deg_r: int,
+                          rcond=None, fix_qr=None) -> "Hermite2":
+        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        p, q, r = hermite2_lstsq(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r,
+                                 rcond=rcond, fix_qr=fix_qr)
+        return cls(p=p, q=q, r=r)
