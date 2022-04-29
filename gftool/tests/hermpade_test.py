@@ -66,6 +66,26 @@ def test_strip_coeffs():
     assert_allclose(qc, [1, 2, 3, 4])
 
 
+def test_pader_degree():
+    r"""Check if `pader` can recover the degree for simple example.
+
+    We consider the function
+
+    .. math::
+
+       (x+3)/(x-1)(x+1) = (x+3)/(x^2 - 1) = \sum_{n=0}^{∞}[-2+{(-1)}^{1+n}]x^n
+
+    """
+    deg = 400
+    ns = np.arange(deg)
+    an = (-2 + (-1)**(1+ns))
+    approx = gt.hermpade.pader(an, num_deg=deg//2-1, den_deg=deg//2)
+    assert approx.numer.degree() == 1
+    assert approx.denom.degree() == 2
+    xx = np.linspace(-0.5, 0.5, num=100)
+    assert_allclose(approx.eval(xx), (xx+3) / (xx**2 - 1))
+
+
 @ignore_illconditioned
 @given(num_deg=st.integers(0, 10), den_deg=st.integers(0, 10))
 @pytest.mark.parametrize("pade", [gt.hermpade.pade,

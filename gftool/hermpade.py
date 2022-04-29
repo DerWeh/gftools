@@ -425,7 +425,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     an = an[:l_max]
     # TODO: do rescaling, haven't found it in the reference
     tol = rcond * np.linalg.norm(an)
-    if np.all(an[:num_deg] <= tol):  # up to tolerance function is 0
+    if np.all(abs(an[:num_deg]) <= tol):  # up to tolerance function is 0
         return RatPol(Polynom([0]), Polynom([1]))
     row = np.r_[an[0], np.zeros(den_deg)]
     col = an

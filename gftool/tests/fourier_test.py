@@ -527,7 +527,13 @@ def test_tt2z_herm2_bethe(num):
     assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
 
 
-def test_tt2z_herm2_box():
+@pytest.mark.parametrize("herm, otol", [
+    (gt.hermpade.Hermite2.from_taylor, 0.05),
+    (gt.hermpade._Hermite2Ret.from_taylor, 0.05),
+    (gt.hermpade.Hermite2.from_taylor_lstsq, 0.06),
+    (gt.hermpade._Hermite2Ret.from_taylor_lstsq, 0.06),
+])
+def test_tt2z_herm2_box(herm, otol):
     """Test `tt2z_herm2` against box Green's function."""
     z = np.linspace(-2, 2, num=1001) + 1e-3j
     tt = np.linspace(0, 20, 201)
@@ -536,12 +542,12 @@ def test_tt2z_herm2_box():
 
     gf_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=-mu)
     gf_ww = gt.lattice.box.gf_z(z + mu*D, half_bandwidth=D)
-    gf_fh = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_herm2)
+    gf_fh = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_herm2, herm2=herm)
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
 
     # error should be local to the band edges
     inner = (-1.5 < z.real) & (z.real < 1)
     assert_allclose(gf_fh[inner], gf_ww[inner], rtol=1e-3)
-    assert_allclose(gf_fh[inner], gf_ww[inner], rtol=0.05)
+    assert_allclose(gf_fh[~inner], gf_ww[~inner], rtol=otol)
     # better than Padé
     assert np.linalg.norm(gf_ww - gf_fh) < np.linalg.norm(gf_ww - gf_fp)
