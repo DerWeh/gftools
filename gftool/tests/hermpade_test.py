@@ -1,4 +1,5 @@
 """Test Padé against `scipy` implementation."""
+# pylint: disable=protected-access
 from functools import partial
 
 import hypothesis.strategies as st
@@ -15,6 +16,21 @@ assert_allclose = np.testing.assert_allclose
 ignore_illconditioned = pytest.mark.filterwarnings(
     "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"
 )
+
+
+def test_nullvec_lstsq():
+    """Compare null-vector least square against regular null-vector.
+
+    As test-case we consider a typical Padé matrix.
+    """
+    size = 17
+    amat = np.random.default_rng(0).normal(size=[size-1, size])
+    qcoef = gt.hermpade._nullvec(amat)
+    qcoef *= np.sign(qcoef[0])  # fix sign
+    for fix in [0, 8, -7, -1]:
+        qcoef_lst = gt.hermpade._nullvec_lst(amat, fix=fix, rcond=0)
+        qcoef_lst *= np.sign(qcoef_lst[0])  # fix sign
+        assert_allclose(qcoef_lst/np.linalg.norm(qcoef_lst), qcoef)
 
 
 @ignore_illconditioned
@@ -48,7 +64,6 @@ def test_pade_vs_scipy(num_deg, den_deg, pade):
 
 def test_strip_coeffs():
     """Check stripping of coefficients that are zero."""
-    # pylint: disable=protected-access
     pc = np.array([0, 1, 0, 0, 0, 3, 0, 2])
     qc = np.array([0, 1, 2, 0, 0, 3, 0, 0, 0])
     pc, qc = gt.hermpade._strip_ceoffs(pc, qc)
