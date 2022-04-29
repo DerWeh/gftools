@@ -19,6 +19,8 @@ from .context import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 
+assert_allclose = np.testing.assert_allclose
+
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
                    elements=st.floats(min_value=-1e6, max_value=1e6),
@@ -299,7 +301,9 @@ def test_tau2izp_multi_pole(poles, resids, pade_frequencies):
     mom = gf_pole.moments(order=range(1, 4))
     occ = gf_pole.occ(BETA)
     gf_ft = gt.fourier.tau2izp(gf_tau, BETA, izp, moments=mom, occ=occ)
+
     assert_allclose(gf_izp, gf_ft, rtol=1e-5, atol=1e-8)
+
     # check why atol is necessary, example below (seems empty)
     # poles=array([-8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211,
     #        -8.84053211, -8.84053211, -8.84053211, -8.84053211, -8.84053211]),
