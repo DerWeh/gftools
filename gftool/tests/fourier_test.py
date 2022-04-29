@@ -1,4 +1,8 @@
-"""Test the Fourier transformation of Green's functions."""
+"""Test the Fourier transformation of Green's functions.
+
+TODO: This module urgently needs a refactor for `tt2z`. We have too many
+different methods.
+"""
 # pylint: disable=protected-access
 from functools import partial
 
@@ -360,6 +364,8 @@ def test_tt2z_single_pole(spole):
 
     gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
     assert_allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
+    gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_simps)
+    assert_allclose(gf_z, gf_dft, atol=2e-3, rtol=2e-4)
     gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
     assert_allclose(gf_z, gf_dft, atol=1e-3, rtol=2e-4)
 
@@ -395,6 +401,8 @@ def test_tt2z_single_pole_nonumexpr(spole):
         gt.fourier._HAS_NUMEXPR = False
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_trapz)
         assert_allclose(gf_z, gf_dft, atol=3e-3, rtol=3e-4)
+        gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_simps)
+        assert_allclose(gf_z, gf_dft, atol=3e-3, rtol=3e-4)
         gf_dft = gt.fourier.tt2z(tt, gf_t=gf_t, z=ww, laplace=gt.fourier.tt2z_lin)
         assert_allclose(gf_z, gf_dft, atol=2e-3, rtol=3e-4)
     finally:
@@ -422,6 +430,9 @@ def test_tt2z_multi_pole(args):
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_trapz)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, ww, laplace=gt.fourier.tt2z_simps)
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     # test if zero handles gu-structure correctly
@@ -455,6 +466,9 @@ def test_tt2z_gufuncz(args):
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
     gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_trapz)
+    assert_allclose(gf_z, gf_ft, rtol=1e-3)
+
+    gf_ft = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_simps)
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
 
@@ -515,6 +529,63 @@ def test_tt2z_pade_box(fast):
     inner = (-1.5 < z.real) & (z.real < 0.9)
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
+
+
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+                   elements=[st.floats(min_value=-1,  max_value=1),
+                             st.floats(min_value=-1, max_value=1),
+                             st.floats(min_value=0, max_value=10), ],
+                   max_dims_extra=2, max_side=3),)
+def test_tt2z_gufuncz_lpz(args):
+    """Test `tt2z_lpz` for different shapes of `z`."""
+    ww, poles, resids = args
+    assume(np.all(resids.sum(axis=-1) > 1e-4))
+    resids /= resids.sum(axis=-1, keepdims=True)
+    # ensure sufficient large imaginary part
+    z = ww + 1e-3j
+    tt = np.linspace(0, 10, 201)
+
+    gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :],
+                            weights=resids[..., np.newaxis, :])
+    gf_z = gt.pole_gf_z(z, poles=poles[..., np.newaxis, :],
+                        weights=resids[..., np.newaxis, :])
+
+    gf_pf = gt.fourier.tt2z(tt, gf_t, z, laplace=gt.fourier.tt2z_lpz)
+    assert_allclose(gf_z, gf_pf, rtol=1e-5, atol=1e-3)
+
+
+def test_tt2z_lpz_bethe():
+    """Test `tt2z_lpz` against Bethe Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.bethe.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_lpz)
+
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 1)
+    assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
+
+
+def test_tt2z_lpz_box():
+    """Test `tt2z_lpz` against box Green's function."""
+    z = np.linspace(-2, 2, num=1001) + 1e-3j
+    tt = np.linspace(0, 20, 201)
+    D = 1.5
+    mu = 0.2
+
+    gf_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=-mu)
+    gf_ww = gt.lattice.box.gf_z(z + mu*D, half_bandwidth=D)
+    gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_lpz)
+
+    # error should be local to the band edges
+    inner = (-1.5 < z.real) & (z.real < 0.9)
+    assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
+    assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.2)
 
 
 def test_tt2z_pader_bethe():

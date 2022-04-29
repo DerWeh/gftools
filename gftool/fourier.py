@@ -1470,10 +1470,12 @@ def tt2z_lpz(tt, gf_t, z, order=None, quad='trapz', **kwds):
         raise ValueError(f"Unknown quadrature scheme {quad}")
     weight = _trapz_weight if quad == 'trapz' else _simps_weight
     coeffs = weight(delta_tt, gf_t, endpoint=False)
-    aa = np.r_[1, pcoeff_covar(coeffs, order=order, **kwds)[0]]
-    convo = np.array([sum(aa[:ll+1]*coeffs[ll::-1]) for ll in range(order)])
+    aa = np.r_["-1", np.ones_like(coeffs[..., 0:1]), pcoeff_covar(coeffs, order=order, **kwds)[0]]
+    convo = np.array([np.sum(aa[..., :ll+1]*coeffs[..., ll::-1], axis=-1)
+                      for ll in range(order)])
+    convo = np.moveaxis(convo, 0, -1)
     phase = _phase(z[..., newaxis], tt[newaxis, :order+1])
-    numer = _gu_matvec(phase[:, :order], convo)
+    numer = _gu_matvec(phase[..., :order], convo)
     denom = _gu_matvec(phase, aa)
     return numer / denom
 
