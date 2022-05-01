@@ -1,14 +1,28 @@
 """Test linear prediction."""
 import numpy as np
 import pytest
+import hypothesis.extra.numpy as hnp
 
 from hypothesis import given, assume, strategies as st
 from hypothesis_gufunc.gufunc import gufunc_args
+from scipy.linalg import companion
 
 from .context import gftool as gt
 
 lp = gt.linearprediction
 assert_allclose = np.testing.assert_allclose
+
+
+@given(a=hnp.arrays(np.float_,
+                    shape=hnp.array_shapes(min_side=2),
+                    elements=st.floats(1e+6, 1e+6))
+       )
+def test_companion_vectorization(a):
+    """Test that `companion` is properly vectorized."""
+    assume(np.all(abs(a[..., 0]) > 1e-6))
+    lp_c = lp.companion(a)
+    vec_c = np.vectorize(companion, signature='(n)->(m,m)')(a)
+    np.testing.assert_array_equal(lp_c, vec_c)
 
 
 def test_pcoeff_burg_implementation():
