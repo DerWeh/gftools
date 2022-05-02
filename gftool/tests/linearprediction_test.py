@@ -105,11 +105,12 @@ def test_lattice_prediction(fraction, lattice, stable):
     Make sure that `stable=True` prediction is correct in the trivial case.
     """
     tt = np.linspace(0, 100, num=1001)
-    gf_ret_t = lattice.gf_ret_t(tt, half_bandwidth=1, center=0.2)
+    gf_ret_t = lattice.gf_ret_t(tt, half_bandwidth=1,
+                                center=np.array([-0.2, +0.2])[:, np.newaxis])
     # try to extrapolate second half from first half
-    gf_half = gf_ret_t[:tt.size//2+1]
-    pcoeff, __ = lp.pcoeff_covar(gf_half, order=gf_half.size//fraction)
-    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.size,
+    gf_half = gf_ret_t[..., :tt.size//2+1]
+    pcoeff, __ = lp.pcoeff_covar(gf_half, order=gf_half.shape[-1]//fraction)
+    gf_pred = lp.predict(gf_half, pcoeff=pcoeff, num=tt.size - gf_half.shape[-1],
                          stable=stable)
     assert_allclose(gf_ret_t, gf_pred, atol=3e-5)
 

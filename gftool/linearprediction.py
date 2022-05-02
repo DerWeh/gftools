@@ -110,7 +110,7 @@ import numpy as np
 
 from scipy.linalg import toeplitz
 
-from gftool._util import _gu_sum
+from gftool._util import _gu_sum, _gu_matvec
 from gftool.matrix import decompose_mat
 
 
@@ -321,23 +321,22 @@ def _predict_stable(x, pcoeff, num: int):
     """
     # calculate poles and residues
     order = pcoeff.shape[-1]
-    comp_mat = companion(np.r_[1, pcoeff])
+    comp_mat = companion(np.r_["-1", np.ones(pcoeff.shape[:-1] + (1,)), pcoeff])
     dec = decompose_mat(comp_mat)
-    right = dec.rv_inv @ x[..., -order:][..., ::-1]
+    right = _gu_matvec(dec.rv_inv, x[..., -order:][..., ::-1])
     left = dec.rv[..., 0, :]
     residues = left*right
 
     # drop exponential growing terms
     bad = abs(dec.eig) > 1
     # print(f'Bad {np.count_nonzero(bad)}/{bad.size}')
-    eig = dec.eig[~bad]
-    residues = residues[~bad]
+    residues[bad] = 0
 
     # predict
     start = x.shape[-1]
     xtended = np.concatenate([x, np.full([*x.shape[:-1], num], np.nan, dtype=x.dtype)], axis=-1)
     for ii in range(start, start+num):
-        residues *= eig
+        residues *= dec.eig
         xtended[..., ii] = _gu_sum(residues)
     return xtended
 
