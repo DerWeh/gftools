@@ -680,7 +680,7 @@ class Hermite2(_Hermite2Base):
     >>> plt.yscale('log')
     >>> plt.show()
 
-    Mind, that the predication of the correct branch is far from safe:
+    Mind, that the prediction of the correct branch is far from safe:
 
     >>> an = binom(1/2, np.arange(8+8+1))  # Taylor of (1+x)**(1/2)
     >>> x = np.linspace(-3, 3, num=500)
