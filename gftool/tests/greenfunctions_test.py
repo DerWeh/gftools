@@ -888,6 +888,23 @@ def test_bethe_retarded(D, center):
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
+@given(gufunc_args('(),(),()->()', dtype=np.float_,
+                   elements=[st.floats(0, 10),
+                             st.floats(0.1, 10),
+                             st.floats(0, 10),
+                             ],
+                   max_dims_extra=2),
+       )
+def test_bethe_retarded_vectorization(args):
+    """Test that retarded Green's function behaves like ufunc."""
+    tt, D, mu = args
+    gf_ret_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=mu)
+    gf_vec = np.vectorize(gt.lattice.bethe.gf_ret_t, otypes=[gf_ret_t.dtype])(
+        tt, half_bandwidth=D, center=mu
+    )
+    np.testing.assert_array_equal(*np.broadcast_arrays(gf_ret_t, gf_vec))
+
+
 def test_hilbert_equals_integral():
     """Compare *bethe_hilbert_transform* with explicit calculation of integral.
 
@@ -1111,3 +1128,20 @@ def test_box_retarded(D, center):
     gf_ft = gt.fourier.tt2z(tt, gf_ret_t, z=ww)
     gf_ww = gt.lattice.box.gf_z(ww - D*center, half_bandwidth=D)
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
+
+
+@given(gufunc_args('(),(),()->()', dtype=np.float_,
+                   elements=[st.floats(0, 10),
+                             st.floats(0.1, 10),
+                             st.floats(0, 10),
+                             ],
+                   max_dims_extra=2),
+       )
+def test_box_retarded_vectorization(args):
+    """Test that retarded Green's function behaves like ufunc."""
+    tt, D, mu = args
+    gf_ret_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=mu)
+    gf_vec = np.vectorize(gt.lattice.box.gf_ret_t, otypes=[gf_ret_t.dtype])(
+        tt, half_bandwidth=D, center=mu
+    )
+    np.testing.assert_array_equal(*np.broadcast_arrays(gf_ret_t, gf_vec))

@@ -404,7 +404,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
     >>> plt.show()
 
     """
-    tt = half_bandwidth*tt
+    tt = np.asarray(half_bandwidth*tt)
     gf = np.zeros_like(tt, dtype=complex)
     retard = tt.real >= 0
     small = retard & (abs(tt) < _SMALL)
@@ -413,6 +413,6 @@ def gf_ret_t(tt, half_bandwidth, center=0):
     gf[small] = -1j*(1 - 1/8*tt2 + 1/192*tt2**2)
     big = retard & ~small
     gf[big] = -2j * jv(1, tt[big]) / tt[big]
-    if center:
+    if np.any(center != 0):
         return gf*np.exp(-1j*center*tt)
     return gf
