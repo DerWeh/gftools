@@ -106,6 +106,8 @@ This can be amended by setting `stable=True` in `~gftool.linearprediction.predic
    >>> plt.show()
 
 """
+import warnings
+
 import numpy as np
 
 from scipy.linalg import toeplitz
@@ -181,7 +183,8 @@ def pcoeff_covar(x, order: int, rcond=None):
     x : (..., N) complex np.ndarray
         Data of the (time) series to be predicted.
     order : int
-        Prediction order, has to be smaller then `N`.
+        Prediction order, has to be smaller then `N`; for ``order>N//2`` the
+        system is under-determined.
     rcond : float, optional
         Cut-off ratio for small singular values of `a`.
         For the purposes of rank determination, singular values are treated
@@ -195,7 +198,21 @@ def pcoeff_covar(x, order: int, rcond=None):
     rho : (...) float np.ndarray
         Error estimate :math:`‖x - Xa‖_2`.
 
+    Raises
+    ------
+    ValueError
+        If the prediction `order` is not smaller than the number of data
+        points `N`.
+
     """
+
+    if order >= x.shape[-1]:
+        raise ValueError(f"Prediction order ({order}) has to be smaller than"
+                         f" number of data points (x.shape={x.shape})")
+    if order > x.shape[-1]//2:
+        warnings.warn("Prediction coefficients are under-determined"
+                      f" for `order={order}` but `x.shape={x.shape}`")
+
     def _covar(x_):
         """Actual calculation to be vectorized."""
         Xmat = toeplitz(x_[order-1:-1], x_[order-1::-1])
@@ -293,11 +310,18 @@ def predict(x, pcoeff, num: int, stable=False):
         Data of the (time) series extended by `num` steps, with
         `px[:x.size] = x`.
 
+    Raises
+    ------
+    ValueError
+        If the number of additional steps `num` is negative.
+
     See Also
     --------
     pcoeff_covar
 
     """
+    if num < 0:
+        raise ValueError(f"Number of predicted (time) steps has to be positive (num={num})")
     if stable:
         return _predict_stable(x, pcoeff=pcoeff, num=num)
 
