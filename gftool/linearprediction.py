@@ -205,7 +205,6 @@ def pcoeff_covar(x, order: int, rcond=None):
         points `N`.
 
     """
-
     if order >= x.shape[-1]:
         raise ValueError(f"Prediction order ({order}) has to be smaller than"
                          f" number of data points (x.shape={x.shape})")
