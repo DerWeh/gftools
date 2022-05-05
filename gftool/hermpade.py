@@ -41,6 +41,7 @@ the applicability beyond the radius of convergence:
    >>> x = np.linspace(-3, 3, num=501)
    >>> pade = gt.hermpade.pade(an, num_deg=8, den_deg=8)
    >>> __ = plt.plot(x, f(x).real, color='black')
+   >>> __ = plt.plot(x, f(x).imag, ':', color='black')
    >>> __ = plt.plot(x, pade.eval(x), color='C1')
    >>> __ = plt.ylim(0, 1.75)
    >>> plt.show()
@@ -58,6 +59,7 @@ It is instructive to plot the error in the complex plane:
    >>> y = np.linspace(-3, 3, num=501)
    >>> z = x[:, None] + 1j*y[None, :]
    >>> error = abs(pade.eval(z) - f(z))
+   >>> poles = pade.denom.roots()
 
    >>> import matplotlib as mpl
    >>> fmt = mpl.ticker.LogFormatterMathtext()
@@ -70,18 +72,23 @@ It is instructive to plot the error in the complex plane:
    >>> __ = plt.clabel(cont, cont.levels, fmt=fmt, fontsize='x-small')
    >>> for ll in levels:
    ...     __ = cbar.ax.axhline(ll, color='black', linewidth=0.25)
+   >>> __ = plt.hlines(0, xmin=x[0], xmax=-1, color='red')  # branch cut
+   >>> __ = plt.scatter(poles.real, poles.imag, color='black', marker='x', zorder=2)  # poles
    >>> __ = plt.xlabel(r"$\Re z$")
    >>> __ = plt.ylabel(r"$\Im z$")
+   >>> __ = plt.xlim(x[0], x[-1])
    >>> plt.tight_layout()
    >>> plt.gca().set_rasterization_zorder(1.5)  # avoid excessive files
    >>> plt.show()
 
-Away from the branch-cut, the Padé approximant is a reasonable approximation.
+Away from the branch-cut, indicated by the red line, the Padé approximant is a
+reasonable approximation. The crosses indicate the simple poles of the Padé
+approximant.
 
 
-Square Hermite-Padé approximant
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A further improvement is obtained by using the square Hermite-Padé approximant,
+Quadratic Hermite-Padé approximant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A further improvement is provided by the quadratic Hermite-Padé approximant,
 which can represent square-root branch cuts:
 
 .. plot::
@@ -91,22 +98,30 @@ which can represent square-root branch cuts:
    >>> herm2 = gt.hermpade.Hermite2.from_taylor(an, deg_p=5, deg_q=5, deg_r=5)
 
    >>> __ = plt.plot(x, f(x).real, color='black')
-   >>> __ = plt.plot(x, herm2.eval(x).real, color='C1')
+   >>> __ = plt.plot(x, f(x).imag, ':', color='black')
+   >>> __ = plt.plot(x, herm2.eval(x + 1e-16j).real, color='C1')
+   >>> __ = plt.plot(x, herm2.eval(x + 1e-16j).imag, ':', color='C1')
    >>> __ = plt.ylim(0, 1.75)
    >>> plt.show()
 
-It nicely approximates the function almost everywhere. Let's compare the error
-to the Padé approximant:
+It nicely approximates the function almost everywhere.
+However, there is ambiguity which branch to choose, thus we had to add the
+shift ``1e-16j`` by hand, to get the correct branch on the real axis.
+Let's compare the error to the (linear) Padé approximant:
 
 .. plot::
    :format: doctest
    :context: close-figs
 
    >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label="Padé")
-   >>> __ = plt.plot(x, abs(herm2.eval(x) - f(x)), label="Herm2")
+   >>> __ = plt.plot(x, abs(herm2.eval(x + 1e-16j) - f(x)), label="Herm2")
+   >>> __ = plt.plot(x, abs(herm2.eval(x) - f(x)), label="wrong branch")
    >>> __ = plt.yscale('log')
    >>> __ = plt.legend()
    >>> plt.show()
+
+The correct branch nicely approximates the function everywhere, but even the
+wrong branch performs better than Padé.
 
 Let's also compare the quality of the approximants in the complex plane:
 
@@ -119,12 +134,16 @@ Let's also compare the quality of the approximants in the complex plane:
    >>> __, axes = plt.subplots(ncols=2, sharex=True, sharey=True)
    >>> __ = axes[0].set_title("Padé")
    >>> __ = axes[1].set_title("Herm2")
+   >>> levels = np.logspace(-15, 0, 16)
    >>> for ax, err in zip(axes, [error, error2]):
    ...     pcm = ax.pcolormesh(x, y, err.T, shading='nearest', norm=norm)
    ...     cont = ax.contour(x, y, err.T, colors='black', linewidths=0.25, levels=levels)
    ...     __ = ax.clabel(cont, cont.levels, fmt=fmt, fontsize='x-small')
    ...     __ = ax.set_xlabel(r"$\Re z$")
+   ...     __ = ax.hlines(0, xmin=x[0], xmax=-1, color='red')  # branch cut
    ...     ax.set_rasterization_zorder(1.5)
+   >>> __ = axes[0].scatter(poles.real, poles.imag, color='black', marker='x', zorder=2)  # poles
+   >>> __ = plt.xlim(x[0], x[-1])
    >>> __ = axes[0].set_ylabel(r"$\Im z$")
    >>> plt.tight_layout()
    >>> cbar = plt.colorbar(pcm, extend='both', ax=axes, fraction=0.08, pad=0.02)
@@ -133,8 +152,98 @@ Let's also compare the quality of the approximants in the complex plane:
    ...     __ = cbar.ax.axhline(ll, color='black', linewidth=0.25)
    >>> plt.show()
 
-Note, however, the square Hermite-Padé approximant contains the ambiguity which
+Note, however, the quadratic Hermite-Padé approximant contains the ambiguity which
 branch to choose. The heuristic can fail and should therefore be checked.
+
+Alternative example: logarithmic branch cut
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We also show the results for a logarithmic branch cut, showing that the results
+hold not only for algebraic branch cuts.
+Let's consider the approximations for the logarithm ``f(z) = np.log(1 + z)``,
+whose series has a radius of convergence of `1`:
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> an = np.r_[0, (-1)**np.arange(16)/np.arange(1, 17)]  # Taylor of ln(1+x)
+   >>> def f(z):
+   ...     return np.emath.log(1 + z)
+   >>> taylor = np.polynomial.Polynomial(an)
+   >>> pade = gt.hermpade.pade(an, num_deg=8, den_deg=8)
+   >>> herm2 = gt.hermpade.Hermite2.from_taylor(an, deg_p=5, deg_q=5, deg_r=5)
+
+Again, we see that the Taylor series fails for larger `z>=1`, the (linear) Padé
+and the quadratic Hermite-Padé, on the other hand, yield good results also for
+large values.
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> import matplotlib.pyplot as plt
+   >>> x = np.linspace(-1, 3, num=1001)[1:]
+   >>> __ = plt.plot(x, f(x), color='black', label="exact")
+   >>> __ = plt.plot(x, taylor(x), label="Taylor")
+   >>> __ = plt.plot(x, pade.eval(x), label="Padé")
+   >>> __ = plt.plot(x, herm2.eval(x), label="Herm2")
+   >>> __ = plt.ylim(-5, 1.5)
+   >>> __ = plt.legend()
+   >>> plt.show()
+
+Plotting the error, again we see that the Taylor series is only valied for
+small values of `z`, and Padé fails to approximate the branch cut well. The
+quadratic Hermite-Padé approximant is best for (almost) all values.
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> x = np.linspace(-3, 3, num=1001)
+   >>> __ = plt.plot(x, abs(taylor(x) - f(x)), label="Taylor")
+   >>> __ = plt.plot(x, abs(pade.eval(x) - f(x)), label="Padé")
+   >>> __ = plt.plot(x, abs(herm2.eval(x) - f(x)), label="Herm2")
+   >>> __ = plt.yscale('log')
+   >>> __ = plt.legend()
+   >>> plt.show()
+
+
+Plotting the error in the complex plain shows that Padé fails to resolve the
+branch cut but is else a good approximation globally. The branch-cut is
+indicated by the red line, the crosses mark the poles of Padé. The Hermite-Padé
+algorithm yields good results also in the vicinity of the branch cut.
+
+.. plot::
+   :format: doctest
+   :context: close-figs
+
+   >>> x = np.linspace(-3, 3, num=501)
+   >>> y = np.linspace(-3, 3, num=501)
+   >>> z = x[:, None] + 1j*y[None, :]
+   >>> error = np.abs(pade.eval(z) - f(z))
+   >>> error2 = np.abs(herm2.eval(z) - f(z))
+
+   >>> import matplotlib as mpl
+   >>> __, axes = plt.subplots(ncols=2, sharex=True, sharey=True)
+   >>> __ = axes[0].set_title("Padé")
+   >>> __ = axes[1].set_title("Herm2")
+   >>> norm = mpl.colors.LogNorm(vmin=1e-16, vmax=1)
+   >>> for ax, err in zip(axes, [error, error2]):
+   ...     pcm = ax.pcolormesh(x, y, err.T, shading='nearest', norm=norm)
+   ...     cont = ax.contour(x, y, err.T, colors='black', linewidths=0.25, levels=levels)
+   ...     __ = ax.clabel(cont, cont.levels, fmt=fmt, fontsize='x-small')
+   ...     __ = ax.set_xlabel(r"$\Re z$")
+   ...     __ = ax.hlines(0, xmin=x[0], xmax=-1, color='red')  # branch cut
+   ...     ax.set_rasterization_zorder(1.5)
+   >>> __ = axes[0].scatter(poles.real, poles.imag, color='black', marker='x', zorder=2)  # poles
+   >>> __ = plt.xlim(x[0], x[-1])
+   >>> __ = axes[0].set_ylabel(r"$\Im z$")
+   >>> plt.tight_layout()
+   >>> cbar = plt.colorbar(pcm, extend='both', ax=axes, fraction=0.08, pad=0.02)
+   >>> cbar.ax.tick_params(labelsize='x-small')
+   >>> for ll in levels:
+   ...     __ = cbar.ax.axhline(ll, color='black', linewidth=0.25)
+   >>> plt.show()
 
 References
 ----------
@@ -601,7 +710,7 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
 
 @dataclass
 class _Hermite2Base:
-    """Basic container for square Hermite-Padé approximant."""
+    """Basic container for quadratic Hermite-Padé approximant."""
 
     p: Polynom
     q: Polynom
@@ -620,7 +729,7 @@ class _Hermite2Base:
 
 @dataclass
 class Hermite2(_Hermite2Base):
-    r"""Square Hermite-Padé approximant with branch selection according to Padé.
+    r"""Quadratic Hermite-Padé approximant with branch selection according to Padé.
 
     A function :math:`f(z)` with known Taylor coefficients `an` is approximated
     using
@@ -653,7 +762,7 @@ class Hermite2(_Hermite2Base):
     Examples
     --------
     Let's approximate the cubic root ``f(z) = (1 + z)**(1/3)`` by the ``[5/5/5]``
-    square Hermite-Padé approximant:
+    quadratic Hermite-Padé approximant:
 
     >>> from scipy.special import binom
     >>> an = binom(1/3, np.arange(5+5+5+2))  # Taylor of (1+x)**(1/3)
@@ -715,7 +824,7 @@ class Hermite2(_Hermite2Base):
 
     @classmethod
     def from_taylor(cls, an, deg_p: int, deg_q: int, deg_r: int) -> "Hermite2":
-        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        """Construct quadratic Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r)
         deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
         length = deg_r + deg_q + deg_p
@@ -726,7 +835,7 @@ class Hermite2(_Hermite2Base):
     @classmethod
     def from_taylor_lstsq(cls, an, deg_p: int, deg_q: int, deg_r: int,
                           rcond=None, fix_qr=None) -> "Hermite2":
-        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        """Construct quadratic Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2_lstsq(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r,
                                  rcond=rcond, fix_qr=fix_qr)
         deg_diff = max(deg_q, int(np.sqrt(deg_p*deg_r))) - deg_r
@@ -738,14 +847,14 @@ class Hermite2(_Hermite2Base):
 
 @dataclass
 class _Hermite2Ret(_Hermite2Base):
-    """Retarded Green's function given by square Hermite-Padé approximant.
+    """Retarded Green's function given by quadratic Hermite-Padé approximant.
 
     .. warning:: highly experimental and will probably vanish.
 
     """
 
     def eval(self, z):
-        """Evaluate the retarded branch of the square Hermite-Padé approximant.
+        """Evaluate the retarded branch of the quadratic Hermite-Padé approximant.
 
         The branch is chosen based on the imaginary part.
         """
@@ -767,14 +876,14 @@ class _Hermite2Ret(_Hermite2Base):
 
     @classmethod
     def from_taylor(cls, an, deg_r: int, deg_q: int, deg_p: int):
-        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        """Construct quadratic Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r)
         return cls(p=p, q=q, r=r)
 
     @classmethod
     def from_taylor_lstsq(cls, an, deg_p: int, deg_q: int, deg_r: int,
                           rcond=None, fix_qr=None) -> "Hermite2":
-        """Construct square Hermite-Padé from Taylor expansion `an`."""
+        """Construct quadratic Hermite-Padé from Taylor expansion `an`."""
         p, q, r = hermite2_lstsq(an=an, p_deg=deg_p, q_deg=deg_q, r_deg=deg_r,
                                  rcond=rcond, fix_qr=fix_qr)
         return cls(p=p, q=q, r=r)
