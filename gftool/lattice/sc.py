@@ -37,7 +37,7 @@ def gf_z(z, half_bandwidth=1):
 
     Returns
     -------
-    gf_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the simple cubic Green's function at complex energy `z`.
 
     References
@@ -93,7 +93,7 @@ def hilbert_transform(xi, half_bandwidth=1):
 
     Returns
     -------
-    hilbert_transform : complex np.ndarray or complex
+    complex np.ndarray or complex
         Hilbert transform of `xi`.
 
     See Also
@@ -147,7 +147,7 @@ def dos(eps, half_bandwidth=1):
 
     Returns
     -------
-    dos : float np.ndarray or float
+    float np.ndarray or float
         The value of the DOS.
 
     Notes
@@ -227,7 +227,7 @@ def dos_moment(m, half_bandwidth):
 
     Returns
     -------
-    dos_moment : float
+    float
         The `m` th moment of the 3D simple cubic DOS.
 
     Raises
@@ -266,7 +266,7 @@ def gf_z_mp(z, half_bandwidth=1):
 
     Returns
     -------
-    gf_z : mpmath.mpc
+    mpmath.mpc
         Value of the Green's function at complex energy `z`.
 
     References
@@ -323,7 +323,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     Returns
     -------
-    dos_mp : mpmath.mpf
+    mpmath.mpf
         The value of the DOS.
 
     References

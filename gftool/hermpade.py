@@ -289,7 +289,7 @@ def _nullvec(mat):
 
     Returns
     -------
-    nullvec : (N) complex np.ndarray
+    (N) complex np.ndarray
         The approximate null-vector corresponding to `mat`.
     """
     q_, __ = qr(mat.conj().T, mode='full')
@@ -319,7 +319,7 @@ def _nullvec_lst(mat, fix: int, rcond=None):
 
     Returns
     -------
-    nullvec : (N) np.ndarray
+    (N) np.ndarray
         The approximate null-vector corresponding to `mat`.
     """
     if fix < 0:  # handle negative indices as we use fix+1

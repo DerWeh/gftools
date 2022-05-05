@@ -22,7 +22,7 @@ def bose_fct(eps, beta):
 
     Returns
     -------
-    bose_fct : complex of float or np.ndarray
+    complex of float or np.ndarray
         The Bose function, same type as eps.
 
     Examples
@@ -66,7 +66,7 @@ def fermi_fct(eps, beta):
 
     Returns
     -------
-    fermi_fct : complex of float or np.ndarray
+    complex of float or np.ndarray
         The Fermi function, same type as eps.
 
     See Also
@@ -114,7 +114,7 @@ def fermi_fct_d1(eps, beta):
 
     Returns
     -------
-    fermi_fct_d1 : float or float np.ndarray
+    float or float np.ndarray
         The Fermi function, same type as eps.
 
     See Also
@@ -152,7 +152,7 @@ def fermi_fct_inv(fermi, beta):
 
     Returns
     -------
-    fermi_fct_inv : float or float np.ndarray
+    float or float np.ndarray
         The inverse of the Fermi function `fermi_fct(fermi_fct_inv, beta)=fermi`.
 
     See Also
@@ -181,7 +181,7 @@ def matsubara_frequencies(n_points, beta):
 
     Returns
     -------
-    matsubara_frequencies : complex np.ndarray
+    complex np.ndarray
         Array of the imaginary Matsubara frequencies.
 
     Examples
@@ -206,7 +206,7 @@ def matsubara_frequencies_b(n_points, beta):
 
     Returns
     -------
-    matsubara_frequencies : complex np.ndarray
+    complex np.ndarray
         Array of the imaginary Matsubara frequencies.
 
     Examples

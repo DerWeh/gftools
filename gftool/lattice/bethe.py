@@ -35,7 +35,7 @@ def gf_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the Bethe Green's function.
 
     References
@@ -80,7 +80,7 @@ def gf_d1_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_d1_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the derivative of the Green's function.
 
     See Also
@@ -110,7 +110,7 @@ def gf_d2_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_d2_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the Green's function.
 
     See Also
@@ -144,7 +144,7 @@ def gf_z_inv(gf, half_bandwidth):
 
     Returns
     -------
-    z : complex np.ndarray or complex
+    complex np.ndarray or complex
         The inverse of the Bethe Green's function `gf_z(gf_z_inv(g, D), D)=g`.
 
     See Also
@@ -185,7 +185,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     Returns
     -------
-    hilbert_transform : complex np.ndarray or complex
+    complex np.ndarray or complex
         Hilbert transform of `xi`.
 
     See Also
@@ -214,7 +214,7 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    dos : float np.ndarray or float
+    float np.ndarray or float
         The value of the DOS.
 
     See Also
@@ -281,7 +281,7 @@ def dos_moment(m, half_bandwidth):
 
     Returns
     -------
-    dos_moment : float
+    float
         The `m` th moment of the Bethe DOS.
 
     Raises
@@ -317,7 +317,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     Returns
     -------
-    dos_mp : mpmath.mpf
+    mpmath.mpf
         The value of the DOS.
 
     See Also
@@ -377,7 +377,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
 
     Returns
     -------
-    gf_ret_t : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the retarded-time Bethe Green's function.
 
     Examples

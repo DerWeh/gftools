@@ -130,7 +130,7 @@ def companion(a):
 
     Returns
     -------
-    c : (..., N-1, N-1) ndarray
+    (..., N-1, N-1) ndarray
         The first row of `c` is ``-a[1:]/a[0]``, and the first
         sub-diagonal is all ones.  The data-type of the array is the same
         as the data-type of ``1.0*a[0]``.
@@ -302,7 +302,7 @@ def predict(x, pcoeff, num: int, stable=False):
 
     Returns
     -------
-    px : (..., N+num) complex np.ndarray
+    (..., N+num) complex np.ndarray
         Data of the (time) series extended by `num` steps, with
         `px[:x.size] = x`.
 
@@ -373,7 +373,7 @@ def plot_roots(pcoeff, axis=None):
 
     Returns
     -------
-    axis : matplotlib.axes.Axes
+    matplotlib.axes.Axes
         The `axis` in which the roots were plotted.
 
     See Also

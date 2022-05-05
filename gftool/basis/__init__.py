@@ -46,10 +46,11 @@ class ZeroPole(NamedTuple):
         Parameters
         ----------
         z : (...) complex np.ndarray
+            Point at which the function is evaluated.
 
         Returns
         -------
-        fct : (...) complex np.ndarray
+        (...) complex np.ndarray
             The function evaluated at `z`.
         """
         z = np.asanyarray(z)[..., np.newaxis]
@@ -61,10 +62,11 @@ class ZeroPole(NamedTuple):
         Parameters
         ----------
         z : (...) complex np.ndarray
+            Point at which the reciprocal of the function is evaluated.
 
         Returns
         -------
-        recip : (...) complex np.ndarray
+        (...) complex np.ndarray
             The reciprocal of the function evaluated at `z`.
         """
         z = np.asanyarray(z)[..., np.newaxis]

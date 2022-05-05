@@ -50,7 +50,7 @@ def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
 
     Returns
     -------
-    gf0_loc_z : (...) complex np.ndarray
+    (...) complex np.ndarray
         Green's function of the impurity site.
     """
     return 1. / (z - e_onsite - hybrid_z(z, e_bath=e_bath, hopping_sqr=hopping_sqr))
@@ -72,7 +72,7 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
 
     Returns
     -------
-    gf0_loc_ret_t : (...) complex np.ndarray
+    (...) complex np.ndarray
         Retarded Green's function of the impurity site.
     """
     ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
@@ -102,7 +102,7 @@ def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
 
     Returns
     -------
-    gf0_loc_gr_t : (...) complex np.ndarray
+    (...) complex np.ndarray
         Greater Green's function of the impurity site.
     """
     ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
@@ -132,7 +132,7 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
 
     Returns
     -------
-    gf0_loc_le_t : (...) complex np.ndarray
+    (...) complex np.ndarray
         Lesser Green's function of the impurity site.
     """
     ham = hamiltonian_matrix(e_onsite, e_bath=e_bath, hopping=hopping)
@@ -165,7 +165,7 @@ def hamiltonian_matrix(e_onsite, e_bath, hopping):
 
     Returns
     -------
-    ham_mat : (..., Nb+1, Nb+1) complex np.ndarray
+    (..., Nb+1, Nb+1) complex np.ndarray
         Lesser Green's function of the impurity site.
     """
     broadcast = np.broadcast(e_onsite[..., np.newaxis], e_bath, hopping)
@@ -193,7 +193,7 @@ def hybrid_z(z, e_bath, hopping_sqr):
 
     Returns
     -------
-    hybrid_z : (...) complex np.ndarray
+    (...) complex np.ndarray
         Hybridization function of the impurity site.
     """
     return _gu_sum(hopping_sqr/(np.asanyarray(z)[..., np.newaxis] - e_bath))

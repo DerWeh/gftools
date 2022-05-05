@@ -159,7 +159,7 @@ class Decomposition(Sequence):
 
         Returns
         -------
-        reconstruct : (..., N, N) or (..., N) np.ndarray
+        (..., N, N) or (..., N) np.ndarray
             The reconstructed matrix. If a subscript string is given as `kind`,
             the shape of the output might differ.
         """
@@ -513,7 +513,7 @@ def construct_gf(rv, diag_inv, rv_inv):
 
     Returns
     -------
-    gf : (N, N) complex np.ndarray
+    (N, N) complex np.ndarray
         The Green's function.
     """
     return rv.dot(np.diagflat(diag_inv)).dot(rv_inv)
@@ -537,7 +537,7 @@ def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
 
     Returns
     -------
-    gf_2x2_z : (..., 2) complex array_like
+    (..., 2) complex array_like
         Diagonal elements of the Green's function of the 2x2 system.
 
     Notes

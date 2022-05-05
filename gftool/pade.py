@@ -134,7 +134,7 @@ def FilterNegImag(threshold=1e-8):
 
         Returns
         -------
-        is_valid : (...) bool np.ndarray
+        (...) bool np.ndarray
             True for all approximants that fulfill `apporximant.imag < threshold`.
         """
         is_valid = np.array([np.all(pade.imag < threshold, axis=-1) for pade in pade_iter])
@@ -192,7 +192,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
 
     Returns
     -------
-    filter_high_variance : callable
+    callable
         The filter function (pade_iter) -> np.ndarray.
     """
     assert abs_num is None or rel_num is None
@@ -212,7 +212,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
 
         Returns
         -------
-        is_valid : (...) bool np.ndarray
+        (...) bool np.ndarray
             Boolean array indicating which continuations to keep.
         """
         pade = np.array(list(pade_iter))
@@ -260,7 +260,7 @@ def coefficients(z, fct_z) -> np.ndarray:
 
     Returns
     -------
-    coefficients : (..., N_z) complex ndarray
+    (..., N_z) complex ndarray
         Array of Padé coefficients, needed to perform Padé continuation.
         Has the same same shape as `fct_z`.
 
@@ -411,7 +411,7 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
 
     Returns
     -------
-    average : function
+    function
         The continued function `f(z)` (`z`, ) -> Result. `f(z).x` contains the
         function values `f(z).err` the associated variance.
 
@@ -514,7 +514,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
 
     Returns
     -------
-    mod_average : function
+    function
         The continued function `f(z)` (`z`, ) -> Result. `f(z).x` contains the
         function values `f(z).err` the associated variance.
 
@@ -609,7 +609,7 @@ def apply_filter(*filters, validity_iter):
 
     Returns
     -------
-    is_valid : (...) bool np.ndarray
+    (...) bool np.ndarray
         Array to index which continuations are good.
     """
     if len(filters) == 1:

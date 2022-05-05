@@ -189,7 +189,7 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
 
     Returns
     -------
-    number_poles : int
+    int
         Best guess for optimal number of poles.
 
     References
@@ -262,7 +262,7 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
 
     Returns
     -------
-    poles : (m) complex np.ndarray
+    (m) complex np.ndarray
         The position of the poles.
 
     Notes
@@ -316,7 +316,7 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
 
     Returns
     -------
-    zeros : (n) complex np.ndarray
+    (n) complex np.ndarray
         The position of the zeros.
 
     Notes
@@ -438,7 +438,7 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
 
     Returns
     -------
-    pade : PadeApprox
+    PadeApprox
         Padé analytic continuation parametrized by `pade.zeros`,
         `pade.poles` and `pade.residues`.
 

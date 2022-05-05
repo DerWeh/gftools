@@ -43,7 +43,7 @@ def gf_z(z, half_bandwidth, scale):
 
     Returns
     -------
-    gf_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the rectangular lattice Green's function.
 
     See Also
@@ -107,7 +107,7 @@ def hilbert_transform(xi, half_bandwidth, scale):
 
     Returns
     -------
-    hilbert_transform : complex np.ndarray or complex
+    complex np.ndarray or complex
         Hilbert transform at `xi`.
 
     See Also
@@ -140,7 +140,7 @@ def dos(eps, half_bandwidth, scale):
 
     Returns
     -------
-    dos : float np.ndarray or float
+    float np.ndarray or float
         The value of the DOS.
 
     Examples

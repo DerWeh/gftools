@@ -29,7 +29,7 @@ def orth_compl(mat):
 
     Returns
     -------
-    mat_perp : (N-M, N) complex np.ndarray
+    (N-M, N) complex np.ndarray
         Orthogonal complement of `mat`, such that ``mat_perp@mat==0``.
 
     Examples
@@ -74,7 +74,7 @@ def lstsq_ec(a, b, c, d, rcond=None):
 
     Returns
     -------
-    x : (N) np.ndarray
+    (N) np.ndarray
         Least-squares solution.
 
     References

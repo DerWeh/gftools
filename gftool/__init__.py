@@ -170,7 +170,7 @@ def surface_gf_zeps(z, eps, hopping_nn):
 
     Returns
     -------
-    surface_gf_zeps : complex
+    complex
         Value of the surface Green's function.
 
     References
@@ -208,7 +208,7 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
 
     Returns
     -------
-    gf_z : complex ndarray
+    complex ndarray
         Value of the Hubbard dimer Green's function at frequencies `z`.
 
     Notes
@@ -253,7 +253,7 @@ def hubbard_I_self_z(z, U, occ):
 
     Returns
     -------
-    Σ_{Hub I} : complex array_like
+    complex array_like
         The self-energy in Hubbard I approximation.
 
     Examples
@@ -295,7 +295,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
 
     Returns
     -------
-    pole_gf_tau_b : (...) float np.ndarray
+    (...) float np.ndarray
         Imaginary time Green's function.
 
     Raises
@@ -490,7 +490,7 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
 
     Returns
     -------
-    estimate : float
+    float
         The estimate of the upper bound of the error. Reliable only for large
         enough Matsubara frequencies.
     """
@@ -527,7 +527,7 @@ def density_error2(delta_gf_iw, iw_n):
 
     Returns
     -------
-    estimate : float
+    float
         The estimate of the upper bound of the error. Reliable only for large
         enough Matsubara frequencies.
     """
@@ -553,7 +553,7 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
 
     Returns
     -------
-    check_convergence : float ndarray
+    float ndarray
         The last dimension of `check_convergence` corresponds to the Matsubara
         frequencies.
 

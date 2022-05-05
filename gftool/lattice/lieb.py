@@ -32,7 +32,7 @@ def gf_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the Lieb lattice Green's function.
 
     See Also
@@ -89,7 +89,7 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    dos : float np.ndarray or float
+    float np.ndarray or float
         The value of the DOS.
 
     See Also
@@ -142,7 +142,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     Returns
     -------
-    hilbert_transform : complex np.ndarray or complex
+    complex np.ndarray or complex
         Hilbert transform of `xi`.
 
     See Also
@@ -194,7 +194,7 @@ def dos_moment(m, half_bandwidth):
 
     Returns
     -------
-    dos_moment : float
+    float
         The `m` th moment of the 2D Lieb DOS.
 
     Raises
@@ -246,7 +246,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     Returns
     -------
-    dos_mp : mpmath.mpf
+    mpmath.mpf
         The value of the DOS.
 
     See Also

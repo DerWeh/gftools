@@ -23,7 +23,7 @@ def gf_z(z, half_bandwidth):
 
     Returns
     -------
-    gf_z : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the Green's function corresponding to a box DOS.
 
     Examples
@@ -57,7 +57,7 @@ def dos(eps, half_bandwidth):
 
     Returns
     -------
-    dos : float np.ndarray or float
+    float np.ndarray or float
         The value of the DOS.
 
     Examples
@@ -92,7 +92,7 @@ def dos_moment(m, half_bandwidth):
 
     Returns
     -------
-    dos_moment : float
+    float
         The `m` th moment of the box DOS.
 
     See Also
@@ -123,7 +123,7 @@ def gf_ret_t(tt, half_bandwidth, center=0):
 
     Returns
     -------
-    gf_ret_t : complex np.ndarray or complex
+    complex np.ndarray or complex
         Value of the retarded-time Green's function corresponding to a box DOS.
 
     Examples

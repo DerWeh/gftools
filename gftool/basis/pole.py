@@ -60,7 +60,7 @@ class PoleFct(NamedTuple):
 
         Returns
         -------
-        mom : (..., M) float np.ndarray
+        (..., M) float np.ndarray
             High-frequency moments.
 
         See Also
@@ -174,7 +174,7 @@ class PoleGf(PoleFct):
 
         Returns
         -------
-        gf_tau : (...) float np.ndarray
+        (...) float np.ndarray
             Imaginary time Green's function.
 
         See Also
@@ -193,7 +193,7 @@ class PoleGf(PoleFct):
 
         Returns
         -------
-        pole_gf_ret_t : (...) float np.ndarray
+        (...) float np.ndarray
             Retarded time Green's function.
 
         See Also
@@ -212,7 +212,7 @@ class PoleGf(PoleFct):
 
         Returns
         -------
-        occ : (...) float np.ndarray
+        (...) float np.ndarray
             Occupation number.
         """
         return _gu_sum(self.residues*fermi_fct(self.poles, beta=beta))
@@ -286,7 +286,7 @@ def gf_z(z, poles, weights):
 
     Returns
     -------
-    gf_z : (...) complex np.ndarray
+    (...) complex np.ndarray
         Green's function.
 
     See Also
@@ -317,7 +317,7 @@ def gf_d1_z(z, poles, weights):
 
     Returns
     -------
-    gf_d1_z : (...) complex np.ndarray
+    (...) complex np.ndarray
         Derivative of the Green's function.
 
     See Also
@@ -352,7 +352,7 @@ def gf_tau(tau, poles, weights, beta):
 
     Returns
     -------
-    pole_gf_tau : (...) float np.ndarray
+    (...) float np.ndarray
         Imaginary time Green's function.
 
     See Also
@@ -383,7 +383,7 @@ def gf_ret_t(tt, poles, weights):
 
     Returns
     -------
-    pole_gf_ret_t : (...) float np.ndarray
+    (...) float np.ndarray
         Retarded time Green's function.
 
     See Also
@@ -421,7 +421,7 @@ def moments(poles, weights, order):
 
     Returns
     -------
-    mom : (..., M) float np.ndarray
+    (..., M) float np.ndarray
         High-frequency moments.
     """
     poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))

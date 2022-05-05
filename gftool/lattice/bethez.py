@@ -26,7 +26,7 @@ def gf_z(z, half_bandwidth, coordination):
 
     Returns
     -------
-    gf_z : complex ndarray or complex
+    complex ndarray or complex
         Value of the Bethe Green's function.
 
     See Also
@@ -75,7 +75,7 @@ def dos(eps, half_bandwidth, coordination):
 
     Returns
     -------
-    dos : float ndarray or float
+    float ndarray or float
         The value of the DOS.
 
     See Also

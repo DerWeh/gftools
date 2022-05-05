@@ -133,7 +133,7 @@ def iw2tau_dft(gf_iw, beta):
 
     Returns
     -------
-    gf_tau : (..., 2*N_iw + 1) float np.ndarray
+    (..., 2*N_iw + 1) float np.ndarray
         The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
 
     See Also
@@ -216,7 +216,7 @@ def iw2tau_dft_soft(gf_iw, beta):
 
     Returns
     -------
-    gf_tau : (..., 2*N_iw + 1) float np.ndarray
+    (..., 2*N_iw + 1) float np.ndarray
         The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
 
     See Also
@@ -306,7 +306,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
 
     Returns
     -------
-    gf_tau : (..., 2*N_iw + 1) float np.ndarray
+    (..., 2*N_iw + 1) float np.ndarray
         The Fourier transform of `gf_iw` for imaginary times :math:`τ \in [0, β]`.
 
     See Also
@@ -409,7 +409,7 @@ def tau2iv_dft(gf_tau, beta):
 
     Returns
     -------
-    gf_iv : (..., (N_iv + 1)/2) float np.ndarray
+    (..., (N_iv + 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -489,7 +489,7 @@ def tau2iv_ft_lin(gf_tau, beta):
 
     Returns
     -------
-    gf_iv : (..., (N_iv + 1)/2) float np.ndarray
+    (..., (N_iv + 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -588,7 +588,7 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
 
     Returns
     -------
-    gf_iv : (..., (N_iv + 1)/2) complex np.ndarray
+    (..., (N_iv + 1)/2) complex np.ndarray
         The Fourier transform of `gf_tau` for non-negative bosonic Matsubara
         frequencies :math:`iν_n`.
 
@@ -673,7 +673,7 @@ def tau2iw_dft(gf_tau, beta):
 
     Returns
     -------
-    gf_iw : (..., (N_iw - 1)/2) float np.ndarray
+    (..., (N_iw - 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for positive fermionic Matsubara
         frequencies :math:`iω_n`.
 
@@ -754,7 +754,7 @@ def tau2iw_ft_lin(gf_tau, beta):
 
     Returns
     -------
-    gf_iw : (..., (N_iw - 1)/2) float np.ndarray
+    (..., (N_iw - 1)/2) float np.ndarray
         The Fourier transform of `gf_tau` for positive fermionic Matsubara
         frequencies :math:`iω_n`.
 
@@ -859,7 +859,7 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
 
     Returns
     -------
-    gf_iw : (..., (N_iv + 1)/2) complex np.ndarray
+    (..., (N_iv + 1)/2) complex np.ndarray
         The Fourier transform of `gf_tau` for non-negative fermionic Matsubara
         frequencies :math:`iω_n`.
 
@@ -1027,7 +1027,7 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
 
     Returns
     -------
-    gf_tau : (N_tau) float np.ndarray
+    (N_tau) float np.ndarray
         The Fourier transform of `gf_izp` for imaginary times `tau`.
 
     See Also
@@ -1124,7 +1124,7 @@ def tt2z_trapz(tt, gf_t, z):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     See Also
@@ -1163,7 +1163,7 @@ def _trapz_weight(delta_tt: float, gf_t, endpoint=False):
 
     Returns
     -------
-    coeffs : complex np.ndarray
+    complex np.ndarray
         Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
     """
     coeffs = delta_tt * gf_t
@@ -1195,7 +1195,7 @@ def _simps_weight(delta_tt, gf_t, endpoint=False):
 
     Returns
     -------
-    coeffs : complex np.ndarray
+    complex np.ndarray
         Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
     """
     coeffs = delta_tt/3 * gf_t
@@ -1233,7 +1233,7 @@ def tt2z_simps(tt, gf_t, z):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     See Also
@@ -1277,7 +1277,7 @@ def tt2z_lin(tt, gf_t, z):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     Raises
@@ -1341,7 +1341,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     Other Parameters
@@ -1408,7 +1408,7 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     Other Parameters
@@ -1507,7 +1507,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
 
     Returns
     -------
-    gf_z : (..., Nz) complex np.ndarray
+    (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
     Raises
@@ -1680,7 +1680,7 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
 
     Returns
     -------
-    gf_izp : (N_izp) complex np.ndarray
+    (N_izp) complex np.ndarray
         The Fourier transform of `gf_tau` for given Padé frequencies `izp`.
 
     See Also

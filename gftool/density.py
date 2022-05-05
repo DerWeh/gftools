@@ -39,7 +39,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
 
     Returns
     -------
-    occ : float
+    float
         The number density of the given Green's function `gf_iw`.
 
     See Also
@@ -120,7 +120,7 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
 
     Returns
     -------
-    mu : float
+    float
         The chemical potential given the correct charge `occ_root(mu)=0`.
 
     Raises

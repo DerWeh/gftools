@@ -73,7 +73,7 @@ def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], comple
 
     Returns
     -------
-    gf_cmpt_z : (..., N_cmpt) complex np.ndarray
+    (..., N_cmpt) complex np.ndarray
         The Green's function of the components embedded in `self_cpa_z`.
     """
     gf_coher_z = hilbert_trafo(z - self_cpa_z)[..., np.newaxis]
@@ -103,7 +103,7 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
 
     Returns
     -------
-    remainder : (...) complex np.ndarray
+    (...) complex np.ndarray
         The result of r(Σ), if it is `0` and hence a root, `self_cpa_z` is the
         correct CPA self-energy.
     """
@@ -136,7 +136,7 @@ def self_fxdpnt_eq(self_cpa_z, z, e_onsite, concentration,
 
     Returns
     -------
-    self_cpa_z_new : (..., N_z) complex np.ndarray
+    (..., N_z) complex np.ndarray
         The new self-energy f(Σ), if it is Σ again and hence a fixed-point,
         `self_cpa_z_new` is the correct CPA self-energy.
     """
@@ -193,7 +193,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
     Returns
     -------
-    self_cpa_z : (...) complex np.ndarray
+    (...) complex np.ndarray
         The CPA self-energy as the root of `self_root_eq`.
 
     Raises

@@ -125,7 +125,7 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
 
         Returns
         -------
-        truncated_svd : SpecDec
+        SpecDec
             The truncates the spectral decomposition discarding small singular values.
         """
         if rcond is None:
@@ -181,7 +181,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
 
     Returns
     -------
-    gf_loc_z : (..., N_cmpt) or (..., N_cmpt, N_cmpt) complex np.ndarray
+    (..., N_cmpt) or (..., N_cmpt, N_cmpt) complex np.ndarray
         The average local Green's function matrix.
 
     See Also
@@ -236,7 +236,7 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_dec: SpecDec,
 
     Returns
     -------
-    diff : (..., N_cmpt, N_cmpt)
+    (..., N_cmpt, N_cmpt)
         Difference of the inverses of the local and the average Green's function.
         If `diff = 0`, `self_beb_z` is the correct self-energy.
 
@@ -321,7 +321,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     Returns
     -------
-    self_beb_z : (..., N_cmpt, N_cmpt) complex np.ndarray
+    (..., N_cmpt, N_cmpt) complex np.ndarray
         The BEB self-energy as the root of `self_root_eq`.
 
     Raises
