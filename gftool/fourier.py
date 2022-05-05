@@ -1251,8 +1251,8 @@ def tt2z_simps(tt, gf_t, z):
 
     See Also
     --------
-    tt2z_trapz : Plain implementation using trapezoidal rule
-    tt2z_lin : Laplace integration using Filon's method
+    tt2z_trapz : Plain implementation using trapezoidal rule.
+    tt2z_lin : Laplace integration using Filon's method.
 
     Notes
     -----
@@ -1366,6 +1366,8 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
         for :math:`abs(z)→∞`. (default: -1)
     pade : {gftool.hermpade.pade, gftool.hermpade.pader}
         Padé algorithm that is used.
+    quad : {'trapz', 'simps'}
+        Quadrature to discretize the Laplace integral.
     kwds
         Optional key-word arguments passed to `pade`.
 
@@ -1380,7 +1382,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     gftool.hermpade.pader
     tt2z_herm2 : Fourier-Padé using square Hermite-Padé approximant.
     tt2z_trapz : Plain implementation using trapezoidal rule.
-    tt2z_lin : Laplace integration using Filon's method
+    tt2z_lin : Laplace integration using Filon's method.
 
     """
     degree = degree + 1  # adding an additional zero reduces discretization error
@@ -1425,6 +1427,15 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
     gf_z : (..., Nz) complex np.ndarray
         Laplace transformed Green's function for complex frequencies `z`.
 
+    Other Parameters
+    ----------------
+    herm2 : {gftool.hermpade.Hermite2.from_taylor, gftool.hermpade.Hermite2.from_taylor_lstsq}
+        Hermite-Padé algorithm that is used.
+    quad : {'trapz', 'simps'}
+        Quadrature to discretize the Laplace integral.
+    kwds
+        Optional key-word arguments passed to `herm2`.
+
     Raises
     ------
     ValueError
@@ -1433,9 +1444,9 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
     See Also
     --------
     gftool.hermpade.Hermite2
-    tt2z_pade : Fourier-Padé using regular rational Padé approximant
+    tt2z_pade : Fourier-Padé using regular rational Padé approximant.
     tt2z_trapz : Plain implementation using trapezoidal rule.
-    tt2z_lin : Laplace integration using Filon's method
+    tt2z_lin : Laplace integration using Filon's method.
 
     """
     delta_tt = tt[1] - tt[0]

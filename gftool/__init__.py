@@ -343,14 +343,14 @@ Result = namedtuple('Result', ['x', 'err'])
 def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
-    As Green's functions decay only as :math:`1/ω`, the known part of the form
-    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
-    :math:`Σ_{\text{static}}` is the ω-independent mean-field part of the self-energy.
-
     .. deprecated:: 0.8.0
        Mostly superseded by more flexible `density_iw`, thus this function will
        likely be discontinued. Currently `density` is a little more accurate
        for `matrix=True`, compared to `density_iw` without using fitting.
+
+    As Green's functions decay only as :math:`1/ω`, the known part of the form
+    :math:`1/(iω_n + μ - ϵ - ℜΣ_{\text{static}})` will be calculated analytically.
+    :math:`Σ_{\text{static}}` is the ω-independent mean-field part of the self-energy.
 
     Parameters
     ----------
@@ -560,16 +560,16 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
     ----------
     see `density`
 
-    Other Parameters
-    ----------------
-    order : int
-        The assumed order of the first non-vanishing term of the Laurent expansion.
-
     Returns
     -------
     check_convergence : float ndarray
         The last dimension of `check_convergence` corresponds to the Matsubara
         frequencies.
+
+    Other Parameters
+    ----------------
+    order : int
+        The assumed order of the first non-vanishing term of the Laurent expansion.
 
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)

@@ -457,7 +457,7 @@ def decompose_gf(g_inv) -> Decomposition:
     Parameters
     ----------
     g_inv : (..., N, N) complex np.ndarray
-        matrix to be decomposed
+        Matrix to be decomposed.
 
     Returns
     -------

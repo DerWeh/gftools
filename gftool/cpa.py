@@ -252,7 +252,7 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 class RootFxdocc(NamedTuple):
     """CPA solution for the self-energy root-equation for fixed occupation.
 
-    Attributes
+    Parameters
     ----------
     self_cpa : np.ndarray or complex
         The CPA self-energy.

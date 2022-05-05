@@ -101,6 +101,16 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
     """SVD like spectral decomposition.
 
     Works only for N×N matrices unlike the `UDecomposition` base class.
+
+    Parameters
+    ----------
+    rv : (..., N, N) complex np.ndarray
+        The matrix of right eigenvectors.
+    eig : (..., N) float np.ndarray
+        The vector of real eigenvalues.
+    rv_inv : (..., N, N) complex np.ndarray
+        The inverse of `rv`.
+
     """
 
     def truncate(self, rcond=None) -> SpecDec:

@@ -35,7 +35,7 @@ def _chebyshev_points(num: int) -> np.ndarray:
 class PoleFct(NamedTuple):
     """Function given by finite number of simple `poles` and `residues`.
 
-    Attributes
+    Parameters
     ----------
     poles, residues : (..., N) complex np.ndarray
         Poles and residues of the function.
@@ -94,7 +94,7 @@ class PoleFct(NamedTuple):
 
         See Also
         --------
-        gf_from_moments : contains the details how `PoleFct` is constructed.
+        gf_from_moments : Contains the details how `PoleFct` is constructed.
 
         """
         return cls(*gf_from_moments(moments, width=width))
@@ -157,7 +157,14 @@ class PoleFct(NamedTuple):
 
 
 class PoleGf(PoleFct):
-    """Fermionic Green's function given by finite number of `poles` and `residues`."""
+    """Fermionic Green's function given by finite number of `poles` and `residues`.
+
+    Parameters
+    ----------
+    poles, residues : (..., N) complex np.ndarray
+        Poles and residues of the function.
+
+    """
 
     def eval_tau(self, tau, beta):
         """Evaluate the imaginary time Green's function.

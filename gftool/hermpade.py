@@ -492,7 +492,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
         The rational polynomial with numerator `RatPol.numer`,
         and denominator `RatPol.denom`.
 
-    See also
+    See Also
     --------
     pade
 
@@ -595,7 +595,7 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
 
     See Also
     --------
-    Hermite2 : high level interface, guessing the correct branch
+    Hermite2 : High-level interface, guessing the correct branch.
 
     Examples
     --------
@@ -682,7 +682,7 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     See Also
     --------
     hermite2
-    Hermite2 : high level interface, guessing the correct branch
+    Hermite2 : High-level interface, guessing the correct branch.
     numpy.linalg.lstsq
 
     """

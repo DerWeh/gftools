@@ -27,7 +27,7 @@ class ZeroPole(NamedTuple):
     The function is given by
     ``ZeroPole.eval(z) = amplitude * np.prod(z - zeros) / np.prod(z - poles)``
 
-    Attributes
+    Parameters
     ----------
     zeros, poles : (..., Nz), (..., Np) complex np.ndarray
         Zeros and poles of the represented function.
@@ -85,7 +85,7 @@ class ZeroPole(NamedTuple):
 class RatPol(NamedTuple):
     """Rational polynomial given as numerator and denominator.
 
-    Attributes
+    Parameters
     ----------
     numer, denom : np.polynomial.Polynomial
         Numerator and denominator, given as `numpy` polynomials.
