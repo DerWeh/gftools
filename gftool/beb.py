@@ -314,7 +314,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         Cut-off ratio for small singular values of `hopping`. For the purposes
         of rank determination, singular values are treated as zero if they are
         smaller than `rcond` times the largest singular value of `hopping`.
-    root_kwds
+    **root_kwds
         Additional arguments passed to `scipy.optimize.root`.
         `method` can be used to choose a solver. `options=dict(fatol=tol)` can
         be specified to set the desired tolerance `tol`.

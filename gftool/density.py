@@ -113,7 +113,7 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
     step0 : float, optional
         Starting step-width for the bracket search. A reasonable guess is of
         the order of the band-width (default: 1).
-    kwds
+    **kwds
         Additional keyword arguments passed to `scipy.optimize.root_scalar`.
         Common arguments might be `xtol` or `rtol` for absolute or relative
         tolerance.

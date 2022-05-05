@@ -1353,7 +1353,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
         Padé algorithm that is used.
     quad : {'trapz', 'simps'}
         Quadrature to discretize the Laplace integral.
-    kwds
+    **kwds
         Optional key-word arguments passed to `pade`.
 
     Raises
@@ -1417,7 +1417,7 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
         Hermite-Padé algorithm that is used.
     quad : {'trapz', 'simps'}
         Quadrature to discretize the Laplace integral.
-    kwds
+    **kwds
         Optional key-word arguments passed to `herm2`.
 
     Raises
@@ -1502,7 +1502,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
         should be evaluated.
     laplace : {`tt2z_lin`, `tt2z_trapz`, `tt2z_pade`, `tt2z_herm2`}, optional
         Back-end to perform the actual Fourier transformation.
-    kwds
+    **kwds
         Key-word arguments forwarded to `laplace`.
 
     Returns
