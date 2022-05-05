@@ -85,7 +85,7 @@ def dos(eps, half_bandwidth):
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D * 2**1.5`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D * 2**1.5`.
 
     Returns
     -------
@@ -242,7 +242,7 @@ def dos_mp(eps, half_bandwidth=1):
         DOS is evaluated at points `eps`.
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D * 2**1.5`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D * 2**1.5`.
 
     Returns
     -------

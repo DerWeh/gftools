@@ -173,7 +173,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
         Hilbert transformation of the lattice to calculate the local Green's function.
     diag : bool, optional
         If `diag`, only the diagonal elements are calculated, else the full
-        matrix. (default: True)
+        matrix (default: True).
     rcond : float, optional
         Cut-off ratio for small singular values of `hopping`. For the purposes
         of rank determination, singular values are treated as zero if they are

@@ -267,7 +267,7 @@ def dos_mp(eps, half_bandwidth=1):
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(`eps` < -0.5*`half_bandwidth`) = 0,
         DOS(1.5*`half_bandwidth` < `eps`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`.
 
     Returns
     -------

@@ -120,7 +120,7 @@ class PoleFct(NamedTuple):
             Moments of the high-frequency expansion, where
             `G(z) = moments / z**np.arange(N)` for large `z`.
         width : float, optional
-            Distance of the largest pole to the origin (default: 1.).
+            Distance of the largest pole to the origin (default: 1.0).
         weight : (..., N_z) float np.ndarray, optional
             Weighting of the fit. If an error `σ` of the input `gf_z` is known,
             this should be `weight=1/σ`. If high-frequency moments should be fitted
@@ -241,7 +241,7 @@ class PoleGf(PoleFct):
         occ : float, optional
             If given, fix occupation of pole Green's function to `occ` (default: False).
         width : float, optional
-            Distance of the largest pole to the origin. (default: 1.)
+            Distance of the largest pole to the origin (default: 1.0).
         weight : (..., N_tau) float np.ndarray, optional
             Weight the values of `gf_tau`, can be provided to include uncertainty.
 
@@ -499,7 +499,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
         Frequencies at which `gf_z` is given. Mind that the fit is only
         meaningful away from the real axis.
     gf_z : (..., N_z) complex np.ndarray
-        Causal Green's function which is fitted
+        Causal Green's function which is fitted.
     n_pole : int
         Number of poles to fit.
     moments : (..., N) float array_like

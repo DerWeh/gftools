@@ -28,14 +28,14 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
         The inverse temperature :math:`beta = 1/k_B T`.
     weights : (..., N_iw) float np.ndarray, optional
         Residues of the frequencies with respect to the residues of the
-        Matsubara frequencies `1/beta`. (default: 1.)
+        Matsubara frequencies `1/beta` (default: 1.0).
         For Padé frequencies this needs to be provided.
     moments : (..., M) float array_like, optional
         Moments of the high-frequency expansion, where
         `G(z) = np.sum(moments / z**np.arange(N))` for large `z`.
     n_fit : int, optional
         Number of additionally to `moments` fitted moments. If Padé frequencies
-        are used, this is typically not necessary. (default: 0)
+        are used, this is typically not necessary (default: 0).
 
     Returns
     -------
@@ -107,12 +107,12 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
         Function `occ_root(mu_i) -> occ_i - occ`, which returns the difference
         in occupation to the desired occupation `occ` for a chemical potential
         `mu_i`.
-        Note that the sign is important, `occ_i - occ` has to be returned!
+        Note that the sign is important, `occ_i - occ` has to be returned.
     mu0 : float, optional
-        The starting guess for the chemical potential. (default: 0)
+        The starting guess for the chemical potential (default: 0).
     step0 : float, optional
         Starting step-width for the bracket search. A reasonable guess is of
-        the order of the band-width. (default: 1)
+        the order of the band-width (default: 1).
     kwds
         Additional keyword arguments passed to `scipy.optimize.root_scalar`.
         Common arguments might be `xtol` or `rtol` for absolute or relative

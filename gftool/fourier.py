@@ -1348,7 +1348,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     ----------------
     degree : int, optional
         Asymptotic degree :math:`d` of the Green's function :math:`G(z)∼z^d`
-        for :math:`abs(z)→∞`. (default: -1)
+        for :math:`abs(z)→∞` (default: -1).
     pade : {gftool.hermpade.pade, gftool.hermpade.pader}
         Padé algorithm that is used.
     quad : {'trapz', 'simps'}
@@ -1674,7 +1674,7 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
         High-frequency moments of `gf_iw`. If none are given, the first moment
         is chosen to remove the discontinuity at :math:`τ=0^{±}`.
     occ : float, optional
-        If given, fix occupation of Green's function to `occ`. (default: False)
+        If given, fix occupation of Green's function to `occ` (default: False).
     weight : (..., N_tau) float np.ndarray, optional
         Weight the values of `gf_tau`, can be provided to include uncertainty.
 

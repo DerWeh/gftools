@@ -109,7 +109,7 @@ class Decomposition(Sequence):
         Parameters
         ----------
         hamilton : (..., N, N) complex np.ndarray
-            Hermitian matrix to be decomposed
+            Hermitian matrix to be decomposed.
 
         Returns
         -------
@@ -478,7 +478,7 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
     Parameters
     ----------
     hamilton : (..., N, N) complex np.ndarray
-        Hermitian matrix to be decomposed
+        Hermitian matrix to be decomposed.
 
     Returns
     -------

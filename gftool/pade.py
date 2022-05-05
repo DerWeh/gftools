@@ -254,9 +254,9 @@ def coefficients(z, fct_z) -> np.ndarray:
     Parameters
     ----------
     z : (N_z, ) complex ndarray
-        Array of complex points
+        Array of complex points.
     fct_z : (..., N_z) complex ndarray
-        Function at points `z`
+        Function at points `z`.
 
     Returns
     -------
@@ -510,7 +510,7 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         If `vectorized`, all approximants are given to the function simultaneously
         where the first dimension corresponds to the approximants.
         If not `vectorized`, `mod_fct` will be called for every approximant
-        separately. (default: True)
+        separately (default: True).
 
     Returns
     -------

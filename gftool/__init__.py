@@ -198,7 +198,7 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
     Parameters
     ----------
     z : complex ndarray or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     hopping : float
         The hopping parameter between the sites of the dimer.
     interaction : float
@@ -291,7 +291,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
         Position and weight of the poles. The real part of the poles needs to
         be positive `poles.real > 0`.
     beta : float
-        Inverse temperature
+        Inverse temperature.
 
     Returns
     -------
@@ -368,7 +368,7 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
         estimate is calculated.
         See `density_error` for description of the error estimate.
     matrix : bool, optional
-        Whether the given `potential` is a matrix (default: False)
+        Whether the given `potential` is a matrix (default: False).
     total : bool or tuple
         If `total` the total density (summed over all dimensions) is returned.
         Also a tuple can be given, over which axes the sums is taken.
@@ -549,9 +549,7 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
     `check_convergence` returns rapidly growing data, the number of Matsubara
     frequencies is not sufficient
 
-    Parameters
-    ----------
-    see `density`
+    See `density` for parameters.
 
     Returns
     -------

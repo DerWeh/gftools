@@ -305,7 +305,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     n_fit : int, optional
         Passed to `gftool.density_iw`.
         Number of additionally fitted moments. If Padé frequencies
-        are used, this is typically not necessary. (default: 0)
+        are used, this is typically not necessary (default: 0).
     restricted : bool, optional
         Whether `self_cpa_z` is restricted to `self_cpa_z.imag <= 0`. (default: True)
         Note, that even if `restricted=True`, the imaginary part can get negative

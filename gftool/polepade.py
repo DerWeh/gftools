@@ -252,8 +252,8 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
         Variable where function is evaluated and function values.
     n, m : int
         Number of zeros and poles of the function.
-        For large `z` the function is proportional to `z**(n - m)`.
-        (`n` defaults to `m-1`)
+        For large `z` the function is proportional to `z**(n - m)`
+        (`n` defaults to `m-1`).
     vandermond : Callable, optional
         Function giving the Vandermond matrix of the chosen polynomial basis.
     weight : (N_z) float np.ndarray, optional
@@ -303,11 +303,11 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
     z, fct_z : (N_z) complex np.ndarray
         Variable where function is evaluated and function values.
     poles : (m) complex np.ndarray
-        Position of the poles of the function
+        Position of the poles of the function.
     n : int
         Number of zeros.
-        For large `z` the function is proportional to `z**(n - m)`.
-        (`n` defaults to `m-1`)
+        For large `z` the function is proportional to `z**(n - m)`
+        (default: ``m-1``).
     vandermond : Callable, optional
         Function giving the Vandermond matrix of the chosen polynomial basis.
     weight : (N_z) float np.ndarray, optional
@@ -384,7 +384,7 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
     z, fct_z : (N_z) complex np.ndarray
         Variable where function is evaluated and function values.
     poles : (M) complex np.ndarray
-        Position of the poles of the function
+        Position of the poles of the function.
     weight : (N_z) float np.ndarray, optional
         Weighting of the data points, for a known error `σ` this should be
         `weight = 1./σ`.
@@ -423,7 +423,7 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
     z, fct_z : (N_z) complex np.ndarray
         Variable where function is evaluated and function values.
     degree : int, optional
-        The difference of denominator and numerator degree. (default: -1)
+        The difference of denominator and numerator degree (default: -1).
         This determines how `fct_z` decays for large `abs(z)`:
         `fct_z → z**degree`. For Green's functions it typically is `-1`, for
         self-energies it typically is `0`.
@@ -448,12 +448,12 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
         Function giving the Vandermond matrix of the chosen polynomial basis.
         Defaults to simple polynomials.
     rotate : bool or None, optional
-        Whether to rotate the coordinate to calculated zeros and poles.
-        (Default: rotate if `z` is purely imaginary)
+        Whether to rotate the coordinate to calculated zeros and poles
+        (default: rotate if `z` is purely imaginary).
     real_asymp : bool, optional
         Whether to consider only the real part of the asymptote, or treat it
-        as complex number. Physically, to asymptote should typically be real.
-        (Default: True)
+        as complex number. Physically, to asymptote should typically be real
+        (default: True).
 
     Examples
     --------

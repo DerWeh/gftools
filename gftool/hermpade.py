@@ -429,7 +429,7 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol
         Cut-off ratio for small singular values for the denominator polynomial.
         For the purposes of rank determination, singular values are treated
         as zero if they are smaller than `rcond` times the largest singular
-        value. (default: machine precision times `den_deg`)
+        value (default: machine precision times `den_deg`).
 
     Returns
     -------
@@ -471,7 +471,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     Parameters
     ----------
     an : (L,) array_like
-        Taylor series coefficients representing polynomial of order ``L-1``
+        Taylor series coefficients representing polynomial of order ``L-1``.
     num_deg, den_deg : int
         The order of the return approximating numerator/denominator polynomial.
         The sum must be at most ``L``: ``L >= n + m + 1``.
@@ -479,7 +479,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     rcond : float, optional
         Cut-off ratio for small singular values. For the purposes of rank
         determination, singular values are treated as zero if they are smaller
-        than `rcond` times the largest singular value. (default: 1e-14)
+        than `rcond` times the largest singular value (default: 1e-14).
         The default is appropriate for round error due to machine precision.
 
     Returns
@@ -659,8 +659,8 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     rcond : float, optional
         Cut-off ratio for small singular values. For the purposes of rank
         determination, singular values are treated as zero if they are
-        smaller than `rcond` times the largest singular value.
-        (default: machine precision times maximum of matrix dimensions)
+        smaller than `rcond` times the largest singular value
+        (default: machine precision times maximum of matrix dimensions).
     fix_qr : int, optional
         The coefficient which is fixed to 1. The values ``0 <= fix_qr <= q_deg``
         corresponds to the coefficients of the polynomial `q`,

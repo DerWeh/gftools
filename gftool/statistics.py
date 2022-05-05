@@ -146,7 +146,7 @@ def fermi_fct_inv(fermi, beta):
     Parameters
     ----------
     fermi : float or float np.ndarray
-        The values of the Fermi function
+        The values of the Fermi function.
     beta : float
         The inverse temperature :math:`beta = 1/k_B T`.
 

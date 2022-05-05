@@ -31,7 +31,7 @@ def gf_z(z, half_bandwidth):
         Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the DOS of the body-centered cubic lattice.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`.
 
     Returns
     -------
@@ -111,7 +111,7 @@ def dos(eps, half_bandwidth):
         DOS is evaluated at points `eps`.
     half_bandwidth : float
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`.
 
     Returns
     -------
@@ -224,7 +224,7 @@ def dos_mp(eps, half_bandwidth=1):
         DOS is evaluated at points `eps`.
     half_bandwidth : mpmath.mpf or mpf_like
         Half-bandwidth of the DOS, DOS(| `eps` | > `half_bandwidth`) = 0.
-        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`
+        The `half_bandwidth` corresponds to the nearest neighbor hopping `t=D/8`.
 
     Returns
     -------

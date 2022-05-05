@@ -96,7 +96,7 @@ def hilbert_transform(xi, half_bandwidth, scale):
     Parameters
     ----------
     xi : complex np.ndarray or complex
-        Point at which the Hilbert transform is evaluated
+        Point at which the Hilbert transform is evaluated.
     half_bandwidth : float
         Half-bandwidth of the DOS of the 2D rectangular lattice.
         The `half_bandwidth` corresponds to the nearest neighbor hopping

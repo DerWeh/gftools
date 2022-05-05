@@ -17,7 +17,7 @@ def gf_z(z, half_bandwidth):
     Parameters
     ----------
     z : complex array_like or complex
-        Green's function is evaluated at complex frequency `z`
+        Green's function is evaluated at complex frequency `z`.
     half_bandwidth : float
         Half-bandwidth of the box DOS.
 

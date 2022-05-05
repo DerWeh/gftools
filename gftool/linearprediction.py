@@ -293,12 +293,12 @@ def predict(x, pcoeff, num: int, stable=False):
     x : (..., N) complex np.ndarray
         Data of the (time) series to be predicted.
     pcoeff : (..., order) complex np.ndarray
-        Prediction coefficients
+        Prediction coefficients.
     num : int
         Number of additional (time) steps.
     stable : bool, optional
         If `stable` exponentially growing terms are suppressed, by setting
-        roots outside the unit-circle to zero. (default: False)
+        roots outside the unit-circle to zero (default: False).
 
     Returns
     -------
@@ -367,9 +367,9 @@ def plot_roots(pcoeff, axis=None):
     Parameters
     ----------
     pcoeff : (order, ) complex np.ndarray
-        Prediction coefficients
+        Prediction coefficients.
     axis : matplotlib.axes.Axes , optional
-        Axis in which the roots are plotted. (default: ``plt.gca()``)
+        Axis in which the roots are plotted (default: ``plt.gca()``).
 
     Returns
     -------
