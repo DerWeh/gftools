@@ -52,7 +52,6 @@ class ZeroPole(NamedTuple):
         -------
         fct : (...) complex np.ndarray
             The function evaluated at `z`.
-
         """
         z = np.asanyarray(z)[..., np.newaxis]
         return self.amplitude * np.prod(z - self.zeros, axis=-1) / np.prod(z - self.poles, axis=-1)
@@ -68,7 +67,6 @@ class ZeroPole(NamedTuple):
         -------
         recip : (...) complex np.ndarray
             The reciprocal of the function evaluated at `z`.
-
         """
         z = np.asanyarray(z)[..., np.newaxis]
         numer = np.prod(z - self.poles, axis=-1)

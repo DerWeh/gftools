@@ -25,7 +25,6 @@ def pade_init(iw, u, n_pade):
     -------
     a
         Padé coefficients
-
     """
     if iw.shape != u.shape:
         raise ValueError("Dimensions of `iw` and `u` don't match")
@@ -74,7 +73,6 @@ def pade_calc(iw, a, w, n_pade):
     -------
     pade_calc
         function evaluated at points `w`
-
     """
     A0, A1 = 0., a[0]
     B0, B1 = 1., 1.

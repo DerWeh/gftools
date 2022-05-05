@@ -180,7 +180,6 @@ def surface_gf_zeps(z, eps, hopping_nn):
        with Numerical Implementations. Revista Brasileira de Ensino de Fisica 39,
        no. 1 (September 22, 2016).
        https://doi.org/10.1590/1806-9126-rbef-2016-0087.
-
     """
     return bethe_gf_z(z-eps, half_bandwidth=2.*hopping_nn)
 
@@ -224,7 +223,6 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
        Schriften Des Forschungszentrums Jülich Reihe Modeling and Simulation 7.
        Jülich: Forschungszentrum Jülich, 2017.
        https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
-
     """
     if kind not in ('+', '-'):
         raise ValueError(f"invalid literal for `kind`: '{kind}'")
@@ -273,7 +271,6 @@ def hubbard_I_self_z(z, U, occ):
     >>> gf_iw = gt.bethe_gf_z(ww+mu-self_ww, half_bandwidth=1.)
     >>> __ = plt.plot(ww.real, -1./np.pi*gf_iw.imag)
     >>> plt.show()
-
     """
     hartree = U * occ
     return hartree * z / (z - U + hartree)
@@ -325,7 +322,6 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     >>> __ = plt.plot(tau, gf_tau)
     >>> __ = plt.xlabel('τ')
     >>> plt.show()
-
     """
     assert np.all((tau >= 0.) & (tau <= beta))
     poles = np.atleast_1d(poles)
@@ -433,7 +429,6 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     .. [3] Luttinger, J. M. “Analytic Properties of Single-Particle Propagators
        for Many-Fermion Systems.” Physical Review 121, no. 4 (February 15,
        1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.
-
     """
     warnings.warn("`density` is deprecated; use `density_iw` instead.",
                   category=DeprecationWarning)
@@ -498,7 +493,6 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
     estimate : float
         The estimate of the upper bound of the error. Reliable only for large
         enough Matsubara frequencies.
-
     """
     part = slice(iw_n.size//10, None, None)  # only consider last 10, iw must be big
     wn = iw_n[part].imag
@@ -536,7 +530,6 @@ def density_error2(delta_gf_iw, iw_n):
     estimate : float
         The estimate of the upper bound of the error. Reliable only for large
         enough Matsubara frequencies.
-
     """
     delta_gf_iw = abs(delta_gf_iw.real)
     part = slice(iw_n.size//10, None, None)  # only consider last 10, iw must be big
@@ -570,7 +563,6 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
     ----------------
     order : int
         The assumed order of the first non-vanishing term of the Laurent expansion.
-
     """
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
 

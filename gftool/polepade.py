@@ -113,7 +113,6 @@ class PadeApprox:
     amplitude : (...) complex np.ndarray or complex
         The amplitude of the function. This is also the large `abs(z)` limit
         of the function `ZeroPole.eval(z) = amplitude * z**(Nz-Np)`.
-
     """
 
     zeros: np.ndarray
@@ -198,7 +197,6 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
        least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
        https://doi.org/10.1007/s00211-018-0948-4
-
     """
     # pylint: disable=too-many-locals
     tol = np.finfo(fct_z.dtype).eps
@@ -276,7 +274,6 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
        least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
        https://doi.org/10.1007/s00211-018-0948-4
-
     """
     # pylint: disable=too-many-locals
     if n is None:
@@ -331,7 +328,6 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
        least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
        https://doi.org/10.1007/s00211-018-0948-4
-
     """
     if n is None:
         n = poles.size - 1
@@ -369,7 +365,6 @@ def asymptotic(z, fct_z, zeros, poles, weight=None):
     -------
     asym, std : float
         Large `z` asymptotic and its standard deviation.
-
     """
     ratios = fct_z * ZeroPole(zeros, poles).reciprocal(z)
     if weight is None:
@@ -403,7 +398,6 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
         The residues corresponding to the `poles`.
     residual : (1)
         Norm of the residual.
-
     """
     polematrix = 1./np.subtract.outer(z, poles)
     if weight is not None:
@@ -482,7 +476,6 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
 
     >>> gf_pade.plot()
     >>> plt.show()
-
     """
     if degree > 0:
         raise ValueError(f"`degree` must be smaller or equal 0 (given: {degree}).")

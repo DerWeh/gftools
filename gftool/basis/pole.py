@@ -67,7 +67,6 @@ class PoleFct(NamedTuple):
         See Also
         --------
         moments
-
         """
         return moments(poles=self.poles, weights=self.residues, order=order)
 
@@ -95,7 +94,6 @@ class PoleFct(NamedTuple):
         See Also
         --------
         gf_from_moments : Contains the details how `PoleFct` is constructed.
-
         """
         return cls(*gf_from_moments(moments, width=width))
 
@@ -150,7 +148,6 @@ class PoleFct(NamedTuple):
         the poles and residues with polynomials and the Vandermond matrix.
         The poles are chooses as Chebyshev nodes, the residues are calculated
         accordingly.
-
         """
         return cls(*gf_from_z(z, gf_z, n_pole=n_pole, moments=moments,
                               width=width, weight=weight))
@@ -163,7 +160,6 @@ class PoleGf(PoleFct):
     ----------
     poles, residues : (..., N) complex np.ndarray
         Poles and residues of the function.
-
     """
 
     def eval_tau(self, tau, beta):
@@ -185,7 +181,6 @@ class PoleGf(PoleFct):
         See Also
         --------
         gf_tau
-
         """
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
@@ -205,7 +200,6 @@ class PoleGf(PoleFct):
         See Also
         --------
         gf_ret_t
-
         """
         return gf_ret_t(tt, poles=self.poles, weights=self.residues)
 
@@ -221,7 +215,6 @@ class PoleGf(PoleFct):
         -------
         occ : (...) float np.ndarray
             Occupation number.
-
         """
         return _gu_sum(self.residues*fermi_fct(self.poles, beta=beta))
 
@@ -274,7 +267,6 @@ class PoleGf(PoleFct):
         the poles and residues with polynomials and the Vandermond matrix.
         The poles are chooses as Chebyshev nodes, the residues are calculated
         accordingly.
-
         """
         return cls(*gf_from_tau(gf_tau, n_pole=n_pole, beta=beta,
                                 moments=moments, occ=occ, width=width, weight=weight))
@@ -303,7 +295,6 @@ def gf_z(z, poles, weights):
     gf_d1_z : First derivative of the Green's function.
     gf_tau : Corresponding fermionic imaginary time Green's function.
     gt.pole_gf_tau_b : Corresponding bosonic imaginary time Green's function.
-
     """
     poles = np.atleast_1d(poles)
     z = np.asanyarray(z)[..., newaxis]
@@ -333,7 +324,6 @@ def gf_d1_z(z, poles, weights):
     See Also
     --------
     gf_z
-
     """
     poles = np.atleast_1d(poles)
     z = np.asanyarray(z)[..., newaxis]
@@ -369,7 +359,6 @@ def gf_tau(tau, poles, weights, beta):
     See Also
     --------
     pole_gf_z : Corresponding commutator Green's function.
-
     """
     assert np.all((tau >= 0.) & (tau <= beta))
     poles = np.atleast_1d(poles)
@@ -401,7 +390,6 @@ def gf_ret_t(tt, poles, weights):
     See Also
     --------
     pole_gf_z : Corresponding commutator Green's function.
-
     """
     poles = np.atleast_1d(poles)
     tt = np.asanyarray(tt)
@@ -436,7 +424,6 @@ def moments(poles, weights, order):
     -------
     mom : (..., M) float np.ndarray
         High-frequency moments.
-
     """
     poles, weights = np.atleast_1d(*np.broadcast_arrays(poles, weights))
     order = np.asarray(order)[..., newaxis]
@@ -478,7 +465,6 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
     the poles and residues with polynomials and the Vandermond matrix.
     The poles are chooses as Chebyshev nodes, the residues are calculated
     accordingly.
-
     """
     moments = np.asarray(moments)
     n_mom = moments.shape[-1]
@@ -549,7 +535,6 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     the poles and residues with polynomials and the Vandermond matrix.
     The poles are chooses as Chebyshev nodes, the residues are calculated
     accordingly.
-
     """
     moments = np.asarray(moments)
     poles = _chebyshev_points(n_pole)
@@ -630,7 +615,6 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     the poles and residues with polynomials and the Vandermond matrix.
     The poles are chooses as Chebyshev nodes, the residues are calculated
     accordingly.
-
     """
     poles = width * _chebyshev_points(n_pole)
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])

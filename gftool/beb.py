@@ -110,7 +110,6 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
         The vector of real eigenvalues.
     rv_inv : (..., N, N) complex np.ndarray
         The inverse of `rv`.
-
     """
 
     def truncate(self, rcond=None) -> SpecDec:
@@ -128,7 +127,6 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
         -------
         truncated_svd : SpecDec
             The truncates the spectral decomposition discarding small singular values.
-
         """
         if rcond is None:
             rcond = np.finfo(self.eig.dtype).eps * max(self.u.shape[-2:])
@@ -189,7 +187,6 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     See Also
     --------
     solve_root
-
     """
     hopping_dec = SpecDec(*decompose_her(hopping))
     LOGGER.info('hopping singular values %s', hopping_dec.s)
@@ -246,7 +243,6 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_dec: SpecDec,
     See Also
     --------
     solve_root
-
     """
     eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
@@ -371,7 +367,6 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     >>> __ = plt.plot(ww.real, -1./np.pi*np.sum(gf_loc_ww.imag, axis=-1), label='avg')
     >>> __ = plt.legend()
     >>> plt.show()
-
     """
     hopping_dec = SpecDec(*decompose_her(hopping))
     LOGGER.info('hopping singular values %s', hopping_dec.s)

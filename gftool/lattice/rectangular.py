@@ -71,7 +71,6 @@ def gf_z(z, half_bandwidth, scale):
     >>> _ = plt.xlim(left=ww.real.min(), right=ww.real.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     D = half_bandwidth / (1 + scale)
     z = z / D
@@ -120,7 +119,6 @@ def hilbert_transform(xi, half_bandwidth, scale):
     Relation between nearest neighbor hopping `t`, scale `γ` and half-bandwidth `D`
 
     .. math:: 2(γ+1)t = D
-
     """
     return gf_z(xi, half_bandwidth, scale=scale)
 
@@ -158,7 +156,6 @@ def dos(eps, half_bandwidth, scale):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     # same code as gf_z, using the itentity for the elliptic integral
     # `K(m) = K(m/(m-1)).conj() / (1-m)**0.5` real `m`

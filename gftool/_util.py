@@ -32,7 +32,6 @@ def _gu_matvec(x1, x2):
     -------
     (..., N) np.ndarray
         The resulting vector.
-
     """
     return (x1 @ x2[..., np.newaxis])[..., 0]
 
@@ -51,7 +50,6 @@ def _u_ellipk(z):
     -------
     complex np.ndarray or complex
         The complete elliptic integral.
-
     """
     ellipk = _ellipk_z(np.asarray(z, dtype=complex))
     try:

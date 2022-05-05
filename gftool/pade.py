@@ -136,7 +136,6 @@ def FilterNegImag(threshold=1e-8):
         -------
         is_valid : (...) bool np.ndarray
             True for all approximants that fulfill `apporximant.imag < threshold`.
-
         """
         is_valid = np.array([np.all(pade.imag < threshold, axis=-1) for pade in pade_iter])
         LOGGER.debug("Filter Padés with positive imaginary part (threshold: %s): %s",
@@ -158,7 +157,6 @@ def FilterNegImagNum(abs_num=None, rel_num=None):
     Warnings
     --------
     Only checked for flat inputs.
-
     """
     assert abs_num is None or rel_num is None
     assert abs_num is not None or rel_num is not None
@@ -196,7 +194,6 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
     -------
     filter_high_variance : callable
         The filter function (pade_iter) -> np.ndarray.
-
     """
     assert abs_num is None or rel_num is None
     assert abs_num is not None or rel_num is not None
@@ -217,7 +214,6 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         -------
         is_valid : (...) bool np.ndarray
             Boolean array indicating which continuations to keep.
-
         """
         pade = np.array(list(pade_iter))
         pade_sum = np.sum(pade, axis=0)
@@ -281,7 +277,6 @@ def coefficients(z, fct_z) -> np.ndarray:
     `fct_z` was already quad precision {float128, complex256}, see
     `_PRECISE_TYPES`. This avoids giving the illusion that the results are more
     precise than the input.
-
     """
     if z.shape != fct_z.shape[-1:]:
         raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
@@ -373,7 +368,6 @@ def calc_iterator(z_out, z_in, coeff):
        by Means of N-Point Padé Approximants.” Journal of Low Temperature
        Physics 29, no. 3-4 (November 1, 1977): 179-92.
        https://doi.org/10.1007/BF00655090.
-
     """
     assert coeff.shape[-1] == z_in.size
     target_shape = coeff.shape[:-1] + z_out.shape
@@ -427,7 +421,6 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         If `valid_pades` not of type `bool`
     RuntimeError
         If all there are none elements of `valid_pades` that evaluate to True.
-
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
@@ -465,7 +458,6 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         RuntimeError
             If the calculated continuation contain any NaNs. This indicates
             invalid input in the coefficients and thus the original function.
-
         """
         z = np.asarray(z)
 
@@ -532,7 +524,6 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         If `valid_pades` not of type `bool`
     RuntimeError
         If all there are none elements of `valid_pades` that evaluate to True.
-
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
@@ -573,7 +564,6 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         RuntimeError
             If the calculated continuation contain any NaNs. This indicates
             invalid input in the coefficients and thus the original function.
-
         """
         z = np.asarray(z)
 
@@ -621,7 +611,6 @@ def apply_filter(*filters, validity_iter):
     -------
     is_valid : (...) bool np.ndarray
         Array to index which continuations are good.
-
     """
     if len(filters) == 1:
         return filters[0](validity_iter)
@@ -685,7 +674,6 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
         Function evaluated at points `z`.
     averaged.err : (N_in, N_out) complex ndarray
         Variance associated with the function values `pade.x` at points `z`.
-
     """
     assert fct_z is None or coeff is None
     z_in = z_in[:kind.stop]
@@ -728,7 +716,6 @@ def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     threshold : float, optional
         The numerical threshold, how large of an positive imaginary part is
         tolerated (default: 1e-8). `np.infty` can be given to accept all.
-
     """
     filter_neg_imag = FilterNegImag(threshold)
     return averaged(z_out=z_out, z_in=z_in, valid_z=valid_z, fct_z=fct_z,

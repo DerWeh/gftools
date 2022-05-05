@@ -185,7 +185,6 @@ def iw2tau_dft(gf_iw, beta):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
@@ -272,7 +271,6 @@ def iw2tau_dft_soft(gf_iw, beta):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     tail_range = np.linspace(0, np.pi, num=gf_iw.shape[-1] + 1)[1:]
     tail = .5*(np.cos(tail_range) + 1.)
@@ -374,7 +372,6 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     moments = np.asarray(moments)
     iws = matsubara_frequencies(range(gf_iw.shape[-1]), beta=beta)
@@ -458,7 +455,6 @@ def tau2iv_dft(gf_tau, beta):
     >>> __ = plt.legend()
     >>> # plt.yscale('log')
     >>> plt.show()
-
     """
     gf_mean = np.trapz(gf_tau, dx=beta/(gf_tau.shape[-1]-1), axis=-1)
     gf_iv = beta * np.fft.ihfft(gf_tau[..., :-1] - gf_mean[..., newaxis])
@@ -553,7 +549,6 @@ def tau2iv_ft_lin(gf_tau, beta):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     n_tau = gf_tau.shape[-1]
     gf_dft = np.fft.ihfft(gf_tau[..., :-1])
@@ -647,7 +642,6 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     g1 = (gf_tau[..., -1] - gf_tau[..., 0])  # = 1/z moment = jump of Gf at 0^{±}
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
@@ -727,7 +721,6 @@ def tau2iw_dft(gf_tau, beta):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     # expand `gf_tau` to [-β, β] to get symmetric function
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
@@ -823,7 +816,6 @@ def tau2iw_ft_lin(gf_tau, beta):
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
     n_tau = gf_tau_full_range.shape[-1] - 1  # pylint: disable=unsubscriptable-object
@@ -970,7 +962,6 @@ def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
     >>> plt.yscale('log')
     >>> plt.tight_layout()
     >>> plt.show()
-
     """
     tau = np.linspace(0, beta, num=gf_tau.shape[-1])
     m1 = -gf_tau[..., -1] - gf_tau[..., 0]
@@ -1104,7 +1095,6 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
     >>> plt.yscale('log')
     >>> plt.tight_layout()
     >>> plt.show()
-
     """
     pole_gf = PoleGf(*_z2polegf(izp, gf_izp, n_pole=izp.size, moments=moments))
     return pole_gf.eval_tau(tau, beta)
@@ -1148,7 +1138,6 @@ def tt2z_trapz(tt, gf_t, z):
     If `numexpr` is available, it is used for the significant speed up it
     provides for transcendental equations.  Internally the sum is evaluated
     as a matrix product to leverage the speed-up of BLAS.
-
     """
     phase = _phase(z[..., newaxis], tt[newaxis, :])
     boundary = (phase[..., 0]*gf_t[..., :1]*(tt[1] - tt[0])
@@ -1176,7 +1165,6 @@ def _trapz_weight(delta_tt: float, gf_t, endpoint=False):
     -------
     coeffs : complex np.ndarray
         Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
-
     """
     coeffs = delta_tt * gf_t
     # trapeze rule -> correct boundaries with 1/2
@@ -1209,7 +1197,6 @@ def _simps_weight(delta_tt, gf_t, endpoint=False):
     -------
     coeffs : complex np.ndarray
         Weighted `gf_t` according to the trapezoidal rule, ready to be summed.
-
     """
     coeffs = delta_tt/3 * gf_t
     # TODO: check if the code be be unified/simplified
@@ -1259,7 +1246,6 @@ def tt2z_simps(tt, gf_t, z):
     If `numexpr` is available, it is used for the significant speed up it
     provides for transcendental equations.  Internally the sum is evaluated
     as a matrix product to leverage the speed-up of BLAS.
-
     """
     delta_tt = tt[1] - tt[0]
     coeffs = _simps_weight(delta_tt, gf_t)
@@ -1319,7 +1305,6 @@ def tt2z_lin(tt, gf_t, z):
        Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
        97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
-
     """
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
@@ -1383,7 +1368,6 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     tt2z_herm2 : Fourier-Padé using square Hermite-Padé approximant.
     tt2z_trapz : Plain implementation using trapezoidal rule.
     tt2z_lin : Laplace integration using Filon's method.
-
     """
     degree = degree + 1  # adding an additional zero reduces discretization error
     delta_tt = tt[1] - tt[0]
@@ -1447,7 +1431,6 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
     tt2z_pade : Fourier-Padé using regular rational Padé approximant.
     tt2z_trapz : Plain implementation using trapezoidal rule.
     tt2z_lin : Laplace integration using Filon's method.
-
     """
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
@@ -1627,7 +1610,6 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     >>> plt.yscale('log')
     >>> plt.tight_layout()
     >>> plt.show()
-
     """
     retarded = np.all(tt >= 0) and np.all(z.imag >= 0)
     advanced = np.all(tt <= 0) and np.all(z.imag <= 0)
@@ -1768,7 +1750,6 @@ def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
     >>> plt.yscale('log')
     >>> plt.tight_layout()
     >>> plt.show()
-
     """
     pole_gf = _tau2polegf(gf_tau, beta, n_pole=izp.size, moments=moments, occ=occ, weight=weight)
     return pole_gf.eval_z(izp)

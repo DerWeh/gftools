@@ -102,7 +102,6 @@ class Lattice:
     """Generic class to test basic properties of `gftool.lattice` modules.
 
     Mostly checks the DOS and it's relation to other functions.
-
     """
 
     lattice = gt.lattice.bethe  # should be replaced!! Just available members
@@ -139,7 +138,6 @@ class Lattice:
         r"""Imaginary part of the GF is proportional to the DOS.
 
         .. math:: DOS(ϵ) = -ℑG(ϵ+i0⁺)/π
-
         """
         omega = np.linspace(*self.band_edges(**kwds), dtype=complex, num=int(1e4)) + 1e-16j
         omega = omega[1:-1]  # exclude endpoints...
@@ -192,7 +190,6 @@ class SymLattice(Lattice):
     """Generic class to test basic properties of symmetric `gftool.lattice` modules.
 
     Mostly checks the DOS and it's relation to other functions.
-
     """
 
     def test_dos_half(self, kwds):

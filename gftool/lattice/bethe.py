@@ -57,7 +57,6 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.xlim(left=ww.min(), right=ww.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
     try:
@@ -87,7 +86,6 @@ def gf_d1_z(z, half_bandwidth):
     See Also
     --------
     gftool.lattice.bethe.gf_z
-
     """
     z_rel_inv = np.array(half_bandwidth / z, dtype=np.complex256)
     try:
@@ -118,7 +116,6 @@ def gf_d2_z(z, half_bandwidth):
     See Also
     --------
     gftool.lattice.bethe.gf_z
-
     """
     z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
     try:
@@ -165,7 +162,6 @@ def gf_z_inv(gf, half_bandwidth):
     >>> gf_ww = gt.lattice.bethe.gf_z(ww, half_bandwidth=1)
     >>> np.allclose(ww, gt.lattice.bethe.gf_z_inv(gf_ww, half_bandwidth=1))
     True
-
     """
     return (0.5 * half_bandwidth)**2 * gf + 1./gf
 
@@ -201,7 +197,6 @@ def hilbert_transform(xi, half_bandwidth):
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`:
 
     .. math:: 2t = D
-
     """
     return gf_z(xi, half_bandwidth)
 
@@ -244,7 +239,6 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     eps_rel = np.asarray(eps / half_bandwidth)
     dos = np.zeros_like(eps_rel)
@@ -298,7 +292,6 @@ def dos_moment(m, half_bandwidth):
     See Also
     --------
     gftool.lattice.bethe.dos
-
     """
     if m % 2:  # odd moments vanish due to symmetry
         return 0
@@ -356,7 +349,6 @@ def dos_mp(eps, half_bandwidth=1):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     eps, half_bandwidth = mp.mpf(eps), mp.mpf(half_bandwidth)
     if mp.fabs(eps) > half_bandwidth:
@@ -402,7 +394,6 @@ def gf_ret_t(tt, half_bandwidth, center=0):
     >>> _ = plt.xlim(left=tt.min(), right=tt.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     tt = np.asarray(half_bandwidth*tt)
     gf = np.zeros_like(tt, dtype=complex)

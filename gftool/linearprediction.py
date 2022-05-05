@@ -148,7 +148,6 @@ def companion(a):
     ----------
     .. [1] R. A. Horn & C. R. Johnson, *Matrix Analysis*.  Cambridge, UK:
         Cambridge University Press, 1999, pp. 146-7.
-
     """
     a = np.atleast_1d(a)
 
@@ -203,7 +202,6 @@ def pcoeff_covar(x, order: int, rcond=None):
     ValueError
         If the prediction `order` is not smaller than the number of data
         points `N`.
-
     """
     if order >= x.shape[-1]:
         raise ValueError(f"Prediction order ({order}) has to be smaller than"
@@ -258,7 +256,6 @@ def pcoeff_burg(x, order: int):
     ----------
     .. [Kay1988] Kay, S.M., 1988. Modern spectral estimation:
        theory and application. Pearson Education India.
-
     """
     N = x.shape[-1]
     rho = np.full([*x.shape[:-1], order+1], np.nan)
@@ -317,7 +314,6 @@ def predict(x, pcoeff, num: int, stable=False):
     See Also
     --------
     pcoeff_covar
-
     """
     if num < 0:
         raise ValueError(f"Number of predicted (time) steps has to be positive (num={num})")
@@ -340,7 +336,6 @@ def _predict_stable(x, pcoeff, num: int):
     If the root is outside the unit circle, it corresponds to a pole in the
     upper complex half-plane resulting in exponential growth.
     We remove such roots.
-
     """
     # calculate poles and residues
     order = pcoeff.shape[-1]
@@ -384,7 +379,6 @@ def plot_roots(pcoeff, axis=None):
     See Also
     --------
     pcoeff_covar
-
     """
     import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
     if axis is None:

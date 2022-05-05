@@ -291,7 +291,6 @@ def _nullvec(mat):
     -------
     nullvec : (N) complex np.ndarray
         The approximate null-vector corresponding to `mat`.
-
     """
     q_, __ = qr(mat.conj().T, mode='full')
     return q_[:, -1]
@@ -322,7 +321,6 @@ def _nullvec_lst(mat, fix: int, rcond=None):
     -------
     nullvec : (N) np.ndarray
         The approximate null-vector corresponding to `mat`.
-
     """
     if fix < 0:  # handle negative indices as we use fix+1
         fix = mat.shape[-1] + fix
@@ -390,7 +388,6 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     >>> __ = plt.legend()
     >>> plt.yscale('log')
     >>> plt.show()
-
     """
     # TODO: allow to fix asymptotic by fixing `p[-1]`
     an = np.asarray(an)
@@ -444,7 +441,6 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol
     --------
     pade
     numpy.linalg.lstsq
-
     """
     an = np.asarray(an)
     assert an.ndim == 1
@@ -524,7 +520,6 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     >>> plt.yscale('log')
     >>> __ = plt.legend()
     >>> plt.show()
-
     """
     an = np.asarray(an)
     assert an.ndim == 1
@@ -617,7 +612,6 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     >>> __ = plt.plot(x, pos_branch.real, '--', label='Herm2', color='C1')
     >>> __ = plt.plot(x, pos_branch.imag, ':', color='C1')
     >>> plt.show()
-
     """
     an = np.asarray(an)
     assert an.ndim == 1
@@ -684,7 +678,6 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     hermite2
     Hermite2 : High-level interface, guessing the correct branch.
     numpy.linalg.lstsq
-
     """
     an = np.asarray(an)
     assert an.ndim == 1
@@ -807,7 +800,6 @@ class Hermite2(_Hermite2Base):
     >>> p_branch, __ = herm.eval_branches(x)
     >>> np.allclose(p_branch, fx, rtol=1e-14, atol=1e-14)
     True
-
     """
 
     p: Polynom
@@ -850,7 +842,6 @@ class _Hermite2Ret(_Hermite2Base):
     """Retarded Green's function given by quadratic Hermite-Padé approximant.
 
     .. warning:: highly experimental and will probably vanish.
-
     """
 
     def eval(self, z):

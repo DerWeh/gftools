@@ -53,7 +53,6 @@ def gf_z(z, half_bandwidth, coordination):
     >>> _ = plt.xlim(left=ww.min(), right=ww.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     assert coordination > 1
     z_rel_inv = half_bandwidth / z
@@ -97,7 +96,6 @@ def dos(eps, half_bandwidth, coordination):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     assert coordination > 1
     eps_rel = np.asarray(eps / half_bandwidth)

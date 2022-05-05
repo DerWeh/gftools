@@ -59,7 +59,6 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.xlim(left=ww.min(), right=ww.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     z_rel_inv = half_bandwidth/z
     elliptic = _u_ellipk(z_rel_inv**2)
@@ -98,7 +97,6 @@ def hilbert_transform(xi, half_bandwidth):
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 4t = D
-
     """
     return gf_z(xi, half_bandwidth)
 
@@ -143,7 +141,6 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     eps_rel = np.asarray(eps / half_bandwidth)
     dos = np.zeros_like(eps_rel)
@@ -198,7 +195,6 @@ def dos_moment(m, half_bandwidth):
     See Also
     --------
     gftool.lattice.square.dos
-
     """
     if m % 2:  # odd moments vanish due to symmetry
         return 0
@@ -259,7 +255,6 @@ def dos_mp(eps, half_bandwidth=1):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     eps, half_bandwidth = mp.mpf(eps), mp.mpf(half_bandwidth)
     if mp.fabs(eps) > half_bandwidth:
@@ -299,6 +294,5 @@ def stress_trafo(xi, half_bandwidth):
     .. [arsenault2013] Arsenault, L.-F., Tremblay, A.-M.S., 2013. Transport
        functions for hypercubic and Bethe lattices. Phys. Rev. B 88, 205109.
        https://doi.org/10.1103/PhysRevB.88.205109
-
     """
     return -0.5 * (xi*gf_z(xi, half_bandwidth=half_bandwidth) - 1)

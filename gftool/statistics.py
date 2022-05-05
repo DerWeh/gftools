@@ -42,7 +42,6 @@ def bose_fct(eps, beta):
     >>> _ = plt.axvline(0, color='black', linewidth=0.8)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     betaeps = np.asanyarray(beta*eps)
     res = np.empty_like(betaeps)
@@ -86,7 +85,6 @@ def fermi_fct(eps, beta):
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> _ = plt.ylim(bottom=0)
     >>> plt.show()
-
     """
     z = eps*beta
     try:
@@ -135,7 +133,6 @@ def fermi_fct_d1(eps, beta):
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> _ = plt.ylim(top=0)
     >>> plt.show()
-
     """
     fermi = fermi_fct(eps, beta=beta)
     return -beta*fermi*(1-fermi)
@@ -168,7 +165,6 @@ def fermi_fct_inv(fermi, beta):
     >>> fermi = gt.fermi_fct(eps, beta=1)
     >>> np.allclose(eps, gt.fermi_fct_inv(fermi, beta=1))
     True
-
     """
     return -logit(fermi)/beta
 
@@ -193,7 +189,6 @@ def matsubara_frequencies(n_points, beta):
     >>> gt.matsubara_frequencies(range(1024), beta=1)
     array([0.+3.14159265e+00j, 0.+9.42477796e+00j, 0.+1.57079633e+01j, ...,
            0.+6.41827379e+03j, 0.+6.42455698e+03j, 0.+6.43084016e+03j])
-
     """
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 1j * np.pi / beta * (2*n_points + 1)
@@ -219,7 +214,6 @@ def matsubara_frequencies_b(n_points, beta):
     >>> gt.matsubara_frequencies_b(range(1024), beta=1)
     array([0.+0.00000000e+00j, 0.+6.28318531e+00j, 0.+1.25663706e+01j, ...,
            0.+6.41513220e+03j, 0.+6.42141538e+03j, 0.+6.42769857e+03j])
-
     """
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 2j * np.pi / beta * n_points
@@ -292,7 +286,6 @@ def pade_frequencies(num: int, beta):
 
     >>> rp
     array([ 1.        ,  1.00002021,  1.04839303,  2.32178225, 22.12980451])
-
     """
     izp, resids = _pade_frequencies(num)
     return 1/beta * izp, resids

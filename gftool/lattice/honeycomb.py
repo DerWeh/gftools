@@ -59,7 +59,6 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.xlim(left=ww.real.min(), right=ww.real.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     D = half_bandwidth / 1.5
     z_rel = z / D
@@ -113,7 +112,6 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     D = half_bandwidth / 1.5
     eps_rel = eps / D
@@ -151,7 +149,6 @@ def hilbert_transform(xi, half_bandwidth):
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 3t/2 = D
-
     """
     return gf_z(xi, half_bandwidth)
 
@@ -201,7 +198,6 @@ def dos_moment(m, half_bandwidth):
     See Also
     --------
     gftool.lattice.honeycomb.dos
-
     """
     if m % 2:  # odd moments vanish due to symmetry
         return 0
@@ -274,7 +270,6 @@ def dos_mp(eps, half_bandwidth=1):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     D_inv = mp.mpf('1.5') / mp.mpf(half_bandwidth)
     eps_rel = mp.mpf(eps) * D_inv

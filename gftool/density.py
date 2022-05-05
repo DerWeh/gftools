@@ -84,7 +84,6 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     0.17858151...
     >>> abs(occ_izp - exact) < 1e-12
     True
-
     """
     # add axis for iws, remove it later at occupation
     moments = np.asanyarray(moments, dtype=np.float_)[..., np.newaxis, :]
@@ -154,7 +153,6 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
     >>> mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
     >>> occ_fct(mu), occ
     (1.67000..., 1.67)
-
     """
     # find a bracket
     delta_occ0 = occ_root(mu0)

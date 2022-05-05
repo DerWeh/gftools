@@ -43,7 +43,6 @@ def _join(*args):
     shapes : list of tuple of int
         Shapes of all `args`. This is necessary to perform the inverse
         operation `_split`.
-
     """
     args = [np.asanyarray(ar) for ar in args]
     joined = np.concatenate([ar.reshape(-1) for ar in args])
@@ -76,7 +75,6 @@ def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], comple
     -------
     gf_cmpt_z : (..., N_cmpt) complex np.ndarray
         The Green's function of the components embedded in `self_cpa_z`.
-
     """
     gf_coher_z = hilbert_trafo(z - self_cpa_z)[..., np.newaxis]
     return gf_coher_z / (1 - (e_onsite - self_cpa_z[..., np.newaxis])*gf_coher_z)
@@ -108,7 +106,6 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
     remainder : (...) complex np.ndarray
         The result of r(Σ), if it is `0` and hence a root, `self_cpa_z` is the
         correct CPA self-energy.
-
     """
     gf_coher_z = hilbert_trafo(z - self_cpa_z)
     energy_diff = e_onsite - self_cpa_z[..., np.newaxis]
@@ -142,7 +139,6 @@ def self_fxdpnt_eq(self_cpa_z, z, e_onsite, concentration,
     self_cpa_z_new : (..., N_z) complex np.ndarray
         The new self-energy f(Σ), if it is Σ again and hence a fixed-point,
         `self_cpa_z_new` is the correct CPA self-energy.
-
     """
     return self_cpa_z + self_root_eq(self_cpa_z, z, e_onsite=e_onsite, concentration=concentration,
                                      hilbert_trafo=hilbert_trafo)
@@ -229,7 +225,6 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
     >>> __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 0].imag)
     >>> __ = plt.plot(ww.real, -1./np.pi*gf_cmpt_ww[..., 1].imag)
     >>> plt.show()
-
     """
     concentration = np.array(concentration)
     if self_cpa_z0 is None:  # static average + 0j to make it complex array
@@ -362,7 +357,6 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     ...                                  hilbert_trafo=hilbert)
     >>> np.allclose(self_cpa_iw, self_compare, atol=1e-5)
     True
-
     """
     concentration = np.asarray(concentration)[..., np.newaxis, :]
     e_onsite = np.asarray(e_onsite)

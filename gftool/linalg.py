@@ -39,7 +39,6 @@ def orth_compl(mat):
     >>> mat_perp = gt.linalg.orth_compl(mat)
     >>> np.allclose(mat_perp@mat, 0)
     True
-
     """
     dim0, dim1 = mat.shape[-2:]
     if dim0 <= dim1:
@@ -82,7 +81,6 @@ def lstsq_ec(a, b, c, d, rcond=None):
     ----------
     .. [golub2013] Golub, Gene H., und Charles F. Van Loan. Matrix Computations.
        JHU Press, 2013.
-
     """
     if a.shape[-1] == 0:
         return np.zeros(a.shape[:-2] + (0,), dtype=a.dtype)

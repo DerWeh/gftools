@@ -40,7 +40,6 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.xlim(left=ww.min(), right=ww.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     z_rel = z / half_bandwidth
     return 0.5 / half_bandwidth * np.emath.log((z_rel + 1) / (z_rel - 1))
@@ -74,7 +73,6 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     dos = np.where(abs(eps) < half_bandwidth, 0.5/half_bandwidth, 0)
     return dos
@@ -100,7 +98,6 @@ def dos_moment(m, half_bandwidth):
     See Also
     --------
     gftool.lattice.box.dos
-
     """
     if m % 2:  # odd moments vanish due to symmetry
         return 0
@@ -143,7 +140,6 @@ def gf_ret_t(tt, half_bandwidth, center=0):
     >>> _ = plt.xlim(left=tt.min(), right=tt.max())
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     tt = np.asarray(half_bandwidth*tt)
     gf = np.zeros_like(tt, dtype=complex)

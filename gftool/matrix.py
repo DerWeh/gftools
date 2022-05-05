@@ -90,7 +90,6 @@ class Decomposition(Sequence):
     >>> matrix_inv = dec.reconstruct(eig=1.0/dec.eig)
     >>> np.allclose(np.linalg.inv(matrix), matrix_inv)
     True
-
     """
 
     __slots__ = ('rv', 'eig', 'rv_inv')
@@ -115,7 +114,6 @@ class Decomposition(Sequence):
         Returns
         -------
         Decomposition
-
         """
         if isinstance(hamilton, cls):
             return hamilton
@@ -137,7 +135,6 @@ class Decomposition(Sequence):
         Returns
         -------
         Decomposition
-
         """
         if isinstance(gf, cls):
             return gf
@@ -165,7 +162,6 @@ class Decomposition(Sequence):
         reconstruct : (..., N, N) or (..., N) np.ndarray
             The reconstructed matrix. If a subscript string is given as `kind`,
             the shape of the output might differ.
-
         """
         eig = eig if eig is not None else self.eig
         kind = kind.lower()
@@ -237,7 +233,6 @@ class UDecomposition(Decomposition):
     True
     >>> np.allclose(dec.u @ dec.u.conj().T, np.eye(*matrix.shape))
     True
-
     """
 
     __slots__ = ()
@@ -300,7 +295,6 @@ def decompose_mat(mat) -> Decomposition:
     >>> dec = gt.matrix.decompose_mat(matrix)
     >>> np.allclose(matrix, dec.reconstruct())
     True
-
     """
     eig, vec = np.linalg.eig(mat)
     return Decomposition(rv=vec, eig=eig, rv_inv=np.linalg.inv(vec))
@@ -373,7 +367,6 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
     >>> dec = gt.matrix.decompose_sym(sym_mat)
     >>> np.allclose(sym_mat, dec.reconstruct())
     True
-
     """
     if check and not np.allclose(sym_mat - transpose(sym_mat), 0):
         raise ValueError("Matrix `sym_mat` is not symmetric.")
@@ -436,7 +429,6 @@ def decompose_her(her_mat, check=True) -> UDecomposition:
     >>> dec = gt.matrix.decompose_her(her_mat)
     >>> np.allclose(her_mat, dec.reconstruct())
     True
-
     """
     if check and not np.allclose(her_mat - transpose(her_mat.conj()), 0):
         raise ValueError("Matrix `her_mat` is not Hermitian.")
@@ -467,7 +459,6 @@ def decompose_gf(g_inv) -> Decomposition:
         The complex eigenvalues of `g_inv`.
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
         The *inverse* of the right eigenvectors :math:`P`.
-
     """
     warnings.warn("`decompose_gf` is deprecated; use `decompose_mat` or `decompose_sym` instead.",
                   category=DeprecationWarning)
@@ -498,7 +489,6 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
         The *inverse* of the right eigenvectors :math:`U^†`. The Hamiltonian is
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`.
-
     """
     warnings.warn("`decompose_hamiltonian` is deprecated; use `decompose_her` instead.",
                   category=DeprecationWarning)
@@ -525,7 +515,6 @@ def construct_gf(rv, diag_inv, rv_inv):
     -------
     gf : (N, N) complex np.ndarray
         The Green's function.
-
     """
     return rv.dot(np.diagflat(diag_inv)).dot(rv_inv)
 
@@ -554,7 +543,6 @@ def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
     Notes
     -----
     For the trivial case `eps0==eps1 and hopping==0`, this implementation fails.
-
     """
     mean_eps = np.mean([eps0, eps1], axis=0)
     sqrt_ = np.lib.scimath.sqrt(0.25*(eps0 - eps1)**2 + hopping*np.conj(hopping))

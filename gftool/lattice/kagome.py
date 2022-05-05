@@ -69,7 +69,6 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.ylim(bottom=-5, top=5)
     >>> _ = plt.legend()
     >>> plt.show()
-
     """
     D = half_bandwidth
     peak = 1 / (3*z + 2*D)
@@ -134,7 +133,6 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     D = half_bandwidth
     return 2 / 3 * honeycomb.dos(eps - D/3, half_bandwidth=D)
@@ -171,7 +169,6 @@ def hilbert_transform(xi, half_bandwidth):
     Relation between nearest neighbor hopping `t` and half-bandwidth `D`
 
     .. math:: 3t/2 = D
-
     """
     return gf_z(xi, half_bandwidth)
 
@@ -234,7 +231,6 @@ def dos_moment(m, half_bandwidth):
     See Also
     --------
     gftool.lattice.kagome.dos
-
     """
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
@@ -300,7 +296,6 @@ def dos_mp(eps, half_bandwidth=1):
     >>> _ = plt.ylim(bottom=0)
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
-
     """
     D = mp.mpf(half_bandwidth)
     return mp.mpf("2/3") * honeycomb.dos_mp(eps - D/3, half_bandwidth=D)
