@@ -8,11 +8,13 @@ Submodules
 .. autosummary::
   :toctree: generated
 
+   gftool.basis
    gftool.beb
    gftool.cpa
    gftool.fourier
    gftool.hermpade
    gftool.lattice
+   gftool.linalg
    gftool.linearprediction
    gftool.matrix
    gftool.pade

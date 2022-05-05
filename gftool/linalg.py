@@ -1,4 +1,4 @@
-"""Collection of linear algebra algorithms not contained in numpy or scipy."""
+"""Collection of linear algebra algorithms not contained in `numpy` or `scipy`."""
 from functools import partial
 
 import numpy as np
@@ -17,8 +17,8 @@ def orth_compl(mat):
 
     .. math:: A = QR = (Q_1, Q_2) {(R_1, 0)}^2.
 
-    The N×(N-M) matrix `Q_2` gives the orthogonal complement `A_⟂ = Q_2.T.conj()`
-    with the property
+    The N×(N-M) matrix `Q_2` gives the orthogonal complement
+    ``A_⟂ = Q_2.T.conj()`` with the property
 
     .. math:: A_⟂ A = 0.
 
@@ -30,13 +30,13 @@ def orth_compl(mat):
     Returns
     -------
     mat_perp : (N-M, N) complex np.ndarray
-        orthogonal complement of `mat`, such that `mat_perp@mat=0`.
+        Orthogonal complement of `mat`, such that ``mat_perp@mat==0``.
 
     Examples
     --------
     >>> RNG = np.random.default_rng()
     >>> mat = RNG.random((10, 5))
-    >>> mat_perp = orth_compl(mat)
+    >>> mat_perp = gt.linalg.orth_compl(mat)
     >>> np.allclose(mat_perp@mat, 0)
     True
 
@@ -54,7 +54,7 @@ def lstsq_ec(a, b, c, d, rcond=None):
 
     Solves the equation `ax = b` with the constraint `cx = d`, where the vector
     `x` minimizes the squared Euclidean 2-norm :math:`||ax - b||^2_2`.
-    Internally `np.linalg.lstsq` is used to solve the least-squares problem.
+    Internally `numpy.linalg.lstsq` is used to solve the least-squares problem.
     The algorithm is taken from [golub2013]_.
 
     Parameters
@@ -71,12 +71,12 @@ def lstsq_ec(a, b, c, d, rcond=None):
         Cut-off ratio for small singular values of `a`.
         For the purposes of rank determination, singular values are treated
         as zero if they are smaller than `rcond` times the largest singular
-        value of `a`. (default: machine precision times `max(M, N)`)
+        value of `a` (default: machine precision times `max(M, N)`).
 
     Returns
     -------
     x : (N) np.ndarray
-        Least-squares solution
+        Least-squares solution.
 
     References
     ----------

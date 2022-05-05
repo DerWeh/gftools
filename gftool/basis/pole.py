@@ -3,9 +3,7 @@ r"""Representation using poles and the corresponding residues.
 Assuming we have only simple poles Green's functions, we can represent Green's
 functions using these poles and their corresponding residues:
 
-.. math::
-
-   g(z) = \sum_j r_j / (z - ϵ_j)
+.. math:: g(z) = \sum_j r_j / (z - ϵ_j)
 
 where :math:`ϵ_j` are the poles and :math:`r_j` the corresponding residues.
 Self-energies can also be represented by the poles after subtracting the static
@@ -118,14 +116,14 @@ class PoleFct(NamedTuple):
             Frequencies at which `gf_z` is given. Mind that the fit is only
             meaningful away from the real axis.
         gf_z : (..., N_z) complex np.ndarray
-            Causal Green's function which is fitted
+            Causal Green's function which is fitted.
         n_pole : int
             Number of poles to fit.
         moments : (..., N) float array_like
             Moments of the high-frequency expansion, where
             `G(z) = moments / z**np.arange(N)` for large `z`.
         width : float, optional
-            Distance of the largest pole to the origin. (default: 1.)
+            Distance of the largest pole to the origin (default: 1.).
         weight : (..., N_z) float np.ndarray, optional
             Weighting of the fit. If an error `σ` of the input `gf_z` is known,
             this should be `weight=1/σ`. If high-frequency moments should be fitted
@@ -135,12 +133,12 @@ class PoleFct(NamedTuple):
         -------
         PoleFct
             Instance with (N) poles at the Chebyshev nodes for degree `N` and
-            (..., N) residues such that the pole function fits `gf_z`
+            (..., N) residues such that the pole function fits `gf_z`.
 
         Raises
         ------
         ValueError
-            If more moments are given than poles are fitted (`len(moments) > n_pole`)
+            If more moments are given than poles are fitted (`len(moments) > n_pole`).
 
         See Also
         --------
@@ -170,7 +168,7 @@ class PoleGf(PoleFct):
             Green's function is evaluated at imaginary times `tau`.
             Only implemented for :math:`τ ∈ [0, β]`.
         beta : float
-            Inverse temperature
+            Inverse temperature.
 
         Returns
         -------
@@ -242,7 +240,7 @@ class PoleGf(PoleFct):
             Moments of the high-frequency expansion, where
             `G(z) = moments / z**np.arange(N)` for large `z`.
         occ : float, optional
-            If given, fix occupation of pole Green's function to `occ`. (default: False)
+            If given, fix occupation of pole Green's function to `occ` (default: False).
         width : float, optional
             Distance of the largest pole to the origin. (default: 1.)
         weight : (..., N_tau) float np.ndarray, optional
@@ -252,12 +250,12 @@ class PoleGf(PoleFct):
         -------
         PoleFct
             Instance with (N) poles at the Chebyshev nodes for degree `N` and
-            (..., N) residues such that the pole function fits `gf_z`
+            (..., N) residues such that the pole function fits `gf_z`.
 
         Raises
         ------
         ValueError
-            If more moments are given than poles are fitted (`len(moments) > n_pole`)
+            If more moments are given than poles are fitted (`len(moments) > n_pole`).
 
         See Also
         --------
@@ -354,7 +352,7 @@ def gf_tau(tau, poles, weights, beta):
     poles, weights : (..., N) float array_like or float
         Position and weight of the poles.
     beta : float
-        Inverse temperature
+        Inverse temperature.
 
     Returns
     -------
@@ -536,7 +534,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     Raises
     ------
     ValueError
-        If more moments are given than poles are fitted (`len(moments) > n_pole`)
+        If more moments are given than poles are fitted (`len(moments) > n_pole`).
 
     Notes
     -----
@@ -601,9 +599,9 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
         Moments of the high-frequency expansion, where
         `G(z) = moments / z**np.arange(N)` for large `z`.
     occ : float, optional
-        If given, fix occupation of pole Green's function to `occ`. (default: False)
+        If given, fix occupation of pole Green's function to `occ` (default: False).
     width : float, optional
-        Distance of the largest pole to the origin. (default: 1.)
+        Distance of the largest pole to the origin (default: 1.).
     weight : (..., N_tau) float np.ndarray, optional
         Weight the values of `gf_tau`, can be provided to include uncertainty.
 
@@ -617,7 +615,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     Raises
     ------
     ValueError
-        If more moments are given than poles are fitted (`len(moments) > n_pole`)
+        If more moments are given than poles are fitted (`len(moments) > n_pole`).
 
     Notes
     -----

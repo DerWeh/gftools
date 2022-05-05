@@ -1,7 +1,15 @@
 """Different function bases.
 
-The basis classes are based on `NamedTuple`, hence they have hardly any overhead.
+The basis classes are based on `~typing.NamedTuple`, hence they have hardly any overhead.
 On the other hand, no additional checks are performed in the constructor.
+
+Submodules
+----------
+
+.. autosummary::
+   :toctree:
+
+   pole
 
 """
 from typing import NamedTuple
@@ -17,8 +25,7 @@ class ZeroPole(NamedTuple):
     """Rational polynomial characterized by zeros and poles.
 
     The function is given by
-
-    .. math:: ZeroPole.eval(z) = asymptotic * np.prod(z - zeros) / np.prod(z - poles)
+    ``ZeroPole.eval(z) = amplitude * np.prod(z - zeros) / np.prod(z - poles)``
 
     Attributes
     ----------
