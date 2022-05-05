@@ -39,11 +39,10 @@ class PoleFct(NamedTuple):
     ----------
     poles, residues : (..., N) complex np.ndarray
         Poles and residues of the function.
-
     """
 
-    poles: np.ndarray
-    residues: np.ndarray
+    poles: np.ndarray  #: Poles of the function.
+    residues: np.ndarray  #: Residues corresponding to the poles.
 
     def eval_z(self, z):
         """Evaluate the function at `z`."""

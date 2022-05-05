@@ -253,11 +253,10 @@ class RootFxdocc(NamedTuple):
         The CPA self-energy.
     mu : float
         Chemical potential.
-
     """
 
-    self_cpa: np.ndarray
-    mu: float
+    self_cpa: np.ndarray  #: The CPA self-energy.
+    mu: float  #: Chemical potential.
 
 
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],

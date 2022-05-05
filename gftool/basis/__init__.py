@@ -34,12 +34,11 @@ class ZeroPole(NamedTuple):
     amplitude : (...) complex np.ndarray or complex
         The amplitude of the function. This is also the large `abs(z)` limit
         of the function `ZeroPole.eval(z) = amplitude * z**(Nz-Np)`.
-
     """
 
-    zeros: np.ndarray
-    poles: np.ndarray
-    amplitude: complex or np.ndarray = 1.
+    zeros: np.ndarray  #: Zeros of the rational polynomial.
+    poles: np.ndarray  #: Poles of the rational polynomial.
+    amplitude: complex or np.ndarray = 1.0  #: Amplitude of the function, i.e., the prefactor.
 
     def eval(self, z):
         """Evaluate the function at `z`.
@@ -87,11 +86,10 @@ class RatPol(NamedTuple):
     ----------
     numer, denom : np.polynomial.Polynomial
         Numerator and denominator, given as `numpy` polynomials.
-
     """
 
-    numer: np.polynomial.Polynomial
-    denom: np.polynomial.Polynomial
+    numer: np.polynomial.Polynomial  #: Numerator of the rational polynomial.
+    denom: np.polynomial.Polynomial  #: Denominator of the rational polynomial.
 
     def eval(self, z):
         """Evaluate the rational polynomial at `z`."""
