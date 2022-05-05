@@ -3,6 +3,13 @@
 What's New
 ==========
 
+unreleased
+----------
+
+Bug fixes
+~~~~~~~~~
+* fix vectorization of `~gftool.linearprediction` functions
+
 0.11.0 (2022-04-29)
 -------------------
 

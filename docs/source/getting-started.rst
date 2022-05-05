@@ -6,27 +6,41 @@ GfTool's main content
 ---------------------
 
 `gftool`
-   * collection of non-interacting Green's functions and spectral functions,
+   * Collection of non-interacting Green's functions and spectral functions,
      see also the `~gftool.lattice` submodule.
-   * utility functions like Matsubara frequencies and Fermi functions.
-   * reliable calculation of particle numbers via Matsubara sums
+   * Utility functions like Matsubara frequencies and Fermi functions.
+   * Reliable calculation of particle numbers via Matsubara sums.
 
 `~gftool.cpa`/`~gftool.beb`
-   * single site approximation to disorder
-   * diagonal disorder only (CPA) and diagonal and off-diagonal (BEB)
-   * average local Green's function and component Green's functions
+   * Single site approximation to disorder.
+   * Diagonal disorder only (CPA) and diagonal and off-diagonal (BEB).
+   * Average local Green's function and component Green's functions.
 
 `~gftool.fourier`
    * Fourier transforms from Matsubara frequencies to imaginary time and back,
      including the handling of high-frequencies moments
-     (especially important for transforms from Matsubara to imaginary time)
-   * Laplace transform from real times to complex frequencies
+     (especially important for transforms from Matsubara to imaginary time).
+   * Laplace transform from real times to complex frequencies.
 
 `~gftool.matrix`
-   * helper for Green's functions in matrix form
+   * Helper for Green's functions in matrix form.
 
 `~gftool.pade`
-   * analytic continuation via the Padé algorithm
+   * Analytic continuation via the Padé algorithm.
+
+     - Calculates a rational polynomial as interpolation of the data points.
+     - Note: the module is out-dated, so it's not well documented at a bit
+       awkward to use. Consider using `~gftool.polepade` instead.
+
+`~gftool.polepade`
+   * Analytic continuation via a pole-based variant of the Padé algorithm.
+
+     - Based on explicit calculation of the pole in a least-squares sense.
+     - Allows including uncertainties as weights.
+
+`~gftool.siam`
+   * Basic Green's functions for the non-interacting Single Impurity Anderson
+     model.
 
 
 Installation
