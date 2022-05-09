@@ -29,7 +29,7 @@ def test_lstsq_ce_constraints(args):
     """Check if fully constraint solution of `gt.linalg.lstsq_ec` is correct."""
     a, b, c, d = args
     if c.shape[-1] > 0:  # make sure matrix is diagonalizable
-        assume(np.all(np.linalg.cond(c) < 1e8))
+        assume(np.all(np.linalg.cond(c) < 1e6))
     sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
     assert_allclose(lstsq, sol, atol=1e-14)
