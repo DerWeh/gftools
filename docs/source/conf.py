@@ -122,6 +122,42 @@ numpydoc_use_plots = True
 # numpydoc_xref_param_type = True
 # numpydoc_xref_ignore = "all"  # not working...
 numpydoc_show_class_members = False
+# run checks, see https://numpydoc.readthedocs.io/en/latest/validation.html
+numpydoc_validation_checks = {
+    # "GL01",  # doesn't work with subclasses: NamedTuple.index and the like
+    # "GL02",  # doesn't work with subclasses: NamedTuple.index and the like
+    "GL03",
+    "GL05",
+    "GL06",
+    "GL07",
+    # "GL08",  # magic method __init__ has no docstring
+    "GL09",
+    "GL10",
+    # "SS01",  # magic method __init__ has no docstring
+    "SS02",
+    # "SS03",  # Attributes cannot be documented for named tuples (inheritance).
+    "SS04",
+    # "SS05",  # We sometimes start with noun, e.g., Green's function
+    "SS06",
+    # "PR01",  # For short docstrings we don't document parameters
+    "PR02",
+    "PR03",
+    "PR04",
+    "PR05",
+    "PR06",
+    "PR07",
+    "PR08",
+    "PR09",
+    "PR10",
+    # "RT01",  # For short docstrings we don't document the return values
+    # "RT02",  # We return sometimes multiple arguments in a single line
+    "RT03",
+    "RT04",
+    "RT05",
+    "YD01",
+    "SA02",
+    "SA03",
+}
 
 # -----------------------------------------------------------------------------
 # Plots
