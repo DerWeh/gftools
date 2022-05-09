@@ -38,7 +38,8 @@ _nan_std = partial(np.nanstd, ddof=1, axis=0)
 
 
 class KindSelector(ABC):
-    """Abstract filter class to determine high-frequency behavior of Padé.
+    """
+    Abstract filter class to determine high-frequency behavior of Padé.
 
     We denote approximants with the corresponding high frequency behavior as
     *valid*.
@@ -81,7 +82,8 @@ class KindSelector(ABC):
 
 
 class KindGf(KindSelector):
-    """Filter approximants such that the high-frequency behavior is :math:`1/ω`.
+    """
+    Filter approximants such that the high-frequency behavior is :math:`1/ω`.
 
     We denote approximants with the corresponding high frequency behavior as
     *valid*.
@@ -98,7 +100,8 @@ class KindGf(KindSelector):
 
 
 class KindSelf(KindSelector):
-    """Filter approximants such that the high-frequency behavior is a constant.
+    """
+    Filter approximants such that the high-frequency behavior is a constant.
 
     We denote approximants with the corresponding high frequency behavior as
     *valid*.
@@ -115,7 +118,8 @@ class KindSelf(KindSelector):
 
 
 def FilterNegImag(threshold=1e-8):
-    """Return function to check if imaginary part is smaller than `threshold`.
+    """
+    Return function to check if imaginary part is smaller than `threshold`.
 
     This methods is designed to create `valid_pades` for `Averager`.
     The imaginary part of retarded Green's functions and self-energies must be
@@ -125,7 +129,8 @@ def FilterNegImag(threshold=1e-8):
     with infinite Coordination number as example.
     """
     def filter_neg_imag(pade_iter):
-        r"""Check which Padé approximants have a negative imaginary part.
+        r"""
+        Check which Padé approximants have a negative imaginary part.
 
         Parameters
         ----------
@@ -146,7 +151,8 @@ def FilterNegImag(threshold=1e-8):
 
 
 def FilterNegImagNum(abs_num=None, rel_num=None):
-    """Return function to check how bad the imaginary part gets.
+    """
+    Return function to check how bad the imaginary part gets.
 
     This methods is designed to create `valid_pades` for `Averager`.
     The imaginary part of retarded Green's functions and self-energies must be
@@ -181,7 +187,8 @@ def FilterNegImagNum(abs_num=None, rel_num=None):
 
 
 def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
-    """Return function to filter continuations with highest variance.
+    """
+    Return function to filter continuations with highest variance.
 
     Parameters
     ----------
@@ -203,7 +210,8 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         assert abs_num > 0
 
     def filter_high_variance(pade_iter):
-        """Remove the continuations with highest variance.
+        """
+        Remove the continuations with highest variance.
 
         Parameters
         ----------
@@ -249,7 +257,8 @@ def _contains_nan(array) -> bool:
 
 
 def coefficients(z, fct_z) -> np.ndarray:
-    """Calculate the coefficients for the Padé continuation.
+    """
+    Calculate the coefficients for the Padé continuation.
 
     Parameters
     ----------
@@ -291,7 +300,8 @@ def coefficients(z, fct_z) -> np.ndarray:
 
 @partial(np.vectorize, otypes=[complex], signature='(n),(n)->(n)')
 def masked_coefficients(z, fct_z):
-    """Calculate coefficients but ignore extreme values.
+    """
+    Calculate coefficients but ignore extreme values.
 
     Like `coefficients` but probably better for noisy data.
     """
@@ -338,7 +348,8 @@ def masked_coefficients(z, fct_z):
 
 
 def calc_iterator(z_out, z_in, coeff):
-    r"""Calculate Padé continuation of function at points `z_out`.
+    r"""
+    Calculate Padé continuation of function at points `z_out`.
 
     The continuation is calculated for different numbers of coefficients taken
     into account, where the number is in [n_min, n_max].
@@ -392,7 +403,8 @@ def calc_iterator(z_out, z_in, coeff):
 
 
 def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
-    """Create function for averaging Padé scheme.
+    """
+    Create function for averaging Padé scheme.
 
     Parameters
     ----------
@@ -434,7 +446,8 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def average(z) -> Result:
-        """Calculate Padé continuation of function at points `z`.
+        """
+        Calculate Padé continuation of function at points `z`.
 
         The continuation is calculated for different numbers of coefficients
         taken into account, where the number is in [n_min, n_max]. The function
@@ -482,7 +495,8 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
 
 
 def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vectorized=True):
-    r"""Create function for averaging Padé scheme using `mod_fct` before the average.
+    r"""
+    Create function for averaging Padé scheme using `mod_fct` before the average.
 
     This function behaves like `Averager` just that `mod_fct` is applied before
     taking the averages. This should be used, if not the analytic continuation
@@ -537,7 +551,8 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def mod_average(z, *args, **kwds) -> Result:
-        """Calculate modified Padé continuation of function at points `z`.
+        """
+        Calculate modified Padé continuation of function at points `z`.
 
         Calculate the averaged continuation of `mod_fct(f_z, *args, **kwds)`
         The continuation is calculated for different numbers of coefficients
@@ -598,7 +613,8 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
 
 
 def apply_filter(*filters, validity_iter):
-    r"""Handle usage of filters for Padé.
+    r"""
+    Handle usage of filters for Padé.
 
     Parameters
     ----------
@@ -633,7 +649,8 @@ def apply_filter(*filters, validity_iter):
 
 def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
              filter_valid=None, kind: KindSelector):
-    """Return the averaged Padé continuation with its variance.
+    """
+    Return the averaged Padé continuation with its variance.
 
     The output is checked to have an imaginary part smaller than `threshold`,
     as retarded Green's functions and self-energies have a negative imaginary
@@ -700,7 +717,8 @@ def averaged(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
 
 def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
                     threshold=1e-8, kind: KindSelector):
-    """Average Padé filtering approximants with non-negative imaginary part.
+    """
+    Average Padé filtering approximants with non-negative imaginary part.
 
     This function wraps `averaged`, see `averaged` for the parameters.
 

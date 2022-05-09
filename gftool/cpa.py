@@ -29,7 +29,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _join(*args):
-    """Join arguments to 1D array for use in `optimize`.
+    """
+    Join arguments to 1D array for use in `optimize`.
 
     Parameters
     ----------
@@ -58,7 +59,8 @@ def _split(joined, shapes):
 
 
 def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], complex]):
-    """Green's function for the components embedded in `self_cpa_z`.
+    """
+    Green's function for the components embedded in `self_cpa_z`.
 
     Parameters
     ----------
@@ -82,7 +84,8 @@ def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], comple
 
 def self_root_eq(self_cpa_z, z, e_onsite, concentration,
                  hilbert_trafo: Callable[[complex], complex]):
-    """Root equation r(Σ)=0 for CPA.
+    """
+    Root equation r(Σ)=0 for CPA.
 
     The root equation writes `r(Σ, z) = T(z) / (1 + T(z)*hilbert_trafo(z-Σ))`.
 
@@ -115,7 +118,8 @@ def self_root_eq(self_cpa_z, z, e_onsite, concentration,
 
 def self_fxdpnt_eq(self_cpa_z, z, e_onsite, concentration,
                    hilbert_trafo: Callable[[complex], complex]):
-    """Fixed-point equation f(Σ)=Σ for CPA.
+    """
+    Fixed-point equation f(Σ)=Σ for CPA.
 
     The fixed-point equation writes `f(Σ, z) = Σ + T(z) / (1 + T(z)*hilbert_trafo(z-Σ))`.
 
@@ -162,7 +166,8 @@ def restrict_self_root_eq(self_cpa_z, *args, **kwds):
 
 def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
                self_cpa_z0=None, restricted=True, **root_kwds):
-    """Determine the CPA self-energy by solving the root problem.
+    """
+    Determine the CPA self-energy by solving the root problem.
 
     Note that the result should be checked, whether the obtained solution is
     physical.
@@ -245,7 +250,8 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
 
 class RootFxdocc(NamedTuple):
-    """CPA solution for the self-energy root-equation for fixed occupation.
+    """
+    CPA solution for the self-energy root-equation for fixed occupation.
 
     Parameters
     ----------
@@ -262,7 +268,8 @@ class RootFxdocc(NamedTuple):
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
                       beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
                       weights=1, n_fit=0, restricted=True, **root_kwds) -> RootFxdocc:
-    """Determine the CPA self-energy by solving the root problem for fixed `occ`.
+    """
+    Determine the CPA self-energy by solving the root problem for fixed `occ`.
 
     Parameters
     ----------

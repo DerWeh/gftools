@@ -25,7 +25,8 @@ def _signed_sqrt(z):
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 2D triangular lattice.
+    r"""
+    Local Green's function of the 2D triangular lattice.
 
     Note, that the spectrum is asymmetric and in :math:`[-2D/3, 4D/3]`,
     where :math:`D` is the half-bandwidth.
@@ -90,7 +91,8 @@ def gf_z(z, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the triangular lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the triangular lattice.
 
     The Hilbert transform is defined
 
@@ -125,7 +127,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 2D triangular lattice.
+    r"""
+    DOS of non-interacting 2D triangular lattice.
 
     The DOS diverges at `-4/9*half_bandwidth`.
     The DOS is evaluated as complete elliptic integral of first kind,
@@ -221,7 +224,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the triangular DOS.
+    """
+    Calculate the `m` th moment of the triangular DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -253,7 +257,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 2D triangular lattice.
+    r"""
+    Multi-precision DOS of non-interacting 2D triangular lattice.
 
     The DOS diverges at `-4/9*half_bandwidth`.
 

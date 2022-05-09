@@ -151,7 +151,8 @@ assert all((density_iw, chemical_potential))
 
 
 def surface_gf_zeps(z, eps, hopping_nn):
-    r"""Surface Green's function for stacked layers.
+    r"""
+    Surface Green's function for stacked layers.
 
     .. math::
         \left(1 - \sqrt{1 - 4 t^2 g_{00}^2}\right)/(2 t^2 g_{00})
@@ -185,7 +186,8 @@ def surface_gf_zeps(z, eps, hopping_nn):
 
 
 def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
-    r"""Green's function for the two site Hubbard model on a *dimer*.
+    r"""
+    Green's function for the two site Hubbard model on a *dimer*.
 
     The Hamilton is given
 
@@ -237,7 +239,8 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
 
 
 def hubbard_I_self_z(z, U, occ):
-    r"""Self-energy in Hubbard-I approximation (atomic solution).
+    r"""
+    Self-energy in Hubbard-I approximation (atomic solution).
 
     The chemical potential and the onsite energy have to be included in `z`.
 
@@ -277,7 +280,8 @@ def hubbard_I_self_z(z, U, occ):
 
 
 def pole_gf_tau_b(tau, poles, weights, beta):
-    """Bosonic imaginary time Green's function given by a finite number of `poles`.
+    """
+    Bosonic imaginary time Green's function given by a finite number of `poles`.
 
     The bosonic Green's function is given by
     `G(tau) = -(1 + bose_fct(poles, beta))*exp(-poles*tau)`
@@ -337,7 +341,8 @@ Result = namedtuple('Result', ['x', 'err'])
 
 
 def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
-    r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
+    r"""
+    Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     .. deprecated:: 0.8.0
        Mostly superseded by more flexible `density_iw`, thus this function will
@@ -466,7 +471,8 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
 
 
 def density_error(delta_gf_iw, iw_n, noisy=True):
-    """Return an estimate for the upper bound of the error in the density.
+    """
+    Return an estimate for the upper bound of the error in the density.
 
     This estimate is based on the *integral test*. The crucial assumption is,
     that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^2` for all larger
@@ -507,7 +513,8 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
 
 
 def density_error2(delta_gf_iw, iw_n):
-    """Return an estimate for the upper bound of the error in the density.
+    """
+    Return an estimate for the upper bound of the error in the density.
 
     This estimate is based on the *integral test*. The crucial assumption is,
     that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^3` for all larger
@@ -541,7 +548,8 @@ def density_error2(delta_gf_iw, iw_n):
 
 
 def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False):
-    """Return data for visual inspection of  the density error.
+    """
+    Return data for visual inspection of  the density error.
 
     The calculation of the density error assumes that *sufficient* Matsubara
     frequencies were used. Sufficient means here, that the reminder :math:`ΔG`

@@ -26,7 +26,8 @@ assert_allclose = np.testing.assert_allclose
               [0.4 + 1j, -1.38 - 0.46j]])
 ))
 def test_gf_loc(t, self_beb_z):
-    """Check local Green's function against integration.
+    """
+    Check local Green's function against integration.
 
     This is a rather expensive test -> currently no hypothesis.
     """

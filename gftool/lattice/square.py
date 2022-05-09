@@ -19,7 +19,8 @@ from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 2D square lattice.
+    r"""
+    Local Green's function of the 2D square lattice.
 
     .. math::
         G(z) = \frac{2}{πz} ∫^{π/2}_{0} \frac{dϕ}{\sqrt{1 - (D/z)^2 \cos^2ϕ}}
@@ -67,7 +68,8 @@ def gf_z(z, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the square lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the square lattice.
 
     The Hilbert transform is defined
 
@@ -102,7 +104,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 2D square lattice.
+    r"""
+    DOS of non-interacting 2D square lattice.
 
     Has a van Hove singularity (logarithmic divergence) at `eps = 0`.
 
@@ -171,7 +174,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the square DOS.
+    """
+    Calculate the `m` th moment of the square DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -205,7 +209,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 2D square lattice.
+    r"""
+    Multi-precision DOS of non-interacting 2D square lattice.
 
     Has a van Hove singularity (logarithmic divergence) at `eps = 0`.
 
@@ -266,7 +271,8 @@ def dos_mp(eps, half_bandwidth=1):
 
 
 def stress_trafo(xi, half_bandwidth):
-    r"""Single pole integration over the stress tensor function.
+    r"""
+    Single pole integration over the stress tensor function.
 
     In analogy to the Hilbert transformation, we define the stress
     tensor transformation as

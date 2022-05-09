@@ -25,7 +25,8 @@ def test_bose_edge_cases():
 @given(z=st.floats(min_value=1e-4, max_value=1e4), n=st.integers(min_value=-100, max_value=100))
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_complex_bose(z, n, beta):
-    """Check if Bose function has imaginary periodicity.
+    """
+    Check if Bose function has imaginary periodicity.
 
     For bosonic Matsubara frequencies :math:`f(z+iν_n) = f(z)` should hold.
     """
@@ -49,7 +50,8 @@ def test_fermi(z, beta):
 @given(z=st.floats(), n=st.integers(min_value=-100, max_value=100))
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_complex_fermi(z, n, beta):
-    """Check if Fermi function has imaginary periodicity.
+    """
+    Check if Fermi function has imaginary periodicity.
 
     For bosonic Matsubara frequencies :math:`f(z+iν_n) = f(z)` should hold.
     """
@@ -64,7 +66,8 @@ def test_complex_fermi(z, n, beta):
 @given(z=st.floats(min_value=0., max_value=1.))
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_inverse_fermi(z, beta):
-    """Check that `gt.fermi_fct_inv` is indeed the inverse.
+    """
+    Check that `gt.fermi_fct_inv` is indeed the inverse.
 
     The other direction does not work in general, due to rounding.
     """

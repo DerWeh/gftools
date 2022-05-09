@@ -18,7 +18,8 @@ HAS_QUAD = gt.precision.HAS_QUAD
 
 
 class TestDecompositionGeneral:
-    """Tests for the function `gftool.matrix.decompose_gf`.
+    """
+    Tests for the function `gftool.matrix.decompose_gf`.
 
     Main use for the function is to invert Green's functions,
     so we mainly test for that purpose.
@@ -44,7 +45,8 @@ class TestDecompositionGeneral:
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_inverse_non_interacting(self, size):
-        r"""Decomposition we be used to calculate the inverse.
+        r"""
+        Decomposition we be used to calculate the inverse.
 
         .. math::
             G^{-1} = P^{-1} h P \Rightarrow P^{-1} h^{-1} P = G
@@ -65,7 +67,8 @@ class TestDecompositionGeneral:
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])
     def test_eigsum_non_interacting(self, size):
-        """Trace of the matrix must be trace of eigenvalues *h*.
+        """
+        Trace of the matrix must be trace of eigenvalues *h*.
 
         This is due to cyclic invariance under the trace.
         """

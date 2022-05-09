@@ -18,7 +18,8 @@ _SMALL = np.finfo(np.float64).eps**0.25
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of Bethe lattice for infinite coordination number.
+    r"""
+    Local Green's function of Bethe lattice for infinite coordination number.
 
     .. math:: G(z) = 2(z - s\sqrt{z^2 - D^2})/D^2
 
@@ -68,7 +69,8 @@ def gf_z(z, half_bandwidth):
 
 
 def gf_d1_z(z, half_bandwidth):
-    """First derivative of local Green's function of Bethe lattice for infinite coordination number.
+    """
+    First derivative of local Green's function of Bethe lattice for infinite coordination number.
 
     Parameters
     ----------
@@ -98,7 +100,8 @@ def gf_d1_z(z, half_bandwidth):
 
 
 def gf_d2_z(z, half_bandwidth):
-    """Second derivative of local Green's function of Bethe lattice for infinite coordination number.
+    """
+    Second derivative of local Green's function of Bethe lattice for infinite coordination number.
 
     Parameters
     ----------
@@ -128,7 +131,8 @@ def gf_d2_z(z, half_bandwidth):
 
 
 def gf_z_inv(gf, half_bandwidth):
-    r"""Inverse of local Green's function of Bethe lattice for infinite coordination number.
+    r"""
+    Inverse of local Green's function of Bethe lattice for infinite coordination number.
 
     .. math:: R(G) = (D/2)^2 G + 1/G
 
@@ -167,7 +171,8 @@ def gf_z_inv(gf, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the Bethe lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the Bethe lattice.
 
     The Hilbert transform is defined as:
 
@@ -202,7 +207,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting Bethe lattice for infinite coordination number.
+    r"""
+    DOS of non-interacting Bethe lattice for infinite coordination number.
 
     Parameters
     ----------
@@ -268,7 +274,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the Bethe DOS.
+    """
+    Calculate the `m` th moment of the Bethe DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -302,7 +309,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting Bethe lattice for infinite coordination number.
+    r"""
+    Multi-precision DOS of non-interacting Bethe lattice for infinite coordination number.
 
     This function is particularly suited to calculate integrals of the form
     :math:`∫dϵ DOS(ϵ)f(ϵ)`.
@@ -357,7 +365,8 @@ def dos_mp(eps, half_bandwidth=1):
 
 
 def gf_ret_t(tt, half_bandwidth, center=0):
-    r"""Retarded-time local Green's function of Bethe lattice with Z=∞.
+    r"""
+    Retarded-time local Green's function of Bethe lattice with Z=∞.
 
     .. math:: G(t) = -2j * Θ(t) * J_1(Dt)/(Dt)
 

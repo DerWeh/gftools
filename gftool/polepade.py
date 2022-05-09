@@ -97,7 +97,8 @@ LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class PadeApprox:
-    """Representation of the Padé approximation based on poles.
+    """
+    Representation of the Padé approximation based on poles.
 
     Basically the approximation is obtained as `~gftool.basis.PoleFct` as well
     as `~gftool.basis.ZeroPole`. Note however, that those to approximations
@@ -163,7 +164,8 @@ class PadeApprox:
 # TODO: implement linear search, we have a finite N_z
 def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
                  vandermond=polynomial.polyvander) -> int:
-    """Estimate the optimal number of poles for a rational approximation.
+    """
+    Estimate the optimal number of poles for a rational approximation.
 
     The number of poles is determined, such that up to numerical accuracy the
     solution is unique, corresponding to a null-dimension equal to 1 [ito2018]_.
@@ -244,7 +246,8 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
 
 
 def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, weight=None):
-    """Calculate position of the `m` poles.
+    """
+    Calculate position of the `m` poles.
 
     Parameters
     ----------
@@ -296,7 +299,8 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
 
 
 def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, weight=None):
-    """Calculate position of `n` zeros given the `poles`.
+    """
+    Calculate position of `n` zeros given the `poles`.
 
     Parameters
     ----------
@@ -346,7 +350,8 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
 
 
 def asymptotic(z, fct_z, zeros, poles, weight=None):
-    """Calculate large `z` asymptotic from `roots` and `poles`.
+    """
+    Calculate large `z` asymptotic from `roots` and `poles`.
 
     We assume `f(z) = a * np.prod(z - zeros) / np.prod(z - poles)`, therefore
     The asymptotic for large `abs(z)` is `f(z) ≈ a * z**(zeros.size - poles.size)`.
@@ -377,7 +382,8 @@ def asymptotic(z, fct_z, zeros, poles, weight=None):
 
 
 def residues_ols(z, fct_z, poles, weight=None, moments=()):
-    """Calculate the residues using ordinary least square.
+    """
+    Calculate the residues using ordinary least square.
 
     Parameters
     ----------
@@ -416,7 +422,8 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
 
 def continuation(z, fct_z, degree=-1, weight=None, moments=(),
                  vandermond=polynomial.polyvander, rotate=None, real_asymp=True) -> PadeApprox:
-    """Perform the Padé analytic continuation of `(z, fct_z)`.
+    """
+    Perform the Padé analytic continuation of `(z, fct_z)`.
 
     Parameters
     ----------

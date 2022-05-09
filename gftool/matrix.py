@@ -55,7 +55,8 @@ transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 @dataclass
 class Decomposition(Sequence):
-    """Decomposition of a matrix into eigenvalues and eigenvectors.
+    """
+    Decomposition of a matrix into eigenvalues and eigenvectors.
 
     .. math:: M = P Λ P^{-1}, Λ = diag(λ₀, λ₁, …)
 
@@ -100,7 +101,8 @@ class Decomposition(Sequence):
 
     @classmethod
     def from_hamiltonian(cls, hamilton):
-        r"""Decompose the Hamiltonian matrix.
+        r"""
+        Decompose the Hamiltonian matrix.
 
         The similarity transformation:
 
@@ -121,7 +123,8 @@ class Decomposition(Sequence):
 
     @classmethod
     def from_gf(cls, gf) -> Decomposition:
-        r"""Decompose the inverse Green's function matrix.
+        r"""
+        Decompose the inverse Green's function matrix.
 
         The similarity transformation:
 
@@ -141,7 +144,8 @@ class Decomposition(Sequence):
         return decompose_gf(gf)
 
     def reconstruct(self, eig=None, kind='full'):
-        """Get matrix back from `Decomposition`.
+        """
+        Get matrix back from `Decomposition`.
 
         If the reciprocal of `self.eig` was taken, this corresponds to the
         inverse of the original matrix.
@@ -184,7 +188,8 @@ class Decomposition(Sequence):
 
 @dataclass  # pylint: disable=too-many-ancestors
 class UDecomposition(Decomposition):
-    """Unitary decomposition of a matrix into eigenvalues and eigenvectors.
+    """
+    Unitary decomposition of a matrix into eigenvalues and eigenvectors.
 
     .. math:: H = U Λ U^†,    Λ = diag(λₗ)
 
@@ -254,7 +259,8 @@ class UDecomposition(Decomposition):
 
 
 def decompose_mat(mat) -> Decomposition:
-    r"""Decompose matrix `mat` into eigenvalues and (right) eigenvectors.
+    r"""
+    Decompose matrix `mat` into eigenvalues and (right) eigenvectors.
 
     Decompose the `mat` into `rv, eig, rv_inv`, with `mat = (rv * eig) @ rv_inv`.
     This is the similarity transformation:
@@ -301,7 +307,8 @@ def decompose_mat(mat) -> Decomposition:
 
 
 def decompose_sym(sym_mat, check=True) -> Decomposition:
-    r"""Decompose symmetric matrix `sym_mat` into eigenvalues and (right) eigenvectors.
+    r"""
+    Decompose symmetric matrix `sym_mat` into eigenvalues and (right) eigenvectors.
 
     Decompose the `sym_mat` into `rv, eig, rv_inv`, with `sym_mat = (rv * eig) @ rv_inv`.
     This is the *almost orthogonal* similarity transformation:
@@ -380,7 +387,8 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
 
 
 def decompose_her(her_mat, check=True) -> UDecomposition:
-    r"""Decompose Hermitian matrix `her_mat` into eigenvalues and (right) eigenvectors.
+    r"""
+    Decompose Hermitian matrix `her_mat` into eigenvalues and (right) eigenvectors.
 
     Decompose the `her_mat` into `rv, eig, rv_inv`, with `her_mat = (rv * eig) @ rv_inv`.
     This is the unitary similarity transformation:
@@ -437,7 +445,8 @@ def decompose_her(her_mat, check=True) -> UDecomposition:
 
 
 def decompose_gf(g_inv) -> Decomposition:
-    r"""Decompose the inverse Green's function into eigenvalues and eigenvectors.
+    r"""
+    Decompose the inverse Green's function into eigenvalues and eigenvectors.
 
     .. deprecated:: 0.10.0
        Use the function `decompose_mat` or `decompose_sym` instead.
@@ -466,7 +475,8 @@ def decompose_gf(g_inv) -> Decomposition:
 
 
 def decompose_hamiltonian(hamilton) -> UDecomposition:
-    r"""Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
+    r"""
+    Decompose the Hamiltonian matrix into eigenvalues and eigenvectors.
 
     .. deprecated:: 0.10.0
        Use the function `decompose_her`.
@@ -496,7 +506,8 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
 
 
 def construct_gf(rv, diag_inv, rv_inv):
-    r"""Construct Green's function from decomposition of its inverse.
+    r"""
+    Construct Green's function from decomposition of its inverse.
 
     .. math:: G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
 
@@ -520,7 +531,8 @@ def construct_gf(rv, diag_inv, rv_inv):
 
 
 def gf_2x2_z(z, eps0, eps1, hopping, hilbert_trafo=None):
-    """Calculate the diagonal Green's function elements for a 2x2 system.
+    """
+    Calculate the diagonal Green's function elements for a 2x2 system.
 
     Parameters
     ----------

@@ -11,7 +11,8 @@ from scipy.special import expit, logit
 
 
 def bose_fct(eps, beta):
-    r"""Return the Bose function `1/(exp(βϵ)-1)`.
+    r"""
+    Return the Bose function `1/(exp(βϵ)-1)`.
 
     Parameters
     ----------
@@ -53,7 +54,8 @@ def bose_fct(eps, beta):
 
 
 def fermi_fct(eps, beta):
-    r"""Return the Fermi function `1/(exp(βϵ)+1)`.
+    r"""
+    Return the Fermi function `1/(exp(βϵ)+1)`.
 
     For complex inputs the function is not as accurate as for real inputs.
 
@@ -101,7 +103,8 @@ def fermi_fct(eps, beta):
 
 
 def fermi_fct_d1(eps, beta):
-    r"""Return the 1st derivative of the Fermi function.
+    r"""
+    Return the 1st derivative of the Fermi function.
 
     .. math:: f'(ϵ) = -β\exp(βϵ)/{[\exp(βϵ)+1]}^2 = -βf(ϵ)[1-f(ϵ)]
 
@@ -139,7 +142,8 @@ def fermi_fct_d1(eps, beta):
 
 
 def fermi_fct_inv(fermi, beta):
-    """Inverse of the Fermi function.
+    """
+    Inverse of the Fermi function.
 
     This is e.g. useful for integrals over the derivative of the Fermi function.
 
@@ -170,7 +174,8 @@ def fermi_fct_inv(fermi, beta):
 
 
 def matsubara_frequencies(n_points, beta):
-    r"""Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
+    r"""
+    Return *fermionic* Matsubara frequencies :math:`iω_n` for the points `n_points`.
 
     Parameters
     ----------
@@ -195,7 +200,8 @@ def matsubara_frequencies(n_points, beta):
 
 
 def matsubara_frequencies_b(n_points, beta):
-    r"""Return *bosonic* Matsubara frequencies :math:`iν_n` for the points `n_points`.
+    r"""
+    Return *bosonic* Matsubara frequencies :math:`iν_n` for the points `n_points`.
 
     Parameters
     ----------
@@ -237,7 +243,8 @@ def _pade_frequencies(num: int):
 
 
 def pade_frequencies(num: int, beta):
-    """Return `num` *fermionic* Padé frequencies :math:`iz_p`.
+    """
+    Return `num` *fermionic* Padé frequencies :math:`iz_p`.
 
     The Padé frequencies are the poles of the approximation of the Fermi
     function with `2*num` poles [ozaki2007]_.

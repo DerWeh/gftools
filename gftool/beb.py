@@ -98,7 +98,8 @@ transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
 
 
 class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
-    """SVD like spectral decomposition.
+    """
+    SVD like spectral decomposition.
 
     Works only for N×N matrices unlike the `UDecomposition` base class.
 
@@ -113,7 +114,8 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
     """
 
     def truncate(self, rcond=None) -> SpecDec:
-        """Return the truncated spectral decomposition.
+        """
+        Return the truncated spectral decomposition.
 
         Singular values smaller than `rcond` times the largest singular values
         are discarded.
@@ -142,7 +144,8 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
         return not ushape[-2] == ushape[-1] == uhshape[-2]
 
     def partition(self, return_sqrts=False):
-        """Symmetrically partition the spectral decomposition as `u * eig**0.5, eig**0.5 * uh`.
+        """
+        Symmetrically partition the spectral decomposition as `u * eig**0.5, eig**0.5 * uh`.
 
         If `return_sqrts` then `us, np.sqrt(s), suh` is returned,
         else only `us, suh` is returned (default: False).
@@ -156,7 +159,8 @@ class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
 
 def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex],
              diag=True, rcond=None):
-    """Calculate average local Green's function matrix in components.
+    """
+    Calculate average local Green's function matrix in components.
 
     For the self-consistent self-energy `self_beb_z` it is diagonal in the
     components. Note, that `gf_loc_z` contain the `concentration`.
@@ -216,7 +220,8 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
 
 def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_dec: SpecDec,
                  hilbert_trafo: Callable[[complex], complex]):
-    """Root equation r(Σ)=0 for BEB.
+    """
+    Root equation r(Σ)=0 for BEB.
 
     Parameters
     ----------
@@ -286,7 +291,8 @@ def restrict_self_root_eq(self_beb_z, *args, **kwds):
 
 def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[complex], complex],
                self_beb_z0=None, restricted=True, rcond=None, **root_kwds):
-    """Determine the BEB self-energy by solving the root problem.
+    """
+    Determine the BEB self-energy by solving the root problem.
 
     Note, that the result should be checked, whether the obtained solution is
     physical.

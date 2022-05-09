@@ -10,7 +10,8 @@ import numpy as np
 
 # initialize `a`
 def pade_init(iw, u, n_pade):
-    """Return a_i = g_i(z_i).
+    """
+    Return a_i = g_i(z_i).
 
     Parameters
     ----------
@@ -56,7 +57,8 @@ def test_pade_init_junya(z, u, N):
 
 # calculate u_pade(w) at w
 def pade_calc(iw, a, w, n_pade):
-    """Calculate Padé of function at points `w`.
+    """
+    Calculate Padé of function at points `w`.
 
     Parameters
     ----------

@@ -114,7 +114,8 @@ _phase = _phase_numexpr if _HAS_NUMEXPR else _phase_numpy
 
 
 def iw2tau_dft(gf_iw, beta):
-    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+    r"""
+    Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
 
     Fourier transformation of a fermionic Matsubara Green's function to
     imaginary-time domain.
@@ -194,7 +195,8 @@ def iw2tau_dft(gf_iw, beta):
 
 
 def iw2tau_dft_soft(gf_iw, beta):
-    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+    r"""
+    Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
 
     Fourier transformation of a fermionic Matsubara Green's function to
     imaginary-time domain.
@@ -281,7 +283,8 @@ def iw2tau_dft_soft(gf_iw, beta):
 
 
 def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
-    r"""Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
+    r"""
+    Discrete Fourier transform of the Hermitian Green's function `gf_iw`.
 
     Fourier transformation of a fermionic Matsubara Green's function to
     imaginary-time domain.
@@ -390,7 +393,8 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
 
 
 def tau2iv_dft(gf_tau, beta):
-    r"""Discrete Fourier transform of the real Green's function `gf_tau`.
+    r"""
+    Discrete Fourier transform of the real Green's function `gf_tau`.
 
     Fourier transformation of a bosonic imaginary-time Green's function to
     Matsubara domain.
@@ -465,7 +469,8 @@ def tau2iv_dft(gf_tau, beta):
 
 
 def tau2iv_ft_lin(gf_tau, beta):
-    r"""Fourier integration of the real Green's function `gf_tau`.
+    r"""
+    Fourier integration of the real Green's function `gf_tau`.
 
     Fourier transformation of a bosonic imaginary-time Green's function to
     Matsubara domain.
@@ -565,7 +570,8 @@ def tau2iv_ft_lin(gf_tau, beta):
 
 
 def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
-    r"""Fourier transformation of the real Green's function `gf_tau`.
+    r"""
+    Fourier transformation of the real Green's function `gf_tau`.
 
     Fourier transformation of a bosonic imaginary-time Green's function to
     Matsubara domain.
@@ -654,7 +660,8 @@ def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
 
 
 def tau2iw_dft(gf_tau, beta):
-    r"""Discrete Fourier transform of the real Green's function `gf_tau`.
+    r"""
+    Discrete Fourier transform of the real Green's function `gf_tau`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
     Matsubara domain.
@@ -730,7 +737,8 @@ def tau2iw_dft(gf_tau, beta):
 
 
 def tau2iw_ft_lin(gf_tau, beta):
-    r"""Fourier integration of the real Green's function `gf_tau`.
+    r"""
+    Fourier integration of the real Green's function `gf_tau`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
     Matsubara domain.
@@ -832,7 +840,8 @@ def tau2iw_ft_lin(gf_tau, beta):
 
 
 def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
-    r"""Fourier transform of the real Green's function `gf_tau`.
+    r"""
+    Fourier transform of the real Green's function `gf_tau`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
     Matsubara domain.
@@ -1002,7 +1011,8 @@ def _z2polegf(z, gf_z, n_pole, moments=(1.,)) -> PoleFct:
 
 
 def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
-    r"""Fourier transform of the Hermitian Green's function `gf_izp` to `tau`.
+    r"""
+    Fourier transform of the Hermitian Green's function `gf_izp` to `tau`.
 
     Fourier transformation of a fermionic Padé Green's function to
     imaginary-time domain.
@@ -1101,7 +1111,8 @@ def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
 
 
 def tt2z_trapz(tt, gf_t, z):
-    r"""Laplace transform of the real-time Green's function `gf_t`.
+    r"""
+    Laplace transform of the real-time Green's function `gf_t`.
 
     Approximate the Laplace integral by trapezoidal rule:
 
@@ -1148,7 +1159,8 @@ def tt2z_trapz(tt, gf_t, z):
 
 
 def _trapz_weight(delta_tt: float, gf_t, endpoint=False):
-    """Return weighted `gf_t` according to trapezoidal rule.
+    """
+    Return weighted `gf_t` according to trapezoidal rule.
 
     Parameters
     ----------
@@ -1175,7 +1187,8 @@ def _trapz_weight(delta_tt: float, gf_t, endpoint=False):
 
 
 def _simps_weight(delta_tt, gf_t, endpoint=False):
-    """Return weighted `gf_t` according to Simpson rule.
+    """
+    Return weighted `gf_t` according to Simpson rule.
 
     If ``endpoint==False`` we can apply the Simpson rule also to even number of
     points.
@@ -1217,7 +1230,8 @@ def _simps_weight(delta_tt, gf_t, endpoint=False):
 
 
 def tt2z_simps(tt, gf_t, z):
-    r"""Laplace transform of the real-time Green's function `gf_t`.
+    r"""
+    Laplace transform of the real-time Green's function `gf_t`.
 
     Approximate the Laplace integral using the Simpson rule.
 
@@ -1254,7 +1268,8 @@ def tt2z_simps(tt, gf_t, z):
 
 
 def tt2z_lin(tt, gf_t, z):
-    r"""Laplace transform of the real-time Green's function `gf_t`.
+    r"""
+    Laplace transform of the real-time Green's function `gf_t`.
 
     Filon's method is used to calculate the Laplace integral
 
@@ -1325,7 +1340,8 @@ def tt2z_lin(tt, gf_t, z):
 
 
 def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
-    r"""Fourier-Padé transform of the real-time Green's function `gf_t`.
+    r"""
+    Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     The function requires an equidistant `tt`.
 
@@ -1391,7 +1407,8 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
 
 
 def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
-    r"""Square Fourier-Padé transform of the real-time Green's function `gf_t`.
+    r"""
+    Square Fourier-Padé transform of the real-time Green's function `gf_t`.
 
     Uses a square Hermite-Padé approximant for the transform.
     The function requires an equidistant `tt`.
@@ -1475,7 +1492,8 @@ def tt2z_lpz(tt, gf_t, z, order=None, quad='trapz', **kwds):
 
 
 def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
-    r"""Laplace transform of the real-time Green's function `gf_t`.
+    r"""
+    Laplace transform of the real-time Green's function `gf_t`.
 
     Calculate the Laplace transform
 
@@ -1650,7 +1668,8 @@ def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> P
 
 
 def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):
-    r"""Fourier transform of the real Green's function `gf_tau` to `izp`.
+    r"""
+    Fourier transform of the real Green's function `gf_tau` to `izp`.
 
     Fourier transformation of a fermionic imaginary-time Green's function to
     fermionic imaginary Padé frequencies `izp`.

@@ -19,7 +19,8 @@ from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of 3D body-centered cubic (bcc) lattice.
+    r"""
+    Local Green's function of 3D body-centered cubic (bcc) lattice.
 
     Has a van Hove singularity at `z=0` (divergence).
 
@@ -66,7 +67,8 @@ def gf_z(z, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the body-centered cubic lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the body-centered cubic lattice.
 
     The Hilbert transform is defined
 
@@ -101,7 +103,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 3D body-centered cubic lattice.
+    r"""
+    DOS of non-interacting 3D body-centered cubic lattice.
 
     Has a van Hove singularity (logarithmic divergence) at `eps = 0`.
 
@@ -176,7 +179,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the body-centered cubic DOS.
+    """
+    Calculate the `m` th moment of the body-centered cubic DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -210,7 +214,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 3D body-centered lattice.
+    r"""
+    Multi-precision DOS of non-interacting 3D body-centered lattice.
 
     Has a van Hove singularity (logarithmic divergence) at `eps = 0`.
 

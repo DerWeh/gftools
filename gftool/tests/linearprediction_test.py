@@ -100,7 +100,8 @@ def test_simple_prediction(method, atol: float):
 @pytest.mark.parametrize("lattice", [gt.lattice.bethe, gt.lattice.box])
 @pytest.mark.parametrize("stable", [True, False])
 def test_lattice_prediction(fraction, lattice, stable):
-    """Test against continuous lattice Green's functions.
+    """
+    Test against continuous lattice Green's functions.
 
     Make sure that `stable=True` prediction is correct in the trivial case.
     """
@@ -122,7 +123,8 @@ def test_lattice_prediction(fraction, lattice, stable):
                              ],
                    max_dims_extra=2, max_side=3, min_side=1),)
 def test_predict_gufunc(method, atol, args):
-    """Test that `predict` behaves like a proper gu-function.
+    """
+    Test that `predict` behaves like a proper gu-function.
 
     Currently uses `pcoeff_burg` as `pcoeff_covar` is not vectorized.
     """
@@ -142,7 +144,8 @@ def test_predict_gufunc(method, atol, args):
 
 
 def test_prediction_stability():
-    """Test stability for box Green's functions.
+    """
+    Test stability for box Green's functions.
 
     We add noise to generate growing exponentially growing terms.
     Prediction with `stable=True` should filter it and produce a somewhat

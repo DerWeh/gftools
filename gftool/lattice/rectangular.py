@@ -20,7 +20,8 @@ from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth, scale):
-    r"""Local Green's function of the 2D rectangular lattice.
+    r"""
+    Local Green's function of the 2D rectangular lattice.
 
     .. math:: G(z) = \frac{1}{π} ∫_0^π \frac{dϕ}{\sqrt{(z - γ \cos ϕ)^2 - 1}}
 
@@ -84,7 +85,8 @@ def gf_z(z, half_bandwidth, scale):
 
 
 def hilbert_transform(xi, half_bandwidth, scale):
-    r"""Hilbert transform of non-interacting DOS of the rectangular lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the rectangular lattice.
 
     The Hilbert transform is defined
 
@@ -124,7 +126,8 @@ def hilbert_transform(xi, half_bandwidth, scale):
 
 
 def dos(eps, half_bandwidth, scale):
-    r"""DOS of non-interacting 2D rectangular lattice.
+    r"""
+    DOS of non-interacting 2D rectangular lattice.
 
     Parameters
     ----------

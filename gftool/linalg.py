@@ -11,7 +11,8 @@ transpose = partial(np.swapaxes, axis1=-2, axis2=-1)
 
 
 def orth_compl(mat):
-    """Calculate the orthogonal complement of a rectangular matrix using QR.
+    """
+    Calculate the orthogonal complement of a rectangular matrix using QR.
 
     For a tall N×M, N>M, matrix `mat` the complete QR-decomposition gives
 
@@ -49,7 +50,8 @@ def orth_compl(mat):
 
 
 def lstsq_ec(a, b, c, d, rcond=None):
-    """Least-squares solution with equality constraint for linear matrix eq.
+    """
+    Least-squares solution with equality constraint for linear matrix eq.
 
     Solves the equation `ax = b` with the constraint `cx = d`, where the vector
     `x` minimizes the squared Euclidean 2-norm :math:`||ax - b||^2_2`.

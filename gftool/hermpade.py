@@ -280,7 +280,8 @@ def _strip_ceoffs(pcoeff, qcoeff):
 
 
 def _nullvec(mat):
-    """Determine a single null-vector of `mat` using QR decomposition.
+    """
+    Determine a single null-vector of `mat` using QR decomposition.
 
     Parameters
     ----------
@@ -297,7 +298,8 @@ def _nullvec(mat):
 
 
 def _nullvec_lst(mat, fix: int, rcond=None):
-    """Determine the null-vector of `mat` in a least-squares sense.
+    """
+    Determine the null-vector of `mat` in a least-squares sense.
 
     Typically the null-vector is found as the singular vector corresponding to
     the smallest singular vector.
@@ -335,7 +337,8 @@ def _nullvec_lst(mat, fix: int, rcond=None):
 
 
 def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
-    """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
+    """
+    Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
     Parameters
     ----------
@@ -411,7 +414,8 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
 
 
 def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol:
-    """Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
+    """
+    Return the [`num_deg`/`den_deg`] Padé approximant to the polynomial `an`.
 
     Same as `pade`, however all elements of `an` are taken into account.
     Instead of finding the null-vector of the underdetermined system,
@@ -463,7 +467,8 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol
 
 
 def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
-    """Robust version of Padé approximant to polynomial `an`.
+    """
+    Robust version of Padé approximant to polynomial `an`.
 
     Implements more or less [gonnet2013]_. The degrees `num_deg` and `den_deg`
     are automatically reduced to obtain a robust solution.
@@ -562,7 +567,8 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
 
 
 def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, Polynom]:
-    r"""Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
+    r"""
+    Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
 
     The polynomials fulfill the equation
 
@@ -632,7 +638,8 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
 
 def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
                    rcond=None, fix_qr=None) -> Tuple[Polynom, Polynom, Polynom]:
-    r"""Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
+    r"""
+    Return the polynomials `p`, `q`, `r` for the quadratic Hermite-Padé approximant.
 
     Same as `hermite2`, however all elements of `an` are taken into account.
     Instead of finding the null-vector of the underdetermined system,
@@ -722,7 +729,8 @@ class _Hermite2Base:
 
 @dataclass
 class Hermite2(_Hermite2Base):
-    r"""Quadratic Hermite-Padé approximant with branch selection according to Padé.
+    r"""
+    Quadratic Hermite-Padé approximant with branch selection according to Padé.
 
     A function :math:`f(z)` with known Taylor coefficients `an` is approximated
     using
@@ -839,13 +847,15 @@ class Hermite2(_Hermite2Base):
 
 @dataclass
 class _Hermite2Ret(_Hermite2Base):
-    """Retarded Green's function given by quadratic Hermite-Padé approximant.
+    """
+    Retarded Green's function given by quadratic Hermite-Padé approximant.
 
     .. warning:: highly experimental and will probably vanish.
     """
 
     def eval(self, z):
-        """Evaluate the retarded branch of the quadratic Hermite-Padé approximant.
+        """
+        Evaluate the retarded branch of the quadratic Hermite-Padé approximant.
 
         The branch is chosen based on the imaginary part.
         """

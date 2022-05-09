@@ -28,7 +28,8 @@ def _signed_sqrt(z):
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 3D face-centered cubic (fcc) lattice.
+    r"""
+    Local Green's function of the 3D face-centered cubic (fcc) lattice.
 
     Note, that the spectrum is asymmetric and in :math:`[-D/2, 3D/2]`,
     where :math:`D` is the half-bandwidth.
@@ -91,7 +92,8 @@ def gf_z(z, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the face-centered cubic lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the face-centered cubic lattice.
 
     The Hilbert transform is defined
 
@@ -126,7 +128,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 3D face-centered cubic lattice.
+    r"""
+    DOS of non-interacting 3D face-centered cubic lattice.
 
     Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at
     `z=0` (continuous but not differentiable).
@@ -211,7 +214,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the face-centered cubic DOS.
+    """
+    Calculate the `m` th moment of the face-centered cubic DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -250,7 +254,8 @@ def _signed_mp_sqrt(eps):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 3D face-centered cubic lattice.
+    r"""
+    Multi-precision DOS of non-interacting 3D face-centered cubic lattice.
 
     Has a van Hove singularity at `z=-half_bandwidth/2` (divergence) and at
     `z=0` (continuous but not differentiable).

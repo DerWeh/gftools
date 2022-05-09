@@ -33,7 +33,8 @@ def _chebyshev_points(num: int) -> np.ndarray:
 
 
 class PoleFct(NamedTuple):
-    """Function given by finite number of simple `poles` and `residues`.
+    """
+    Function given by finite number of simple `poles` and `residues`.
 
     Parameters
     ----------
@@ -49,7 +50,8 @@ class PoleFct(NamedTuple):
         return gf_z(z, poles=self.poles, weights=self.residues)
 
     def moments(self, order):
-        """Calculate high-frequency moments of `order`.
+        """
+        Calculate high-frequency moments of `order`.
 
         Parameters
         ----------
@@ -71,7 +73,8 @@ class PoleFct(NamedTuple):
 
     @classmethod
     def from_moments(cls, moments, width=1.):
-        """Generate instance matching high-frequency `moments`.
+        """
+        Generate instance matching high-frequency `moments`.
 
         Parameters
         ----------
@@ -98,7 +101,8 @@ class PoleFct(NamedTuple):
 
     @classmethod
     def from_z(cls, z, gf_z, n_pole, moments=(), width=1., weight=None):
-        """Generate instance fitting `gf_z`.
+        """
+        Generate instance fitting `gf_z`.
 
         This function is only meaningful away from the real axis.
         Finds poles and weights for a pole Green's function matching the given
@@ -153,7 +157,8 @@ class PoleFct(NamedTuple):
 
 
 class PoleGf(PoleFct):
-    """Fermionic Green's function given by finite number of `poles` and `residues`.
+    """
+    Fermionic Green's function given by finite number of `poles` and `residues`.
 
     Parameters
     ----------
@@ -162,7 +167,8 @@ class PoleGf(PoleFct):
     """
 
     def eval_tau(self, tau, beta):
-        """Evaluate the imaginary time Green's function.
+        """
+        Evaluate the imaginary time Green's function.
 
         Parameters
         ----------
@@ -184,7 +190,8 @@ class PoleGf(PoleFct):
         return gf_tau(tau, poles=self.poles, weights=self.residues, beta=beta)
 
     def eval_ret_t(self, tt):
-        """Evaluate the retarded time Green's function.
+        """
+        Evaluate the retarded time Green's function.
 
         Parameters
         ----------
@@ -203,7 +210,8 @@ class PoleGf(PoleFct):
         return gf_ret_t(tt, poles=self.poles, weights=self.residues)
 
     def occ(self, beta):
-        """Calculate the occupation number.
+        """
+        Calculate the occupation number.
 
         Parameters
         ----------
@@ -219,7 +227,8 @@ class PoleGf(PoleFct):
 
     @classmethod
     def from_tau(cls, gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=None):
-        """Generate instance fitting `gf_tau`.
+        """
+        Generate instance fitting `gf_tau`.
 
         Finds poles and weights for a pole Green's function matching the given
         Green's function `gf_tau`.
@@ -272,7 +281,8 @@ class PoleGf(PoleFct):
 
 
 def gf_z(z, poles, weights):
-    """Green's function given by a finite number of `poles`.
+    """
+    Green's function given by a finite number of `poles`.
 
     To be a Green's function, `np.sum(weights)` has to be 1 for the `1/z` tail
     or respectively the normalization.
@@ -304,7 +314,8 @@ _gf_z = gf_z  # keep name, as gf_z is often locally overwritten
 
 
 def gf_d1_z(z, poles, weights):
-    """First derivative of Green's function given by a finite number of `poles`.
+    """
+    First derivative of Green's function given by a finite number of `poles`.
 
     To be a Green's function, `np.sum(weights)` has to be 1 for the 1/z tail.
 
@@ -338,7 +349,8 @@ def _single_pole_gf_tau(tau, pole, beta):
 
 
 def gf_tau(tau, poles, weights, beta):
-    """Imaginary time Green's function given by a finite number of `poles`.
+    """
+    Imaginary time Green's function given by a finite number of `poles`.
 
     Parameters
     ----------
@@ -372,7 +384,8 @@ def _single_pole_gf_ret_t(tt, pole):
 
 
 def gf_ret_t(tt, poles, weights):
-    """Retarded time Green's function given by a finite number of `poles`.
+    """
+    Retarded time Green's function given by a finite number of `poles`.
 
     Parameters
     ----------
@@ -406,7 +419,8 @@ def _single_pole_gf_le_t(tt, pole, beta):
 
 
 def moments(poles, weights, order):
-    r"""High-frequency moments of the pole Green's function.
+    r"""
+    High-frequency moments of the pole Green's function.
 
     Return the moments `mom` of the expansion :math:`g(z) = \sum_m mom_m/z^m`
     For the pole Green's function we have the simple relation
@@ -430,7 +444,8 @@ def moments(poles, weights, order):
 
 
 def gf_from_moments(moments, width=1.) -> PoleFct:
-    """Find pole Green's function matching given `moments`.
+    """
+    Find pole Green's function matching given `moments`.
 
     Finds poles and weights for a pole Green's function matching the given
     high frequency `moments` for large `z`:
@@ -484,7 +499,8 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
 
 
 def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
-    """Find pole causal Green's function fitting `gf_z`.
+    """
+    Find pole causal Green's function fitting `gf_z`.
 
     This function is only meaningful away from the real axis.
     Finds poles and weights for a pole Green's function matching the given
@@ -570,7 +586,8 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
 
 
 def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=None) -> PoleGf:
-    """Find pole Green's function fitting `gf_tau`.
+    """
+    Find pole Green's function fitting `gf_tau`.
 
     Finds poles and weights for a pole Green's function matching the given
     Green's function `gf_tau`.

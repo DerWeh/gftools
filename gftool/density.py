@@ -14,7 +14,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
-    r"""Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
+    r"""
+    Calculate the number density of the Green's function `gf_iw` at finite temperature `beta`.
 
     This function can be used for fermionic Matsubara frequencies `matsubara_frequencies`,
     as well as fermionic Padé frequencies `pade_frequencies`.
@@ -99,7 +100,8 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
 
 
 def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, **kwds) -> float:
-    """Search chemical potential for a given occupation.
+    """
+    Search chemical potential for a given occupation.
 
     Parameters
     ----------

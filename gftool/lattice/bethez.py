@@ -8,7 +8,8 @@ import numpy as np
 
 
 def gf_z(z, half_bandwidth, coordination):
-    r"""Local Green's function of Bethe lattice for `coordination`.
+    r"""
+    Local Green's function of Bethe lattice for `coordination`.
 
     .. math:: G(z) = 2 (Z - 1) / z / ((Z - 2) + Z\sqrt{1 - D^2/z^2})
 
@@ -62,7 +63,8 @@ def gf_z(z, half_bandwidth, coordination):
 
 
 def dos(eps, half_bandwidth, coordination):
-    r"""DOS of non-interacting Bethe lattice for `coordination`.
+    r"""
+    DOS of non-interacting Bethe lattice for `coordination`.
 
     Parameters
     ----------

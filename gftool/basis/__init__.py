@@ -22,7 +22,8 @@ assert PoleFct, PoleGf
 
 
 class ZeroPole(NamedTuple):
-    """Rational polynomial characterized by zeros and poles.
+    """
+    Rational polynomial characterized by zeros and poles.
 
     The function is given by
     ``ZeroPole.eval(z) = amplitude * np.prod(z - zeros) / np.prod(z - poles)``
@@ -41,7 +42,8 @@ class ZeroPole(NamedTuple):
     amplitude: complex or np.ndarray = 1.0  #: Amplitude of the function, i.e., the prefactor.
 
     def eval(self, z):
-        """Evaluate the function at `z`.
+        """
+        Evaluate the function at `z`.
 
         Parameters
         ----------
@@ -57,7 +59,8 @@ class ZeroPole(NamedTuple):
         return self.amplitude * np.prod(z - self.zeros, axis=-1) / np.prod(z - self.poles, axis=-1)
 
     def reciprocal(self, z):
-        """Evaluate the reciprocal `1./ZeroPole.eval(z)` at `z`.
+        """
+        Evaluate the reciprocal `1./ZeroPole.eval(z)` at `z`.
 
         Parameters
         ----------
@@ -82,7 +85,8 @@ class ZeroPole(NamedTuple):
 
 
 class RatPol(NamedTuple):
-    """Rational polynomial given as numerator and denominator.
+    """
+    Rational polynomial given as numerator and denominator.
 
     Parameters
     ----------

@@ -19,7 +19,8 @@ from gftool._util import _u_ellipk
 
 
 def gf_z(z, half_bandwidth=1):
-    r"""Local Green's function of 3D simple cubic lattice.
+    r"""
+    Local Green's function of 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `z = ±D/3`.
@@ -75,7 +76,8 @@ def gf_z(z, half_bandwidth=1):
 
 
 def hilbert_transform(xi, half_bandwidth=1):
-    r"""Hilbert transform of non-interacting DOS of the simple cubic lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the simple cubic lattice.
 
     The Hilbert transform is defined
 
@@ -131,7 +133,8 @@ _dos_eps0_expansion = _gen_dos_eps0_expansinon()
 
 
 def dos(eps, half_bandwidth=1):
-    r"""Local Green's function of 3D simple cubic lattice.
+    r"""
+    Local Green's function of 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `abs(eps) = D/3`.
@@ -214,7 +217,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the simple cubic DOS.
+    """
+    Calculate the `m` th moment of the simple cubic DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -248,7 +252,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def gf_z_mp(z, half_bandwidth=1):
-    r"""Multi-precision Green's function of non-interacting 3D simple cubic lattice.
+    r"""
+    Multi-precision Green's function of non-interacting 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `z = ±D/3`.
@@ -304,7 +309,8 @@ def gf_z_mp(z, half_bandwidth=1):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 3D simple cubic lattice.
+    r"""
+    Multi-precision DOS of non-interacting 3D simple cubic lattice.
 
     Has a van Hove singularity (continuous but not differentiable) at
     `abs(eps) = D/3`.

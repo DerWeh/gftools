@@ -117,7 +117,8 @@ from gftool.matrix import decompose_mat
 
 
 def companion(a):
-    """Create a companion matrix.
+    """
+    Create a companion matrix.
 
     Create the companion matrix [1]_ associated with the polynomial whose
     coefficients are given in `a`.
@@ -167,7 +168,8 @@ def companion(a):
 
 
 def pcoeff_covar(x, order: int, rcond=None):
-    """Calculate linear prediction (LP) coefficients using covariance method.
+    """
+    Calculate linear prediction (LP) coefficients using covariance method.
 
     The covariance method gives the equation
 
@@ -224,7 +226,8 @@ def pcoeff_covar(x, order: int, rcond=None):
 
 
 def pcoeff_burg(x, order: int):
-    """Burg's method for linear prediction (LP) coefficients.
+    """
+    Burg's method for linear prediction (LP) coefficients.
 
     .. warning::
 
@@ -286,7 +289,8 @@ def pcoeff_burg(x, order: int):
 
 
 def predict(x, pcoeff, num: int, stable=False):
-    """Forward-predict a series additional `num` steps.
+    """
+    Forward-predict a series additional `num` steps.
 
     Parameters
     ----------
@@ -330,7 +334,8 @@ def predict(x, pcoeff, num: int, stable=False):
 
 
 def _predict_stable(x, pcoeff, num: int):
-    """Companion matrix implementation removing growing terms.
+    """
+    Companion matrix implementation removing growing terms.
 
     The roots of the `pcoeff` polynomial are related to poles in frequency.
     If the root is outside the unit circle, it corresponds to a pole in the
@@ -360,7 +365,8 @@ def _predict_stable(x, pcoeff, num: int):
 
 
 def plot_roots(pcoeff, axis=None):
-    """Plot the roots corresponding to `pcoeff`.
+    """
+    Plot the roots corresponding to `pcoeff`.
 
     Roots for the forward prediction should be inside the unit-circle.
 

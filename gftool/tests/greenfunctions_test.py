@@ -34,7 +34,8 @@ def method(func):
 
 
 class GfProperties:
-    r"""Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
+    r"""
+    Generic class to test basic properties of a fermionic Gf :math:`G(z)`.
 
     Checks the analytical properties a one particle Gf of the structure
 
@@ -59,7 +60,8 @@ class GfProperties:
 
     @staticmethod
     def band_edges(params):
-        """Return the support of the Green's function, by default (-∞, ∞).
+        """
+        Return the support of the Green's function, by default (-∞, ∞).
 
         Can be overwritten by subclasses using the `params`.
         """
@@ -99,7 +101,8 @@ class GfProperties:
 
 
 class Lattice:
-    """Generic class to test basic properties of `gftool.lattice` modules.
+    """
+    Generic class to test basic properties of `gftool.lattice` modules.
 
     Mostly checks the DOS and it's relation to other functions.
     """
@@ -115,7 +118,8 @@ class Lattice:
 
     @staticmethod
     def band_edges(**kwds):
-        """Return the support of the Green's function, by default (-∞, ∞).
+        """
+        Return the support of the Green's function, by default (-∞, ∞).
 
         Can be overwritten by subclasses using the `kwds`.
         """
@@ -135,7 +139,8 @@ class Lattice:
         assert integrate.quad(dos, *self.band_edges(**kwds), points=points)[0] == pytest.approx(1.0)
 
     def test_imgf_eq_dos(self, kwds):
-        r"""Imaginary part of the GF is proportional to the DOS.
+        r"""
+        Imaginary part of the GF is proportional to the DOS.
 
         .. math:: DOS(ϵ) = -ℑG(ϵ+i0⁺)/π
         """
@@ -176,7 +181,8 @@ class Lattice:
 
     @given(z=st.complex_numbers(max_magnitude=1e6))
     def test_hilbert_transform(self, z, kwds):
-        """Hilbert transform is same as non-interacting local Green's function.
+        """
+        Hilbert transform is same as non-interacting local Green's function.
 
         Probably we should drop the Hilbert transform to avoid redundancy,
         but as long as we have let's make sure it also is correct.
@@ -187,7 +193,8 @@ class Lattice:
 
 
 class SymLattice(Lattice):
-    """Generic class to test basic properties of symmetric `gftool.lattice` modules.
+    """
+    Generic class to test basic properties of symmetric `gftool.lattice` modules.
 
     Mostly checks the DOS and it's relation to other functions.
     """
@@ -760,7 +767,8 @@ class TestFaceCenteredCubic(Lattice):
         return [0]
 
     def test_dos_moment(self, kwds):
-        """Moment is integral over ϵ^m DOS.
+        """
+        Moment is integral over ϵ^m DOS.
 
         Overwritten to soften the absolute tolerance for ``m1`` which 0.
         """
@@ -903,7 +911,8 @@ def test_bethe_retarded_vectorization(args):
 
 
 def test_hilbert_equals_integral():
-    """Compare *bethe_hilbert_transform* with explicit calculation of integral.
+    """
+    Compare *bethe_hilbert_transform* with explicit calculation of integral.
 
     The integral is singular for xi=0, actually the Cauchy principal value
     should be taken.

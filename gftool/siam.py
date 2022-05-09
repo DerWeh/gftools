@@ -34,7 +34,8 @@ from gftool.basis.pole import (_single_pole_gf_gr_t, _single_pole_gf_le_t,
 
 
 def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
-    """Noninteracting local Green's function for the impurity.
+    """
+    Noninteracting local Green's function for the impurity.
 
     Parameters
     ----------
@@ -57,7 +58,8 @@ def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
 
 
 def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
-    """Noninteracting retarded local Green's function for the impurity.
+    """
+    Noninteracting retarded local Green's function for the impurity.
 
     Parameters
     ----------
@@ -85,7 +87,8 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
 
 
 def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
-    """Noninteracting greater local Green's function for the impurity.
+    """
+    Noninteracting greater local Green's function for the impurity.
 
     Parameters
     ----------
@@ -115,7 +118,8 @@ def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
 
 
 def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
-    """Noninteracting lesser local Green's function for the impurity.
+    """
+    Noninteracting lesser local Green's function for the impurity.
 
     Parameters
     ----------
@@ -145,7 +149,8 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
 
 
 def hamiltonian_matrix(e_onsite, e_bath, hopping):
-    r"""One-particle Hamiltonian matrix of the SIAM.
+    r"""
+    One-particle Hamiltonian matrix of the SIAM.
 
     The non-interacting Hamiltonian can be written in the form
 
@@ -179,7 +184,8 @@ def hamiltonian_matrix(e_onsite, e_bath, hopping):
 
 
 def hybrid_z(z, e_bath, hopping_sqr):
-    """Hybridization function of the impurity.
+    """
+    Hybridization function of the impurity.
 
     Parameters
     ----------

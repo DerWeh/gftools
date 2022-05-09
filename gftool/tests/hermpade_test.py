@@ -19,7 +19,8 @@ ignore_illconditioned = pytest.mark.filterwarnings(
 
 
 def test_nullvec_lstsq():
-    """Compare null-vector least square against regular null-vector.
+    """
+    Compare null-vector least square against regular null-vector.
 
     As test-case we consider a typical Padé matrix.
     """
@@ -37,7 +38,8 @@ def test_nullvec_lstsq():
 @given(num_deg=st.integers(0, 10), den_deg=st.integers(0, 10))
 @pytest.mark.parametrize("pade", [gt.hermpade.pade, gt.hermpade.pade_lstsq])
 def test_pade_vs_scipy(num_deg, den_deg, pade):
-    """Compare against the more naive `scipy` algorithm.
+    """
+    Compare against the more naive `scipy` algorithm.
 
     For small degrees they should be equal.
     """
@@ -82,7 +84,8 @@ def test_strip_coeffs():
 
 
 def test_pader_degree():
-    r"""Check if `pader` can recover the degree for simple example.
+    r"""
+    Check if `pader` can recover the degree for simple example.
 
     We consider the function
 

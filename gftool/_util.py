@@ -10,7 +10,8 @@ _ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 
 
 def _gu_sum(a, **kwds):
-    """Sum over last axis for the use in generalized ufuncs.
+    """
+    Sum over last axis for the use in generalized ufuncs.
 
     `np.sum` is more accurate over the fast axis,
     so we ensure the array to be c-contiguous.
@@ -19,7 +20,8 @@ def _gu_sum(a, **kwds):
 
 
 def _gu_matvec(x1, x2):
-    """Matrix-vector product for the use in generalized ufuncs.
+    """
+    Matrix-vector product for the use in generalized ufuncs.
 
     Parameters
     ----------
@@ -37,7 +39,8 @@ def _gu_matvec(x1, x2):
 
 
 def _u_ellipk(z):
-    """Complete elliptic integral of first kind `scipy.special.ellip` for complex arguments.
+    """
+    Complete elliptic integral of first kind `scipy.special.ellip` for complex arguments.
 
     Wraps the `mpmath` implementation `mpmath.fp.ellipf` using `numpy.frompyfunc`.
 

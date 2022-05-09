@@ -10,7 +10,8 @@ _SMALL = np.finfo(np.float64).eps**0.25
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function corresponding to a box DOS.
+    r"""
+    Local Green's function corresponding to a box DOS.
 
     .. math:: G(z) = \ln(\frac{z + D}{z - D}) / 2D
 
@@ -46,7 +47,8 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""Box-shaped DOS.
+    r"""
+    Box-shaped DOS.
 
     Parameters
     ----------
@@ -79,7 +81,8 @@ def dos(eps, half_bandwidth):
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the box DOS.
+    """
+    Calculate the `m` th moment of the box DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -105,7 +108,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def gf_ret_t(tt, half_bandwidth, center=0):
-    r"""Local retarded-time local Green's function corresponding to a box DOS.
+    r"""
+    Local retarded-time local Green's function corresponding to a box DOS.
 
     .. math:: G(t) = -1j Θ(t) \sin(Dt)/Dt
 

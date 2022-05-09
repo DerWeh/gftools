@@ -17,7 +17,8 @@ from gftool.lattice import honeycomb
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 2D kagome lattice.
+    r"""
+    Local Green's function of the 2D kagome lattice.
 
     The Green's function of the 2D kagome lattice can be expressed in terms
     of the 2D triangular lattice `gftool.lattice.triangular.gf_z`, and a
@@ -76,7 +77,8 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 2D kagome lattice.
+    r"""
+    DOS of non-interacting 2D kagome lattice.
 
     The delta-peak at `eps=-2*half_bandwidth/3` is **ommited** and must be
     treated seperately! Without it, the DOS integrates to `2/3`.
@@ -139,7 +141,8 @@ def dos(eps, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the kagome lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the kagome lattice.
 
     The Hilbert transform is defined
 
@@ -207,7 +210,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the kagome DOS.
+    """
+    Calculate the `m` th moment of the kagome DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -239,7 +243,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 2D kagome lattice.
+    r"""
+    Multi-precision DOS of non-interacting 2D kagome lattice.
 
     The delta-peak at `eps=-2*half_bandwidth/3` is **ommited** and must be
     treated seperately! Without it, the DOS integrates to `2/3`.

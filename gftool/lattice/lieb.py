@@ -13,7 +13,8 @@ from gftool.lattice import square
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 2D Lieb lattice.
+    r"""
+    Local Green's function of the 2D Lieb lattice.
 
     The Green's function of the 2D Lieb lattice can be expressed in terms
     of the 2D square lattice `gftool.lattice.square.gf_z`, and a non-dispersive
@@ -68,7 +69,8 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 2D Lieb lattice.
+    r"""
+    DOS of non-interacting 2D Lieb lattice.
 
     The delta-peak at `eps=0` is **ommited** and must be treated seperately!
     Without it, the DOS integrates to `2/3`.
@@ -124,7 +126,8 @@ def dos(eps, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the lieb lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the lieb lattice.
 
     The Hilbert transform is defined
 
@@ -181,7 +184,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the Lieb DOS.
+    """
+    Calculate the `m` th moment of the Lieb DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -215,7 +219,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 2D lieb lattice.
+    r"""
+    Multi-precision DOS of non-interacting 2D lieb lattice.
 
     The delta-peak at `eps=0` is **ommited** and must be treated seperately!
     Without it, the DOS integrates to `2/3`.

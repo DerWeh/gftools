@@ -16,7 +16,8 @@ from mpmath import mp
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 1D lattice.
+    r"""
+    Local Green's function of the 1D lattice.
 
     .. math:: G(z) = \frac{1}{2 π} ∫_{-π}^{π}\frac{dϕ}{z - D\cos(ϕ)}
 
@@ -61,7 +62,8 @@ def gf_z(z, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the 1D lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the 1D lattice.
 
     The Hilbert transform is defined
 
@@ -96,7 +98,8 @@ def hilbert_transform(xi, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 1D lattice.
+    r"""
+    DOS of non-interacting 1D lattice.
 
     Diverges at the band-edges `abs(eps) = half_bandwidth`.
 
@@ -165,7 +168,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the 1D DOS.
+    """
+    Calculate the `m` th moment of the 1D DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -199,7 +203,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 1D lattice.
+    r"""
+    Multi-precision DOS of non-interacting 1D lattice.
 
     Diverges at the band-edges `abs(eps) = half_bandwidth`.
 

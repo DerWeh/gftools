@@ -13,7 +13,8 @@ from gftool.lattice import triangular
 
 
 def gf_z(z, half_bandwidth):
-    r"""Local Green's function of the 2D honeycomb lattice.
+    r"""
+    Local Green's function of the 2D honeycomb lattice.
 
     The Green's function of the 2D honeycomb lattice can be expressed in terms
     of the 2D triangular lattice `gftool.lattice.triangular.gf_z`,
@@ -66,7 +67,8 @@ def gf_z(z, half_bandwidth):
 
 
 def dos(eps, half_bandwidth):
-    r"""DOS of non-interacting 2D honeycomb lattice.
+    r"""
+    DOS of non-interacting 2D honeycomb lattice.
 
     The DOS diverges at `eps=±half_bandwidth/3`.
     The Green's function and therefore the DOS of the 2D honeycomb lattice can
@@ -119,7 +121,8 @@ def dos(eps, half_bandwidth):
 
 
 def hilbert_transform(xi, half_bandwidth):
-    r"""Hilbert transform of non-interacting DOS of the honeycomb lattice.
+    r"""
+    Hilbert transform of non-interacting DOS of the honeycomb lattice.
 
     The Hilbert transform is defined
 
@@ -174,7 +177,8 @@ dos_moment_coefficients = {
 
 
 def dos_moment(m, half_bandwidth):
-    """Calculate the `m` th moment of the honeycomb DOS.
+    """
+    Calculate the `m` th moment of the honeycomb DOS.
 
     The moments are defined as :math:`∫dϵ ϵ^m DOS(ϵ)`.
 
@@ -208,7 +212,8 @@ def dos_moment(m, half_bandwidth):
 
 
 def dos_mp(eps, half_bandwidth=1):
-    r"""Multi-precision DOS of non-interacting 2D honeycomb lattice.
+    r"""
+    Multi-precision DOS of non-interacting 2D honeycomb lattice.
 
     The DOS diverges at `eps=±half_bandwidth/3`.
 
