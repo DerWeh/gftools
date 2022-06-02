@@ -55,7 +55,7 @@ def test_consistency_gf_loc_z_vs_ret_t(args):
                              st.floats(min_value=+0, max_value=1),
                              ],
                    max_dims_extra=2, max_side=5),
-       st.floats(min_value=0, exclude_min=True, allow_infinity=False))
+       st.floats(min_value=0, max_value=1e16, exclude_min=True))
 def test_consistency_gf_loc_ret_vs_grle(args, beta):
     """Check if Laplace transform of `gf0_loc_ret_t` matches `gf0_loc_gr_t`/`gf0_loc_le_t`."""
     tt, e_onsite, e_bath, hopping = args
