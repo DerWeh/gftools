@@ -1,5 +1,6 @@
 """Test the utility functions related to Green's functions."""
 from functools import partial
+from warnings import catch_warnings, filterwarnings
 
 import pytest
 import hypothesis.strategies as st
@@ -41,7 +42,9 @@ def test_complex_bose(z, n, beta):
 @pytest.mark.parametrize("beta", [0.7, 1.38, 1000])
 def test_fermi(z, beta):
     """Check if Fermi functions agrees with the standard form."""
-    fermi_comp = 1./(np.exp(beta*z) + 1)
+    with catch_warnings():  # fermi_fct should avoid these overflows
+        filterwarnings("ignore", message="overflow encountered in exp", category=RuntimeWarning)
+        fermi_comp = 1./(np.exp(beta*z) + 1)
     # assert approx(fermi_comp) == gt.fermi_fct(z, beta=beta)
     assert approx(gt.fermi_fct(z, beta=beta), fermi_comp)
 
@@ -116,6 +119,7 @@ def test_chemical_potential_single_pole(eps, occ):
     assert_allclose(occ_fct(mu), occ)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")  # test gt.density while it's still there
 def test_density():
     """Check density for simple Green's functions."""
     beta = 10.1

@@ -4,6 +4,8 @@ Per default, the functions refer to Fermi statistics,
 a tailing '_b' indicates Bose statistics instead.
 
 """
+from warnings import catch_warnings, filterwarnings
+
 import numpy as np
 
 from scipy import linalg
@@ -47,7 +49,10 @@ def bose_fct(eps, beta):
     betaeps = np.asanyarray(beta*eps)
     res = np.empty_like(betaeps)
     small = betaeps < 700
-    res[small] = 1./np.expm1(betaeps[small])
+
+    with catch_warnings():
+        filterwarnings("ignore", message="divide by zero encountered.*", category=RuntimeWarning)
+        res[small] = 1./np.expm1(betaeps[small])
     # avoid overflows for big numbers using negative exponents
     res[~small] = -np.exp(-betaeps[~small])/np.expm1(-betaeps[~small])
     return res
