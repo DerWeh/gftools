@@ -722,9 +722,11 @@ class _Hermite2Base:
         discriminant = np.emath.sqrt(qz**2 - 4*pz*rz)
         p_branch = 0.5*(-qz + discriminant) / rz
         m_branch = 0.5*(-qz - discriminant) / rz
-        p_stable = np.where(abs(p_branch) >= abs(m_branch), p_branch, pz / (rz*m_branch))
-        m_stable = np.where(abs(m_branch) >= abs(p_branch), m_branch, pz / (rz*p_branch))
-        return p_stable, m_stable
+        # more stable calculation of branches, using `out` for lazy evaluation
+        # see [fasondini2019]_, 5.2 Evaluating the quadratic formula
+        np.divide(pz, rz*m_branch, out=p_branch, where=abs(p_branch) < abs(m_branch))
+        np.divide(pz, rz*p_branch, out=m_branch, where=abs(m_branch) < abs(p_branch))
+        return p_branch, m_branch
 
 
 @dataclass
