@@ -137,7 +137,7 @@ def dos(eps, half_bandwidth):
     >>> plt.show()
     """
     D = half_bandwidth
-    return 2 / 3 * honeycomb.dos(eps - D/3, half_bandwidth=D)
+    return 2 * honeycomb.dos(3*eps - D, half_bandwidth=3*D)
 
 
 def hilbert_transform(xi, half_bandwidth):
@@ -303,4 +303,4 @@ def dos_mp(eps, half_bandwidth=1):
     >>> plt.show()
     """
     D = mp.mpf(half_bandwidth)
-    return mp.mpf("2/3") * honeycomb.dos_mp(eps - D/3, half_bandwidth=D)
+    return 2 * honeycomb.dos_mp(3*mp.mpf(eps) - D, half_bandwidth=3*D)
