@@ -170,6 +170,8 @@ class Lattice:
         singularities = self.singularities(**kwds)
         if singularities:
             assume(min(abs(eps - sing) for sing in singularities) > 1e-6)
+        # DOS not defined precisely at band edge
+        assume(min(abs(eps - edge) for edge in self.band_edges(**kwds)) > 1e-16)
         assert_allclose(self.lattice.dos(eps, **kwds),
                         float(self.lattice.dos_mp(eps, **kwds)))
 
