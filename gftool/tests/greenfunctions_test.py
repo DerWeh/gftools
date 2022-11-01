@@ -166,6 +166,10 @@ class Lattice:
     @given(eps=st.floats(-1.5, +1.5))
     def test_dos_vs_dos_mp(self, eps, kwds):
         """Compare multi-precision and `numpy` implementation of DOS."""
+        # check only sufficiently far from singularities
+        singularities = self.singularities(**kwds)
+        if singularities:
+            assume(min(abs(eps - sing) for sing in singularities) > 1e-6)
         assert_allclose(self.lattice.dos(eps, **kwds),
                         float(self.lattice.dos_mp(eps, **kwds)))
 
