@@ -173,7 +173,8 @@ class Lattice:
         # DOS not defined precisely at band edge
         assume(min(abs(eps - edge) for edge in self.band_edges(**kwds)) > 1e-16)
         assert_allclose(self.lattice.dos(eps, **kwds),
-                        float(self.lattice.dos_mp(eps, **kwds)))
+                        float(self.lattice.dos_mp(eps, **kwds)),
+                        atol=1e-16)
 
     def test_dos_support(self, kwds):
         """DOS should have no support for outside the band-edges."""
@@ -855,11 +856,11 @@ class TestHubbardDimer(GfProperties):
 def test_bethe_derivative_1(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
-    z += np.sign(z.imag)*1e-6j  # keep reasonable distance from real axis
-    with mpmath.workdps(30):  # improved integration accuracy in case of large inter
+    z += np.sign(z.imag)*1e-5j  # keep reasonable distance from real axis
+    with mpmath.workdps(50):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(partial(gt.bethe_gf_z, half_bandwidth=D), z,
                         method='quad', radius=z.imag/2)
-    assert_allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D), atol=1e-12)
+    assert_allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D), atol=1e-10)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])
@@ -867,12 +868,12 @@ def test_bethe_derivative_1(z, D):
 def test_bethe_derivative_2(z, D):
     """Check derivative against numerical solution."""
     assume(z.imag != 0)  # Gf have poles on real axis
-    z += np.sign(z.imag)*1e-6j  # keep reasonable distance from real axis
+    z += np.sign(z.imag)*1e-5j  # keep reasonable distance from real axis
     fct = partial(gt.bethe_gf_d1_z, half_bandwidth=D)
     fct_d1 = partial(gt.bethe_gf_d2_z, half_bandwidth=D)
-    with mpmath.workdps(30):  # improved integration accuracy in case of large inter
+    with mpmath.workdps(50):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(fct, z, method='quad', radius=z.imag/2)
-    assert_allclose(gf_d1, fct_d1(z), atol=1e-12)
+    assert_allclose(gf_d1, fct_d1(z), atol=1e-10)
 
 
 @given(z=st.complex_numbers(max_magnitude=1e4 if HAS_QUAD else 1e3),
@@ -880,7 +881,7 @@ def test_bethe_derivative_2(z, D):
 def test_bethe_inverse(z, D):
     """Check inverse."""
     if HAS_QUAD:
-        assume(z.imag != 0)  # Gf have poles on real axis
+        assume(abs(z.imag) > 1e-16)  # Gf have poles on real axis
         approx = pytest.approx
     else:
         assume(abs(z.imag) > 1e-8)
