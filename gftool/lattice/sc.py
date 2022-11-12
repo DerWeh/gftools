@@ -360,7 +360,16 @@ def dos_mp(eps, half_bandwidth=1):
     """
     D_inv = 3 / half_bandwidth
     eps = mp.fabs(eps)
-    if eps == 0:
+    if eps < 10**(-mp.dps/4):
         km2 = 0.25 * (2 - mp.sqrt(3))
-        return D_inv * (2 / mp.pi**2) * mp.ellipk(km2) * mp.ellipk(1 - km2) / mp.pi
+        dos0 = D_inv * (2 / mp.pi**2) * mp.ellipk(km2) * mp.ellipk(1 - km2) / mp.pi
+        dos1 = 1 / (3 * mp.pi**4 * dos0)
+        even_coeffs = [dos0*d0 - dos1*d1 for d0, d1 in zip(
+            [1, mp.mpf("1/18"), mp.mpf("11/648"), mp.mpf("19/2160")],
+            [0, 1, mp.mpf("7/18"), mp.mpf("5/24")],
+        )]
+        coeffs = [0] * (2*len(even_coeffs) - 1)
+        coeffs[::2] = even_coeffs
+        return mp.polyval(coeffs[::-1], eps)
+
     return -mp.im(gf_z_mp(eps, half_bandwidth)) / mp.pi
