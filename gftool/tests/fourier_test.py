@@ -30,7 +30,7 @@ def test_gf_form_moments(args):
     mom, = args
     gf = gt.basis.pole.gf_from_moments(mom, width=1)
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
-    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-12)
+    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-10)
 
 
 def test_gf_form_moments_nan():

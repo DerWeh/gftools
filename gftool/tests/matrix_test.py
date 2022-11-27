@@ -91,26 +91,31 @@ def test_decomposition_reconsturction(args):
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(mat) < 1e8))
     dec = gt.matrix.decompose_gf(mat)
-    assert_allclose(dec.reconstruct(kind='full'), mat)
-    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), mat, atol=1e-10)
+    assert_allclose(dec.reconstruct(kind='diag'),
+                    np.diagonal(mat, axis1=-2, axis2=-1), atol=1e-10)
 
     # symmetric
     sym_mat = mat + gt.matrix.transpose(mat)
     if sym_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(sym_mat) < 1e8))
     dec = gt.matrix.decompose_sym(sym_mat)
-    assert_allclose(dec.reconstruct(kind='full'), sym_mat)
-    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(sym_mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), sym_mat, atol=1e-10)
+    assert_allclose(dec.reconstruct(kind='diag'),
+                    np.diagonal(sym_mat, axis1=-2, axis2=-1), atol=1e-10)
 
     # Hermitian
     her_mat = mat + gt.matrix.transpose(mat).conj()
     if her_mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(her_mat) < 1e8))
     dec = gt.matrix.decompose_hamiltonian(her_mat)
-    assert_allclose(dec.reconstruct(kind='full'), her_mat)
-    assert_allclose(dec.reconstruct(kind='diag'), np.diagonal(her_mat, axis1=-2, axis2=-1))
+    assert_allclose(dec.reconstruct(kind='full'), her_mat, atol=1e-10)
+    assert_allclose(dec.reconstruct(kind='diag'),
+                    np.diagonal(her_mat, axis1=-2, axis2=-1), atol=1e-10)
 
 
+@pytest.mark.filterwarnings("ignore:(invalid value):RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
@@ -122,9 +127,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(mat) < 1e8))
     inverse = np.linalg.inv(mat)
     dec = gt.matrix.Decomposition.from_gf(mat)
-    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-10)
     assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-10)
 
     # symmetric
     sym_mat = mat + gt.matrix.transpose(mat)
@@ -132,9 +137,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(sym_mat) < 1e8))
     inverse = np.linalg.inv(sym_mat)
     dec = gt.matrix.decompose_sym(sym_mat)
-    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-10)
     assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-10)
 
     # Hermitian
     her_mat = mat + gt.matrix.transpose(mat).conj()
@@ -142,9 +147,9 @@ def test_decomposition_inverse(args):
         assume(np.all(np.linalg.cond(her_mat) < 1e8))
     inverse = np.linalg.inv(her_mat)
     dec = gt.matrix.Decomposition.from_hamiltonian(her_mat)
-    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-12)
+    assert_allclose(dec.reconstruct(1./dec.eig, kind='full'), inverse, atol=1e-10)
     assert_allclose(dec.reconstruct(1./dec.eig, kind='diag'),
-                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-12)
+                    np.diagonal(inverse, axis1=-2, axis2=-1), atol=1e-10)
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -157,7 +162,7 @@ def test_decomposition_inverse(args):
 def test_2x2_gf(z, eps0, eps1, hopping):
     """Compare analytic 2x2 Gf vs numeric diagonalization."""
     assume(abs(z.imag) > 1e-6)
-    assume((eps0 != eps1) or (hopping != 0))
+    assume(abs(eps0 - eps1) > 1e-16 or abs(hopping) > 1e-16)
     ham = np.array([[eps0, hopping],
                     [hopping, eps1]])
     dec = gt.matrix.decompose_hamiltonian(ham)

@@ -86,9 +86,10 @@ def test_cpa_interface(args):
     """Test fixed-occupation CPA for various broadcastable inputs."""
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
     z, eps, conc = args
-    assume(np.all(conc.sum(axis=-1)) > 0)
+    assume(np.all(conc.sum(axis=-1) > 1e-12))
     z = np.where(z.imag < 0, z.conj(), z)
     z += 1j  # go into imaginary plane where convergences is fast
+    conc = np.where(conc < np.finfo(conc.dtype).eps*2, 0, conc)
     conc /= conc.sum(axis=-1)[..., np.newaxis]
 
     self_cpa_z = gt.cpa.solve_root(z, e_onsite=eps, concentration=conc, hilbert_trafo=hilbert)

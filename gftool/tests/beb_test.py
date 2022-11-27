@@ -56,11 +56,10 @@ def test_gf_loc(t, self_beb_z):
     np.array([[1.0, 0.3], [0.3, 1.2]]),  # full rank example
     np.array([[4.0, 6.0], [6.0, 9.0]]),  # rank deficient example
 ])
-@given(z=st.complex_numbers(max_magnitude=1e-6))
+@given(z=st.complex_numbers(max_magnitude=1e3).filter(lambda z: abs(z.imag) > 1e-6))
 def test_selfconsistency(t, z):
     """Self-consistent Gf is diagonal and equals averaged Gf."""
     # randomly chosen example
-    assume(z.imag != 0)
     z = np.array(z.conjugate() if z.imag < 0 else z)
     eps = np.array([-0.137, 0.23])
     c = np.array([0.137, 0.863])
@@ -69,18 +68,17 @@ def test_selfconsistency(t, z):
     self_beb_z = gt.beb.solve_root(np.array(z), eps, concentration=c, hopping=t,
                                    hilbert_trafo=hilbert, restricted=False)
     gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=False)
-    assert_allclose(gf_loc_z[..., 0, 1], 0, atol=1e-8)
-    assert_allclose(gf_loc_z[..., 1, 0], 0, atol=1e-8)
+    assert_allclose(gf_loc_z[..., 0, 1], 0, atol=1e-6)
+    assert_allclose(gf_loc_z[..., 1, 0], 0, atol=1e-6)
     # Gf_loc diagonal -> inverse is 1/diagonal
     gf_avg = c / (1./gt.beb.diagonal(gf_loc_z) + gt.beb.diagonal(self_beb_z) - eps)
-    assert_allclose(gt.beb.diagonal(gf_loc_z), gf_avg)
+    assert_allclose(gt.beb.diagonal(gf_loc_z), gf_avg, atol=1e-6)
 
 
-@given(z=st.complex_numbers(max_magnitude=1e-6))
+@given(z=st.complex_numbers(max_magnitude=1e3).filter(lambda z: abs(z.imag) > 1e-6))
 def test_cpa_limit(z):
     """Compare BEB Gf to CPA Gf in the CPA limit `t=1`."""
     # randomly chosen example
-    assume(z.imag != 0)
     z = np.array(z.conjugate() if z.imag < 0 else z)
     eps = np.array([-0.137, 0.23])
     c = np.array([0.137, 0.863])
@@ -94,8 +92,8 @@ def test_cpa_limit(z):
     gf_loc_z = gt.beb.gf_loc_z(z, self_beb_z, hopping=t, hilbert_trafo=hilbert, diag=True)
     self_cpa_z = gt.cpa.solve_root(z, eps, concentration=c, hilbert_trafo=hilbert)
     gf_cpa_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite=eps, hilbert_trafo=hilbert)
-    assert_allclose(gf_loc_z, c*gf_cpa_z)
-    assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z))
+    assert_allclose(gf_loc_z, c*gf_cpa_z, rtol=1e-5)
+    assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z), rtol=1e-6)
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value encountered in double_scalars):RuntimeWarning")
