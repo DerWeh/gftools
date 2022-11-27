@@ -114,8 +114,7 @@ def test_decomposition_reconsturction(args):
                     np.diagonal(her_mat, axis1=-2, axis2=-1), atol=1e-10)
 
 
-@pytest.mark.filterwarnings("ignore:(invalid value):RuntimeWarning")
-@pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(overflow)|(invalid value):RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
