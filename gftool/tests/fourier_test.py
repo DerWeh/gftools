@@ -16,6 +16,7 @@ from hypothesis_gufunc.gufunc import gufunc_args
 from scipy.integrate import simpson
 
 from .context import gftool as gt
+from .context import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 
@@ -30,7 +31,7 @@ def test_gf_form_moments(args):
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
     # low accuracy due to 'unbalanced' results, e.g. [1e5, 1e-10, 1e-10]
     # we should use a better test criterion...
-    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-10*np.linalg.norm(mom))
+    assert_allclose_vm(mom, gf_mom, equal_nan=True, atol=1e-10)
 
 
 def test_gf_form_moments_nan():
@@ -272,12 +273,12 @@ def test_izp2tau_multi_pole(poles, resids, pade_frequencies):
 
     gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA)
     gf_tau = gf_pole.eval_tau(tau, beta=BETA)
-    assert_allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft, atol=1e-12)
 
     # using many moments should give exact result
     mom = gf_pole.moments(order=range(1, 4))
     gf_ft = gt.fourier.izp2tau(izp, gf_izp, tau=tau, beta=BETA, moments=mom)
-    assert_allclose(gf_tau, gf_ft)
+    assert_allclose(gf_tau, gf_ft, atol=1e-12)
 
 
 @given(poles=arrays(float, 10, elements=st.floats(-10, 10)),

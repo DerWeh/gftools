@@ -7,6 +7,7 @@ from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+from .context import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
@@ -32,7 +33,7 @@ def test_lstsq_ce_constraints(args):
         assume(np.all(np.linalg.cond(c) < 1e6))
     sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert_allclose(lstsq, sol, atol=1e-14*np.linalg.norm(sol, axis=-1))
+    assert_allclose_vm(lstsq, sol, atol=1e-14)
 
 
 @pytest.mark.skip("Can't get this test working...")
@@ -85,4 +86,4 @@ def test_lstsq_ce_is_lstq(args):
     c = np.eye(n//2, n)
     d = lstsq[..., :n//2]
     lstsq_ec = gt.linalg.lstsq_ec(a, b, c, d)
-    assert_allclose(lstsq_ec, lstsq, atol=1e-14)
+    assert_allclose_vm(lstsq_ec, lstsq, atol=1e-12)
