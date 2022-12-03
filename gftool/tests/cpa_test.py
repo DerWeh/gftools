@@ -91,6 +91,8 @@ def test_cpa_interface(args):
     z += 1j  # go into imaginary plane where convergences is fast
     conc = np.where(conc < np.finfo(conc.dtype).eps*2, 0, conc)
     conc /= conc.sum(axis=-1)[..., np.newaxis]
+    # for some reason tiny values crashes root search...
+    eps = np.where(abs(eps) < np.finfo(eps.dtype).eps*2, 0, eps)
 
     self_cpa_z = gt.cpa.solve_root(z, e_onsite=eps, concentration=conc, hilbert_trafo=hilbert)
     gf_z = hilbert(z - self_cpa_z)

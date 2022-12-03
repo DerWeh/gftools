@@ -19,8 +19,6 @@ from .context import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 
-assert_allclose = np.testing.assert_allclose
-
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
                    elements=st.floats(min_value=-1e6, max_value=1e6),
@@ -32,7 +30,7 @@ def test_gf_form_moments(args):
     gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
     # low accuracy due to 'unbalanced' results, e.g. [1e5, 1e-10, 1e-10]
     # we should use a better test criterion...
-    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-8)
+    assert_allclose(mom, gf_mom, equal_nan=True, atol=1e-10*np.linalg.norm(mom))
 
 
 def test_gf_form_moments_nan():

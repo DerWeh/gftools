@@ -32,7 +32,7 @@ def test_lstsq_ce_constraints(args):
         assume(np.all(np.linalg.cond(c) < 1e6))
     sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert_allclose(lstsq, sol, atol=1e-14)
+    assert_allclose(lstsq, sol, atol=1e-14*np.linalg.norm(sol, axis=-1))
 
 
 @pytest.mark.skip("Can't get this test working...")
