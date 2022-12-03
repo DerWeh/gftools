@@ -97,7 +97,7 @@ def test_cpa_interface(args):
     self_cpa_z = gt.cpa.solve_root(z, e_onsite=eps, concentration=conc, hilbert_trafo=hilbert)
     gf_z = hilbert(z - self_cpa_z)
     gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, eps, hilbert_trafo=hilbert)
-    assert_allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-5)
+    assert_allclose(np.sum(conc*gf_cmpt_z, axis=-1), gf_z, rtol=1e-3)
 
 
 @ignore_illconditioned
