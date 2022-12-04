@@ -8,7 +8,7 @@ import numpy as np
 import hypothesis.strategies as st
 
 from scipy import integrate
-from hypothesis import given, assume
+from hypothesis import given
 
 from .context import gftool as gt
 
