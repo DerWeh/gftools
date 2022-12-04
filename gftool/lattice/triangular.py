@@ -330,4 +330,6 @@ def dos_mp(eps, half_bandwidth=1):
             z0 = 4 * rr
             z1 = (rr + 1)**3 * (3 - rr) / 4
             dos_ = 1 / mp.sqrt(z0) * mp.ellipk(z1/z0)
+        else:
+            raise RuntimeError("Should be impossible. Please report this!")
         return 2 / np.pi**2 / D * dos_

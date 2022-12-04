@@ -230,9 +230,9 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         # why iterative?
         # Awful Padés might give wrong features in average, so it should be corrected
         if abs_num is None:
-            abs_num_ = int(rel_num*N_pades)
+            abs_num = int(rel_num*N_pades)
         bad = []  # isin needs list not set
-        for nn in range(N_pades, abs_num_, -1):
+        for nn in range(N_pades, abs_num, -1):
             diff = nn*pade - pade_sum  # 50% of time
             distance = _gu_sum(diff.real**2 + diff.imag**2)  # 40% of time
             badness = np.argsort(distance, axis=0)[::-1]  # truncate what is not needed
@@ -244,8 +244,8 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         except UnboundLocalError:
             LOGGER.warning("Not enough Padés to filter (#Padés = %s)", N_pades)
             return np.ones_like(pade[..., 0], dtype=bool)
-        is_valid[badness[:-abs_num_]] = False
-        # assert set(badness[:-abs_num_]) == set(bad)  # FIXME
+        is_valid[badness[:-abs_num]] = False
+        # assert set(badness[:-abs_num]) == set(bad)  # FIXME
         return is_valid
     return filter_high_variance
 
