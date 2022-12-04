@@ -860,7 +860,7 @@ def test_bethe_derivative_1(z, D):
     with mpmath.workdps(50):  # improved integration accuracy in case of large inter
         gf_d1 = fp.diff(partial(gt.bethe_gf_z, half_bandwidth=D), z,
                         method='quad', radius=z.imag/2)
-    assert_allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D), atol=1e-10)
+    assert_allclose(gf_d1, gt.bethe_gf_d1_z(z, half_bandwidth=D), atol=1e-6)
 
 
 @pytest.mark.parametrize("D", [0.5, 1., 2.])

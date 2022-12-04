@@ -93,7 +93,7 @@ def test_cpa_limit(z):
     self_cpa_z = gt.cpa.solve_root(z, eps, concentration=c, hilbert_trafo=hilbert)
     gf_cpa_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite=eps, hilbert_trafo=hilbert)
     assert_allclose(gf_loc_z, c*gf_cpa_z, rtol=1e-5)
-    assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z), rtol=1e-6)
+    assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z), rtol=1e-5)
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value encountered in double_scalars):RuntimeWarning")
