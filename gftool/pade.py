@@ -243,7 +243,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         except UnboundLocalError:
             LOGGER.warning("Not enough Padés to filter (#Padés = %s)", N_pades)
             return np.ones_like(pade[..., 0], dtype=bool)
-        is_valid[badness[:-abs_num_]] = False
+        is_valid[badness[:-abs_num_]] = False  # pylint: disable=invalid-unary-operand-type
         # assert set(badness[:-abs_num_]) == set(bad)  # FIXME
         return is_valid
     return filter_high_variance
