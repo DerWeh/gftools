@@ -33,6 +33,10 @@ Green's functions and lattices
    honeycomb_dos_moment
    honeycomb_gf_z
    honeycomb_hilbert_transform
+   diced_dos
+   diced_dos_moment
+   diced_gf_z
+   diced_hilbert_transform
 
 
 .. rubric:: 3D

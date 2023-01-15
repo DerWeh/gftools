@@ -43,19 +43,21 @@ Submodules
     triangular
     honeycomb
     kagome
+    diced
     sc
     bcc
     fcc
 
 """
 from . import (bcc, bethe, bethez, box, fcc, honeycomb, kagome, lieb, onedim,
-               rectangular, sc, square, triangular)
+               rectangular, sc, square, triangular, diced)
 
 # silence warnings of unused imports
 assert bcc
 assert bethe
 assert bethez
 assert box
+assert diced
 assert fcc
 assert honeycomb
 assert kagome
