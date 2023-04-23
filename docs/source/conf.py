@@ -214,7 +214,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3.10', None),
                        'np': ('http://docs.scipy.org/doc/numpy/', None),
                        'mpmath': ('https://mpmath.org/doc/current/', None),
                        'matplotlib': ('https://matplotlib.org/', None),
-                       'numexpr': ('https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/', None)
+                       'numexpr': ('https://numexpr.readthedocs.io/en/stable/', None)
                        }
 
 # -----------------------------------------------------------------------------
