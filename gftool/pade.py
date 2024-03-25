@@ -336,7 +336,7 @@ def masked_coefficients(z, fct_z):
                 elif abs(last_coeff) < abs(mat[last_it, jj])*cutoff:  # tiny quotient
                     mat_pi[jj] = (-1)/(z[jj] - z[last_it])
                 else:  # huge quotient
-                    mat_pi[jj] = np.infty
+                    mat_pi[jj] = np.inf
             last_it = ii
             last_coeff = mat_pi[ii]
         else:

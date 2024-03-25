@@ -24,7 +24,7 @@ ignore_illconditioned = pytest.mark.filterwarnings(
 
 
 @given(gufunc_args(
-    '(n)->(n)', dtype=np.complex_,
+    '(n)->(n)', dtype=np.complex128,
     elements=st.complex_numbers(allow_infinity=False, allow_nan=False,
                                 max_magnitude=None if HAS_QUAD else 1e100)
 ))

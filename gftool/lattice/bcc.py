@@ -154,7 +154,7 @@ def dos(eps, half_bandwidth):
     m = 0.5 - 0.5j*np.sqrt(eps_rel[finite]**-2 - 1)
     Ksqr = _u_ellipk(m)**2
     dos_[finite] = -4 / (np.pi**3 * abs(eps[finite])) * Ksqr.imag
-    dos_[singular] = np.infty
+    dos_[singular] = np.inf
     return dos_
 
 
