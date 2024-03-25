@@ -220,4 +220,4 @@ intersphinx_mapping = {'python': ('https://docs.python.org/3.10', None),
 # -----------------------------------------------------------------------------
 # extlinks
 # -----------------------------------------------------------------------------
-extlinks = {'commit': ('https://github.com/DerWeh/gftools/commit/%s', '')}
+extlinks = {'commit': ('https://github.com/DerWeh/gftools/commit/%s', '%s')}
