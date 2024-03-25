@@ -15,9 +15,9 @@ except AttributeError:
     HAS_QUAD = False
     warnings.warn("No quad precision datatypes available!\n"
                   "Some functions might be less accurate.")
-    np.float128 = np.longfloat
-    np.complex256 = np.clongfloat
+    np.float128 = np.longdouble
+    np.complex256 = np.clongdouble
 else:
     HAS_QUAD = True
 
-PRECISE_TYPES = {np.dtype(np.longfloat), np.dtype(np.clongfloat)}
+PRECISE_TYPES = {np.dtype(np.longdouble), np.dtype(np.clongdouble)}

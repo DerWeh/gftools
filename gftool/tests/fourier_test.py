@@ -21,7 +21,7 @@ from .context import assert_allclose_vm
 assert_allclose = np.testing.assert_allclose
 
 
-@given(gufunc_args('(n)->(n),(m)', dtype=np.float_,
+@given(gufunc_args('(n)->(n),(m)', dtype=np.float64,
                    elements=st.floats(min_value=-1e6, max_value=1e6),
                    max_dims_extra=2, max_side=10),)
 def test_gf_form_moments(args):
@@ -72,7 +72,7 @@ def test_iw2tau_dft_single_pole(pole):
     assert_allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
@@ -172,7 +172,7 @@ def test_tau2iw_dft_single_pole(pole):
     assert_allclose(gf_iw, gf_dft, atol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
@@ -201,7 +201,7 @@ def test_tau2iw_multi_pole(args):
     assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10)],
                    max_dims_extra=1, max_side=5),)
@@ -224,7 +224,7 @@ def test_tau2iw_multi_pole_hfm(args):
     assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
-@given(gufunc_args('(n)->(n)', dtype=np.float_,
+@given(gufunc_args('(n)->(n)', dtype=np.float64,
                    elements=st.floats(min_value=-1e6, max_value=1e6),
                    max_dims_extra=2, max_side=10),)
 def test_pole_from_gftau_exact(args):
@@ -343,7 +343,7 @@ def test_simps_weights(test_fct):
         assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-10, max_value=10),
                              st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=5),)
@@ -414,7 +414,7 @@ def test_tt2z_single_pole_nonumexpr(spole):
         gt.fourier._phase = gt.fourier._phase_numexpr
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],
                    max_dims_extra=2, max_side=5),)
@@ -447,7 +447,7 @@ def test_tt2z_multi_pole(args):
     gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
                    elements=[st.complex_numbers(max_magnitude=2),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],
@@ -477,7 +477,7 @@ def test_tt2z_gufuncz(args):
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
                    elements=[st.floats(min_value=-1,  max_value=1),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],
@@ -536,7 +536,7 @@ def test_tt2z_pade_box(fast):
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex_,
+@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
                    elements=[st.floats(min_value=-1,  max_value=1),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10), ],

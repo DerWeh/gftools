@@ -83,7 +83,7 @@ class TestDecompositionGeneral:
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
 def test_decomposition_reconsturction(args):
     """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
@@ -116,7 +116,7 @@ def test_decomposition_reconsturction(args):
 
 @pytest.mark.filterwarnings("ignore:(overflow)|(invalid value):RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=2, max_side=4),)
 def test_decomposition_inverse(args):
     """Check if the inverse using `gt.matrix.Decomposition` is correct."""

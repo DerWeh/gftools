@@ -89,7 +89,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     True
     """
     # add axis for iws, remove it later at occupation
-    moments = np.asanyarray(moments, dtype=np.float_)[..., np.newaxis, :]
+    moments = np.asanyarray(moments, dtype=np.float64)[..., np.newaxis, :]
     if n_fit:
         n_mom = moments.shape[-1]
         weight = iws.imag**(n_mom+n_fit)
