@@ -83,7 +83,9 @@ def test_fermi_d1_std_form(z, beta):
     """Check if Fermi functions agrees with the standard form."""
     assume(z*beta < 500.)  # avoid overflows in naive implementation
     exp = np.exp(beta*z)
-    fermi_d1_comp = -beta*exp/(exp+1)**2
+    with catch_warnings():  # fermi_fct_d1 should avoid these overflows
+        filterwarnings("ignore", message="overflow encountered in", category=RuntimeWarning)
+        fermi_d1_comp = -beta*exp/(exp+1)**2
     assert approx(gt.fermi_fct_d1(z, beta=beta), fermi_d1_comp)
 
 
