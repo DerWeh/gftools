@@ -66,7 +66,7 @@ class GfProperties:
         Can be overwritten by subclasses using the `params`.
         """
         del params
-        return -np.infty, np.infty
+        return -np.inf, np.inf
 
     def test_complex(self, params):
         r""":math:`G_{AB}^*(z) = G_{B^† A^†}(z^*)`."""
@@ -76,11 +76,11 @@ class GfProperties:
     def test_limit(self, params):
         r""":math:`\lim_{z→∞} zG(z) = 1`."""
         assert_allclose(  # along real axis
-            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
+            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.inf), 1,
             rtol=1e-2
         )
         assert_allclose(  # along imaginary axis
-            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
+            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.inf), 1,
             rtol=1e-2
         )
 
@@ -124,7 +124,7 @@ class Lattice:
         Can be overwritten by subclasses using the `kwds`.
         """
         del kwds
-        return -np.infty, np.infty
+        return -np.inf, np.inf
 
     @staticmethod
     def singularities(**kwds):
@@ -842,11 +842,11 @@ class TestHubbardDimer(GfProperties):
     def test_limit(self, params):
         """Limit of Pols cannot be accurately determined, thus accuracy is reduced."""
         assert_allclose(  # along real axis
-            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.infty), 1,
+            fp.limit(lambda zz: zz*self.gf(zz, *params[0], **params[1]).real, np.inf), 1,
             rtol=1e-1
         )
         assert_allclose(  # along imaginary axis
-            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.infty), 1,
+            fp.limit(lambda zz: -zz*self.gf(1j*zz, *params[0], **params[1]).imag, np.inf), 1,
             rtol=1e-2
         )
 
@@ -903,7 +903,7 @@ def test_bethe_retarded(D, center):
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
-@given(gufunc_args('(),(),()->()', dtype=np.float_,
+@given(gufunc_args('(),(),()->()', dtype=np.float64,
                    elements=[st.floats(0, 10),
                              st.floats(0.1, 10),
                              st.floats(0, 10),
@@ -996,7 +996,7 @@ def test_simplecubic_gf_vs_gf_mp(z, D):
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N)->()',
-                   dtype=[np.complex_, np.float_, np.float_],
+                   dtype=[np.complex128, np.float64, np.float64],
                    elements=[st.complex_numbers(), st.floats(), st.floats()],
                    max_dims_extra=3)
        )
@@ -1010,7 +1010,7 @@ def test_pole_gf_z_gu(args):
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
-                   dtype=[np.float_, np.float_, np.float_, np.float_],
+                   dtype=[np.float64, np.float64, np.float64, np.float64],
                    elements=[st.floats(min_value=0., max_value=1.),
                              st.floats(), nonneg_float, nonneg_float],
                    max_dims_extra=3)
@@ -1027,7 +1027,7 @@ def test_pole_gf_tau_gu(args):
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
-                   dtype=[np.float_, np.float_, np.float_, np.float_],
+                   dtype=[np.float64, np.float64, np.float64, np.float64],
                    elements=[st.floats(min_value=0., max_value=1.),
                              pos_float, nonneg_float, pos_float],
                    max_dims_extra=3)
@@ -1068,14 +1068,14 @@ def test_hubbard_I_self_hfm():
     U, occ = 1.7, 0.3
     hubbard_I = partial(gt.hubbard_I_self_z, U=U, occ=occ)
     m0 = U*occ
-    limit_0p = fp.limit(hubbard_I, np.infty, exp=True)
+    limit_0p = fp.limit(hubbard_I, np.inf, exp=True)
     assert limit_0p == pytest.approx(m0)
 
     def hubbard_dyn(z):
         return z*(hubbard_I(z) - m0)
 
     m1 = occ * (1 - occ) * U**2
-    limit_1p = fp.limit(hubbard_dyn, np.infty, exp=True, steps=[25])
+    limit_1p = fp.limit(hubbard_dyn, np.inf, exp=True, steps=[25])
     assert limit_1p == pytest.approx(m1)
 
 
@@ -1146,7 +1146,7 @@ def test_box_retarded(D, center):
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
-@given(gufunc_args('(),(),()->()', dtype=np.float_,
+@given(gufunc_args('(),(),()->()', dtype=np.float64,
                    elements=[st.floats(0, 10),
                              st.floats(0.1, 10),
                              st.floats(0, 10),

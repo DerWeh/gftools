@@ -188,13 +188,18 @@ def dos(eps, half_bandwidth=1):
     small_eps = eps < np.finfo(eps.dtype).eps**(0.25)  # use expansion
     dos_[small_eps] = _dos_eps0_expansion(eps[small_eps], half_bandwidth=3.0)
     finite = ~small_eps & (eps < 3)
-    # Green's function but avoid (1 ± 1/eps**2) for small eps
-    eps2 = eps[finite]**2
-    xi = sqrt(eps[finite] - sqrt(eps2 - 1)) / sqrt(eps[finite] + sqrt(eps2 - 9))
+    # # Green's function but avoid (1 ± 1/eps**2) for small eps
+    # eps2 = eps[finite]**2
+    # xi = sqrt(eps[finite] - sqrt(eps2 - 1)) / sqrt(eps[finite] + sqrt(eps2 - 9))
+    # # above code is inaccurate at band-edges
+    # # examples: eps=0.49999999997101063, half_bandwidth=0.5: result=5.669327e-06, true=5.66933e-06
+    # # for small eps we use expansion anyway
+    eps_sqr = eps[finite]**-2
+    xi = sqrt(1 - sqrt(1 - eps_sqr)) / sqrt(1 + sqrt(1 - 9*eps_sqr))
     denom_inv = 1 / ((1 - xi)**3 * (1 + 3*xi))
     k2 = 16 * xi**3 * denom_inv
     gf_ = (1 - 9*xi**4) * (2 / np.pi * _u_ellipk(k2))**2 * denom_inv / eps[finite]
-    dos_[finite] = -1. / np.pi * gf_.imag
+    dos_[finite] = -1.0 / np.pi * gf_.imag
     return D_inv * dos_
 
 

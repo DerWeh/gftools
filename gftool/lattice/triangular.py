@@ -86,7 +86,7 @@ def gf_z(z, half_bandwidth):
     # eqs (2.22) and eq (2.18), fix correct plane
     K[kk.imag > 0] += 2j*_u_ellipk(1 - mm[kk.imag > 0])
     gf_z = 1 / np.pi / D * gg * K  # eq (2.6)
-    gf_z[singular] = 0 - 1j*np.infty
+    gf_z[singular] = 0 - 1j*np.inf
     return np.where(advanced, np.conj(gf_z), gf_z).reshape(shape)  # return to advanced by symmetry
 
 
@@ -330,4 +330,6 @@ def dos_mp(eps, half_bandwidth=1):
             z0 = 4 * rr
             z1 = (rr + 1)**3 * (3 - rr) / 4
             dos_ = 1 / mp.sqrt(z0) * mp.ellipk(z1/z0)
+        else:
+            raise RuntimeError("Should be impossible. Please report this!")
         return 2 / np.pi**2 / D * dos_

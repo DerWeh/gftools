@@ -19,8 +19,8 @@ assert_allclose = np.testing.assert_allclose
 
 def test_bose_edge_cases():
     """Check exact limits at `0` and `np.infty`."""
-    assert gt.bose_fct(0., 1) == np.infty
-    assert gt.bose_fct(np.infty, 1) == 0
+    assert gt.bose_fct(0., 1) == np.inf
+    assert gt.bose_fct(np.inf, 1) == 0
 
 
 @given(z=st.floats(min_value=1e-4, max_value=1e4), n=st.integers(min_value=-100, max_value=100))
@@ -83,7 +83,9 @@ def test_fermi_d1_std_form(z, beta):
     """Check if Fermi functions agrees with the standard form."""
     assume(z*beta < 500.)  # avoid overflows in naive implementation
     exp = np.exp(beta*z)
-    fermi_d1_comp = -beta*exp/(exp+1)**2
+    with catch_warnings():  # fermi_fct_d1 should avoid these overflows
+        filterwarnings("ignore", message="overflow encountered in", category=RuntimeWarning)
+        fermi_d1_comp = -beta*exp/(exp+1)**2
     assert approx(gt.fermi_fct_d1(z, beta=beta), fermi_d1_comp)
 
 
@@ -152,7 +154,7 @@ def test_density():
     assert_allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
-@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float_,
+@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float64,
                         elements=[st.floats(min_value=-10, max_value=10),
                                   st.floats(min_value=0, max_value=10)]
                         ),)
@@ -188,7 +190,7 @@ def pade_frequencies():
     return pade_frequencies_
 
 
-@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float_,
+@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float64,
                         elements=[st.floats(min_value=-10, max_value=10),
                                   st.floats(min_value=0, max_value=10)]
                         ),)

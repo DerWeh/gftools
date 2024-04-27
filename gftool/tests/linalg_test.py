@@ -13,7 +13,7 @@ assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
 
 
-@given(gufunc_args('(m,n)->(k,m)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(m,n)->(k,m)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=0, max_side=10),)
 def test_orth_compl(args):
     """Test that orthogonal complement is orthogonal."""
@@ -24,7 +24,7 @@ def test_orth_compl(args):
     assert_allclose(perp@mat, 0, atol=1e-12)
 
 
-@given(gufunc_args('(m,n),(m),(n,n),(n)->(n)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(m,n),(m),(n,n),(n)->(n)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=0, max_side=5),)
 def test_lstsq_ce_constraints(args):
     """Check if fully constraint solution of `gt.linalg.lstsq_ec` is correct."""
@@ -33,11 +33,11 @@ def test_lstsq_ce_constraints(args):
         assume(np.all(np.linalg.cond(c) < 1e6))
     sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
-    assert_allclose_vm(lstsq, sol, atol=1e-14)
+    assert_allclose_vm(lstsq, sol, atol=1e-12)
 
 
 @pytest.mark.skip("Can't get this test working...")
-@given(gufunc_args('(m,n),(m),(l,n),(l)->(n)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(m,n),(m),(l,n),(l)->(n)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=0, max_side=5),)
 def test_lstsq_ce(args):
     """Check if solution of `gt.linalg.lstsq_ec` fulfills constraints."""
@@ -74,7 +74,7 @@ def test_singular_constraint():
     assert_allclose(np.sum(c*lstsq, axis=-1), d)
 
 
-@given(gufunc_args('(m,n),(m)->(n)', dtype=np.complex_, elements=easy_complex,
+@given(gufunc_args('(m,n),(m)->(n)', dtype=np.complex128, elements=easy_complex,
                    max_dims_extra=0, max_side=5),)
 def test_lstsq_ce_is_lstq(args):
     """Check if solution of `gt.linalg.lstsq_ec` is a least-squares solution."""

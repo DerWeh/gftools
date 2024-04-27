@@ -68,8 +68,10 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     using Matsubara frequency
 
     >>> occ = gt.density_iw(iws, gf_iw, beta=BETA)
-    >>> m2 = pole_gf.moments(2)  # additional high-frequency moment
-    >>> occ_m2 = gt.density_iw(iws, gf_iw, beta=BETA, moments=[1., m2])
+    >>> m2 = pole_gf.moments([1, 2])  # additional high-frequency moment
+    >>> m2
+    array([1.        , 0.30839757])
+    >>> occ_m2 = gt.density_iw(iws, gf_iw, beta=BETA, moments=m2)
     >>> occ_fit2 = gt.density_iw(iws, gf_iw, beta=BETA, n_fit=1)
     >>> exact, occ, occ_m2, occ_fit2
     (0.17858151..., 0.17934437..., 0.17858150..., 0.17858198...)
@@ -87,7 +89,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     True
     """
     # add axis for iws, remove it later at occupation
-    moments = np.asanyarray(moments, dtype=np.float_)[..., np.newaxis, :]
+    moments = np.asanyarray(moments, dtype=np.float64)[..., np.newaxis, :]
     if n_fit:
         n_mom = moments.shape[-1]
         weight = iws.imag**(n_mom+n_fit)

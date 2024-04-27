@@ -13,7 +13,7 @@ lp = gt.linearprediction
 assert_allclose = np.testing.assert_allclose
 
 
-@given(a=hnp.arrays(np.float_,
+@given(a=hnp.arrays(np.float64,
                     shape=hnp.array_shapes(min_side=2),
                     elements=st.floats(1e+6, 1e+6))
        )
@@ -117,7 +117,7 @@ def test_lattice_prediction(fraction, lattice, stable):
 
 
 @pytest.mark.parametrize("method, atol", [(lp.pcoeff_covar, 1e-6)])
-@given(gufunc_args('(n),(n)->()', dtype=np.float_,
+@given(gufunc_args('(n),(n)->()', dtype=np.float64,
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=0, max_value=10),
                              ],

@@ -229,8 +229,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         # iteratively remove Padés with larges deviation
         # why iterative?
         # Awful Padés might give wrong features in average, so it should be corrected
-        if abs_num is None:
-            abs_num_ = int(rel_num*N_pades)
+        abs_num_ = int(rel_num*N_pades) if abs_num is None else abs_num
         bad = []  # isin needs list not set
         for nn in range(N_pades, abs_num_, -1):
             diff = nn*pade - pade_sum  # 50% of time
@@ -244,7 +243,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         except UnboundLocalError:
             LOGGER.warning("Not enough Padés to filter (#Padés = %s)", N_pades)
             return np.ones_like(pade[..., 0], dtype=bool)
-        is_valid[badness[:-abs_num_]] = False
+        is_valid[badness[:-abs_num_]] = False  # pylint: disable=invalid-unary-operand-type
         # assert set(badness[:-abs_num_]) == set(bad)  # FIXME
         return is_valid
     return filter_high_variance
@@ -337,7 +336,7 @@ def masked_coefficients(z, fct_z):
                 elif abs(last_coeff) < abs(mat[last_it, jj])*cutoff:  # tiny quotient
                     mat_pi[jj] = (-1)/(z[jj] - z[last_it])
                 else:  # huge quotient
-                    mat_pi[jj] = np.infty
+                    mat_pi[jj] = np.inf
             last_it = ii
             last_coeff = mat_pi[ii]
         else:

@@ -12,7 +12,7 @@ assert_allclose = np.testing.assert_allclose
 
 
 @pytest.mark.filterwarnings("ignore:(overflow):RuntimeWarning")
-@given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(),(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=+0, max_value=1),
@@ -31,7 +31,7 @@ def test_gf_loc_z_vs_resolvent(args, z):
     assert_allclose(gf0_loc_z, resolvent[..., 0, 0])
 
 
-@given(gufunc_args('(),(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(),(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=+0, max_value=1),
@@ -50,7 +50,7 @@ def test_consistency_gf_loc_z_vs_ret_t(args):
     assert_allclose(gf0_loc_z, gf0_ft_z, rtol=1e-3, atol=1e-4)
 
 
-@given(gufunc_args('(),(),(n),(n)->(l)', dtype=np.float_,
+@given(gufunc_args('(),(),(n),(n)->(l)', dtype=np.float64,
                    elements=[st.floats(min_value=+0, max_value=1000),
                              st.floats(min_value=-1, max_value=1),
                              st.floats(min_value=-1, max_value=1),

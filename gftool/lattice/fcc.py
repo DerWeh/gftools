@@ -178,7 +178,7 @@ def dos(eps, half_bandwidth):
     finite = (-0.5*half_bandwidth < eps) & (eps < 1.5*half_bandwidth) & ~singular
     dos_ = np.zeros_like(eps)
     dos_[finite] = 1 / np.pi * gf_z(eps[finite], half_bandwidth=half_bandwidth).imag
-    dos_[singular] = np.infty
+    dos_[singular] = np.inf
     return abs(dos_)  # at 0.5D wrong sign
 
 

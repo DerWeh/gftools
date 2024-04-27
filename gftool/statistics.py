@@ -234,7 +234,7 @@ def _pade_frequencies(num: int):
     """Temperature independent part, useful for caching."""
     num = 2*num
     a = -np.diagflat(range(1, 2*num, 2))
-    b = np.zeros_like(a, dtype=np.float_)
+    b = np.zeros_like(a, dtype=np.float64)
     np.fill_diagonal(b[1:, :], 0.5)
     np.fill_diagonal(b[:, 1:], 0.5)
     eig, v = linalg.eig(a, b=b, overwrite_a=True, overwrite_b=True)

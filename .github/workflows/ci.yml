@@ -44,7 +44,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.7", "3.10"]  # check oldest and latest supported version
+        python-version: ["3.7", "3.12"]  # check oldest and latest supported version
         other-os: [false]
         include:  # checking one version in the middle is enough
           - os: windows-latest

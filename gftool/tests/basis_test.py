@@ -12,7 +12,7 @@ assert_allclose = np.testing.assert_allclose
 
 
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@given(gufunc_args('(n)->(n)', dtype=np.complex_, elements=st.complex_numbers()))
+@given(gufunc_args('(n)->(n)', dtype=np.complex128, elements=st.complex_numbers()))
 def test_zp_to_ratpol(args):
     """Check that `gt.basis.ZeroPole` and `gt.basis.RatPol` give same result."""
     z, = args
