@@ -3,12 +3,23 @@
 What's New
 ==========
 
-unreleased
-----------
+0.11.1 (2024-04-27)
+-------------------
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+* Officially support Python 3.12 (:commit:`3d3afa0`).
+* Comply with NumPy 2 syntax (:commit:`6980098`).
+
+Documentation
+~~~~~~~~~~~~~
+* Enforce `numpydoc` style.
+* Update expired links (:commit:`7f1aa09`).
 
 Bug fixes
 ~~~~~~~~~
-* fix vectorization of `~gftool.linearprediction` functions
+* Improve slight inaccuracies of `~gftool.lattice.sc.dos`.
+* Fix vectorization of `~gftool.linearprediction` functions.
 
 0.11.0 (2022-04-29)
 -------------------
