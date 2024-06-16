@@ -62,7 +62,7 @@ from numpy import newaxis
 
 from . import beb, cpa, fourier, lattice, matrix as gtmatrix, linearprediction, polepade
 from ._util import _gu_sum
-from ._version import get_versions
+from ._version import __version__
 
 # Bethe lattice
 # pylint: disable=wrong-import-position
@@ -129,11 +129,10 @@ from .basis.pole import (gf_z as pole_gf_z,
 
 from .density import density_iw, chemical_potential
 
-__version__ = get_versions()['version']
-
 LOGGER = logging.getLogger(__name__)
 
 # silence warnings of unused imports
+assert __version__
 assert all((beb, cpa, fourier, lattice, linearprediction, polepade))
 assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
             bethe_gf_z, bethe_hilbert_transform))

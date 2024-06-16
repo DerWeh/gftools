@@ -3,6 +3,13 @@
 What's New
 ==========
 
+Breaking Changes
+~~~~~~~~~~~~~~~~
+* Drop support for Python 3.7, **minimal version** is now **3.8**.
+  This is necessary for modern build system.
+  Python 3.7 was dropped by NumPy in 2022, this should be no issue.
+
+
 0.11.1 (2024-04-27)
 -------------------
 
