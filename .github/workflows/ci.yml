@@ -21,8 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -r requirements-dev.txt
-          pip install -r requirements.txt
-          python setup.py install
+          pip install .
       - name: Basic Lint
         run: |
           find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pydocstyle -v {} +
@@ -68,8 +67,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -r requirements-dev.txt
-          pip install -r requirements.txt
-          python setup.py install
+          pip install .
       - name: Test code
         run: pytest --cov=gftool --cov-report=xml -v
       - name: Upload coverage to Codecov
@@ -90,8 +88,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -r requirements-doc.txt
-          pip install -r requirements.txt
-          python setup.py install
+          pip install .
       - name: Test documentation
         run: |
           sphinx-build -d docs/build/doctrees docs/source docs/build/html

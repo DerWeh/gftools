@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools >= 64.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gftool"
+dynamic = ["version"]
+requires-python = ">=3.8"
+authors = [
+  {name = "Weh", email = "andreas.weh@physik.uni-augsburg.de"},
+]
+description="Collection of commonly used Green's functions and utilities"
+readme = "README.rst"
+keywords = ["Green's function", "physics"]
+license = {file = "LICENSE.txt"}
+classifiers=[
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: MIT License',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Topic :: Scientific/Engineering :: Physics',
+]
+dependencies = [
+  'numpy>=1.17.0',
+  'scipy>=1.6.0',
+  'mpmath'
+]
+
+[project.optional-dependencies]
+test = ['pytest>=4.6', 'hypothesis>=4.24.5']
+fast = ['numexpr']
+
+[project.urls]
+ReadTheDocs = "https://gftools.readthedocs.io/"
+Repository = "https://github.com/DerWeh/gftools"
+Zenodo = "https://zenodo.org/doi/10.5281/zenodo.4744545"
+
+[tool.setuptools]
+packages = ["gftool"]
+
+[tool.setuptools_scm]
+version_file = "gftool/_version.py"
+
+[tool.pydocstyle]
+add-ignore = "D105"  # ignore undocumented dunder methods like ``__str__`
