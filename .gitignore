@@ -1,5 +1,6 @@
 *@neomake*
 tempfiles/
+_version.py
 
 tags.*
 tags
