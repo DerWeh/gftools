@@ -7,7 +7,8 @@ from hypothesis import given, assume, strategies as st
 from hypothesis_gufunc.gufunc import gufunc_args
 from scipy.linalg import companion
 
-from .context import gftool as gt
+import gftool as gt
+import gftool.siam
 
 lp = gt.linearprediction
 assert_allclose = np.testing.assert_allclose

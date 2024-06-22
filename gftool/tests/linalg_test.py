@@ -6,8 +6,8 @@ import pytest
 from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
-from .context import gftool as gt
-from .context import assert_allclose_vm
+import gftool as gt
+from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)

@@ -15,8 +15,8 @@ from hypothesis.extra.numpy import arrays
 from hypothesis_gufunc.gufunc import gufunc_args
 from scipy.integrate import simpson
 
-from .context import gftool as gt
-from .context import assert_allclose_vm
+import gftool as gt
+from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 

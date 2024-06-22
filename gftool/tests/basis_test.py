@@ -6,7 +6,7 @@ import pytest
 from hypothesis import given, assume
 from hypothesis_gufunc.gufunc import gufunc_args
 
-from .context import gftool as gt
+import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 

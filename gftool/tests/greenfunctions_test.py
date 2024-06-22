@@ -16,7 +16,7 @@ from hypothesis_gufunc.gufunc import gufunc_args
 from mpmath import fp
 from scipy import integrate
 
-from .context import gftool as gt
+import gftool as gt
 
 HAS_QUAD = gt.precision.HAS_QUAD
 

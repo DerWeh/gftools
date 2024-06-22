@@ -10,7 +10,7 @@ import hypothesis.strategies as st
 from scipy import integrate
 from hypothesis import given
 
-from .context import gftool as gt
+import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 
