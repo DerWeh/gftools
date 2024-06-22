@@ -128,6 +128,7 @@ from .basis.pole import (gf_z as pole_gf_z,
                          moments as pole_gf_moments)
 
 from .density import density_iw, chemical_potential
+import gftool.siam
 
 LOGGER = logging.getLogger(__name__)
 
@@ -147,6 +148,7 @@ assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_
 assert all((bose_fct, matsubara_frequencies_b))
 assert all((pole_gf_z, pole_gf_d1_z, pole_gf_tau, pole_gf_ret_t, pole_gf_moments))
 assert all((density_iw, chemical_potential))
+assert gftool.siam
 
 
 def surface_gf_zeps(z, eps, hopping_nn):

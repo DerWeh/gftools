@@ -1,5 +1,5 @@
 """Test the utility functions related to Green's functions."""
-from functools import partial
+from functools import partial, lru_cache
 from warnings import catch_warnings, filterwarnings
 
 import pytest
@@ -10,11 +10,15 @@ from hypothesis import given, assume
 import numpy as np
 from mpmath import fp
 
-from .context import gftool as gt, pole
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.basis import pole
+from gftool.tests.custom_strategies import gufunc_args
+
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 assert_allclose = np.testing.assert_allclose
+# cache pade_frequencies
+gt.statistics._pade_frequencies = lru_cache(maxsize=10)(gt.statistics._pade_frequencies)
 
 
 def test_bose_edge_cases():

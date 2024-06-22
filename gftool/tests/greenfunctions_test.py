@@ -15,8 +15,8 @@ from hypothesis import assume, given, strategies as st
 from mpmath import fp
 from scipy import integrate
 
-from .context import gftool as gt
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
 
 HAS_QUAD = gt.precision.HAS_QUAD
 

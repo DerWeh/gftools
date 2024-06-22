@@ -10,7 +10,7 @@ from hypothesis import given
 from scipy import interpolate
 from scipy.special import binom
 
-from .context import gftool as gt
+import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 ignore_illconditioned = pytest.mark.filterwarnings(

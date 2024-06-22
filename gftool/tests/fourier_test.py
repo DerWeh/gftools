@@ -13,10 +13,10 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 from hypothesis.extra.numpy import arrays
 
-from .context import gftool as gt
-from .context import assert_allclose_vm
-from .custom_strategies import gufunc_args
-from .old_scipy_integrate import simpson
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
+from gftool.tests.old_scipy_integrate import simpson
+from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
