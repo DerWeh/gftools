@@ -47,7 +47,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -r requirements-dev.txt
-          pip install .
+          pip install .[test,fast]
       - name: Test code
         run: pytest --cov=gftool --cov-report=xml -v
       - name: Upload coverage to Codecov
