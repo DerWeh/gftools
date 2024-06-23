@@ -14,16 +14,14 @@ fixing the charge on the real axis directly.
 """
 # pylint: disable=too-many-locals
 import logging
-
 from functools import partial
 from typing import Callable, NamedTuple
+from typing import Optional as Opt
 
 import numpy as np
-
 from scipy import optimize
 
-from gftool.density import density_iw, chemical_potential
-
+from gftool.density import chemical_potential, density_iw
 
 LOGGER = logging.getLogger(__name__)
 
@@ -266,7 +264,7 @@ class RootFxdocc(NamedTuple):
 
 
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
-                      beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
+                      beta: float, occ: Opt[float] = None, self_cpa_iw0=None, mu0: float = 0,
                       weights=1, n_fit=0, restricted=True, **root_kwds) -> RootFxdocc:
     """
     Determine the CPA self-energy by solving the root problem for fixed `occ`.
@@ -405,7 +403,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     LOGGER.debug('Search CPA self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
-        root_kwds['callback'] = lambda x, f: LOGGER.debug(
+        root_kwds['callback'] = lambda _, f: LOGGER.debug(
             'Residue: mu=%+6g   cpa=%6g', f[0], np.linalg.norm(f[1:])
         )
 

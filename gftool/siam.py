@@ -28,9 +28,12 @@ with the hybridization function
 import numpy as np
 
 from gftool._util import _gu_sum
+from gftool.basis.pole import (
+    _single_pole_gf_gr_t,
+    _single_pole_gf_le_t,
+    _single_pole_gf_ret_t,
+)
 from gftool.matrix import decompose_her
-from gftool.basis.pole import (_single_pole_gf_gr_t, _single_pole_gf_le_t,
-                               _single_pole_gf_ret_t)
 
 
 def gf0_loc_z(z, e_onsite, e_bath, hopping_sqr):
@@ -82,8 +85,7 @@ def gf0_loc_ret_t(tt, e_onsite, e_bath, hopping):
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
     eig_exp = _single_pole_gf_ret_t(tt[..., np.newaxis], dec.eig)
-    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
-    return gf0_t
+    return dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
 
 
 def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
@@ -113,8 +115,7 @@ def gf0_loc_gr_t(tt, e_onsite, e_bath, hopping, beta):
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
     eig_exp = _single_pole_gf_gr_t(tt[..., np.newaxis], dec.eig, beta=beta)
-    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
-    return gf0_t
+    return dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
 
 
 def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
@@ -144,8 +145,7 @@ def gf0_loc_le_t(tt, e_onsite, e_bath, hopping, beta):
     # calculate only elements [..., 0] corresponding to the local impurity site
     dec.rv_inv, dec.rv = dec.rv_inv[..., :, :1], dec.rv[..., :1, :]
     eig_exp = _single_pole_gf_le_t(tt[..., np.newaxis], dec.eig, beta=beta)
-    gf0_t = dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
-    return gf0_t
+    return dec.reconstruct(eig=eig_exp, kind='diag')[..., 0]
 
 
 def hamiltonian_matrix(e_onsite, e_bath, hopping):

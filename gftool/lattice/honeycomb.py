@@ -42,9 +42,9 @@ def gf_z(z, half_bandwidth):
 
     References
     ----------
-    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green's Functions for the
        Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
-       1411–1419. https://doi.org/10.1063/1.1666155
+       1411-1419. https://doi.org/10.1063/1.1666155
 
     Examples
     --------
@@ -96,9 +96,9 @@ def dos(eps, half_bandwidth):
 
     References
     ----------
-    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green's Functions for the
        Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
-       1411–1419. https://doi.org/10.1063/1.1666155
+       1411-1419. https://doi.org/10.1063/1.1666155
 
     Examples
     --------
@@ -126,7 +126,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -208,7 +208,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
@@ -251,9 +252,9 @@ def dos_mp(eps, half_bandwidth=1):
 
     References
     ----------
-    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green's Functions for the
        Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
-       1411–1419. https://doi.org/10.1063/1.1666155
+       1411-1419. https://doi.org/10.1063/1.1666155
 
     Examples
     --------

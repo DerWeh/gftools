@@ -1,9 +1,8 @@
 """Test functionality of basis representations."""
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 import pytest
-
-from hypothesis import given, assume
+from hypothesis import assume, given
 from hypothesis_gufunc.gufunc import gufunc_args
 
 import gftool as gt

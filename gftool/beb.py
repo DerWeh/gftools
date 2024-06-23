@@ -27,7 +27,7 @@ References
 .. [blackman1971]
    Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.
    Generalized Locator---Coherent-Potential Approach to Binary Alloys.
-   Phys. Rev. B 4, 2412–2428. https://doi.org/10.1103/PhysRevB.4.2412
+   Phys. Rev. B 4, 2412-2428. https://doi.org/10.1103/PhysRevB.4.2412
 .. [weh2021] Weh, A., Zhang, Y., Östlin, A., Terletska, H., Bauernfeind, D.,
    Tam, K.-M., Evertz, H.G., Byczuk, K., Vollhardt, D., Chioncel, L., 2021.
    Dynamical mean-field theory of the Anderson--Hubbard model with local and
@@ -79,16 +79,14 @@ system.
 from __future__ import annotations
 
 import logging
-
-from typing import Callable
 from functools import partial
+from typing import Callable
 
 import numpy as np
-
 from numpy import newaxis
 from scipy import optimize
 
-from gftool.matrix import decompose_her, decompose_mat, UDecomposition
+from gftool.matrix import UDecomposition, decompose_her, decompose_mat
 
 LOGGER = logging.getLogger(__name__)
 
@@ -399,7 +397,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
     LOGGER.debug('Search BEB self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
-        root_kwds['callback'] = lambda x, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
+        root_kwds['callback'] = lambda _, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
 
     sol = optimize.root(root_eq, x0=self_beb_z0, **root_kwds)
     LOGGER.info("BEB self-energy root found after %s iterations.", sol.nit)

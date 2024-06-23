@@ -11,7 +11,6 @@ which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t] = [-2D/3, 4D/3]`.
 
 """
 import numpy as np
-
 from mpmath import mp
 from scipy.special import ellipkm1
 
@@ -49,9 +48,9 @@ def gf_z(z, half_bandwidth):
 
     References
     ----------
-    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green’s Functions for the
+    .. [horiguchi1972] Horiguchi, T., 1972. Lattice Green's Functions for the
        Triangular and Honeycomb Lattices. Journal of Mathematical Physics 13,
-       1411–1419. https://doi.org/10.1063/1.1666155
+       1411-1419. https://doi.org/10.1063/1.1666155
 
     Examples
     --------
@@ -96,7 +95,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -155,7 +154,7 @@ def dos(eps, half_bandwidth):
 
     References
     ----------
-    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green’s Functions and DOS for
+    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green's Functions and DOS for
        Some 2D Lattices. Graphene, 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001.
 
@@ -180,12 +179,12 @@ def dos(eps, half_bandwidth):
     dos = np.zeros_like(eps)
     # implementation differs slightly from [kogan2021], as evaluating `ellipk`
     # is inaccurate around the singularity
-    region1 = (-1.5 <= eps) & (eps <= -1)
+    region1 = (-1.5 <= eps) & (eps <= -1)  # noqa: SIM300
     rr = np.sqrt(2*eps[region1] + 3)
     denom = (rr + 1)**3 * (3 - rr)
     numer = (rr - 1)**3 * (3 + rr)
     dos[region1] = 2 / np.sqrt(denom) * ellipkm1(-numer/denom)
-    region2 = (-1 <= eps) & (eps <= +3)
+    region2 = (-1 <= eps) & (eps <= +3)  # noqa: SIM300
     rr = np.sqrt(2*eps[region2] + 3)
     numer = (rr - 1)**3 * (3 + rr)
     dos[region2] = 0.5 / np.sqrt(rr) * ellipkm1(1/16*numer/rr)
@@ -253,7 +252,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
@@ -288,7 +288,7 @@ def dos_mp(eps, half_bandwidth=1):
 
     References
     ----------
-    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green’s Functions and DOS for
+    .. [kogan2021] Kogan, E. and Gumbs, G. (2021) Green's Functions and DOS for
        Some 2D Lattices. Graphene, 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001.
 
@@ -331,5 +331,6 @@ def dos_mp(eps, half_bandwidth=1):
             z1 = (rr + 1)**3 * (3 - rr) / 4
             dos_ = 1 / mp.sqrt(z0) * mp.ellipk(z1/z0)
         else:
-            raise RuntimeError("Should be impossible. Please report this!")
+            msg = "Should be impossible. Please report this!"
+            raise RuntimeError(msg)
         return 2 / np.pi**2 / D * dos_

@@ -11,9 +11,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-8t, +8t] = [-D, +D]`.
 
 """
 import numpy as np
-
-from numpy.lib.scimath import sqrt
 from mpmath import mp
+from numpy.lib.scimath import sqrt
 
 from gftool._util import _u_ellipk
 
@@ -42,8 +41,8 @@ def gf_z(z, half_bandwidth):
     References
     ----------
     .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
-       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
-       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693
+       Green's Function for the bcc, fcc, and Rectangular Lattices. Journal of
+       Mathematical Physics 12, 986-992. https://doi.org/10.1063/1.1665693
 
     Examples
     --------
@@ -72,7 +71,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -128,8 +127,8 @@ def dos(eps, half_bandwidth):
     References
     ----------
     .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
-       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
-       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693
+       Green's Function for the bcc, fcc, and Rectangular Lattices. Journal of
+       Mathematical Physics 12, 986-992. https://doi.org/10.1063/1.1665693
 
     Examples
     --------
@@ -210,7 +209,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
@@ -243,8 +243,8 @@ def dos_mp(eps, half_bandwidth=1):
     References
     ----------
     .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
-       Green’s Function for the bcc, fcc, and Rectangular Lattices. Journal of
-       Mathematical Physics 12, 986–992. https://doi.org/10.1063/1.1665693
+       Green's Function for the bcc, fcc, and Rectangular Lattices. Journal of
+       Mathematical Physics 12, 986-992. https://doi.org/10.1063/1.1665693
 
     Examples
     --------
