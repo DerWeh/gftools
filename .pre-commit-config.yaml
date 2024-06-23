@@ -23,3 +23,15 @@ repos:
   hooks:
     - id: ruff
       args: ["--fix", "--show-fixes"]
+- repo: https://github.com/codespell-project/codespell
+  rev: "v2.3.0"
+  hooks:
+    - id: codespell
+      args: ["-L", "numer,Hove,suh", "--skip=gftool/tests/old_scipy_integrate.py"]
+- repo: local
+  hooks:
+    - id: disallow-caps
+      name: Disallow improper capitalization
+      language: pygrep
+      entry: PyBind|Numpy|Cmake|CCache|Github|PyTest
+      exclude: .pre-commit-config.yaml

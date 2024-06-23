@@ -72,7 +72,7 @@ def dos(eps, half_bandwidth):
     r"""
     DOS of non-interacting 2D Lieb lattice.
 
-    The delta-peak at `eps=0` is **ommited** and must be treated seperately!
+    The delta-peak at `eps=0` is **omitted** and must be treated separately!
     Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=±half_bandwidth/2**0.5`.
@@ -223,7 +223,7 @@ def dos_mp(eps, half_bandwidth=1):
     r"""
     Multi-precision DOS of non-interacting 2D lieb lattice.
 
-    The delta-peak at `eps=0` is **ommited** and must be treated seperately!
+    The delta-peak at `eps=0` is **omitted** and must be treated separately!
     Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=±half_bandwidth/2**0.5`.

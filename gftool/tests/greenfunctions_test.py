@@ -1037,7 +1037,7 @@ def test_pole_gf_tau_gu(guargs):
     assert np.all(gf_tau <= 0)
 
 
-@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(
     gufunc_args(
         shape_kwds={"signature": "(),(N),(N),()->()"},

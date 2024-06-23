@@ -71,7 +71,7 @@ Glossary
 
    ft
       <Fourier transformation> In contrast to :term:`dft`, this is used for
-      Fourier integration of continous variables without discretization.
+      Fourier integration of continuous variables without discretization.
 
 Previously defined:
 
@@ -146,7 +146,7 @@ def iw2tau_dft(gf_iw, beta):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -229,7 +229,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -321,7 +321,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -1563,8 +1563,8 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     >>> plt.tight_layout()
     >>> plt.show()
 
-    The function Laplace transform can be evaluated at abitrary contours,
-    e.g. for a semi-ceircle in the the upper half-plane.
+    The function Laplace transform can be evaluated at arbitrary contours,
+    e.g. for a semi-circle in the upper half-plane.
     Note, that close to the real axis the accuracy is bad, due to the
     truncation at `max(tt)`
 
@@ -1582,7 +1582,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     >>> plt.show()
 
     For small `max(tt)` close to the real axis, `tt2z_pade` is often the
-    superior choice (it is taylored to resove poles):
+    superior choice (it is tailored to resolve poles):
 
     >>> tt = np.linspace(0, 40, num=401)
     >>> ww = np.linspace(-1.5, 1.5, num=501) + 1e-3j

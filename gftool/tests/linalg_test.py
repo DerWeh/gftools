@@ -110,5 +110,5 @@ def test_lstsq_ce_is_lstq(guargs):
     c = np.eye(n//2, n)
     d = lstsq[..., :n//2]
     lstsq_ec = gt.linalg.lstsq_ec(a, b, c, d)
-    # TODO: we should do a vector comparision
+    # TODO: we should do a vector comparison
     assert_allclose_vm(lstsq_ec, lstsq, atol=1e-11)
