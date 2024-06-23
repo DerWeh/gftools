@@ -5,7 +5,7 @@ import numpy as np
 
 import gftool as gt
 import gftool.pade
-from gftool.tests import old_pade
+from gftool.tests import _old_pade as old_pade
 
 logging.basicConfig(level=logging.DEBUG)
 assert_allclose = np.testing.assert_allclose
