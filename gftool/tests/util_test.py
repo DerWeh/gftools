@@ -1,3 +1,4 @@
+"""Test internal GfTool utilities."""
 from math import fsum
 
 import numpy as np
