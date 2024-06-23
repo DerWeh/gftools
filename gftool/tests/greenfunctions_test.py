@@ -1024,7 +1024,7 @@ def test_pole_gf_tau_gu(args):
     assert np.all(gf_tau <= 0)
 
 
-@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
 @given(gufunc_args('(),(N),(N),()->()',
                    dtype=[np.float64, np.float64, np.float64, np.float64],
                    elements=[st.floats(min_value=0., max_value=1.),

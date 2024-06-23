@@ -80,8 +80,8 @@ def dos(eps, half_bandwidth):
     r"""
     DOS of non-interacting 2D kagome lattice.
 
-    The delta-peak at `eps=-2*half_bandwidth/3` is **ommited** and must be
-    treated seperately! Without it, the DOS integrates to `2/3`.
+    The delta-peak at `eps=-2*half_bandwidth/3` is **omitted** and must be
+    treated separately! Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=0` and `eps=2*half_bandwidth/3`.
 
@@ -247,8 +247,8 @@ def dos_mp(eps, half_bandwidth=1):
     r"""
     Multi-precision DOS of non-interacting 2D kagome lattice.
 
-    The delta-peak at `eps=-2*half_bandwidth/3` is **ommited** and must be
-    treated seperately! Without it, the DOS integrates to `2/3`.
+    The delta-peak at `eps=-2*half_bandwidth/3` is **omitted** and must be
+    treated separately! Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=0` and `eps=2*half_bandwidth/3`.
 

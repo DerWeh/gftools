@@ -191,7 +191,7 @@ large values.
    >>> __ = plt.legend()
    >>> plt.show()
 
-Plotting the error, again we see that the Taylor series is only valied for
+Plotting the error, again we see that the Taylor series is only valid for
 small values of `z`, and Padé fails to approximate the branch cut well. The
 quadratic Hermite-Padé approximant is best for (almost) all values.
 
@@ -399,7 +399,7 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
         msg = "Order of q+p (den_deg+num_deg) must be smaller than len(an)."
         raise ValueError(msg)
     an = an[:l_max]
-    if den_deg == 0:  # trival case: no rational polynomial
+    if den_deg == 0:  # trivial case: no rational polynomial
         return RatPol(Polynom(an), Polynom(np.array([1])))
     # first solve the Toeplitz system for q, first row contains tailing zeros
     top = np.r_[an[num_deg+1::-1][:den_deg+1], [0]*(den_deg-num_deg-1)]
