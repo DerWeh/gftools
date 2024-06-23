@@ -1,9 +1,9 @@
 """Test linear prediction."""
+import hypothesis.extra.numpy as hnp
 import numpy as np
 import pytest
-import hypothesis.extra.numpy as hnp
-
-from hypothesis import given, assume, strategies as st
+from hypothesis import assume, given
+from hypothesis import strategies as st
 from scipy.linalg import companion
 
 import gftool as gt

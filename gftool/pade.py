@@ -19,17 +19,16 @@ References
 
 """
 import logging
-
 from abc import ABC, abstractmethod
-from typing import Optional as Opt
 from functools import partial
 from itertools import islice
+from typing import Optional as Opt
 
 import numpy as np
 
 from gftool import Result
-from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 from gftool._util import _gu_sum
+from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
@@ -51,9 +50,11 @@ class KindSelector(ABC):
     def __init__(self, n_min, n_max):
         """Consider approximants including between `n_min` and `n_max` Matsubara frequencies."""
         if n_min < 1:
-            raise ValueError(f"`n_min` needs to be at least 1 (n_min: {n_min}).")
+            msg = f"`n_min` needs to be at least 1 (n_min: {n_min})."
+            raise ValueError(msg)
         if n_max <= n_min:
-            raise ValueError(f"`n_max` ({n_max}) needs to be bigger than `n_min` ({n_min}).")
+            msg = f"`n_max` ({n_max}) needs to be bigger than `n_min` ({n_min})."
+            raise ValueError(msg)
         self.start = n_min - 1  # indices start from 0
         self.stop = n_max - 1  # indices start from 0
         self.step = NotImplemented
@@ -287,7 +288,8 @@ def coefficients(z, fct_z) -> np.ndarray:
     precise than the input.
     """
     if z.shape != fct_z.shape[-1:]:
-        raise ValueError(f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch.")
+        msg = f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch."
+        raise ValueError(msg)
     res = fct_z.astype(dtype=np.complex256, copy=True)
     for ii in range(z.size - 1):
         res[..., ii+1:] = (res[..., ii:ii+1]/res[..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
@@ -394,9 +396,9 @@ def calc_iterator(z_out, z_in, coeff):
     multiplier = np.moveaxis(multiplier, -2, 0).copy()
 
     for multiplier_im in multiplier:
-        multiplier_im = multiplier_im / B2
-        B2 = 1 + multiplier_im
-        pade, pade_prev = (pade + multiplier_im*pade_prev)/B2, pade
+        mult_im = multiplier_im / B2
+        B2 = 1 + mult_im
+        pade, pade_prev = (pade + mult_im*pade_prev)/B2, pade
 
         yield pade.reshape(target_shape)
 
@@ -435,13 +437,19 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
-        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
-                        "Expected `bool`.")
+        msg = (
+            f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
+            "Expected `bool`."
+        )
+        raise TypeError(msg)
     if not valid_pades.any(axis=0).all():
         # for some axis no valid Padé was found
-        raise RuntimeError("No Padé fulfills is valid.\n"
-                           f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
-                           f"{np.argwhere(~valid_pades.any(axis=0))}")
+        msg = (
+            "No Padé fulfills is valid.\n"
+            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
+            f"{np.argwhere(~valid_pades.any(axis=0))}"
+        )
+        raise RuntimeError(msg)
     LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def average(z) -> Result:
@@ -479,11 +487,13 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
             if _contains_nan(pades):
                 # check if fct_z already contained nans
-                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
+                msg = "Calculation of Padés failed, results contains NaNs"
+                raise RuntimeError(msg)
         else:
             pades = np.array(list(pade_iter))
             if _contains_nan(pades):
-                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
+                msg = "Calculation of Padés failed, results contains NaNs"
+                raise RuntimeError(msg)
             pades[~valid_pades] = np.nan + 1j*np.nan
 
         pade_avg = np.nanmean(pades, axis=0)
@@ -540,13 +550,19 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
     """
     valid_pades = np.array(valid_pades)
     if valid_pades.dtype != bool:
-        raise TypeError(f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
-                        "Expected `bool`.")
+        msg = (
+            f"Invalid type of `valid_pades`: {valid_pades.dtype}\n"
+            "Expected `bool`."
+        )
+        raise TypeError(msg)
     if not valid_pades.any(axis=0).all():
         # for some axis no valid pade was found
-        raise RuntimeError("No Padé fulfills is valid.\n"
-                           f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
-                           f"{np.argwhere(~valid_pades.any(axis=0))}")
+        msg = (
+            "No Padé fulfills is valid.\n"
+            f"No solution found for coefficient (shape: {coeff.shape[:-1]}) axes "
+            f"{np.argwhere(~valid_pades.any(axis=0))}"
+        )
+        raise RuntimeError(msg)
     LOGGER.info("Number of valid Padé approximants: %s", np.count_nonzero(valid_pades, axis=0))
 
     def mod_average(z, *args, **kwds) -> Result:
@@ -587,11 +603,13 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
             pades = np.array([pade for pade, valid in zip(pade_iter, valid_pades) if valid])
             if _contains_nan(pades):
                 # check if fct_z already contained nans
-                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
+                msg = "Calculation of Padés failed, results contains NaNs"
+                raise RuntimeError(msg)
         else:
             pades = np.array(list(pade_iter))
             if _contains_nan(pades):
-                raise RuntimeError("Calculation of Padés failed, results contains NaNs")
+                msg = "Calculation of Padés failed, results contains NaNs"
+                raise RuntimeError(msg)
             pades[~valid_pades] = np.nan + 1j*np.nan
 
         if vectorized:
@@ -638,10 +656,13 @@ def apply_filter(*filters, validity_iter):
             is_valid_filt = filt(i_validity_iter[i_valid])
             i_valid[i_valid] = is_valid_filt
             if np.count_nonzero(i_valid) == 0:
-                raise RuntimeError(
+                msg = (
                     f"No Padé is valid due to filter {filt}.\n"
                     f"No solution found for coefficient (shape: {validity_iter.shape[1:-1]}) axes "
                     f"{np.argwhere(~is_valid.any(axis=0))}"
+                )
+                raise RuntimeError(
+                    msg
                 )
     return np.moveaxis(is_valid, 0, -1).reshape(shape[:-1])
 

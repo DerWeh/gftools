@@ -51,8 +51,8 @@ def gf_z(z, half_bandwidth):
     .. [varm2013] Varma, V.K., Monien, H., 2013. Lattice Green’s functions for
        kagome, diced, and hyperkagome lattices. Phys. Rev. E 87, 032109.
        https://doi.org/10.1103/PhysRevE.87.032109
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples
@@ -70,7 +70,7 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.ylim(bottom=-5, top=5)
     >>> _ = plt.legend()
     >>> plt.show()
-    """
+    """  # noqa: RUF002
     D = half_bandwidth
     peak = 1 / (3*z + 2*D)
     return peak + 2/3*honeycomb.gf_z(z - D/3, half_bandwidth=D)
@@ -114,11 +114,11 @@ def dos(eps, half_bandwidth):
 
     References
     ----------
-    .. [varm2013] Varma, V.K., Monien, H., 2013. Lattice Green’s functions for
+    .. [varm2013] Varma, V.K., Monien, H., 2013. Lattice Green's functions for
        kagome, diced, and hyperkagome lattices. Phys. Rev. E 87, 032109.
        https://doi.org/10.1103/PhysRevE.87.032109
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples
@@ -146,7 +146,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -239,7 +239,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
@@ -274,11 +275,11 @@ def dos_mp(eps, half_bandwidth=1):
 
     References
     ----------
-    .. [varm2013] Varma, V.K., Monien, H., 2013. Lattice Green’s functions for
+    .. [varm2013] Varma, V.K., Monien, H., 2013. Lattice Green's functions for
        kagome, diced, and hyperkagome lattices. Phys. Rev. E 87, 032109.
        https://doi.org/10.1103/PhysRevE.87.032109
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples

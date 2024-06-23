@@ -249,7 +249,7 @@ References
 ----------
 .. [fasondini2019] Fasondini, M., Hale, N., Spoerer, R. & Weideman, J. A. C.
    Quadratic Padé Approximation: Numerical Aspects and Applications.
-   Computer research and modeling 11, 1017–1031 (2019).
+   Computer research and modeling 11, 1017-1031 (2019).
    https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
 .. [baker1996] Baker Jr, G. A. & Graves-Morris, Pade Approximants.
    Second edition. (Cambridge University Press, 1996).
@@ -332,8 +332,7 @@ def _nullvec_lst(mat, fix: int, rcond=None):
         np.concatenate((mat[:, :fix], mat[:, fix+1:]), axis=-1),
         -mat[:, fix], rcond=rcond,
     )
-    vec = np.r_[vec[:fix], 1, vec[fix:]]
-    return vec
+    return np.r_[vec[:fix], 1, vec[fix:]]
 
 
 def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
@@ -397,7 +396,8 @@ def pade(an, num_deg: int, den_deg: int, fast=False) -> RatPol:
     assert an.ndim == 1
     l_max = num_deg + den_deg + 1
     if an.size < l_max:
-        raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
+        msg = "Order of q+p (den_deg+num_deg) must be smaller than len(an)."
+        raise ValueError(msg)
     an = an[:l_max]
     if den_deg == 0:  # trival case: no rational polynomial
         return RatPol(Polynom(an), Polynom(np.array([1])))
@@ -450,7 +450,8 @@ def pade_lstsq(an, num_deg: int, den_deg: int, rcond=None, fix_q=None) -> RatPol
     assert an.ndim == 1
     l_max = num_deg + den_deg + 1
     if an.size < l_max:
-        raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
+        msg = "Order of q+p (den_deg+num_deg) must be smaller than len(an)."
+        raise ValueError(msg)
     if den_deg == 0:  # trivial case: no rational polynomial
         return RatPol(Polynom(an), Polynom(np.array([1])))
     # first solve the Toeplitz system for q, first row contains tailing zeros
@@ -500,7 +501,7 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     References
     ----------
     .. [gonnet2013] 1.Gonnet, P., Güttel, S. & Trefethen, L. N.
-       Robust Padé Approximation via SVD. SIAM Rev. 55, 101–117 (2013).
+       Robust Padé Approximation via SVD. SIAM Rev. 55, 101-117 (2013).
        https://doi.org/10.1137/110853236
 
     Examples
@@ -530,7 +531,8 @@ def pader(an, num_deg: int, den_deg: int, rcond: float = 1e-14) -> RatPol:
     assert an.ndim == 1
     l_max = num_deg + den_deg + 1
     if an.size < l_max:
-        raise ValueError("Order of q+p (den_deg+num_deg) must be smaller than len(an).")
+        msg = "Order of q+p (den_deg+num_deg) must be smaller than len(an)."
+        raise ValueError(msg)
     an = an[:l_max]
     # TODO: do rescaling, haven't found it in the reference
     tol = rcond * np.linalg.norm(an)
@@ -623,7 +625,8 @@ def hermite2(an, p_deg: int, q_deg: int, r_deg: int) -> Tuple[Polynom, Polynom, 
     assert an.ndim == 1
     l_max = r_deg + q_deg + p_deg + 2
     if an.size < l_max:
-        raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
+        msg = "Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an)."
+        raise ValueError(msg)
     an = an[:l_max]
     full_amat = toeplitz(an, r=np.zeros_like(an))
     amat2 = (full_amat@full_amat[:, :r_deg+1])
@@ -689,7 +692,8 @@ def hermite2_lstsq(an, p_deg: int, q_deg: int, r_deg: int,
     an = np.asarray(an)
     assert an.ndim == 1
     if an.size < r_deg + q_deg + p_deg + 2:
-        raise ValueError("Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an).")
+        msg = "Order of r+q+p (r_deg+q_deg+p_deg) must be smaller than len(an)."
+        raise ValueError(msg)
     if np.all(an == 0):  # cannot handle this edge case
         return Polynom([0]*(p_deg+1)), Polynom([0]*(q_deg+1)), Polynom([1]+[0]*r_deg)
     full_amat = toeplitz(an, r=np.zeros_like(an))
@@ -759,7 +763,7 @@ class Hermite2(_Hermite2Base):
     ----------
     .. [fasondini2019] Fasondini, M., Hale, N., Spoerer, R. & Weideman, J. A. C.
        Quadratic Padé Approximation: Numerical Aspects and Applications.
-       Computer research and modeling 11, 1017–1031 (2019).
+       Computer research and modeling 11, 1017-1031 (2019).
        https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
 
     Examples
@@ -821,8 +825,7 @@ class Hermite2(_Hermite2Base):
         """Evaluate square approximant choosing branch based on Padé."""
         p_branch, m_branch = self.eval_branches(z)
         pade_ = self.pade.eval(z)
-        approx = np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
-        return approx
+        return np.where(abs(p_branch - pade_) < abs(m_branch - pade_), p_branch, m_branch)
 
     @classmethod
     def from_taylor(cls, an, deg_p: int, deg_q: int, deg_r: int) -> "Hermite2":
@@ -865,7 +868,7 @@ class _Hermite2Ret(_Hermite2Base):
         # use the branch with positive spectral weight
         p_is_ret = p_branch.imag <= 0
         m_is_ret = m_branch.imag <= 0
-        branch = np.select(
+        return np.select(
             [p_is_ret & ~m_is_ret,  # only p retarded
              ~p_is_ret & m_is_ret,  # only m retarded
              p_is_ret & m_is_ret & (p_branch.imag >= m_branch.imag),  # both retarded
@@ -875,7 +878,6 @@ class _Hermite2Ret(_Hermite2Base):
              ],
             [p_branch, m_branch, p_branch, m_branch, p_branch, m_branch]
         )
-        return branch
 
     @classmethod
     def from_taylor(cls, an, deg_r: int, deg_q: int, deg_p: int):

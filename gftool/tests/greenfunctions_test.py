@@ -8,10 +8,10 @@ from functools import partial, wraps
 from itertools import product
 
 import mpmath
-import pytest
 import numpy as np
-
-from hypothesis import assume, given, strategies as st
+import pytest
+from hypothesis import assume, given
+from hypothesis import strategies as st
 from mpmath import fp
 from scipy import integrate
 
@@ -48,12 +48,10 @@ class GfProperties:
     z_mesh: np.ndarray  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
-    def gf(self, z, **kwds):
-        """Green's function."""
-        raise NotImplementedError('This is just a placeholder')
+    def gf(self, z, **kwds): ...
 
     @staticmethod
-    @pytest.fixture
+    @pytest.fixture()
     def params():
         """Contains possible parameters needed for the Green's function."""
         return (), {}
@@ -160,7 +158,7 @@ class Lattice:
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
             # pylint: disable=cell-var-from-loop
-            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             assert moment == pytest.approx(dos_moment(mm))
 
     @given(eps=st.floats(-1.5, +1.5))
@@ -534,7 +532,7 @@ class TestKagome(Lattice):
         D = kwds["half_bandwidth"]
         for mm in self.lattice.dos_moment_coefficients:
             # pylint: disable=cell-var-from-loop
-            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             if not np.isfinite(moment):
                 # FIXEM: integration failed, use better check
                 continue
@@ -620,7 +618,7 @@ class TestLieb(Lattice):
             # moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
             # fp.quad fails for some values of D
             # moment = fp.quad(lambda eps: eps**mm * dos(eps), interval)
-            moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps),
+            moment, __ = integrate.quad(lambda eps: eps**mm * dos(eps),  # noqa: B023
                                         points[0], points[-1], points=points[1:-1])
             if mm == 0:  # delta peak contributes
                 moment += 1/3
@@ -789,7 +787,7 @@ class TestFaceCenteredCubic(Lattice):
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
             # pylint: disable=cell-var-from-loop
-            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             assert moment == pytest.approx(dos_moment(mm), rel=1e-6, abs=1e-10)
 
 
@@ -1035,7 +1033,8 @@ def test_pole_gf_tau_gu(guargs):
     assume(not np.any(np.isnan(tau)))
     gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=beta)
     gf_tau = np.nan_to_num(gf_tau, -1)  # nan is valid result
-    assert np.all(-1*weights.sum() <= gf_tau) and np.all(gf_tau <= 0)
+    assert np.all(-1*weights.sum() <= gf_tau)
+    assert np.all(gf_tau <= 0)
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
@@ -1078,7 +1077,7 @@ def test_square_stress_trafo():
     for zz in zz_points:
         # pylint: disable=cell-var-from-loop
         with mpmath.workdps(30):
-            integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])
+            integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])  # noqa: B023
         assert_allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)
 
 
@@ -1136,7 +1135,6 @@ class TestBox(SymLattice):
     @pytest.mark.skip(reason="Not implemented as redundant.")
     def test_hilbert_transform(self, z, kwds):
         """Hilbert transform is same as non-interacting local Green's function."""
-        pass
 
     def test_dos_moment(self, kwds):
         """Moment is integral over ϵ^m DOS."""
@@ -1147,7 +1145,7 @@ class TestBox(SymLattice):
         points = [left, *self.singularities(**kwds), right]
         for mm in range(0, 21, 2):
             # pytint: disable=cell-var-from-loop
-            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
+            moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             assert moment == pytest.approx(dos_moment(mm))
 
 

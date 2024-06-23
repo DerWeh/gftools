@@ -1,12 +1,11 @@
 """Tests of functions for real-space Gf matrices for infinite coordination number."""
 from functools import partial
 
-import pytest
-import numpy as np
-import scipy.linalg as la
 import hypothesis.strategies as st
-
-from hypothesis import given, assume
+import numpy as np
+import pytest
+import scipy.linalg as la
+from hypothesis import assume, given
 
 import gftool as gt
 from gftool.tests.custom_strategies import gufunc_args
@@ -58,11 +57,11 @@ class TestDecompositionGeneral:
         for g0 in self.g0_loc_inv:
             g0_inv_full[idx, idx] = g0
             rv, h, rv_inv = gt.matrix.decompose_gf(g0_inv_full)
-            g0 = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
-            assert_allclose(g0.dot(g0_inv_full), np.identity(size), atol=1e-14)
-            assert_allclose(g0, la.inv(g0_inv_full))
+            g0mat = gt.matrix.construct_gf(rv_inv=rv_inv, diag_inv=h**-1, rv=rv)
+            assert_allclose(g0mat.dot(g0_inv_full), np.identity(size), atol=1e-14)
+            assert_allclose(g0mat, la.inv(g0_inv_full))
             g0_alt = gt.matrix.Decomposition(rv, h**-1, rv_inv).reconstruct(kind='full')
-            assert_allclose(g0, g0_alt)
+            assert_allclose(g0mat, g0_alt)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("size", [4, 9, 20])

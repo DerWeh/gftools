@@ -3,7 +3,8 @@
 We compare it to the limits `gftool.lattice.bethe` and `gftool.lattice.onedim`.
 
 """
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 from numpy.testing import assert_allclose
 
 import gftool as gt

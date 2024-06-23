@@ -43,10 +43,9 @@ Rest are mostly legacy functions.
 from __future__ import annotations
 
 import warnings
-
-from functools import partial
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 
@@ -351,7 +350,7 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
     .. [noble2017] Noble, J.H., Lubasch, M., Stevens, J., Jentschura, U.D., 2017.
        Diagonalization of complex symmetric matrices: Generalized Householder
        reflections, iterative deflation and implicit shifts.
-       Computer Physics Communications 221, 304–316.
+       Computer Physics Communications 221, 304-316.
        https://doi.org/10.1016/j.cpc.2017.06.014
 
     Examples
@@ -376,7 +375,8 @@ def decompose_sym(sym_mat, check=True) -> Decomposition:
     True
     """
     if check and not np.allclose(sym_mat - transpose(sym_mat), 0):
-        raise ValueError("Matrix `sym_mat` is not symmetric.")
+        msg = "Matrix `sym_mat` is not symmetric."
+        raise ValueError(msg)
     h, rv = np.linalg.eig(sym_mat)
     # improve coordination number for complex symmetric matrices, rv_scaled is orthogonal
     rv *= np.sum(rv**2, axis=-2, keepdims=True)**-0.5
@@ -439,7 +439,8 @@ def decompose_her(her_mat, check=True) -> UDecomposition:
     True
     """
     if check and not np.allclose(her_mat - transpose(her_mat.conj()), 0):
-        raise ValueError("Matrix `her_mat` is not Hermitian.")
+        msg = "Matrix `her_mat` is not Hermitian."
+        raise ValueError(msg)
     eig, vec = np.linalg.eigh(her_mat)
     return UDecomposition(rv=vec, eig=eig, rv_inv=transpose(vec.conj()))
 
@@ -469,8 +470,10 @@ def decompose_gf(g_inv) -> Decomposition:
     Decomposition.rv_inv : (..., N, N) complex np.ndarray
         The *inverse* of the right eigenvectors :math:`P`.
     """
-    warnings.warn("`decompose_gf` is deprecated; use `decompose_mat` or `decompose_sym` instead.",
-                  category=DeprecationWarning)
+    warnings.warn(
+        "`decompose_gf` is deprecated; use `decompose_mat` or `decompose_sym` instead.",
+        category=DeprecationWarning, stacklevel=1
+    )
     return decompose_mat(mat=g_inv)
 
 
@@ -501,7 +504,7 @@ def decompose_hamiltonian(hamilton) -> UDecomposition:
         hermitian, thus the decomposition is unitary :math:`U^† = U ^{-1}`.
     """
     warnings.warn("`decompose_hamiltonian` is deprecated; use `decompose_her` instead.",
-                  category=DeprecationWarning)
+                  category=DeprecationWarning, stacklevel=1)
     return decompose_her(hamilton, check=False)
 
 
@@ -509,7 +512,7 @@ def construct_gf(rv, diag_inv, rv_inv):
     r"""
     Construct Green's function from decomposition of its inverse.
 
-    .. math:: G^{−1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
+    .. math:: G^{-1} = P h P^{-1} ⇒ G = P h^{-1} P^{-1}
 
     It is recommended to directly use `Decomposition.reconstruct` instead.
 

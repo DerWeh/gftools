@@ -20,9 +20,8 @@ import numpy as np
 from numpy import newaxis
 
 from gftool import linalg
-from gftool.statistics import fermi_fct
 from gftool._util import _gu_sum, _vecsolve
-
+from gftool.statistics import fermi_fct
 
 polyvander = np.polynomial.polynomial.polyvander
 
@@ -572,8 +571,11 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
         gf_z = gf_z * weight
     if moments.shape[-1] > 0:
         if moments.shape[-1] > n_pole:
-            raise ValueError("Too many poles given, system is over constrained. "
-                             f"poles: {n_pole}, moments: {moments.shape[-1]}")
+            msg = (
+                "Too many poles given, system is over constrained. "
+                f"poles: {n_pole}, moments: {moments.shape[-1]}"
+            )
+            raise ValueError(msg)
         constrain_mat = np.swapaxes(polyvander(poles, deg=moments.shape[-1]-1), -1, -2)
         _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
                                  otypes=[otype], excluded={'rcond'})
@@ -642,8 +644,11 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
         gf_tau = gf_tau * weight
     if moments.shape[-1] > 0 or occ:  # constrained
         if moments.shape[-1] + int(occ) > n_pole:
-            raise ValueError("Too many poles given, system is over constrained. "
-                             f"poles: {n_pole}, moments: {moments.shape[-1]}")
+            msg = (
+                "Too many poles given, system is over constrained. "
+                f"poles: {n_pole}, moments: {moments.shape[-1]}"
+            )
+            raise ValueError(msg)
         constrain_mat = np.polynomial.polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
         if occ:
             constrain_mat = np.concatenate(

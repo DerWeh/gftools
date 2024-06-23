@@ -1,10 +1,9 @@
 """Helper functions used throughout the code basis."""
+from contextlib import suppress
 from functools import partial
 
 import numpy as np
-
 from mpmath import fp
-
 
 _ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 
@@ -79,8 +78,6 @@ def _u_ellipk(z):
         The complete elliptic integral.
     """
     ellipk = _ellipk_z(np.asarray(z, dtype=complex))
-    try:
+    with suppress(AttributeError):  # complex not np.ndarray
         ellipk = ellipk.astype(complex)
-    except AttributeError:  # complex not np.ndarray
-        pass
     return ellipk

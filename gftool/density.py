@@ -1,10 +1,8 @@
 """Calculate density from Green's function."""
 import logging
-
 from typing import Callable
 
 import numpy as np
-
 from scipy import optimize
 
 from gftool._util import _gu_sum
@@ -172,8 +170,9 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
         step *= 2  # increase step width exponentially till a bounds are found
         loops += 1
         if loops > 100:
-            raise RuntimeError("No bracket `occ_root(mua) < 0 < occ_root(mub)` could be found.")
-    bracket = list(sorted([mu1, mu0+step]))
+            msg = "No bracket `occ_root(mua) < 0 < occ_root(mub)` could be found."
+            raise RuntimeError(msg)
+    bracket = sorted([mu1, mu0+step])
     LOGGER.debug("Bracket found after %s iterations.", loops)
     root_res = optimize.root_scalar(occ_root, bracket=bracket, **kwds)
     if not root_res.converged:

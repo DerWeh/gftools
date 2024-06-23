@@ -1,9 +1,8 @@
 """Test for the single impurity Anderson model."""
+import hypothesis.strategies as st
 import numpy as np
 import pytest
-import hypothesis.strategies as st
-
-from hypothesis import given, assume
+from hypothesis import assume, given
 
 import gftool as gt
 from gftool.tests.custom_strategies import gufunc_args

@@ -1,14 +1,12 @@
 """Test BEB."""
 import logging
-
 from functools import partial
 
-import pytest
-import numpy as np
 import hypothesis.strategies as st
-
-from scipy import integrate
+import numpy as np
+import pytest
 from hypothesis import given
+from scipy import integrate
 
 import gftool as gt
 
@@ -20,11 +18,11 @@ assert_allclose = np.testing.assert_allclose
     np.array([[1.0, 0.3], [0.3, 1.2]]),  # full rank example
     np.array([[4.0, 6.0], [6.0, 9.0]]),  # rank deficient example
 ])
-@pytest.mark.parametrize("self_beb_z", (
+@pytest.mark.parametrize("self_beb_z", [
     (0.3-1j)*np.eye(2, 2),
     np.array([[0.178 - 0.13j, 0.4 + 1j],
               [0.4 + 1j, -1.38 - 0.46j]])
-))
+])
 def test_gf_loc(t, self_beb_z):
     """
     Check local Green's function against integration.
@@ -109,7 +107,7 @@ def test_resuming():
     t = np.array([[0.5, 1.2],
                   [1.2, 1.0]])
     solve_root = partial(gt.beb.solve_root, ww, eps, concentration=c, hopping=t,
-                         hilbert_trafo=hilbert, options=dict(fatol=1e-8))
+                         hilbert_trafo=hilbert, options={"fatol": 1e-8})
     self_beb_ww = solve_root()
     self_beb_resume = solve_root(self_beb_z0=self_beb_ww)
     assert_allclose(self_beb_ww, self_beb_resume)

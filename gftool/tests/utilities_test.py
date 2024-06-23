@@ -1,19 +1,16 @@
 """Test the utility functions related to Green's functions."""
-from functools import partial, lru_cache
+from functools import lru_cache, partial
 from warnings import catch_warnings, filterwarnings
 
-import pytest
 import hypothesis.strategies as st
-
-from hypothesis import given, assume
-
 import numpy as np
+import pytest
+from hypothesis import assume, given
 from mpmath import fp
 
 import gftool as gt
 from gftool.basis import pole
 from gftool.tests.custom_strategies import gufunc_args
-
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 assert_allclose = np.testing.assert_allclose

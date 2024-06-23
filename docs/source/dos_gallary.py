@@ -1,10 +1,12 @@
 """Showcase of selection of DOSs."""
-import gftool as gt
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
+import gftool as gt
 
 
 def atext(axis, text, x=0.97, y=0.85, fontsize="x-large", horizontalalignment="right", **kwds):
+    """Add text legend on axis."""
     axis.text(x, y, s=text, transform=axis.transAxes, **kwds, fontsize=fontsize,
               horizontalalignment=horizontalalignment)
 

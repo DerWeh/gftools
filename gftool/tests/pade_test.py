@@ -19,7 +19,8 @@ def test_regression():
     iws = gt.matsubara_frequencies(np.arange(2**10), beta=1./T)
     # use quad precision for comparability
     iws = iws.astype(dtype=np.complex256)
-    rand = np.random.random(iws.size) + 1j*np.random.random(iws.size)
+    rng = np.random.default_rng(42)
+    rand = rng.random(iws.size) + 1j*rng.random(iws.size)
     rand *= 1e-3
     rand *= 1 + np.sqrt(np.arange(iws.size))
     gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D) + rand

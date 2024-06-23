@@ -1,19 +1,25 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-    - id: check-added-large-files
-    - id: check-case-conflict
-    - id: check-merge-conflict
-    - id: check-symlinks
-    - id: check-yaml
-    - id: debug-statements
-    - id: end-of-file-fixer
-    - id: mixed-line-ending
-    # - id: name-tests-test
-    #   args: ["--pytest"]
-    - id: check-docstring-first
-    - id: check-ast
-    - id: trailing-whitespace
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-case-conflict
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-yaml
+  - id: debug-statements
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  # - id: name-tests-test
+  #   args: ["--pytest"]
+  - id: check-docstring-first
+  - id: check-ast
+  - id: trailing-whitespace
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: "v0.4.8"
+  hooks:
+    - id: ruff
+      args: ["--fix", "--show-fixes"]

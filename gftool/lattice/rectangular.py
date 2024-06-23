@@ -13,7 +13,6 @@ The DOS has a singularity at :math:`2t(γ-1)=D(γ-1)/(γ+1)`.
 
 """
 import numpy as np
-
 from numpy.lib import scimath
 
 from gftool._util import _u_ellipk
@@ -54,8 +53,8 @@ def gf_z(z, half_bandwidth, scale):
     References
     ----------
     .. [morita1971] Morita, T., Horiguchi, T., 1971. Calculation of the Lattice
-       Green’s Function for the bcc, fcc, and Rectangular Lattices.
-       Journal of Mathematical Physics 12, 986–992.
+       Green's Function for the bcc, fcc, and Rectangular Lattices.
+       Journal of Mathematical Physics 12, 986-992.
        https://doi.org/10.1063/1.1665693
 
     Examples
@@ -80,8 +79,7 @@ def gf_z(z, half_bandwidth, scale):
     elliptic = _u_ellipk(k1)
     z_inv = 1 / z
     k1sqrt = 1 / scimath.sqrt(1 - sm1p2*z_inv**2)
-    gf_z = 2 / np.pi / D * z_inv * k1sqrt * elliptic
-    return gf_z
+    return 2 / np.pi / D * z_inv * k1sqrt * elliptic
 
 
 def hilbert_transform(xi, half_bandwidth, scale):
@@ -90,7 +88,7 @@ def hilbert_transform(xi, half_bandwidth, scale):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.

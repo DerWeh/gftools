@@ -28,9 +28,11 @@ def pade_init(iw, u, n_pade):
         Padé coefficients
     """
     if iw.shape != u.shape:
-        raise ValueError("Dimensions of `iw` and `u` don't match")
+        msg = "Dimensions of `iw` and `u` don't match"
+        raise ValueError(msg)
     if n_pade > len(iw):
-        raise IndexError("`n_pade` larger then number of data points")
+        msg = "`n_pade` larger then number of data points"
+        raise IndexError(msg)
     g = np.zeros((n_pade, n_pade), dtype=np.complex256)
     iw = iw[:n_pade]
     g[0] = u[:n_pade]

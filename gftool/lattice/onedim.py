@@ -11,7 +11,6 @@ which takes values in :math:`ϵ_k ∈ [-2t, +2t] = [-D, +D]`.
 
 """
 import numpy as np
-
 from mpmath import mp
 
 
@@ -67,7 +66,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -199,7 +198,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
@@ -266,5 +266,4 @@ def dos_mp(eps, half_bandwidth=1):
     if mp.fabs(eps) > half_bandwidth:
         return mp.mpf('0')
     eps_rel = eps / half_bandwidth
-    dos_ = mp.mpf('1') / (mp.pi * half_bandwidth * mp.sqrt(-mp.powm1(eps_rel, mp.mpf('2'))))
-    return dos_
+    return mp.mpf('1') / (mp.pi * half_bandwidth * mp.sqrt(-mp.powm1(eps_rel, mp.mpf('2'))))

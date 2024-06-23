@@ -7,7 +7,6 @@ a tailing '_b' indicates Bose statistics instead.
 from warnings import catch_warnings, filterwarnings
 
 import numpy as np
-
 from scipy import linalg
 from scipy.special import expit, logit
 

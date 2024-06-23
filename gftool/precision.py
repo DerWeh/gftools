@@ -9,12 +9,13 @@ import numpy as np
 
 try:
     # pylint: disable=pointless-statement
-    np.complex256
-    np.float128
+    np.complex256  # noqa: B018
+    np.float128  # noqa: B018
 except AttributeError:
     HAS_QUAD = False
     warnings.warn("No quad precision datatypes available!\n"
-                  "Some functions might be less accurate.")
+                  "Some functions might be less accurate.",
+                  stacklevel=1)
     np.float128 = np.longdouble
     np.complex256 = np.clongdouble
 else:

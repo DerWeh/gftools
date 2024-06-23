@@ -76,8 +76,7 @@ def dos(eps, half_bandwidth):
     >>> _ = plt.xlim(left=eps.min(), right=eps.max())
     >>> plt.show()
     """
-    dos = np.where(abs(eps) < half_bandwidth, 0.5/half_bandwidth, 0)
-    return dos
+    return np.where(abs(eps) < half_bandwidth, 0.5/half_bandwidth, 0)
 
 
 def dos_moment(m, half_bandwidth):
