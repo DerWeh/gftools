@@ -185,7 +185,7 @@ class Decomposition(Sequence):
         return f"Decomposition({self.rv.shape}x{self.eig.shape}x{self.rv_inv.shape})"
 
 
-@dataclass  # pylint: disable=too-many-ancestors
+@dataclass
 class UDecomposition(Decomposition):
     """
     Unitary decomposition of a matrix into eigenvalues and eigenvectors.

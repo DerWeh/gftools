@@ -157,7 +157,6 @@ class Lattice:
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             assert moment == pytest.approx(dos_moment(mm))
 
@@ -531,7 +530,6 @@ class TestKagome(Lattice):
         points = [left, *self.singularities(**kwds), right]
         D = kwds["half_bandwidth"]
         for mm in self.lattice.dos_moment_coefficients:
-            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             if not np.isfinite(moment):
                 # FIXEM: integration failed, use better check
@@ -612,7 +610,6 @@ class TestLieb(Lattice):
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pylint: disable=cell-var-from-loop
             if kwds["half_bandwidth"] < 0.8 and mm > 10:
                 break  # small integrals are numerically inaccurate
             # moment = fp.quad(lambda eps: eps**mm * dos(eps), points)
@@ -786,7 +783,6 @@ class TestFaceCenteredCubic(Lattice):
         left, right = self.band_edges(**kwds)
         points = [left, *self.singularities(**kwds), right]
         for mm in self.lattice.dos_moment_coefficients:
-            # pylint: disable=cell-var-from-loop
             moment = fp.quad(lambda eps: eps**mm * dos(eps), points)  # noqa: B023
             assert moment == pytest.approx(dos_moment(mm), rel=1e-6, abs=1e-10)
 
@@ -1075,7 +1071,6 @@ def test_square_stress_trafo():
     D = 1.17
 
     for zz in zz_points:
-        # pylint: disable=cell-var-from-loop
         with mpmath.workdps(30):
             integ = fp.quad(lambda eps: stress_tensor(eps, half_bandwidth=D)/(zz - eps), [-D, 0, D])  # noqa: B023
         assert_allclose(gt.lattice.square.stress_trafo(zz, half_bandwidth=D), integ)

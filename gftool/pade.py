@@ -244,7 +244,7 @@ def FilterHighVariance(rel_num: Opt[float] = None, abs_num: Opt[int] = None):
         except UnboundLocalError:
             LOGGER.warning("Not enough Padés to filter (#Padés = %s)", N_pades)
             return np.ones_like(pade[..., 0], dtype=bool)
-        is_valid[badness[:-abs_num_]] = False  # pylint: disable=invalid-unary-operand-type
+        is_valid[badness[:-abs_num_]] = False
         # assert set(badness[:-abs_num_]) == set(bad)  # FIXME
         return is_valid
     return filter_high_variance
@@ -343,7 +343,6 @@ def masked_coefficients(z, fct_z):
             last_coeff = mat_pi[ii]
         else:
             mask[ii] = False
-    # pylint: disable=invalid-unary-operand-type
     LOGGER.info("Number of eliminated coefficients: %s", np.count_nonzero(~mask))
     return mat.diagonal(axis1=0, axis2=-1)
 

@@ -396,7 +396,7 @@ def plot_roots(pcoeff, axis=None):
     --------
     pcoeff_covar
     """
-    import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
+    import matplotlib.pyplot as plt
     if axis is None:
         axis = plt.gca()
 

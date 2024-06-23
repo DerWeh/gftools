@@ -12,7 +12,6 @@ given `mu` on the real axis. In fact, we expect this to be more stable than
 fixing the charge on the real axis directly.
 
 """
-# pylint: disable=too-many-locals
 import logging
 from functools import partial
 from typing import Callable, NamedTuple

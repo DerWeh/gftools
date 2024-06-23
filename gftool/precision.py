@@ -8,7 +8,6 @@ import warnings
 import numpy as np
 
 try:
-    # pylint: disable=pointless-statement
     np.complex256  # noqa: B018
     np.float128  # noqa: B018
 except AttributeError:
