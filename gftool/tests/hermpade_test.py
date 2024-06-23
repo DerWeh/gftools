@@ -1,5 +1,4 @@
 """Test Padé against `scipy` implementation."""
-# pylint: disable=protected-access
 from functools import partial
 
 import hypothesis.strategies as st

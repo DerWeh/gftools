@@ -138,8 +138,8 @@ class PadeApprox:
 
     def plot(self, residue=False, axis=None):
         """Represent the function as scatter plot."""
-        import matplotlib as mpl  # pylint: disable=[import-outside-toplevel,import-error]
-        import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
+        import matplotlib as mpl
+        import matplotlib.pyplot as plt
         if axis is None:
             axis = plt.gca()
         axis.axhline(0, color='.3')
@@ -200,7 +200,6 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: Opt[int] = None,
        least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
        https://doi.org/10.1007/s00211-018-0948-4
     """
-    # pylint: disable=too-many-locals
     tol = np.finfo(fct_z.dtype).eps
     max_n_poles = abs_max_n_poles = (z.size - degree)//2
     if n_poles0 is None:
@@ -287,7 +286,6 @@ def poles(z, fct_z, *, n: Opt[int] = None, m: int, vandermond=polynomial.polyvan
        least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
        https://doi.org/10.1007/s00211-018-0948-4
     """
-    # pylint: disable=too-many-locals
     if n is None:
         n = m - 1
     fct_z = fct_z/np.median(fct_z)

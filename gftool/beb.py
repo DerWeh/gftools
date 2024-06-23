@@ -75,7 +75,6 @@ system.
     plt.show()
 
 """
-# pylint: disable=too-many-locals
 from __future__ import annotations
 
 import logging
@@ -95,7 +94,7 @@ diagonal = partial(np.diagonal, axis1=-2, axis2=-1)
 transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
 
 
-class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
+class SpecDec(UDecomposition):
     """
     SVD like spectral decomposition.
 
@@ -391,7 +390,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         output = np.broadcast(z, e_onsite[..., 0], concentration[..., 0], self_beb_z0[..., 0, 0])
         self_beb_z0 = np.broadcast_to(self_beb_z0, shape=output.shape + np.asarray(hopping).shape)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
-                      **self_root_part.keywords)  # pylint: disable=no-member
+                      **self_root_part.keywords)
 
     root_kwds.setdefault("method", "krylov")
     LOGGER.debug('Search BEB self-energy root')
@@ -404,7 +403,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     if LOGGER.isEnabledFor(logging.INFO):
         # check condition number in matrix diagonalization to make sure it is well defined
-        us, suh = hopping_dec.partition()  # pylint: disable=unbalanced-tuple-unpacking
+        us, suh = hopping_dec.partition()
         z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
         dec = decompose_mat(suh @ np.linalg.inv(z_m_self) @ us)
         max_cond = np.max(np.linalg.cond(dec.rv))

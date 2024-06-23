@@ -3,7 +3,6 @@
 TODO: This module urgently needs a refactor for `tt2z`. We have too many
 different methods.
 """
-# pylint: disable=protected-access
 from functools import partial
 
 import hypothesis.strategies as st
