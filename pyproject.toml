@@ -44,9 +44,6 @@ packages = ["gftool"]
 [tool.setuptools_scm]
 version_file = "gftool/_version.py"
 
-[tool.pydocstyle]
-add-ignore = "D105"  # ignore undocumented dunder methods like ``__str__`
-
 [tool.ruff.lint]
 extend-select = [
   "B",        # flake8-bugbear
@@ -72,17 +69,23 @@ extend-select = [
   "PD",       # pandas-vet
   "FURB",     # refurb
   "PYI",      # flake8-pyi
+  "D",        # pydocstyle
 ]
 ignore = [
   "PLR09",    # Too many <...>
   "PLR2004",  # Magic value used in comparison
   "ISC001",   # Conflicts with formatter
+  "D105",     # ignore undocumented dunder methods like ``__str__`
 ]
 allowed-confusables = ["ρ", "ν", "ℑ", "ℜ", "σ", "γ", "𝒪", "×"]
 
 [tool.ruff.lint.per-file-ignores]
 "gftool/tests/**" = ["T20"]
 "gftool/tests/old_scipy_integrate.py" = ["ALL"]
+"docs/source" = ["D100", "D103"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.lint.flake8-pytest-style]
 parametrize-names-type = "csv"  # legacy behaviour

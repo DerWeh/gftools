@@ -48,7 +48,7 @@ class GfProperties:
     z_mesh: np.ndarray  # mesh on which the function's properties will be tested
     s = +1  # Fermions
 
-    def gf(self, z, **kwds): ...
+    def gf(self, z, **kwds): ...  # noqa: D102
 
     @staticmethod
     @pytest.fixture()
