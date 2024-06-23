@@ -1,4 +1,0 @@
-include README.rst
-include LICENSE.txt
-include versioneer.py
-include gftool/_version.py
