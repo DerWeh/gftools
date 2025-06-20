@@ -62,7 +62,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> gf_iw = pole_gf.eval_z(iws)
     >>> exact = pole_gf.occ(BETA)
     >>> exact
-    0.17858151698239388
+    np.float64(0.17858151698239388)
 
     Numerical calculation of the occupation number,
     using Matsubara frequency
@@ -73,10 +73,10 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     array([1.        , 0.30839757])
     >>> occ_m2 = gt.density_iw(iws, gf_iw, beta=BETA, moments=m2)
     >>> occ_fit2 = gt.density_iw(iws, gf_iw, beta=BETA, n_fit=1)
-    >>> exact, occ, occ_m2, occ_fit2
-    (0.17858151..., 0.17934437..., 0.17858150..., 0.17858198...)
-    >>> abs(occ - exact), abs(occ_m2 - exact), abs(occ_fit2 - exact)
-    (0.00076286..., 8.18...e-09, 4.72...e-07)
+    >>> np.array([exact, occ, occ_m2, occ_fit2])
+    array([0.17858152, 0.17934438, 0.17858151, 0.17858199])
+    >>> np.array([abs(occ - exact), abs(occ_m2 - exact), abs(occ_fit2 - exact)])
+    array([7.62861559e-04, 8.186...-09, 4.721...-07])
 
     using more accurate Padé frequencies
 
@@ -84,9 +84,9 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> gf_izp = pole_gf.eval_z(izp)
     >>> occ_izp = gt.density_iw(izp, gf_izp, beta=BETA, weights=rp)
     >>> occ_izp
-    0.17858151...
+    np.float64(0.17858151...)
     >>> abs(occ_izp - exact) < 1e-12
-    True
+    np.True_
     """
     # add axis for iws, remove it later at occupation
     moments = np.asanyarray(moments, dtype=np.float64)[..., np.newaxis, :]
@@ -156,7 +156,7 @@ def chemical_potential(occ_root: Callable[[float], float], mu0=0.0, step0=1.0, *
     ...     return gt.fermi_fct(eps - mu, beta=BETA).sum()
     >>> mu = gt.chemical_potential(lambda mu: occ_fct(mu) - occ)
     >>> occ_fct(mu), occ
-    (1.67000..., 1.67)
+    (np.float64(1.67000...), 1.67)
     """
     # find a bracket
     delta_occ0 = occ_root(mu0)

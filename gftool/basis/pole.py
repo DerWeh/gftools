@@ -21,7 +21,7 @@ from numpy import newaxis
 
 from gftool import linalg
 from gftool.statistics import fermi_fct
-from gftool._util import _gu_sum
+from gftool._util import _gu_sum, _vecsolve
 
 
 polyvander = np.polynomial.polynomial.polyvander
@@ -494,7 +494,7 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
     poles = width * poles
     _poles, moments = np.broadcast_arrays(poles, moments)
     mat = np.swapaxes(np.polynomial.polynomial.polyvander(_poles, deg=poles.shape[-1]-1), -1, -2)
-    resid = np.linalg.solve(mat, moments)
+    resid = _vecsolve(mat, moments)
     return PoleFct(poles=poles, residues=resid)
 
 

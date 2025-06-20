@@ -198,7 +198,8 @@ def matsubara_frequencies(n_points, beta):
     --------
     >>> gt.matsubara_frequencies(range(1024), beta=1)
     array([0.+3.14159265e+00j, 0.+9.42477796e+00j, 0.+1.57079633e+01j, ...,
-           0.+6.41827379e+03j, 0.+6.42455698e+03j, 0.+6.43084016e+03j])
+           0.+6.41827379e+03j, 0.+6.42455698e+03j, 0.+6.43084016e+03j],
+          shape=(1024,))
     """
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 1j * np.pi / beta * (2*n_points + 1)
@@ -224,7 +225,8 @@ def matsubara_frequencies_b(n_points, beta):
     --------
     >>> gt.matsubara_frequencies_b(range(1024), beta=1)
     array([0.+0.00000000e+00j, 0.+6.28318531e+00j, 0.+1.25663706e+01j, ...,
-           0.+6.41513220e+03j, 0.+6.42141538e+03j, 0.+6.42769857e+03j])
+           0.+6.41513220e+03j, 0.+6.42141538e+03j, 0.+6.42769857e+03j],
+          shape=(1024,))
     """
     n_points = np.asanyarray(n_points).astype(dtype=int, casting='safe')
     return 2j * np.pi / beta * n_points

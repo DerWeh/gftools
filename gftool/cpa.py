@@ -355,7 +355,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
 
     >>> gf_coher_iw = hilbert(iws - self_cpa_iw)
     >>> gt.density_iw(iws, gf_coher_iw, beta=beta, moments=[1, self_cpa_iw[-1].real])
-    0.499999...
+    np.float64(0.499999...)
 
     check CPA
 

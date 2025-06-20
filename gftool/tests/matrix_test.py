@@ -7,9 +7,9 @@ import scipy.linalg as la
 import hypothesis.strategies as st
 
 from hypothesis import given, assume
-from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+from .custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
@@ -83,11 +83,16 @@ class TestDecompositionGeneral:
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex128, elements=easy_complex,
-                   max_dims_extra=2, max_side=4),)
-def test_decomposition_reconsturction(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n,n)->(n,n)"},
+        dtype=np.complex128,
+        elements=easy_complex,
+    )
+)
+def test_decomposition_reconsturction(guargs):
     """Check if the reconstruction using `gt.matrix.Decomposition` is correct."""
-    mat, = args  # unpack
+    (mat,) = guargs.args  # unpack
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(mat) < 1e8))
     dec = gt.matrix.decompose_gf(mat)
@@ -116,11 +121,16 @@ def test_decomposition_reconsturction(args):
 
 @pytest.mark.filterwarnings("ignore:(overflow)|(invalid value):RuntimeWarning")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@given(gufunc_args('(n,n)->(n,n)', dtype=np.complex128, elements=easy_complex,
-                   max_dims_extra=2, max_side=4),)
-def test_decomposition_inverse(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n,n)->(n,n)"},
+        dtype=np.complex128,
+        elements=easy_complex,
+    )
+)
+def test_decomposition_inverse(guargs):
     """Check if the inverse using `gt.matrix.Decomposition` is correct."""
-    mat, = args  # unpack
+    (mat,) = guargs.args  # unpack
     # make sure `mat` is reasonable
     if mat.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(mat) < 1e8))

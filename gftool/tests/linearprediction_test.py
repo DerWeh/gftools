@@ -4,10 +4,10 @@ import pytest
 import hypothesis.extra.numpy as hnp
 
 from hypothesis import given, assume, strategies as st
-from hypothesis_gufunc.gufunc import gufunc_args
 from scipy.linalg import companion
 
 from .context import gftool as gt
+from .custom_strategies import gufunc_args
 
 lp = gt.linearprediction
 assert_allclose = np.testing.assert_allclose
@@ -117,18 +117,23 @@ def test_lattice_prediction(fraction, lattice, stable):
 
 
 @pytest.mark.parametrize("method, atol", [(lp.pcoeff_covar, 1e-6)])
-@given(gufunc_args('(n),(n)->()', dtype=np.float64,
-                   elements=[st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10),
-                             ],
-                   max_dims_extra=2, max_side=3, min_side=1),)
-def test_predict_gufunc(method, atol, args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=0, max_value=10),
+        ],
+    )
+)
+def test_predict_gufunc(method, atol, guargs):
     """
     Test that `predict` behaves like a proper gu-function.
 
     Currently uses `pcoeff_burg` as `pcoeff_covar` is not vectorized.
     """
-    poles, resids = args
+    poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     # resids /= resids.sum(axis=-1, keepdims=True)
     # ensure sufficient large imaginary part

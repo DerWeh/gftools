@@ -12,11 +12,11 @@ import pytest
 import numpy as np
 
 from hypothesis import assume, given, strategies as st
-from hypothesis_gufunc.gufunc import gufunc_args
 from mpmath import fp
 from scipy import integrate
 
 from .context import gftool as gt
+from .custom_strategies import gufunc_args
 
 HAS_QUAD = gt.precision.HAS_QUAD
 
@@ -903,16 +903,20 @@ def test_bethe_retarded(D, center):
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
-@given(gufunc_args('(),(),()->()', dtype=np.float64,
-                   elements=[st.floats(0, 10),
-                             st.floats(0.1, 10),
-                             st.floats(0, 10),
-                             ],
-                   max_dims_extra=2),
-       )
-def test_bethe_retarded_vectorization(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(),()->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(0, 10),
+            st.floats(0.1, 10),
+            st.floats(0, 10),
+        ],
+    ),
+)
+def test_bethe_retarded_vectorization(guargs):
     """Test that retarded Green's function behaves like ufunc."""
-    tt, D, mu = args
+    tt, D, mu = guargs.args
     gf_ret_t = gt.lattice.bethe.gf_ret_t(tt, half_bandwidth=D, center=mu)
     gf_vec = np.vectorize(gt.lattice.bethe.gf_ret_t, otypes=[gf_ret_t.dtype])(
         tt, half_bandwidth=D, center=mu
@@ -995,29 +999,38 @@ def test_simplecubic_gf_vs_gf_mp(z, D):
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(divide by zero):RuntimeWarning")
-@given(gufunc_args('(),(N),(N)->()',
-                   dtype=[np.complex128, np.float64, np.float64],
-                   elements=[st.complex_numbers(), st.floats(), st.floats()],
-                   max_dims_extra=3)
-       )
-def test_pole_gf_z_gu(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(N),(N)->()"},
+        dtype=[np.complex128, np.float64, np.float64],
+        elements=[st.complex_numbers(), st.floats(), st.floats()],
+    )
+)
+def test_pole_gf_z_gu(guargs):
     """Check that `gt.pole_gf_z` is a proper gu-function and ensure symmetry."""
-    z, poles, weights = args
+    z, poles, weights = guargs.args
     assert_allclose(np.conjugate(gt.pole_gf_z(z, poles=poles, weights=weights)),
                     gt.pole_gf_z(np.conjugate(z), poles=poles, weights=weights),
                     equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow):RuntimeWarning")
-@given(gufunc_args('(),(N),(N),()->()',
-                   dtype=[np.float64, np.float64, np.float64, np.float64],
-                   elements=[st.floats(min_value=0., max_value=1.),
-                             st.floats(), nonneg_float, nonneg_float],
-                   max_dims_extra=3)
-       )
-def test_pole_gf_tau_gu(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(N),(N),()->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=0.0, max_value=1.0),
+            st.floats(),
+            nonneg_float,
+            nonneg_float,
+        ],
+        # max_dims_extra=3,
+    )
+)
+def test_pole_gf_tau_gu(guargs):
     """Check that `gt.pole_gf_tau` is a proper gu-function and ensure negativity."""
-    tau, poles, weights, beta = args
+    tau, poles, weights, beta = guargs.args
     tau = tau * beta
     assume(not np.any(np.isnan(tau)))
     gf_tau = gt.pole_gf_tau(tau, poles=poles, weights=weights, beta=beta)
@@ -1026,15 +1039,21 @@ def test_pole_gf_tau_gu(args):
 
 
 @pytest.mark.filterwarnings("ignore:(invalid value)|(overflow)|(devide by zero):RuntimeWarning")
-@given(gufunc_args('(),(N),(N),()->()',
-                   dtype=[np.float64, np.float64, np.float64, np.float64],
-                   elements=[st.floats(min_value=0., max_value=1.),
-                             pos_float, nonneg_float, pos_float],
-                   max_dims_extra=3)
-       )
-def test_pole_gf_tau_b_gu(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(N),(N),()->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=0.0, max_value=1.0),
+            pos_float,
+            nonneg_float,
+            pos_float,
+        ],
+    )
+)
+def test_pole_gf_tau_b_gu(guargs):
     """Check that `gt.pole_gf_tau_b` is a proper gu-function and ensure negativity."""
-    tau, poles, weights, beta = args
+    tau, poles, weights, beta = guargs.args
     tau = tau * beta
     assume(not np.any(np.isnan(tau)))
     assume(np.all(poles*np.asanyarray(beta)[..., np.newaxis] > 0))
@@ -1146,16 +1165,20 @@ def test_box_retarded(D, center):
     assert_allclose(gf_ft, gf_ww, rtol=1e-4, atol=1e-5)
 
 
-@given(gufunc_args('(),(),()->()', dtype=np.float64,
-                   elements=[st.floats(0, 10),
-                             st.floats(0.1, 10),
-                             st.floats(0, 10),
-                             ],
-                   max_dims_extra=2),
-       )
-def test_box_retarded_vectorization(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(),()->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(0, 10),
+            st.floats(0.1, 10),
+            st.floats(0, 10),
+        ],
+    )
+)
+def test_box_retarded_vectorization(guargs):
     """Test that retarded Green's function behaves like ufunc."""
-    tt, D, mu = args
+    tt, D, mu = guargs.args
     gf_ret_t = gt.lattice.box.gf_ret_t(tt, half_bandwidth=D, center=mu)
     gf_vec = np.vectorize(gt.lattice.box.gf_ret_t, otypes=[gf_ret_t.dtype])(
         tt, half_bandwidth=D, center=mu

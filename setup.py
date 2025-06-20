@@ -18,7 +18,6 @@ setup(
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -41,5 +40,5 @@ setup(
         'mpmath'
     ],
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'hypothesis', 'hypothesis_gufunc'],
+    tests_require=['pytest', 'hypothesis'],
 )

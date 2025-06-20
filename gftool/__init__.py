@@ -319,8 +319,8 @@ def pole_gf_tau_b(tau, poles, weights, beta):
 
     The integrated imaginary time Green's function gives `-np.sum(weights/poles)`
 
-    >>> np.trapz(gf_tau, x=tau)
-    -2.0000041750107735
+    >>> np.trapezoid(gf_tau, x=tau)
+    np.float64(-2.0000041750107735)
 
     >>> import matplotlib.pyplot as plt
     >>> __ = plt.plot(tau, gf_tau)

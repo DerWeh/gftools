@@ -7,9 +7,9 @@ import hypothesis.strategies as st
 import pytest
 
 from hypothesis import given, assume
-from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+from .custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 
@@ -23,14 +23,20 @@ ignore_illconditioned = pytest.mark.filterwarnings(
 )
 
 
-@given(gufunc_args(
-    '(n)->(n)', dtype=np.complex128,
-    elements=st.complex_numbers(allow_infinity=False, allow_nan=False,
-                                max_magnitude=None if HAS_QUAD else 1e100)
-))
-def test_trival_cmpt_gf(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n)->(n)"},
+        dtype=np.complex128,
+        elements=st.complex_numbers(
+            allow_infinity=False,
+            allow_nan=False,
+            max_magnitude=None if HAS_QUAD else 1e100,
+        ),
+    )
+)
+def test_trival_cmpt_gf(guargs):
     """Test component Green's function for trivial case `concentration=1`."""
-    z, = args
+    (z,) = guargs.args
     assume(z.size > 0)
     assume(np.all(z.imag != 0))
     z = np.where(z.imag < 0, z.conj(), z)
@@ -76,16 +82,21 @@ def test_restriction(z):
 
 
 @ignore_close_to_root
-@given(gufunc_args('(),(n),(n)->()', dtype=complex,
-                   elements=[st.complex_numbers(max_magnitude=1e-3),
-                             st.floats(min_value=-2, max_value=+2),
-                             st.floats(min_value=0, max_value=1), ],
-                   max_dims_extra=2, min_side=2, max_side=4),
-       )
-def test_cpa_interface(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(),(n),(n)->()", "min_side": 2, "max_side": 4},
+        dtype=complex,
+        elements=[
+            st.complex_numbers(max_magnitude=1e-3),
+            st.floats(min_value=-2, max_value=+2),
+            st.floats(min_value=0, max_value=1),
+        ],
+    )
+)
+def test_cpa_interface(guargs):
     """Test fixed-occupation CPA for various broadcastable inputs."""
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
-    z, eps, conc = args
+    z, eps, conc = guargs.args
     assume(np.all(conc.sum(axis=-1) > 1e-12))
     z = np.where(z.imag < 0, z.conj(), z)
     z += 1j  # go into imaginary plane where convergences is fast
