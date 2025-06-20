@@ -86,7 +86,7 @@ Matsubara frequencies we use `~gftool.density_iw`:
 >>> gf_iw = gt.bethe_gf_z(iws, half_bandwidth=1.)
 >>> occ = gt.density_iw(iws, gf_iw, beta=1./temperature)
 >>> occ
-0.5
+np.float64(0.5)
 
 We can also search the chemical potential :math:`μ` for a given occupation
 using `~gftool.chemical_potential`.
@@ -106,7 +106,7 @@ Validate the result:
 
 >>> gf_quarter_iw = gt.bethe_gf_z(iws + mu, half_bandwidth=1.)
 >>> gt.density_iw(iws, gf_quarter_iw, beta=1./temperature)
-0.249999...
+np.float64(0.249999...)
 
 
 
