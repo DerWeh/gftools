@@ -100,6 +100,7 @@ else:
 
 
 LOGGER = logging.getLogger(__name__)
+_trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
 
 
 def _phase_numexpr(z, tt):
@@ -460,7 +461,7 @@ def tau2iv_dft(gf_tau, beta):
     >>> # plt.yscale('log')
     >>> plt.show()
     """
-    gf_mean = np.trapz(gf_tau, dx=beta/(gf_tau.shape[-1]-1), axis=-1)
+    gf_mean = _trapezoid(gf_tau, dx=beta/(gf_tau.shape[-1]-1), axis=-1)
     gf_iv = beta * np.fft.ihfft(gf_tau[..., :-1] - gf_mean[..., newaxis])
     gf_iv[..., 0] = gf_mean
     # gives better results in practice but is wrong...
@@ -1145,7 +1146,7 @@ def tt2z_trapz(tt, gf_t, z):
     Notes
     -----
     The function is equivalent to the one-liner
-    `np.trapz(np.exp(1j*z[:, None]*tt)*gf_t, x=tt)`.
+    `np.trapezoid(np.exp(1j*z[:, None]*tt)*gf_t, x=tt)`.
     If `numexpr` is available, it is used for the significant speed up it
     provides for transcendental equations.  Internally the sum is evaluated
     as a matrix product to leverage the speed-up of BLAS.
@@ -1335,7 +1336,7 @@ def tt2z_lin(tt, gf_t, z):
     weight2 = (np.exp(izdt) - weight1)/izdt
     gf_z = delta_tt * (weight1*g_dft + weight2*dg_dft)
     if np.any(zero):
-        gf_z[..., zero] = np.trapz(gf_t, x=tt)[..., np.newaxis]
+        gf_z[..., zero] = _trapezoid(gf_t, x=tt)[..., np.newaxis]
     return gf_z
 
 

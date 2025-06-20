@@ -19,6 +19,7 @@ from .context import assert_allclose_vm
 from .old_scipy_integrate import simpson
 
 assert_allclose = np.testing.assert_allclose
+trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
 
 
 @given(gufunc_args('(n)->(n),(m)', dtype=np.float64,
@@ -321,10 +322,10 @@ def test_trapz_weights(test_fct):
     tt, dt = np.linspace(0, 10, 101, retstep=True)
     gf = test_fct(tt)
     coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=True)
-    assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
+    assert_allclose(coeff.sum(), trapezoid(gf, dx=dt), rtol=1e-14)
     gf[-1] = 0
     coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=False)
-    assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
+    assert_allclose(coeff.sum(), trapezoid(gf, dx=dt), rtol=1e-14)
 
 
 @pytest.mark.parametrize("test_fct", [
@@ -340,7 +341,7 @@ def test_simps_weights(test_fct):
         assert_allclose(coeff.sum(), simpson(gf, dx=dt, even='first'), rtol=1e-14)
         gf[-2:] = 0
         coeff = gt.fourier._trapz_weight(dt, gf_t=gf, endpoint=False)
-        assert_allclose(coeff.sum(), np.trapz(gf, dx=dt), rtol=1e-14)
+        assert_allclose(coeff.sum(), trapezoid(gf, dx=dt), rtol=1e-14)
 
 
 @given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
@@ -354,7 +355,7 @@ def test_tt2z_trapz_naive_gubehaviour(args):
     ww = np.linspace(-5, 5, num=57) + 0.1j
     gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
     gf_ft = gt.fourier.tt2z_trapz(tt, gf_t, ww)
-    naiv = np.trapz(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
+    naiv = trapezoid(np.exp(1j*ww[:, None]*tt)*gf_t[..., None, :], x=tt)
     assert_allclose(gf_ft, naiv, rtol=1e-12, atol=1e-14)
 
 
