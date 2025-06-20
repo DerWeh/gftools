@@ -6,12 +6,12 @@ import pytest
 import hypothesis.strategies as st
 
 from hypothesis import given, assume
-from hypothesis_gufunc.gufunc import gufunc_args
 
 import numpy as np
 from mpmath import fp
 
 from .context import gftool as gt, pole
+from .custom_strategies import gufunc_args
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 assert_allclose = np.testing.assert_allclose
@@ -154,14 +154,21 @@ def test_density():
     assert_allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
-@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float64,
-                        elements=[st.floats(min_value=-10, max_value=10),
-                                  st.floats(min_value=0, max_value=10)]
-                        ),)
-def test_density_iw(args):
+@given(
+    guargs=gufunc_args(
+        # we do not test for broadcasting here (max_dims=0)
+        shape_kwds={"signature": "(n),(n)->(n)", "max_dims": 0},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    )
+)
+def test_density_iw(guargs):
     """Check `gt.density_iw` on Matsubara frequencies for multi pole Green's function."""
     beta = 17
-    poles, residues = args
+    poles, residues = guargs.args
     iw = gt.matsubara_frequencies(range(4096), beta=beta)
     if np.any(residues.sum(axis=-1) > 10.):
         # there are issues with moments with large residues, without moments it's fine
@@ -190,14 +197,20 @@ def pade_frequencies():
     return pade_frequencies_
 
 
-@given(args=gufunc_args('(n),(n)->(n)', dtype=np.float64,
-                        elements=[st.floats(min_value=-10, max_value=10),
-                                  st.floats(min_value=0, max_value=10)]
-                        ),)
-def test_density_izp(args, pade_frequencies):
+@given(
+    guargs=gufunc_args(
+        shape_kwds={"signature": "(n),(n)->(n)"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_density_izp(guargs, pade_frequencies):
     """Check `gt.density_iw` on Padé frequencies for multi pole Green's function."""
     beta = 17
-    poles, residues = args
+    poles, residues = guargs.args
     izp, rp = pade_frequencies(beta)
     if np.any(residues.sum(axis=-1) > 10.):
         # there are issues with moments with large residues, without moments it's fine

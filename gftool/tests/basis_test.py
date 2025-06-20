@@ -4,18 +4,24 @@ import hypothesis.strategies as st
 import pytest
 
 from hypothesis import given, assume
-from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
+from .custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 
 
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-@given(gufunc_args('(n)->(n)', dtype=np.complex128, elements=st.complex_numbers()))
-def test_zp_to_ratpol(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n)->(n)"},
+        dtype=np.complex128,
+        elements=st.complex_numbers(),
+    )
+)
+def test_zp_to_ratpol(guargs):
     """Check that `gt.basis.ZeroPole` and `gt.basis.RatPol` give same result."""
-    z, = args
+    (z,) = guargs.args
     poles = np.array([1+1j, 0.2-3j])
     assume(not np.any(np.isclose(np.subtract.outer(z, poles), 0)))
     zeros = np.array([0, 1j])

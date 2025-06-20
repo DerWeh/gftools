@@ -12,24 +12,32 @@ import hypothesis.strategies as st
 
 from hypothesis import given, assume
 from hypothesis.extra.numpy import arrays
-from hypothesis_gufunc.gufunc import gufunc_args
 
 from .context import gftool as gt
 from .context import assert_allclose_vm
+from .custom_strategies import gufunc_args
 from .old_scipy_integrate import simpson
 
 assert_allclose = np.testing.assert_allclose
 trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
 
 
-@given(gufunc_args('(n)->(n),(m)', dtype=np.float64,
-                   elements=st.floats(min_value=-1e6, max_value=1e6),
-                   max_dims_extra=2, max_side=10),)
-def test_gf_form_moments(args):
+@given(
+    gufunc_args(
+        # shape_kwds={"signature": "(n)->(n),(m)"}, currently not possible
+        shape_kwds={
+            "signature": "(n)->()",
+            "max_side": 10,
+        },
+        dtype=np.float64,
+        elements=st.floats(min_value=-1e6, max_value=1e6),
+    )
+)
+def test_gf_form_moments(guargs):
     """Check that the Gfs constructed from moments have the correct moment."""
-    mom, = args
+    (mom,) = guargs.args
     gf = gt.basis.pole.gf_from_moments(mom, width=1)
-    gf_mom = gf.moments(np.arange(mom.shape[-1])+1)
+    gf_mom = gf.moments(np.arange(mom.shape[-1]) + 1)
     # low accuracy due to 'unbalanced' results, e.g. [1e5, 1e-10, 1e-10]
     # we should use a better test criterion...
     assert_allclose_vm(mom, gf_mom, equal_nan=True, atol=1e-10)
@@ -73,13 +81,19 @@ def test_iw2tau_dft_single_pole(pole):
     assert_allclose(gf_tau, gf_dft, atol=1e-3, rtol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
-                   elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10)],
-                   max_dims_extra=1, max_side=5),)
-def test_iw2tau_multi_pole(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    )
+)
+def test_iw2tau_multi_pole(guargs):
     """Test `iw2tau` for a multi-pole Green's function."""
-    poles, resids = args
+    poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)  # not really necessary...
     m0 = resids.sum(axis=-1, keepdims=True)
@@ -173,13 +187,20 @@ def test_tau2iw_dft_single_pole(pole):
     assert_allclose(gf_iw, gf_dft, atol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
-                   elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10)],
-                   max_dims_extra=1, max_side=5),)
-def test_tau2iw_multi_pole(args):
+@given(
+    gufunc_args(
+        # "(n),(n)->(l)",
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    )
+)
+def test_tau2iw_multi_pole(guargs):
     """Test `tau2iw` for a multi-pole Green's function."""
-    poles, resids = args
+    poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     m0 = resids.sum(axis=-1, keepdims=True)
@@ -202,13 +223,20 @@ def test_tau2iw_multi_pole(args):
     assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
-                   elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10)],
-                   max_dims_extra=1, max_side=5),)
-def test_tau2iw_multi_pole_hfm(args):
+@given(
+    gufunc_args(
+        # "(n),(n)->(l)",
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_tau2iw_multi_pole_hfm(guargs):
     """Test `tau2iw_dft` for a multi-pole Green's function."""
-    poles, resids = args
+    poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     BETA = 1.3
@@ -225,12 +253,16 @@ def test_tau2iw_multi_pole_hfm(args):
     assert_allclose(gf_iw, gf_ft, rtol=1e-4)
 
 
-@given(gufunc_args('(n)->(n)', dtype=np.float64,
-                   elements=st.floats(min_value=-1e6, max_value=1e6),
-                   max_dims_extra=2, max_side=10),)
-def test_pole_from_gftau_exact(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(n)->(n)"},
+        dtype=np.float64,
+        elements=st.floats(min_value=-1e6, max_value=1e6),
+    ),
+)
+def test_pole_from_gftau_exact(guargs):
     """Recover exact residues from Pole Gf with Chebyshev poles."""
-    resids, = args
+    (resids,) = guargs.args
     n_poles = resids.shape[-1]
     assume(n_poles > 0)
     poles = np.cos(.5*np.pi*np.arange(1, 2*n_poles, 2)/n_poles)[::-1]
@@ -344,13 +376,20 @@ def test_simps_weights(test_fct):
         assert_allclose(coeff.sum(), trapezoid(gf, dx=dt), rtol=1e-14)
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
-                   elements=[st.floats(min_value=-10, max_value=10),
-                             st.floats(min_value=0, max_value=10), ],
-                   max_dims_extra=2, max_side=5),)
-def test_tt2z_trapz_naive_gubehaviour(args):
+@given(
+    gufunc_args(
+        # "(n),(n)->(l)",
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-10, max_value=10),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_tt2z_trapz_naive_gubehaviour(guargs):
     """Compare optimized to naive trapezoidal rule."""
-    poles, resids = args
+    poles, resids = guargs.args
     tt = np.linspace(0, 10, num=101)
     ww = np.linspace(-5, 5, num=57) + 0.1j
     gf_t = gt.pole_gf_ret_t(tt, poles=poles[..., np.newaxis, :], weights=resids[..., np.newaxis, :])
@@ -415,13 +454,20 @@ def test_tt2z_single_pole_nonumexpr(spole):
         gt.fourier._phase = gt.fourier._phase_numexpr
 
 
-@given(gufunc_args('(n),(n)->(l)', dtype=np.float64,
-                   elements=[st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10), ],
-                   max_dims_extra=2, max_side=5),)
-def test_tt2z_multi_pole(args):
+@given(
+    gufunc_args(
+        # "(n),(n)->(l)",
+        shape_kwds={"signature": "(n),(n)->()"},
+        dtype=np.float64,
+        elements=[
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=0, max_value=10),
+        ],
+    )
+)
+def test_tt2z_multi_pole(guargs):
     """Test `tt2z` for a multi-pole Green's function."""
-    poles, resids = args
+    poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     tt = np.linspace(0, 50, 3001)
@@ -448,14 +494,20 @@ def test_tt2z_multi_pole(args):
     gt.fourier.tt2z(tt[::10], gf_t[..., ::10], ww, laplace=gt.fourier.tt2z_lin)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
-                   elements=[st.complex_numbers(max_magnitude=2),
-                             st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10), ],
-                   max_dims_extra=2, max_side=5),)
-def test_tt2z_gufuncz(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(l),(n),(n)->(l)"},
+        dtype=np.complex128,
+        elements=[
+            st.complex_numbers(max_magnitude=2),
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_tt2z_gufuncz(guargs):
     """Test `tt2z` for different shapes of `z`."""
-    z, poles, resids = args
+    z, poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     # ensure sufficient large imaginary part
@@ -478,14 +530,20 @@ def test_tt2z_gufuncz(args):
     assert_allclose(gf_z, gf_ft, rtol=1e-3)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
-                   elements=[st.floats(min_value=-1,  max_value=1),
-                             st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10), ],
-                   max_dims_extra=2, max_side=3),)
-def test_tt2z_gufuncz_pade(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(l),(n),(n)->(l)"},
+        dtype=np.complex128,
+        elements=[
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_tt2z_gufuncz_pade(guargs):
     """Test `tt2z_pade` for different shapes of `z`."""
-    ww, poles, resids = args
+    ww, poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     # ensure sufficient large imaginary part
@@ -537,14 +595,20 @@ def test_tt2z_pade_box(fast):
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
 
 
-@given(gufunc_args('(l),(n),(n)->(l)', dtype=np.complex128,
-                   elements=[st.floats(min_value=-1,  max_value=1),
-                             st.floats(min_value=-1, max_value=1),
-                             st.floats(min_value=0, max_value=10), ],
-                   max_dims_extra=2, max_side=3),)
-def test_tt2z_gufuncz_lpz(args):
+@given(
+    gufunc_args(
+        shape_kwds={"signature": "(l),(n),(n)->(l)"},
+        dtype=np.complex128,
+        elements=[
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=-1, max_value=1),
+            st.floats(min_value=0, max_value=10),
+        ],
+    ),
+)
+def test_tt2z_gufuncz_lpz(guargs):
     """Test `tt2z_lpz` for different shapes of `z`."""
-    ww, poles, resids = args
+    ww, poles, resids = guargs.args
     assume(np.all(resids.sum(axis=-1) > 1e-4))
     resids /= resids.sum(axis=-1, keepdims=True)
     # ensure sufficient large imaginary part
