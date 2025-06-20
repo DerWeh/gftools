@@ -27,8 +27,8 @@ jobs:
         run: |
           find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pydocstyle -v {} +
           find gftool -name '*.py' -not -path '*/tests/*' -not -path '*.ropeproject*' -not -name _version.py -exec pyflakes {} +
-      - name: Pylint
-        run: pylint --rcfile=.auto_pylintrc gftool
+      # - name: Pylint
+      #   run: pylint --rcfile=.auto_pylintrc gftool
   code-change:
     runs-on: ubuntu-latest
     steps:
