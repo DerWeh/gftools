@@ -9,6 +9,30 @@ from mpmath import fp
 _ellipk_z = np.frompyfunc(partial(fp.ellipf, np.pi/2), 1, 1)
 
 
+def _vecsolve(a, b):
+    """
+    Solve a linear equation.
+
+    Computes the "exact" solution, `x`, of the well-determined, i.e., full
+    rank, linear matrix equation `ax = b`.
+    This is a wrapper for `np.linalg.solve` to reproduce the old behaviour.
+
+    Parameters
+    ----------
+    a : (..., M, M) array_like
+        Coefficient matrix.
+    b : (..., M) array_like
+        Ordinate or "dependent variable" values.
+
+    Returns
+    -------
+    x : (..., M) ndarray
+        Solution to the system a x = b.  Returned shape is identical to `b`.
+    """
+    return np.linalg.solve(a, np.asanyarray(b)[..., np.newaxis])[..., 0]
+
+
+
 def _gu_sum(a, **kwds):
     """
     Sum over last axis for the use in generalized ufuncs.

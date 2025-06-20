@@ -42,7 +42,7 @@ def test_lstsq_ce_constraints(guargs):
     a, b, c, d = guargs.args
     if c.shape[-1] > 0:  # make sure matrix is diagonalizable
         assume(np.all(np.linalg.cond(c) < 1e6))
-    sol = np.linalg.solve(c, d[..., np.newaxis])[..., 0]
+    sol = gt._util._vecsolve(c, d)
     lstsq = gt.linalg.lstsq_ec(a, b, c, d)
     assert_allclose_vm(lstsq, sol, atol=1e-12)
 
