@@ -13,10 +13,10 @@ import hypothesis.strategies as st
 from hypothesis import given, assume
 from hypothesis.extra.numpy import arrays
 from hypothesis_gufunc.gufunc import gufunc_args
-from scipy.integrate import simpson
 
 from .context import gftool as gt
 from .context import assert_allclose_vm
+from .old_scipy_integrate import simpson
 
 assert_allclose = np.testing.assert_allclose
 
