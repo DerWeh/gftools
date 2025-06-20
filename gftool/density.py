@@ -76,7 +76,7 @@ def density_iw(iws, gf_iw, beta, weights=1., moments=(1.,), n_fit=0):
     >>> np.array([exact, occ, occ_m2, occ_fit2])
     array([0.17858152, 0.17934438, 0.17858151, 0.17858199])
     >>> np.array([abs(occ - exact), abs(occ_m2 - exact), abs(occ_fit2 - exact)])
-    array([7.62861559e-04, 8.18666776e-09, 4.72108251e-07])
+    array([7.62861559e-04, 8.186...-09, 4.721...-07])
 
     using more accurate Padé frequencies
 
