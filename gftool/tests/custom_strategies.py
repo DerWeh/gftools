@@ -13,7 +13,7 @@ from hypothesis.extra.numpy import (
 )
 
 class GU_Args(NamedTuple):
-    args: tuple[np.ndarray]
+    args: "tuple[np.ndarray]"
     shapes:  BroadcastableShapes
 
 
