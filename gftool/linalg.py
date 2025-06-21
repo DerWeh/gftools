@@ -85,7 +85,7 @@ def lstsq_ec(a, b, c, d, rcond=None):
        JHU Press, 2013.
     """
     if a.shape[-1] == 0:
-        return np.zeros(a.shape[:-2] + (0,), dtype=a.dtype)
+        return np.zeros((*a.shape[:-2], 0), dtype=a.dtype)
     if c.shape[-2] == 0:  # no conditions given, do standard lstsq
         if c.shape[-2] != d.shape[-1]:
             msg = (

@@ -92,7 +92,7 @@ class Decomposition(Sequence):
     True
     """
 
-    __slots__ = ('rv', 'eig', 'rv_inv')
+    __slots__ = ('rv', 'eig', 'rv_inv')  # noqa: RUF023
 
     rv: np.ndarray  #: The matrix of right eigenvectors.
     eig: np.ndarray  #: The vector of eigenvalues.

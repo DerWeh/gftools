@@ -17,7 +17,7 @@ from gftool.tests.old_scipy_integrate import simpson
 from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
-trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
+trapezoid = np.trapz if int(np.__version__.split('.')[0]) < 2 else np.trapezoid  # noqa: NPY201
 
 
 @given(

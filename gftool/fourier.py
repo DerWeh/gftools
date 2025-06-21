@@ -84,6 +84,7 @@ import logging
 
 import numpy as np
 from numpy import newaxis
+from scipy.optimize import minimize_scalar
 
 from gftool._util import _gu_matvec
 from gftool.basis.pole import PoleFct, PoleGf
@@ -100,7 +101,7 @@ else:
 
 
 LOGGER = logging.getLogger(__name__)
-_trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
+_trapezoid = np.trapz if int(np.__version__.split('.')[0]) < 2 else np.trapezoid  # noqa: NPY201
 
 
 def _phase_numexpr(z, tt):
@@ -188,7 +189,7 @@ def iw2tau_dft(gf_iw, beta):
     >>> plt.yscale('log')
     >>> plt.show()
     """
-    gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
+    gf_iwall = np.zeros((*gf_iw.shape[:-1], 2 * gf_iw.shape[-1] + 1), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
     gf_tau = np.fft.hfft(1./beta * gf_iwall)
     return gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
@@ -999,7 +1000,6 @@ def _z2polegf(z, gf_z, n_pole, moments=(1.,)) -> PoleFct:
         gf_fit = pole_gf.eval_z(z)
         return np.linalg.norm(gf_z - gf_fit)
 
-    from scipy.optimize import minimize_scalar
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
     return PoleFct.from_z(z, gf_z, n_pole=n_pole, moments=moments, width=opt.x)
@@ -1636,7 +1636,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
         )
         raise ValueError(msg)
     if z.size == 0 or gf_t.size == 0:  # consistent behavior for gufuncs
-        return np.full(np.broadcast_shapes(z.shape, gf_t.shape[:-1]+(1, )),
+        return np.full(np.broadcast_shapes(z.shape, (*gf_t.shape[:-1], 1)),
                        fill_value=np.nan)
     return laplace(tt, gf_t, z, **kwds)
 
@@ -1660,7 +1660,6 @@ def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> P
         gf_fit = pole_gf.eval_tau(tau, beta=beta)
         return np.linalg.norm(gf_tau - gf_fit)
 
-    from scipy.optimize import minimize_scalar
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
     return PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments,

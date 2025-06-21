@@ -577,12 +577,12 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
             )
             raise ValueError(msg)
         constrain_mat = np.swapaxes(polyvander(poles, deg=moments.shape[-1]-1), -1, -2)
-        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
-                                 otypes=[otype], excluded={'rcond'})
+        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature="(m,n),(m),(l,n),(l)->(n)",
+                                 otypes=[otype], excluded={"rcond"})
         resid = _lstsq_ec(gf_sp_mat, gf_z, constrain_mat, moments)
     else:
         _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
-                              signature='(m,n),(m)->(n)', otypes=[otype])
+                              signature="(m,n),(m)->(n)", otypes=[otype])
         resid = _lstsq(gf_sp_mat, gf_z)
     return PoleFct(poles=poles, residues=resid)
 
@@ -655,11 +655,11 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
                 np.broadcast_arrays(constrain_mat, fermi_fct(poles, beta=beta)), axis=-2
             )
             moments = np.concatenate(np.broadcast_arrays(moments, occ), axis=-1)
-        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature='(m,n),(m),(l,n),(l)->(n)',
-                                 otypes=[otype], excluded={'rcond'})
+        _lstsq_ec = np.vectorize(linalg.lstsq_ec, signature="(m,n),(m),(l,n),(l)->(n)",
+                                 otypes=[otype], excluded={"rcond"})
         resid = _lstsq_ec(gf_sp_mat, gf_tau, constrain_mat, moments)
     else:
         _lstsq = np.vectorize(lambda a, b: np.linalg.lstsq(a, b, rcond=None)[0],
-                              signature='(m,n),(m)->(n)', otypes=[otype])
+                              signature="(m,n),(m)->(n)", otypes=[otype])
         resid = _lstsq(gf_sp_mat, gf_tau)
     return PoleGf(poles=poles, residues=resid)

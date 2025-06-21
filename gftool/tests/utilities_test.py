@@ -100,7 +100,7 @@ def test_fermi_derivative_1(z):
         dist = min(zimag_per, 2*np.pi - zimag_per)
     else:
         dist = abs(z.real) / 2
-    assert_allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad', radius=dist/2),
+    assert_allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method="quad", radius=dist/2),
                     gt.fermi_fct_d1(z, beta=1), atol=1e-12)
 
 

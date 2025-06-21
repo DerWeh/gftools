@@ -190,7 +190,7 @@ def surface_gf_zeps(z, eps, hopping_nn):
     return bethe_gf_z(z-eps, half_bandwidth=2.*hopping_nn)
 
 
-def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
+def hubbard_dimer_gf_z(z, hopping, interaction, kind="+"):
     r"""
     Green's function for the two site Hubbard model on a *dimer*.
 
@@ -231,10 +231,10 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
        Jülich: Forschungszentrum Jülich, 2017.
        https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
     """
-    if kind not in ('+', '-'):
+    if kind not in ("+", "-"):
         msg = f"invalid literal for `kind`: '{kind}'"
         raise ValueError(msg)
-    s = 1 if kind == '+' else -1
+    s = 1 if kind == "+" else -1
     t = hopping
     U = interaction
     W = (0.25*U*U + 4*t*t)**0.5
@@ -344,7 +344,7 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     return _gu_sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles))
 
 
-Result = namedtuple('Result', ['x', 'err'])  # noqa: PYI024
+Result = namedtuple("Result", ["x", "err"])  # noqa: PYI024
 
 
 def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
@@ -451,9 +451,9 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     if matrix:
         dec = gtmatrix.decompose_her(potential)
         eig = dec.eig
-        tail = dec.reconstruct(1./np.add.outer(iw, eig), kind='diag')
+        tail = dec.reconstruct(1./np.add.outer(iw, eig), kind="diag")
         tail = np.moveaxis(tail, source=0, destination=-1)
-        analytic = dec.reconstruct(fermi_fct(-eig, beta=beta), kind='diag')
+        analytic = dec.reconstruct(fermi_fct(-eig, beta=beta), kind="diag")
     else:
         tail = 1/np.add.outer(potential, iw)
         analytic = fermi_fct(-potential, beta=beta)
@@ -578,7 +578,7 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
 
     if matrix:
         dec = gtmatrix.decompose_her(potential)
-        tail = dec.reconstruct(1./np.add.outer(dec.eig, iw), kind='diag')
+        tail = dec.reconstruct(1./np.add.outer(dec.eig, iw), kind="diag")
     else:
         tail = 1/np.add.outer(potential, iw)
 

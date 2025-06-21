@@ -51,7 +51,7 @@ class GfProperties:
     def gf(self, z, **kwds): ...  # noqa: D102
 
     @staticmethod
-    @pytest.fixture()
+    @pytest.fixture
     def params():
         """Contains possible parameters needed for the Green's function."""
         return (), {}

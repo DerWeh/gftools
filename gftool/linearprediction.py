@@ -162,7 +162,7 @@ def companion(a):
     first_row = -a[..., 1:] / (1.0 * a[..., 0:1])
     n = a.shape[-1]
 
-    c = np.zeros(a.shape[:-1] + (n - 1, n - 1), dtype=first_row.dtype)
+    c = np.zeros((*a.shape[:-1], n - 1, n - 1), dtype=first_row.dtype)
     c[..., 0, :] = first_row
     c[..., list(range(1, n - 1)), list(range(n - 2))] = 1
     return c
@@ -354,7 +354,7 @@ def _predict_stable(x, pcoeff, num: int):
     """
     # calculate poles and residues
     order = pcoeff.shape[-1]
-    comp_mat = companion(np.r_["-1", np.ones(pcoeff.shape[:-1] + (1,)), pcoeff])
+    comp_mat = companion(np.r_["-1", np.ones((*pcoeff.shape[:-1], 1)), pcoeff])
     dec = decompose_mat(comp_mat)
     right = _gu_matvec(dec.rv_inv, x[..., -order:][..., ::-1])
     left = dec.rv[..., 0, :]
@@ -396,7 +396,7 @@ def plot_roots(pcoeff, axis=None):
     --------
     pcoeff_covar
     """
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt  # noqa: PLC0415
     if axis is None:
         axis = plt.gca()
 

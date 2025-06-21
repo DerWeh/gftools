@@ -138,8 +138,8 @@ class PadeApprox:
 
     def plot(self, residue=False, axis=None):
         """Represent the function as scatter plot."""
-        import matplotlib as mpl
-        import matplotlib.pyplot as plt
+        import matplotlib as mpl  # noqa: PLC0415
+        import matplotlib.pyplot as plt  # noqa: PLC0415
         if axis is None:
             axis = plt.gca()
         axis.axhline(0, color='.3')
