@@ -214,7 +214,6 @@ plot_rcparams = {
 intersphinx_mapping = {'python': ('https://docs.python.org/3.10', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-                       'np': ('http://docs.scipy.org/doc/numpy/', None),
                        'mpmath': ('https://mpmath.org/doc/current/', None),
                        'matplotlib': ('https://matplotlib.org/', None),
                        'numexpr': ('https://numexpr.readthedocs.io/en/stable/', None)
