@@ -15,7 +15,7 @@ assert_allclose = np.testing.assert_allclose
 HAS_QUAD = gt.precision.HAS_QUAD
 
 ignore_close_to_root = pytest.mark.filterwarnings(
-    "ignore:(invalid value encountered in double_scalars):RuntimeWarning"
+    "ignore:(invalid value encountered in (double_scalars|scalar divide)):RuntimeWarning"
 )
 ignore_illconditioned = pytest.mark.filterwarnings(
     "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"

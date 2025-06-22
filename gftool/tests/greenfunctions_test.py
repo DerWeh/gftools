@@ -521,6 +521,9 @@ class TestKagome(Lattice):
         points = self.singularities(**kwds)
         assert integrate.quad(dos, *self.band_edges(**kwds), points=points)[0] == pytest.approx(2/3)
 
+    @pytest.mark.filterwarnings(
+        "ignore:(invalid value encountered in scalar subtract):RuntimeWarning"
+    )
     def test_dos_moment(self, kwds):
         """Moment is integral over ϵ^m DOS."""
         # check influence of bandwidth, as they are calculated for D=1 and normalized

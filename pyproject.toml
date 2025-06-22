@@ -44,6 +44,7 @@ testpaths = ["gftool/tests"]
 log_cli_level = "INFO"
 # xfail_strict = true
 addopts = ["-ra", "--strict-config", "--strict-markers"]
+filterwarnings = ["error"]
 
 [tool.setuptools]
 packages = ["gftool"]

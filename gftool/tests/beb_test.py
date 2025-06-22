@@ -94,7 +94,7 @@ def test_cpa_limit(z):
     assert_allclose(gf_loc_z.sum(axis=-1), hilbert(z - self_cpa_z), rtol=1e-5)
 
 
-@pytest.mark.filterwarnings("ignore:(invalid value encountered in double_scalars):RuntimeWarning")
+@pytest.mark.filterwarnings("ignore:(invalid value encountered in (double_scalars|scalar divide)):RuntimeWarning")
 def test_resuming():
     """Calculating the BEB effective medium twice should be no issue."""
     # randomly chosen example
