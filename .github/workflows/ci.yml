@@ -2,8 +2,8 @@ name: Continuous Integration
 on:
   push:
     paths:
-      - 'gftool/**'
-      - 'docs/**'
+      - "gftool/**"
+      - "docs/**"
   pull_request:
     types: [opened]
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
         with:
-          paths_ignore: '["docs/**"]'  # skip unit-tests if only docs were changed
+          paths_ignore: '["docs/**"]' # skip unit-tests if only docs were changed
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
   tests:
@@ -23,9 +23,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.8", "3.12"]  # check oldest and latest supported version
+        python-version: ["3.8", "3.12"] # check oldest and latest supported version
         other-os: [false]
-        include:  # checking one version in the middle is enough
+        include: # checking one version in the middle is enough
           - os: windows-latest
             python-version: "3.8"
             other-os: true
@@ -33,7 +33,7 @@ jobs:
             python-version: "3.8"
             other-os: true
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.other-os }}  # don't cancel due to OS specific failures
+    continue-on-error: ${{ matrix.other-os }} # don't cancel due to OS specific failures
     env:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
