@@ -53,87 +53,91 @@ Glossary
 """
 import logging
 import warnings
-
 from collections import namedtuple
 
 import numpy as np
-
 from numpy import newaxis
 
-from . import beb, cpa, fourier, lattice, matrix as gtmatrix, linearprediction, polepade
+import gftool.siam
+
+from . import beb, cpa, fourier, lattice, linearprediction, polepade
+from . import matrix as gtmatrix
 from ._util import _gu_sum
-from ._version import get_versions
-
-# Bethe lattice
-# pylint: disable=wrong-import-position
-from .lattice.bethe import (dos as bethe_dos, dos_moment as bethe_dos_moment,
-                            gf_d1_z as bethe_gf_d1_z, gf_d2_z as bethe_gf_d2_z,
-                            gf_z as bethe_gf_z,
-                            hilbert_transform as bethe_hilbert_transform)
-
-# One-dimensional lattice
-from .lattice.onedim import (dos as onedim_dos,
-                             dos_moment as onedim_dos_moment,
-                             gf_z as onedim_gf_z,
-                             hilbert_transform as onedim_hilbert_transform)
-
-# Square lattice
-from .lattice.square import (dos as square_dos,
-                             dos_moment as square_dos_moment,
-                             gf_z as square_gf_z,
-                             hilbert_transform as square_hilbert_transform)
-
-# Triangular lattice
-from .lattice.triangular import (dos as triangular_dos,
-                                 dos_moment as triangular_dos_moment,
-                                 gf_z as triangular_gf_z,
-                                 hilbert_transform as triangular_hilbert_transform)
-
-# Honeycomb lattice
-from .lattice.honeycomb import (dos as honeycomb_dos,
-                                dos_moment as honeycomb_dos_moment,
-                                gf_z as honeycomb_gf_z,
-                                hilbert_transform as honeycomb_hilbert_transform)
-
-# Simple cubic lattice
-from .lattice.sc import (dos as sc_dos,
-                         dos_moment as sc_dos_moment,
-                         gf_z as sc_gf_z,
-                         hilbert_transform as sc_hilbert_transform)
-
-# Body-centered cubic lattice
-from .lattice.bcc import (dos as bcc_dos,
-                          dos_moment as bcc_dos_moment,
-                          gf_z as bcc_gf_z,
-                          hilbert_transform as bcc_hilbert_transform)
-
-# Body-centered cubic lattice
-from .lattice.fcc import (dos as fcc_dos,
-                          dos_moment as fcc_dos_moment,
-                          gf_z as fcc_gf_z,
-                          hilbert_transform as fcc_hilbert_transform)
-
-# Fermi statistics
-from .statistics import (fermi_fct, fermi_fct_d1, fermi_fct_inv,
-                         matsubara_frequencies, pade_frequencies)
-
-# Bose statistics
-from .statistics import (bose_fct, matsubara_frequencies_b)
+from ._version import __version__
+from .basis.pole import gf_d1_z as pole_gf_d1_z
+from .basis.pole import gf_ret_t as pole_gf_ret_t
+from .basis.pole import gf_tau as pole_gf_tau
 
 # Green's function give by finite number poles
-from .basis.pole import (gf_z as pole_gf_z,
-                         gf_d1_z as pole_gf_d1_z,
-                         gf_tau as pole_gf_tau,
-                         gf_ret_t as pole_gf_ret_t,
-                         moments as pole_gf_moments)
+from .basis.pole import gf_z as pole_gf_z
+from .basis.pole import moments as pole_gf_moments
+from .density import chemical_potential, density_iw
 
-from .density import density_iw, chemical_potential
+# Body-centered cubic lattice
+from .lattice.bcc import dos as bcc_dos
+from .lattice.bcc import dos_moment as bcc_dos_moment
+from .lattice.bcc import gf_z as bcc_gf_z
+from .lattice.bcc import hilbert_transform as bcc_hilbert_transform
 
-__version__ = get_versions()['version']
+# Bethe lattice
+from .lattice.bethe import dos as bethe_dos
+from .lattice.bethe import dos_moment as bethe_dos_moment
+from .lattice.bethe import gf_d1_z as bethe_gf_d1_z
+from .lattice.bethe import gf_d2_z as bethe_gf_d2_z
+from .lattice.bethe import gf_z as bethe_gf_z
+from .lattice.bethe import hilbert_transform as bethe_hilbert_transform
+
+# Body-centered cubic lattice
+from .lattice.fcc import dos as fcc_dos
+from .lattice.fcc import dos_moment as fcc_dos_moment
+from .lattice.fcc import gf_z as fcc_gf_z
+from .lattice.fcc import hilbert_transform as fcc_hilbert_transform
+
+# Honeycomb lattice
+from .lattice.honeycomb import dos as honeycomb_dos
+from .lattice.honeycomb import dos_moment as honeycomb_dos_moment
+from .lattice.honeycomb import gf_z as honeycomb_gf_z
+from .lattice.honeycomb import hilbert_transform as honeycomb_hilbert_transform
+
+# One-dimensional lattice
+from .lattice.onedim import dos as onedim_dos
+from .lattice.onedim import dos_moment as onedim_dos_moment
+from .lattice.onedim import gf_z as onedim_gf_z
+from .lattice.onedim import hilbert_transform as onedim_hilbert_transform
+
+# Simple cubic lattice
+from .lattice.sc import dos as sc_dos
+from .lattice.sc import dos_moment as sc_dos_moment
+from .lattice.sc import gf_z as sc_gf_z
+from .lattice.sc import hilbert_transform as sc_hilbert_transform
+
+# Square lattice
+from .lattice.square import dos as square_dos
+from .lattice.square import dos_moment as square_dos_moment
+from .lattice.square import gf_z as square_gf_z
+from .lattice.square import hilbert_transform as square_hilbert_transform
+
+# Triangular lattice
+from .lattice.triangular import dos as triangular_dos
+from .lattice.triangular import dos_moment as triangular_dos_moment
+from .lattice.triangular import gf_z as triangular_gf_z
+from .lattice.triangular import hilbert_transform as triangular_hilbert_transform
+
+# Fermi and Bose statistics
+from .statistics import (
+    bose_fct,
+    fermi_fct,
+    fermi_fct_d1,
+    fermi_fct_inv,
+    matsubara_frequencies,
+    matsubara_frequencies_b,
+    pade_frequencies,
+)
 
 LOGGER = logging.getLogger(__name__)
 
 # silence warnings of unused imports
+assert __version__
 assert all((beb, cpa, fourier, lattice, linearprediction, polepade))
 assert all((bethe_dos, bethe_dos_moment, bethe_gf_d1_z, bethe_gf_d2_z,
             bethe_gf_z, bethe_hilbert_transform))
@@ -148,6 +152,7 @@ assert all((fermi_fct, fermi_fct_d1, fermi_fct_inv, matsubara_frequencies, pade_
 assert all((bose_fct, matsubara_frequencies_b))
 assert all((pole_gf_z, pole_gf_d1_z, pole_gf_tau, pole_gf_ret_t, pole_gf_moments))
 assert all((density_iw, chemical_potential))
+assert gftool.siam
 
 
 def surface_gf_zeps(z, eps, hopping_nn):
@@ -185,7 +190,7 @@ def surface_gf_zeps(z, eps, hopping_nn):
     return bethe_gf_z(z-eps, half_bandwidth=2.*hopping_nn)
 
 
-def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
+def hubbard_dimer_gf_z(z, hopping, interaction, kind="+"):
     r"""
     Green's function for the two site Hubbard model on a *dimer*.
 
@@ -226,14 +231,15 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind='+'):
        Jülich: Forschungszentrum Jülich, 2017.
        https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
     """
-    if kind not in ('+', '-'):
-        raise ValueError(f"invalid literal for `kind`: '{kind}'")
-    s = 1 if kind == '+' else -1
+    if kind not in ("+", "-"):
+        msg = f"invalid literal for `kind`: '{kind}'"
+        raise ValueError(msg)
+    s = 1 if kind == "+" else -1
     t = hopping
     U = interaction
     W = (0.25*U*U + 4*t*t)**0.5
     E_0 = 0.5*U - W
-    gf_z  = (0.5 + s*t/W) / (z - (E_0 + s*t))
+    gf_z = (0.5 + s*t/W) / (z - (E_0 + s*t))
     gf_z += (0.5 - s*t/W) / (z - (U + s*t - E_0))
     return gf_z
 
@@ -332,12 +338,13 @@ def pole_gf_tau_b(tau, poles, weights, beta):
     tau = np.asanyarray(tau)[..., newaxis]
     beta = np.asanyarray(beta)[..., newaxis]
     if np.any(poles.real < 0):
-        raise ValueError("Bosonic Green's function only well-defined for positive `poles`.")
+        msg = "Bosonic Green's function only well-defined for positive `poles`."
+        raise ValueError(msg)
     # eps((beta-tau)*pole)*g(pole, beta) = -exp(-tau*pole)*g(pole, -beta)
     return _gu_sum(weights*bose_fct(poles, -beta)*np.exp(-tau*poles))
 
 
-Result = namedtuple('Result', ['x', 'err'])
+Result = namedtuple("Result", ["x", "err"])  # noqa: PYI024
 
 
 def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
@@ -433,10 +440,10 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
        https://www.cond-mat.de/events/correl17/manuscripts/eder.pdf.
     .. [3] Luttinger, J. M. “Analytic Properties of Single-Particle Propagators
        for Many-Fermion Systems.” Physical Review 121, no. 4 (February 15,
-       1961): 942–49. https://doi.org/10.1103/PhysRev.121.942.
+       1961): 942-49. https://doi.org/10.1103/PhysRev.121.942.
     """
     warnings.warn("`density` is deprecated; use `density_iw` instead.",
-                  category=DeprecationWarning)
+                  category=DeprecationWarning, stacklevel=1)
     iw = matsubara_frequencies(np.arange(gf_iw.shape[-1]), beta=beta)
     if total:
         assert gf_iw.ndim == 1
@@ -444,9 +451,9 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
     if matrix:
         dec = gtmatrix.decompose_her(potential)
         eig = dec.eig
-        tail = dec.reconstruct(1./np.add.outer(iw, eig), kind='diag')
+        tail = dec.reconstruct(1./np.add.outer(iw, eig), kind="diag")
         tail = np.moveaxis(tail, source=0, destination=-1)
-        analytic = dec.reconstruct(fermi_fct(-eig, beta=beta), kind='diag')
+        analytic = dec.reconstruct(fermi_fct(-eig, beta=beta), kind="diag")
     else:
         tail = 1/np.add.outer(potential, iw)
         analytic = fermi_fct(-potential, beta=beta)
@@ -463,10 +470,9 @@ def density(gf_iw, potential, beta, return_err=True, matrix=False, total=False):
         err = density_error(delta_g_re, iw)
         if return_err is True:
             return Result(x=density, err=err)
-        else:
-            if np.any(err > return_err):
-                warnings.warn("density result inaccurate, error estimate = "
-                              + str(err), Warning)
+        if np.any(err > return_err):
+            warnings.warn("density result inaccurate, error estimate = "
+                          + str(err), Warning, stacklevel=1)
     return density
 
 
@@ -475,7 +481,7 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
     Return an estimate for the upper bound of the error in the density.
 
     This estimate is based on the *integral test*. The crucial assumption is,
-    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^2` for all larger
+    that `ω_N` is large enough, such that :math:`ΔG ~ 1/ω_n^2` for all larger
     :math:`n`.
     If this criteria is not met, the error estimate is unreasonable and can
     **not** be trusted. If the error is of the same magnitude as the density
@@ -508,8 +514,7 @@ def density_error(delta_gf_iw, iw_n, noisy=True):
     else:
         delta_gf_iw = abs(delta_gf_iw.real)
         factor = np.max(delta_gf_iw[..., part] * wn**2, axis=-1)
-    estimate = factor * denominator
-    return estimate
+    return factor * denominator
 
 
 def density_error2(delta_gf_iw, iw_n):
@@ -517,7 +522,7 @@ def density_error2(delta_gf_iw, iw_n):
     Return an estimate for the upper bound of the error in the density.
 
     This estimate is based on the *integral test*. The crucial assumption is,
-    that `ω_N` is large enough, such that :math:`ΔG ∼ 1/ω_n^3` for all larger
+    that `ω_N` is large enough, such that :math:`ΔG ~ 1/ω_n^3` for all larger
     :math:`n`.
     If this criteria is not met, the error estimate is unreasonable and can
     **not** be trusted. If the error is of the same magnitude as the density
@@ -543,8 +548,7 @@ def density_error2(delta_gf_iw, iw_n):
     wn = iw_n[part].imag
     denominator = 1./2.*np.pi/wn[-1]**2
     factor = np.max(delta_gf_iw[..., part] * wn**3, axis=-1)
-    estimate = factor * denominator
-    return estimate
+    return factor * denominator
 
 
 def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False):
@@ -574,7 +578,7 @@ def check_convergence(gf_iw, potential, beta, order=2, matrix=False, total=False
 
     if matrix:
         dec = gtmatrix.decompose_her(potential)
-        tail = dec.reconstruct(1./np.add.outer(dec.eig, iw), kind='diag')
+        tail = dec.reconstruct(1./np.add.outer(dec.eig, iw), kind="diag")
     else:
         tail = 1/np.add.outer(potential, iw)
 

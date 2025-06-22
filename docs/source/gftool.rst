@@ -95,12 +95,6 @@ Statistics and particle numbers
 
 Utilities
 ^^^^^^^^^
-.. rubric:: Functions
-.. autosummary::
-   :toctree: generated
-
-   get_versions
-
 
 .. rubric:: Classes
 .. autosummary::

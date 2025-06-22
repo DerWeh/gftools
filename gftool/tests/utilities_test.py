@@ -1,20 +1,21 @@
 """Test the utility functions related to Green's functions."""
-from functools import partial
+from functools import lru_cache, partial
 from warnings import catch_warnings, filterwarnings
 
-import pytest
 import hypothesis.strategies as st
-
-from hypothesis import given, assume
-
 import numpy as np
+import pytest
+from hypothesis import assume, given
 from mpmath import fp
 
-from .context import gftool as gt, pole
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.basis import pole
+from gftool.tests.custom_strategies import gufunc_args
 
 approx = partial(np.allclose, rtol=1e-12, atol=1e-16, equal_nan=True)
 assert_allclose = np.testing.assert_allclose
+# cache pade_frequencies
+gt.statistics._pade_frequencies = lru_cache(maxsize=10)(gt.statistics._pade_frequencies)
 
 
 def test_bose_edge_cases():
@@ -99,7 +100,7 @@ def test_fermi_derivative_1(z):
         dist = min(zimag_per, 2*np.pi - zimag_per)
     else:
         dist = abs(z.real) / 2
-    assert_allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method='quad', radius=dist/2),
+    assert_allclose(fp.diff(partial(gt.fermi_fct, beta=1), z, method="quad", radius=dist/2),
                     gt.fermi_fct_d1(z, beta=1), atol=1e-12)
 
 

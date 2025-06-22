@@ -16,10 +16,10 @@ the results of `pcoeff_burg` seem to be rather **unreliable**.
 References
 ----------
 .. [Vaidyanathan2007] Vaidyanathan, P.P., 2007. The Theory of Linear Prediction.
-   Synthesis Lectures on Signal Processing 2, 1–184.
+   Synthesis Lectures on Signal Processing 2, 1-184.
    https://doi.org/10.2200/S00086ED1V01Y200712SPR003
 .. [Makhoul1975] Makhoul, J. Linear prediction: A tutorial review.
-   Proceedings of the IEEE 63, 561–580 (1975).
+   Proceedings of the IEEE 63, 561-580 (1975).
    https://doi.org/10.1109/PROC.1975.9792
 
 Examples
@@ -109,10 +109,9 @@ This can be amended by setting `stable=True` in `~gftool.linearprediction.predic
 import warnings
 
 import numpy as np
-
 from scipy.linalg import toeplitz
 
-from gftool._util import _gu_sum, _gu_matvec
+from gftool._util import _gu_matvec, _gu_sum
 from gftool.matrix import decompose_mat
 
 
@@ -153,17 +152,19 @@ def companion(a):
     a = np.atleast_1d(a)
 
     if a.size < 2:
-        raise ValueError("The length of `a` must be at least 2.")
+        msg = "The length of `a` must be at least 2."
+        raise ValueError(msg)
 
     if np.any(a[..., 0] == 0):
-        raise ValueError("The first coefficient in `a` must not be zero.")
+        msg = "The first coefficient in `a` must not be zero."
+        raise ValueError(msg)
 
     first_row = -a[..., 1:] / (1.0 * a[..., 0:1])
     n = a.shape[-1]
 
-    c = np.zeros(a.shape[:-1] + (n - 1, n - 1), dtype=first_row.dtype)
+    c = np.zeros((*a.shape[:-1], n - 1, n - 1), dtype=first_row.dtype)
     c[..., 0, :] = first_row
-    c[..., list(range(1, n - 1)), list(range(0, n - 2))] = 1
+    c[..., list(range(1, n - 1)), list(range(n - 2))] = 1
     return c
 
 
@@ -206,11 +207,19 @@ def pcoeff_covar(x, order: int, rcond=None):
         points `N`.
     """
     if order >= x.shape[-1]:
-        raise ValueError(f"Prediction order ({order}) has to be smaller than"
-                         f" number of data points (x.shape={x.shape})")
+        msg = (
+            f"Prediction order ({order}) has to be smaller than"
+            f" number of data points (x.shape={x.shape})"
+        )
+        raise ValueError(msg)
     if order > x.shape[-1]//2:
-        warnings.warn("Prediction coefficients are under-determined"
-                      f" for `order={order}` but `x.shape={x.shape}`")
+        warnings.warn(
+            (
+                "Prediction coefficients are under-determined"
+                f" for `order={order}` but `x.shape={x.shape}`"
+            ),
+            stacklevel=1
+        )
 
     def _covar(x_):
         """Actual calculation to be vectorized."""
@@ -320,7 +329,8 @@ def predict(x, pcoeff, num: int, stable=False):
     pcoeff_covar
     """
     if num < 0:
-        raise ValueError(f"Number of predicted (time) steps has to be positive (num={num})")
+        msg = f"Number of predicted (time) steps has to be positive (num={num})"
+        raise ValueError(msg)
     if stable:
         return _predict_stable(x, pcoeff=pcoeff, num=num)
 
@@ -344,7 +354,7 @@ def _predict_stable(x, pcoeff, num: int):
     """
     # calculate poles and residues
     order = pcoeff.shape[-1]
-    comp_mat = companion(np.r_["-1", np.ones(pcoeff.shape[:-1] + (1,)), pcoeff])
+    comp_mat = companion(np.r_["-1", np.ones((*pcoeff.shape[:-1], 1)), pcoeff])
     dec = decompose_mat(comp_mat)
     right = _gu_matvec(dec.rv_inv, x[..., -order:][..., ::-1])
     left = dec.rv[..., 0, :]
@@ -386,7 +396,7 @@ def plot_roots(pcoeff, axis=None):
     --------
     pcoeff_covar
     """
-    import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
+    import matplotlib.pyplot as plt  # noqa: PLC0415
     if axis is None:
         axis = plt.gca()
 

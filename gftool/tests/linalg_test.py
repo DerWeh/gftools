@@ -1,13 +1,12 @@
 """Tests of linear algebra utilities."""
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 import pytest
+from hypothesis import assume, given
 
-from hypothesis import given, assume
-
-from .context import gftool as gt
-from .context import assert_allclose_vm
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
+from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
@@ -111,5 +110,5 @@ def test_lstsq_ce_is_lstq(guargs):
     c = np.eye(n//2, n)
     d = lstsq[..., :n//2]
     lstsq_ec = gt.linalg.lstsq_ec(a, b, c, d)
-    # TODO: we should do a vector comparision
+    # TODO: we should do a vector comparison
     assert_allclose_vm(lstsq_ec, lstsq, atol=1e-11)

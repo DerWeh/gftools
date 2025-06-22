@@ -1,10 +1,8 @@
-pre-commit
-pydocstyle
-pyflakes
-pylint~=2.9.6  # 2.10 introduces bug, see https://github.com/PyCQA/pylint/issues/4960
-pytest>=4.6
-hypothesis>=4.24.5
-pytest-cov
-codecov
-numexpr  # fast `gt.fourier.tt2z`
 attrs>=19.2.0
+build
+codecov
+hypothesis>=4.24.5
+numexpr  # fast `gt.fourier.tt2z`
+pre-commit
+pytest>=4.6
+pytest-cov

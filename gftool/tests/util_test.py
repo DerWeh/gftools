@@ -1,10 +1,10 @@
+"""Test internal GfTool utilities."""
 from math import fsum
 
 import numpy as np
-
 from numpy.random import default_rng
 
-from .context import gftool as gt
+import gftool as gt
 
 
 def test_gu_sum_accuracy():

@@ -27,7 +27,7 @@ References
 .. [blackman1971]
    Blackman, J.A., Esterling, D.M., Berk, N.F., 1971.
    Generalized Locator---Coherent-Potential Approach to Binary Alloys.
-   Phys. Rev. B 4, 2412–2428. https://doi.org/10.1103/PhysRevB.4.2412
+   Phys. Rev. B 4, 2412-2428. https://doi.org/10.1103/PhysRevB.4.2412
 .. [weh2021] Weh, A., Zhang, Y., Östlin, A., Terletska, H., Bauernfeind, D.,
    Tam, K.-M., Evertz, H.G., Byczuk, K., Vollhardt, D., Chioncel, L., 2021.
    Dynamical mean-field theory of the Anderson--Hubbard model with local and
@@ -75,20 +75,17 @@ system.
     plt.show()
 
 """
-# pylint: disable=too-many-locals
 from __future__ import annotations
 
 import logging
-
-from typing import Callable
 from functools import partial
+from typing import Callable
 
 import numpy as np
-
 from numpy import newaxis
 from scipy import optimize
 
-from gftool.matrix import decompose_her, decompose_mat, UDecomposition
+from gftool.matrix import UDecomposition, decompose_her, decompose_mat
 
 LOGGER = logging.getLogger(__name__)
 
@@ -97,7 +94,7 @@ diagonal = partial(np.diagonal, axis1=-2, axis2=-1)
 transpose = partial(np.swapaxes, axis1=-1, axis2=-2)
 
 
-class SpecDec(UDecomposition):  # pylint: disable=too-many-ancestors
+class SpecDec(UDecomposition):
     """
     SVD like spectral decomposition.
 
@@ -393,20 +390,20 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
         output = np.broadcast(z, e_onsite[..., 0], concentration[..., 0], self_beb_z0[..., 0, 0])
         self_beb_z0 = np.broadcast_to(self_beb_z0, shape=output.shape + np.asarray(hopping).shape)
     root_eq = partial(restrict_self_root_eq if restricted else self_root_eq,
-                      **self_root_part.keywords)  # pylint: disable=no-member
+                      **self_root_part.keywords)
 
     root_kwds.setdefault("method", "krylov")
     LOGGER.debug('Search BEB self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
-        root_kwds['callback'] = lambda x, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
+        root_kwds['callback'] = lambda _, f: LOGGER.debug('Residue: %s', np.linalg.norm(f))
 
     sol = optimize.root(root_eq, x0=self_beb_z0, **root_kwds)
     LOGGER.info("BEB self-energy root found after %s iterations.", sol.nit)
 
     if LOGGER.isEnabledFor(logging.INFO):
         # check condition number in matrix diagonalization to make sure it is well defined
-        us, suh = hopping_dec.partition()  # pylint: disable=unbalanced-tuple-unpacking
+        us, suh = hopping_dec.partition()
         z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
         dec = decompose_mat(suh @ np.linalg.inv(z_m_self) @ us)
         max_cond = np.max(np.linalg.cond(dec.rv))

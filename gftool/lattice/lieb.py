@@ -42,8 +42,8 @@ def gf_z(z, half_bandwidth):
 
     References
     ----------
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples
@@ -72,7 +72,7 @@ def dos(eps, half_bandwidth):
     r"""
     DOS of non-interacting 2D Lieb lattice.
 
-    The delta-peak at `eps=0` is **ommited** and must be treated seperately!
+    The delta-peak at `eps=0` is **omitted** and must be treated separately!
     Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=±half_bandwidth/2**0.5`.
@@ -101,8 +101,8 @@ def dos(eps, half_bandwidth):
 
     References
     ----------
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples
@@ -131,7 +131,7 @@ def hilbert_transform(xi, half_bandwidth):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -215,14 +215,15 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def dos_mp(eps, half_bandwidth=1):
     r"""
     Multi-precision DOS of non-interacting 2D lieb lattice.
 
-    The delta-peak at `eps=0` is **ommited** and must be treated seperately!
+    The delta-peak at `eps=0` is **omitted** and must be treated separately!
     Without it, the DOS integrates to `2/3`.
 
     Besides the delta-peak, the DOS diverges at `eps=±half_bandwidth/2**0.5`.
@@ -261,8 +262,8 @@ def dos_mp(eps, half_bandwidth=1):
 
     References
     ----------
-    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green’s Functions and DOS for
-       Some 2D Lattices. Graphene 10, 1–12.
+    .. [kogan2021] Kogan, E., Gumbs, G., 2020. Green's Functions and DOS for
+       Some 2D Lattices. Graphene 10, 1-12.
        https://doi.org/10.4236/graphene.2021.101001
 
     Examples

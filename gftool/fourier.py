@@ -71,7 +71,7 @@ Glossary
 
    ft
       <Fourier transformation> In contrast to :term:`dft`, this is used for
-      Fourier integration of continous variables without discretization.
+      Fourier integration of continuous variables without discretization.
 
 Previously defined:
 
@@ -84,12 +84,13 @@ import logging
 
 import numpy as np
 from numpy import newaxis
+from scipy.optimize import minimize_scalar
 
 from gftool._util import _gu_matvec
-from gftool.hermpade import pade, Hermite2
+from gftool.basis.pole import PoleFct, PoleGf
+from gftool.hermpade import Hermite2, pade
 from gftool.linearprediction import pcoeff_covar
 from gftool.statistics import matsubara_frequencies, matsubara_frequencies_b
-from gftool.basis.pole import PoleFct, PoleGf
 
 try:
     import numexpr as ne
@@ -100,7 +101,7 @@ else:
 
 
 LOGGER = logging.getLogger(__name__)
-_trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
+_trapezoid = np.trapz if int(np.__version__.split('.')[0]) < 2 else np.trapezoid  # noqa: NPY201
 
 
 def _phase_numexpr(z, tt):
@@ -146,7 +147,7 @@ def iw2tau_dft(gf_iw, beta):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -188,11 +189,10 @@ def iw2tau_dft(gf_iw, beta):
     >>> plt.yscale('log')
     >>> plt.show()
     """
-    gf_iwall = np.zeros(gf_iw.shape[:-1] + (2*gf_iw.shape[-1] + 1,), dtype=gf_iw.dtype)
+    gf_iwall = np.zeros((*gf_iw.shape[:-1], 2 * gf_iw.shape[-1] + 1), dtype=gf_iw.dtype)
     gf_iwall[..., 1:-1:2] = gf_iw  # GF containing fermionic and bosonic Matsubaras
     gf_tau = np.fft.hfft(1./beta * gf_iwall)
-    gf_tau = gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
-    return gf_tau
+    return gf_tau[..., :gf_iwall.shape[-1]]  # trim to tau in [0, beta]
 
 
 def iw2tau_dft_soft(gf_iw, beta):
@@ -230,7 +230,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -279,8 +279,7 @@ def iw2tau_dft_soft(gf_iw, beta):
     tail = .5*(np.cos(tail_range) + 1.)
     LOGGER.debug("Remaining tail approximated by 'cos': %s", gf_iw[..., -1:])
     gf_iw_extended = np.concatenate((gf_iw, tail*gf_iw[..., -1:]), axis=-1)
-    gf_tau = iw2tau_dft(gf_iw_extended, beta=beta)[..., ::2]  # trim artificial resolution
-    return gf_tau
+    return iw2tau_dft(gf_iw_extended, beta=beta)[..., ::2]  # trim artificial resolution
 
 
 def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
@@ -323,7 +322,7 @@ def iw2tau(gf_iw, beta, moments=(1.,), fourier=iw2tau_dft, n_fit=0):
     -----
     For accurate an accurate Fourier transform, it is necessary, that `gf_iw`
     has already reached it's high-frequency behaviour, which need to be included
-    explicitly. Therefore, the accuracy of the FT depends implicitely on the
+    explicitly. Therefore, the accuracy of the FT depends implicitly on the
     bandwidth!
 
     Examples
@@ -506,12 +505,12 @@ def tau2iv_ft_lin(gf_tau, beta):
     References
     ----------
     .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
-       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38-47 (1930).
        https://doi.org/10.1017/S0370164600026262
     .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
        Quadrature: The Story so Far. in Numerical Mathematics and Advanced
        Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
-       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
+       97-118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
 
     Examples
@@ -566,8 +565,7 @@ def tau2iv_ft_lin(gf_tau, beta):
     weight2 = (expm1 + 1 - weight1)/d_tau_ivs
     weight1[..., 0], weight2[..., 0] = 1, .5  # special case n=0, fix from before
     gf_iv = weight1*gf_dft + weight2*d_gf_dft
-    gf_iv = beta*gf_iv
-    return gf_iv
+    return beta*gf_iv
 
 
 def tau2iv(gf_tau, beta, fourier=tau2iv_ft_lin):
@@ -733,8 +731,7 @@ def tau2iw_dft(gf_tau, beta):
     # expand `gf_tau` to [-β, β] to get symmetric function
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
     dft = np.fft.ihfft(gf_tau_full_range[..., :-1])
-    gf_iw = -beta * dft[..., 1::2]  # select *fermionic* Matsubara frequencies
-    return gf_iw
+    return -beta * dft[..., 1::2]  # select *fermionic* Matsubara frequencies
 
 
 def tau2iw_ft_lin(gf_tau, beta):
@@ -774,12 +771,12 @@ def tau2iw_ft_lin(gf_tau, beta):
     References
     ----------
     .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
-       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38-47 (1930).
        https://doi.org/10.1017/S0370164600026262
     .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
        Quadrature: The Story so Far. in Numerical Mathematics and Advanced
        Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
-       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
+       97-118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
 
     Examples
@@ -827,7 +824,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     >>> plt.show()
     """
     gf_tau_full_range = np.concatenate((-gf_tau[..., :-1], gf_tau), axis=-1)
-    n_tau = gf_tau_full_range.shape[-1] - 1  # pylint: disable=unsubscriptable-object
+    n_tau = gf_tau_full_range.shape[-1] - 1
     gf_dft = np.fft.ihfft(gf_tau_full_range[..., :-1])
     d_gf_tau = gf_tau_full_range[..., 1:] - gf_tau_full_range[..., :-1]
     d_gf_dft = np.fft.ihfft(d_gf_tau)
@@ -836,8 +833,7 @@ def tau2iw_ft_lin(gf_tau, beta):
     weight1 = expm1/d_tau_iws
     weight2 = (expm1 + 1 - weight1)/d_tau_iws
     gf_iw = weight1*gf_dft[..., 1::2] + weight2*d_gf_dft[..., 1::2]
-    gf_iw = -beta*gf_iw
-    return gf_iw
+    return -beta*gf_iw
 
 
 def tau2iw(gf_tau, beta, n_pole=None, moments=None, fourier=tau2iw_ft_lin):
@@ -1004,11 +1000,9 @@ def _z2polegf(z, gf_z, n_pole, moments=(1.,)) -> PoleFct:
         gf_fit = pole_gf.eval_z(z)
         return np.linalg.norm(gf_z - gf_fit)
 
-    from scipy.optimize import minimize_scalar  # pylint: disable=import-outside-toplevel
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
-    opt_pole_gf = PoleFct.from_z(z, gf_z, n_pole=n_pole, moments=moments, width=opt.x)
-    return opt_pole_gf
+    return PoleFct.from_z(z, gf_z, n_pole=n_pole, moments=moments, width=opt.x)
 
 
 def izp2tau(izp, gf_izp, tau, beta, moments=(1.,)):
@@ -1314,17 +1308,18 @@ def tt2z_lin(tt, gf_t, z):
     References
     ----------
     .. [filon1930] Filon, L. N. G. III.—On a Quadrature Formula for
-       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38–47 (1930).
+       Trigonometric Integrals. Proc. Roy. Soc. Edinburgh 49, 38-47 (1930).
        https://doi.org/10.1017/S0370164600026262
     .. [iserles2006] Iserles, A., Nørsett, S. P. & Olver, S. Highly Oscillatory
        Quadrature: The Story so Far. in Numerical Mathematics and Advanced
        Applications (eds. de Castro, A. B., Gómez, D., Quintela, P. & Salgado, P.)
-       97–118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
+       97-118 (Springer, 2006). https://doi.org/10.1007/978-3-540-34288-5_6
        http://www.sam.math.ethz.ch/~hiptmair/Seminars/OSCINT/INO06.pdf
     """
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
-        raise ValueError("Equidistant `tt` required for current implementation.")
+        msg = "Equidistant `tt` required for current implementation."
+        raise ValueError(msg)
     zero = z == 0  # special case `z=0` has to be handled separately (due: 1/z)
     if np.any(zero):
         z = np.where(zero, 1, z)
@@ -1364,7 +1359,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     Other Parameters
     ----------------
     degree : int, optional
-        Asymptotic degree :math:`d` of the Green's function :math:`G(z)∼z^d`
+        Asymptotic degree :math:`d` of the Green's function :math:`G(z)~z^d`
         for :math:`abs(z)→∞` (default: -1).
     pade : {gftool.hermpade.pade, gftool.hermpade.pader}
         Padé algorithm that is used.
@@ -1389,9 +1384,11 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     degree = degree + 1  # adding an additional zero reduces discretization error
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
-        raise ValueError("Equidistant `tt` required for current implementation.")
+        msg = "Equidistant `tt` required for current implementation."
+        raise ValueError(msg)
     if quad not in ('trapz', 'simps'):
-        raise ValueError(f"Unknown quadrature scheme {quad}")
+        msg = f"Unknown quadrature scheme {quad}"
+        raise ValueError(msg)
     weight = _trapz_weight if quad == 'trapz' else _simps_weight
     assert tt[0] == 0, "If not, we need to fix the phase"
     assert tt.size == gf_t.shape[-1]  # TODO: test that tt matches gf_t
@@ -1402,9 +1399,7 @@ def tt2z_pade(tt, gf_t, z, degree=-1, pade=pade, quad='trapz', **kwds):
     def pade_val(y_, coeffs_):
         return pade(coeffs_, den_deg=deg, num_deg=deg+degree, **kwds).eval(y_)
 
-    approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
-
-    return approx
+    return np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
 
 
 def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
@@ -1452,9 +1447,11 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
     """
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
-        raise ValueError("Equidistant `tt` required for current implementation.")
+        msg = "Equidistant `tt` required for current implementation."
+        raise ValueError(msg)
     if quad not in ('trapz', 'simps'):
-        raise ValueError(f"Unknown quadrature scheme {quad}")
+        msg = f"Unknown quadrature scheme {quad}"
+        raise ValueError(msg)
     weight = _trapz_weight if quad == 'trapz' else _simps_weight
     assert tt[0] == 0, "If not, we need to fix the phase"
     assert np.all(z.imag > 0), "Only implemented for retarded Green's function"
@@ -1466,20 +1463,20 @@ def tt2z_herm2(tt, gf_t, z, herm2=Hermite2.from_taylor, quad='trapz', **kwds):
         herm = herm2(coeffs_, deg_r=deg, deg_q=deg, deg_p=deg, **kwds)
         return herm.eval(y_)
 
-    approx = np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
-
-    return approx
+    return np.vectorize(pade_val, signature="(n),(l)->(n)", otypes=[complex])(y, coeffs)
 
 
 def tt2z_lpz(tt, gf_t, z, order=None, quad='trapz', **kwds):
     """Linear prediction Z-transform of the real-time Green's function `gf_t`."""
     delta_tt = tt[1] - tt[0]
     if not np.allclose(tt[1:] - tt[:-1], delta_tt):
-        raise ValueError("Equidistant `tt` required for current implementation.")
+        msg = "Equidistant `tt` required for current implementation."
+        raise ValueError(msg)
     if order is None:
         order = tt.size // 2
     if quad not in ('trapz', 'simps'):
-        raise ValueError(f"Unknown quadrature scheme {quad}")
+        msg = f"Unknown quadrature scheme {quad}"
+        raise ValueError(msg)
     weight = _trapz_weight if quad == 'trapz' else _simps_weight
     coeffs = weight(delta_tt, gf_t, endpoint=False)
     aa = np.r_["-1", np.ones_like(coeffs[..., 0:1]), pcoeff_covar(coeffs, order=order, **kwds)[0]]
@@ -1564,8 +1561,8 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     >>> plt.tight_layout()
     >>> plt.show()
 
-    The function Laplace transform can be evaluated at abitrary contours,
-    e.g. for a semi-ceircle in the the upper half-plane.
+    The function Laplace transform can be evaluated at arbitrary contours,
+    e.g. for a semi-circle in the upper half-plane.
     Note, that close to the real axis the accuracy is bad, due to the
     truncation at `max(tt)`
 
@@ -1583,7 +1580,7 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     >>> plt.show()
 
     For small `max(tt)` close to the real axis, `tt2z_pade` is often the
-    superior choice (it is taylored to resove poles):
+    superior choice (it is tailored to resolve poles):
 
     >>> tt = np.linspace(0, 40, num=401)
     >>> ww = np.linspace(-1.5, 1.5, num=501) + 1e-3j
@@ -1633,10 +1630,13 @@ def tt2z(tt, gf_t, z, laplace=tt2z_lin, **kwds):
     retarded = np.all(tt >= 0) and np.all(z.imag >= 0)
     advanced = np.all(tt <= 0) and np.all(z.imag <= 0)
     if not (retarded or advanced):
-        raise ValueError("Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
-                         " or `tt<=0 and z.imag<=0`")
+        msg = (
+            "Laplace Transform only well defined if `tt>=0 and z.imag>=0`"
+            " or `tt<=0 and z.imag<=0`"
+        )
+        raise ValueError(msg)
     if z.size == 0 or gf_t.size == 0:  # consistent behavior for gufuncs
-        return np.full(np.broadcast_shapes(z.shape, gf_t.shape[:-1]+(1, )),
+        return np.full(np.broadcast_shapes(z.shape, (*gf_t.shape[:-1], 1)),
                        fill_value=np.nan)
     return laplace(tt, gf_t, z, **kwds)
 
@@ -1660,12 +1660,10 @@ def _tau2polegf(gf_tau, beta, n_pole, moments=None, occ=False, weight=None) -> P
         gf_fit = pole_gf.eval_tau(tau, beta=beta)
         return np.linalg.norm(gf_tau - gf_fit)
 
-    from scipy.optimize import minimize_scalar  # pylint: disable=import-outside-toplevel
     opt = minimize_scalar(error_)
     LOGGER.debug("Fitting error: %s Optimal pole-spread: %s", opt.fun, opt.x)
-    opt_pole_gf = PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments,
-                                  occ=occ, width=opt.x, weight=weight)
-    return opt_pole_gf
+    return PoleGf.from_tau(gf_tau, n_pole=n_pole, beta=beta, moments=moments,
+                           occ=occ, width=opt.x, weight=weight)
 
 
 def tau2izp(gf_tau, beta, izp, moments=None, occ=False, weight=None):

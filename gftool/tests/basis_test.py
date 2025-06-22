@@ -1,12 +1,11 @@
 """Test functionality of basis representations."""
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 import pytest
+from hypothesis import assume, given
 
-from hypothesis import given, assume
-
-from .context import gftool as gt
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 

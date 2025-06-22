@@ -2,7 +2,6 @@
 from functools import partial
 
 import numpy as np
-
 from scipy import linalg as spla
 
 from gftool._util import _gu_sum
@@ -43,7 +42,8 @@ def orth_compl(mat):
     """
     dim0, dim1 = mat.shape[-2:]
     if dim0 <= dim1:
-        raise ValueError(f"`mat` needs to be tall, (given: shape={mat.shape})")
+        msg = f"`mat` needs to be tall, (given: shape={mat.shape})"
+        raise ValueError(msg)
     q_mat, _ = np.linalg.qr(mat, mode="complete")
     q2_mat = q_mat[..., dim1:]
     return transpose(q2_mat).conj()
@@ -85,11 +85,14 @@ def lstsq_ec(a, b, c, d, rcond=None):
        JHU Press, 2013.
     """
     if a.shape[-1] == 0:
-        return np.zeros(a.shape[:-2] + (0,), dtype=a.dtype)
+        return np.zeros((*a.shape[:-2], 0), dtype=a.dtype)
     if c.shape[-2] == 0:  # no conditions given, do standard lstsq
         if c.shape[-2] != d.shape[-1]:
-            raise ValueError("Mismatch of shapes of 'c' and 'd'. "
-                             f"Expected (L, N), (L), got {c.shape}, {d.shape}.")
+            msg = (
+                "Mismatch of shapes of 'c' and 'd'. "
+                f"Expected (L, N), (L), got {c.shape}, {d.shape}."
+            )
+            raise ValueError(msg)
         return np.linalg.lstsq(a, b, rcond=None)[0]
     constrains = d.shape[-1]
     q_ct, r_ct = np.linalg.qr(transpose(c).conj(), mode='complete')

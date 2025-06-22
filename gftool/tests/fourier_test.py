@@ -3,23 +3,21 @@
 TODO: This module urgently needs a refactor for `tt2z`. We have too many
 different methods.
 """
-# pylint: disable=protected-access
 from functools import partial
 
+import hypothesis.strategies as st
 import numpy as np
 import pytest
-import hypothesis.strategies as st
-
-from hypothesis import given, assume
+from hypothesis import assume, given
 from hypothesis.extra.numpy import arrays
 
-from .context import gftool as gt
-from .context import assert_allclose_vm
-from .custom_strategies import gufunc_args
-from .old_scipy_integrate import simpson
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
+from gftool.tests.old_scipy_integrate import simpson
+from gftool.tests.utils import assert_allclose_vm
 
 assert_allclose = np.testing.assert_allclose
-trapezoid = np.trapz if int(np.__version__.split(".")[0]) < 2 else np.trapezoid
+trapezoid = np.trapz if int(np.__version__.split('.')[0]) < 2 else np.trapezoid  # noqa: NPY201
 
 
 @given(
@@ -572,7 +570,7 @@ def test_tt2z_pade_bethe(fast):
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade, fast=fast)
 
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 1)
+    inner = (-1.5 < z.real) & (z.real < 1)  # noqa: SIM300
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=2e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
@@ -590,7 +588,7 @@ def test_tt2z_pade_box(fast):
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade, fast=fast)
 
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 0.9)
+    inner = (-1.5 < z.real) & (z.real < 0.9)  # noqa: SIM300
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.3 if fast else 0.2)
 
@@ -636,7 +634,7 @@ def test_tt2z_lpz_bethe():
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_lpz)
 
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 1)
+    inner = (-1.5 < z.real) & (z.real < 1)  # noqa: SIM300
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
@@ -653,7 +651,7 @@ def test_tt2z_lpz_box():
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_lpz)
 
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 0.9)
+    inner = (-1.5 < z.real) & (z.real < 0.9)  # noqa: SIM300
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.2)
 
@@ -671,7 +669,7 @@ def test_tt2z_pader_bethe():
     gf_fp = gt.fourier.tt2z(tt, gf_t+noise, z=z, laplace=gt.fourier.tt2z_pade,
                             pade=gt.hermpade.pader, rcond=1e-8)
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 1)
+    inner = (-1.5 < z.real) & (z.real < 1)  # noqa: SIM300
     assert_allclose(gf_fp[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fp[~inner], gf_ww[~inner], rtol=0.05)
 
@@ -722,7 +720,7 @@ def test_tt2z_herm2_box(herm, otol):
     gf_fp = gt.fourier.tt2z(tt, gf_t, z=z, laplace=gt.fourier.tt2z_pade)
 
     # error should be local to the band edges
-    inner = (-1.5 < z.real) & (z.real < 1)
+    inner = (-1.5 < z.real) & (z.real < 1)  # noqa: SIM300
     assert_allclose(gf_fh[inner], gf_ww[inner], rtol=1e-3)
     assert_allclose(gf_fh[~inner], gf_ww[~inner], rtol=otol)
     # better than Padé

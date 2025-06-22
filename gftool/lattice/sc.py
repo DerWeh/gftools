@@ -11,9 +11,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-6t, +6t] = [-D, +D]`.
 
 """
 import numpy as np
-
-from numpy.lib.scimath import sqrt
 from mpmath import mp
+from numpy.lib.scimath import sqrt
 
 from gftool._util import _u_ellipk
 
@@ -81,7 +80,7 @@ def hilbert_transform(xi, half_bandwidth=1):
 
     The Hilbert transform is defined
 
-    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ − ϵ}
+    .. math:: \tilde{D}(ξ) = ∫_{-∞}^{∞}dϵ \frac{DOS(ϵ)}{ξ - ϵ}
 
     The lattice Hilbert transform is the same as the non-interacting Green's
     function.
@@ -253,7 +252,8 @@ def dos_moment(m, half_bandwidth):
     try:
         return dos_moment_coefficients[m] * half_bandwidth**m
     except KeyError as keyerr:
-        raise NotImplementedError('Calculation of arbitrary moments not implemented.') from keyerr
+        msg = 'Calculation of arbitrary moments not implemented.'
+        raise NotImplementedError(msg) from keyerr
 
 
 def gf_z_mp(z, half_bandwidth=1):

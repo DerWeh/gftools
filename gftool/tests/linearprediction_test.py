@@ -1,13 +1,13 @@
 """Test linear prediction."""
+import hypothesis.extra.numpy as hnp
 import numpy as np
 import pytest
-import hypothesis.extra.numpy as hnp
-
-from hypothesis import given, assume, strategies as st
+from hypothesis import assume, given
+from hypothesis import strategies as st
 from scipy.linalg import companion
 
-from .context import gftool as gt
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
 
 lp = gt.linearprediction
 assert_allclose = np.testing.assert_allclose

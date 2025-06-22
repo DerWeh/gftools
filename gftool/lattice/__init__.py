@@ -48,8 +48,21 @@ Submodules
     fcc
 
 """
-from . import (bcc, bethe, bethez, box, fcc, honeycomb, kagome, lieb, onedim,
-               rectangular, sc, square, triangular)
+from . import (
+    bcc,
+    bethe,
+    bethez,
+    box,
+    fcc,
+    honeycomb,
+    kagome,
+    lieb,
+    onedim,
+    rectangular,
+    sc,
+    square,
+    triangular,
+)
 
 # silence warnings of unused imports
 assert bcc

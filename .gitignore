@@ -1,5 +1,8 @@
+gftool/_version.py
+
 *@neomake*
 tempfiles/
+_version.py
 
 tags.*
 tags

@@ -3,10 +3,11 @@
 We compare it to the limits `gftool.lattice.bethe` and `gftool.lattice.onedim`.
 
 """
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 from numpy.testing import assert_allclose
 
-from .context import gftool as gt
+import gftool as gt
 
 bethe = gt.lattice.bethe
 bethez = gt.lattice.bethez

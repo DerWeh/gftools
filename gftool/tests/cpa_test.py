@@ -2,21 +2,20 @@
 from functools import partial
 from itertools import product
 
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 import pytest
+from hypothesis import assume, given
 
-from hypothesis import given, assume
-
-from .context import gftool as gt
-from .custom_strategies import gufunc_args
+import gftool as gt
+from gftool.tests.custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 
 HAS_QUAD = gt.precision.HAS_QUAD
 
 ignore_close_to_root = pytest.mark.filterwarnings(
-    "ignore:(invalid value encountered in double_scalars):RuntimeWarning"
+    "ignore:(invalid value encountered in (double_scalars|scalar divide)):RuntimeWarning"
 )
 ignore_illconditioned = pytest.mark.filterwarnings(
     "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"
@@ -45,7 +44,7 @@ def test_trival_cmpt_gf(guargs):
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
 
     self_cpa_z = gt.cpa.solve_root(z, e_onsite, concentration, hilbert_trafo=hilbert,
-                                   options=dict(fatol=1e-14))
+                                   options={"fatol": 1e-14})
     gf_cmpt_z = gt.cpa.gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo=hilbert)[..., 0]
     assert_allclose(gf_cmpt_z, hilbert(z - e_onsite[0]))
     assert_allclose(e_onsite[0], self_cpa_z)
@@ -77,7 +76,7 @@ def test_restriction(z):
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
 
     self_cpa_z = gt.cpa.solve_root(z, e_onsite, concentration, hilbert_trafo=hilbert,
-                                   options=dict(fatol=1e-14))
+                                   options={"fatol": 1e-14})
     assert self_cpa_z.imag < +1e-10
 
 
@@ -137,7 +136,7 @@ def test_cpa_occ_simple():
     concentration = [0.34, 0.76]
     self_iw, mu = gt.cpa.solve_fxdocc_root(iws, e_onsite, concentration,
                                            hilbert_trafo=hilbert, beta=beta, occ=occ,
-                                           options=dict(fatol=1e-14))
+                                           options={"fatol": 1e-14})
     gf_coher_iw = hilbert(iws - self_iw)
     pot = np.average(e_onsite, weights=concentration) - mu
     occ_coher = gt.density_iw(iws, gf_coher_iw, moments=[1.0, pot], beta=beta)
@@ -147,7 +146,7 @@ def test_cpa_occ_simple():
     assert_allclose(np.average(occ_cmpt, weights=concentration), occ)
 
     self_iw_fxdmu = gt.cpa.solve_root(iws, np.array(e_onsite)-mu, concentration,
-                                      hilbert_trafo=hilbert, options=dict(fatol=1e-14))
+                                      hilbert_trafo=hilbert, options={"fatol": 1e-14})
     assert_allclose(self_iw_fxdmu, self_iw)
 
 
@@ -158,10 +157,10 @@ def test_cpa_occ(conc):
     izp, rp = gt.pade_frequencies(50, beta)
     hilbert = partial(gt.bethe_gf_z, half_bandwidth=1)
     conc = np.array(conc)
-    for occ, delta, mu in product([0.2, 0.4, 0.6, 0.8],  # occupation
-                                  [0.4, 0.8, 1.2, 1.6],  # disorder strength
-                                  [-1.5, -0.5, 0.5, 1.5]):  # chemical potential
-        eps = 0.5*np.array([-delta, +delta]) - mu
+    for occ, delta, mu0 in product([0.2, 0.4, 0.6, 0.8],  # occupation
+                                   [0.4, 0.8, 1.2, 1.6],  # disorder strength
+                                   [-1.5, -0.5, 0.5, 1.5]):  # chemical potential
+        eps = 0.5*np.array([-delta, +delta]) - mu0
         self_izp, mu = gt.cpa.solve_fxdocc_root(
             izp, eps[..., np.newaxis, :], conc, hilbert_trafo=hilbert, weights=rp,
             beta=beta, occ=occ,

@@ -12,18 +12,15 @@ given `mu` on the real axis. In fact, we expect this to be more stable than
 fixing the charge on the real axis directly.
 
 """
-# pylint: disable=too-many-locals
 import logging
-
 from functools import partial
 from typing import Callable, NamedTuple
+from typing import Optional as Opt
 
 import numpy as np
-
 from scipy import optimize
 
-from gftool.density import density_iw, chemical_potential
-
+from gftool.density import chemical_potential, density_iw
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,8 +51,8 @@ def _join(*args):
 def _split(joined, shapes):
     """Inverse operation to `_join` separating arrays."""
     sizes = [np.prod(sh) for sh in shapes[:-1]]
-    splited = np.split(joined, indices_or_sections=np.cumsum(sizes))
-    return [array.reshape(sh) for array, sh in zip(splited, shapes)]
+    split = np.split(joined, indices_or_sections=np.cumsum(sizes))
+    return [array.reshape(sh) for array, sh in zip(split, shapes)]
 
 
 def gf_cmpt_z(z, self_cpa_z, e_onsite, hilbert_trafo: Callable[[complex], complex]):
@@ -208,9 +205,9 @@ def solve_root(z, e_onsite, concentration, hilbert_trafo: Callable[[complex], co
 
     Notes
     -----
-    For `restricted=True` root-serach, we made good experince with the methods
+    For `restricted=True` root-serach, we made good experience with the methods
     `'anderson'`, `'krylov'` and `'df-sane'`.
-    For `restricted=False`, we made made good experince with the method `'broyden2'`.
+    For `restricted=False`, we made made good experience with the method `'broyden2'`.
 
     Examples
     --------
@@ -266,7 +263,7 @@ class RootFxdocc(NamedTuple):
 
 
 def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[complex], complex],
-                      beta: float, occ: float = None, self_cpa_iw0=None, mu0: float = 0,
+                      beta: float, occ: Opt[float] = None, self_cpa_iw0=None, mu0: float = 0,
                       weights=1, n_fit=0, restricted=True, **root_kwds) -> RootFxdocc:
     """
     Determine the CPA self-energy by solving the root problem for fixed `occ`.
@@ -405,7 +402,7 @@ def solve_fxdocc_root(iws, e_onsite, concentration, hilbert_trafo: Callable[[com
     LOGGER.debug('Search CPA self-energy root')
     if 'callback' not in root_kwds and LOGGER.isEnabledFor(logging.DEBUG):
         # setup LOGGER if no 'callback' is provided
-        root_kwds['callback'] = lambda x, f: LOGGER.debug(
+        root_kwds['callback'] = lambda _, f: LOGGER.debug(
             'Residue: mu=%+6g   cpa=%6g', f[0], np.linalg.norm(f[1:])
         )
 

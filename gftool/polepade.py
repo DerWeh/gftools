@@ -18,7 +18,7 @@ for the self-energy it is `degree=0`.
 References
 ----------
 .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
-   least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
+   least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
    https://doi.org/10.1007/s00211-018-0948-4
 .. [weh2020] Weh, A. et al. Spectral properties of heterostructures containing
    half-metallic ferromagnets in the presence of local many-body correlations.
@@ -81,13 +81,13 @@ be used:
 
 """
 import logging
-
+import warnings
 from dataclasses import dataclass
+from typing import Optional as Opt
 
 import numpy as np
-
-from scipy import linalg
 from numpy.polynomial import polynomial
+from scipy import linalg
 
 from gftool.basis import PoleFct, ZeroPole
 from gftool.linalg import lstsq_ec, orth_compl
@@ -138,8 +138,8 @@ class PadeApprox:
 
     def plot(self, residue=False, axis=None):
         """Represent the function as scatter plot."""
-        import matplotlib as mpl  # pylint: disable=[import-outside-toplevel,import-error]
-        import matplotlib.pyplot as plt  # pylint: disable=[import-outside-toplevel,import-error]
+        import matplotlib as mpl  # noqa: PLC0415
+        import matplotlib.pyplot as plt  # noqa: PLC0415
         if axis is None:
             axis = plt.gca()
         axis.axhline(0, color='.3')
@@ -151,7 +151,7 @@ class PadeApprox:
                      color=cmap(norm(abs(self.residues))), marker='o')
         if residue:  # indicate residues as error-bars
             axis.quiver(self.poles.real, self.poles.imag, self.residues.real, self.residues.imag,
-                        ((abs(self.residues))), norm=norm, cmap=cmap, width=0.004,
+                        (abs(self.residues)), norm=norm, cmap=cmap, width=0.004,
                         units='xy', angles='xy', scale_units='xy', scale=1)
         axis.scatter(self.zeros.real, self.zeros.imag, label='zeros', marker='x', color='black')
         axis.set_xlabel(r"$\Re z$")
@@ -162,7 +162,7 @@ class PadeApprox:
 
 
 # TODO: implement linear search, we have a finite N_z
-def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
+def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: Opt[int] = None,
                  vandermond=polynomial.polyvander) -> int:
     """
     Estimate the optimal number of poles for a rational approximation.
@@ -197,20 +197,22 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
     References
     ----------
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
-       least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
+       least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
        https://doi.org/10.1007/s00211-018-0948-4
     """
-    # pylint: disable=too-many-locals
     tol = np.finfo(fct_z.dtype).eps
     max_n_poles = abs_max_n_poles = (z.size - degree)//2
     if n_poles0 is None:
         n_poles = min(max_n_poles, 50)
     else:
         if n_poles0 > max_n_poles:
-            raise ValueError(
+            msg = (
                 "'n_poles0' to large, system is under determined!"
                 "\n#poles + #zeroes = 2*#poles + degree must be smaller than"
                 f"number of given points {z.size}"
+            )
+            raise ValueError(
+                msg
             )
         n_poles = n_poles0
     assert 2*n_poles + degree < z.size
@@ -231,12 +233,18 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
             return n_poles
         if null_dim == 0:  # too few poles
             if n_poles == abs_max_n_poles:
+                msg = f"No solution with {abs_max_n_poles} poles or less could be found!"
                 raise RuntimeError(
-                    f"No solution with {abs_max_n_poles} poles or less could be found!"
+                    msg
                 )
             if n_poles == max_n_poles:
-                print("Warning: residue is bigger then tolerance: "
-                      f"{singular_values[-1]/singular_values[0]}.")
+                warnings.warn(
+                    (
+                        "Warning: residue is bigger then tolerance: "
+                        f"{singular_values[-1]/singular_values[0]}."
+                    ),
+                    stacklevel=1
+                )
                 return n_poles
             # increase number of poles
             n_poles = min(2*n_poles, max_n_poles)
@@ -245,7 +253,7 @@ def number_poles(z, fct_z, *, degree=-1, weight=None, n_poles0: int = None,
             n_poles = n_poles - (null_dim - degree)//2
 
 
-def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, weight=None):
+def poles(z, fct_z, *, n: Opt[int] = None, m: int, vandermond=polynomial.polyvander, weight=None):
     """
     Calculate position of the `m` poles.
 
@@ -275,10 +283,9 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
     References
     ----------
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
-       least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
+       least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
        https://doi.org/10.1007/s00211-018-0948-4
     """
-    # pylint: disable=too-many-locals
     if n is None:
         n = m - 1
     fct_z = fct_z/np.median(fct_z)
@@ -298,7 +305,7 @@ def poles(z, fct_z, *, n: int = None, m: int, vandermond=polynomial.polyvander, 
     return linalg.eig(vh[:m, :m], vh[:m, m:], right=False)
 
 
-def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, weight=None):
+def zeros(z, fct_z, poles, *, n: Opt[int] = None, vandermond=polynomial.polyvander, weight=None):
     """
     Calculate position of `n` zeros given the `poles`.
 
@@ -330,7 +337,7 @@ def zeros(z, fct_z, poles, *, n: int = None, vandermond=polynomial.polyvander, w
     References
     ----------
     .. [ito2018] Ito, S., Nakatsukasa, Y., 2018. Stable polefinding and rational
-       least-squares fitting via eigenvalues. Numer. Math. 139, 633–682.
+       least-squares fitting via eigenvalues. Numer. Math. 139, 633-682.
        https://doi.org/10.1007/s00211-018-0948-4
     """
     if n is None:
@@ -413,8 +420,11 @@ def residues_ols(z, fct_z, poles, weight=None, moments=()):
     if moments.shape[-1] == 0:
         return np.linalg.lstsq(polematrix, fct_z, rcond=None)[:2]
     if moments.shape[-1] > poles.size:
-        raise ValueError("Too many poles given, system is over constrained. "
-                         f"poles: {poles.size}, moments: {moments.shape[-1]}")
+        msg = (
+            "Too many poles given, system is over constrained. "
+            f"poles: {poles.size}, moments: {moments.shape[-1]}"
+        )
+        raise ValueError(msg)
     constrain_mat = polynomial.polyvander(poles, deg=moments.shape[-1]-1).T
     resid = lstsq_ec(polematrix, fct_z, constrain_mat, moments)
     return resid, [np.linalg.norm(np.sum(polematrix*resid, axis=-1) - fct_z, ord=2)]
@@ -485,7 +495,8 @@ def continuation(z, fct_z, degree=-1, weight=None, moments=(),
     >>> plt.show()
     """
     if degree > 0:
-        raise ValueError(f"`degree` must be smaller or equal 0 (given: {degree}).")
+        msg = f"`degree` must be smaller or equal 0 (given: {degree})."
+        raise ValueError(msg)
     if rotate is None:  # meant for Matsubara frequencies on imaginary axis
         rotate = np.allclose(z.real, 0)
     if rotate:  # rotate frequencies

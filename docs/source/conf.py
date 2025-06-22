@@ -1,8 +1,10 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
+Configuration file for the Sphinx documentation builder.
+
+This file only contains a selection of the most common options. For a full
+list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
+"""
 
 # -- Path setup --------------------------------------------------------------
 
@@ -10,13 +12,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../..'))  # noqa: PTH100
 
 import gftool
+
 # -- Project information -----------------------------------------------------
 
 project = 'GfTool'
@@ -35,7 +38,7 @@ papersize = 'a4paper'
 #
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if on_rtd:  # RTD modifies `conf.py` file resulting in dirty git
-    print("We are on RTD!")
+    print("We are on RTD!")  # noqa: T201
     dirty, gtver = '.dirty', gftool.__version__
     clean_version = gtver[:-len(dirty)] if gtver.endswith(dirty) else gtver
     gftool.__version__ = clean_version
@@ -211,7 +214,6 @@ plot_rcparams = {
 intersphinx_mapping = {'python': ('https://docs.python.org/3.10', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-                       'np': ('http://docs.scipy.org/doc/numpy/', None),
                        'mpmath': ('https://mpmath.org/doc/current/', None),
                        'matplotlib': ('https://matplotlib.org/', None),
                        'numexpr': ('https://numexpr.readthedocs.io/en/stable/', None)

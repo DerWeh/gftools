@@ -58,7 +58,7 @@ If you clone the project, you can locally build the documentation:
 .. code-block:: console
 
    $ pip install -r requirements-doc.txt
-   $ python setup.py build_sphinx
+   $ sphinx-build docs/source docs/build/html
 
 
 

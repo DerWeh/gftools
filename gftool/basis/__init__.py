@@ -77,7 +77,7 @@ class ZeroPole(NamedTuple):
         denom = np.prod(z - self.zeros, axis=-1)
         return 1./self.amplitude * numer / denom
 
-    def to_ratpol(self) -> 'RatPol':
+    def to_ratpol(self) -> "RatPol":
         """Represent the rational polynomial as fraction of two polynomial."""
         numerator = np.polynomial.Polynomial.fromroots(self.zeros)*self.amplitude
         denominator = np.polynomial.Polynomial.fromroots(self.poles)
