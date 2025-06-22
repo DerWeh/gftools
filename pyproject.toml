@@ -38,6 +38,13 @@ ReadTheDocs = "https://gftools.readthedocs.io/"
 Repository = "https://github.com/DerWeh/gftools"
 Zenodo = "https://zenodo.org/doi/10.5281/zenodo.4744545"
 
+[tool.pytest.ini_options]
+minversion = "7"
+testpaths = ["gftool/tests"]
+log_cli_level = "INFO"
+# xfail_strict = true
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+
 [tool.setuptools]
 packages = ["gftool"]
 
