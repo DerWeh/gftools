@@ -5,7 +5,7 @@ import numpy as np
 
 import gftool as gt
 import gftool.pade
-from gftool._precision import HAS_QUAD
+from gftool._precision import HAS_QUAD, complex256
 from gftool.tests import _old_pade as old_pade
 
 logging.basicConfig(level=logging.DEBUG)
@@ -19,7 +19,7 @@ def test_regression():
     D = 1.2
     iws = gt.matsubara_frequencies(np.arange(2**10), beta=1./T)
     # use quad precision for comparability
-    iws = iws.astype(dtype=np.complex256)
+    iws = iws.astype(dtype=complex256)
     rng = np.random.default_rng(42)
     rand = rng.random(iws.size) + 1j*rng.random(iws.size)
     rand *= 1e-3
@@ -47,8 +47,8 @@ def test_coeff_type_reduction():
     gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D)
     coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex128))
     assert coeff.dtype == np.dtype(np.complex128)
-    coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex256))
-    assert coeff.dtype == np.dtype(np.complex256)
+    coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=complex256))
+    assert coeff.dtype == np.dtype(complex256)
 
 
 # def passing():  # compare calculation (masked) to exact result

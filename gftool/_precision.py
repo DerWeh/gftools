@@ -8,15 +8,17 @@ import warnings
 import numpy as np
 
 try:
-    np.complex256  # noqa: B018
-    np.float128  # noqa: B018
+    float128 = np.float128
+    complex256 = np.complex256
 except AttributeError:
     HAS_QUAD = False
-    warnings.warn("No quad precision datatypes available!\n"
-                  "Some functions might be less accurate.",
-                  stacklevel=1)
-    np.float128 = np.longdouble
-    np.complex256 = np.clongdouble
+    warnings.warn(
+        "No quad precision data types available!\n"
+        "Some functions might be less accurate.",
+        stacklevel=1,
+    )
+    float128 = np.longdouble
+    complex256 = np.clongdouble
 else:
     HAS_QUAD = True
 
