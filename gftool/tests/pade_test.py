@@ -5,6 +5,7 @@ import numpy as np
 
 import gftool as gt
 import gftool.pade
+from gftool._precision import HAS_QUAD
 from gftool.tests import _old_pade as old_pade
 
 logging.basicConfig(level=logging.DEBUG)
@@ -32,7 +33,7 @@ def test_regression():
     # FIXME: look into different counting
     gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
     gf_bethe = list(kind.islice(gt.pade.calc_iterator(omega, z_in=iws, coeff=coeff)))[-1]
-    if gt.precision.HAS_QUAD:
+    if HAS_QUAD:
         assert_allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
     else:  # reduce test accuracy for Windows
         assert_allclose(gf_bethe_old, gf_bethe, rtol=1e-12, atol=1e-14)

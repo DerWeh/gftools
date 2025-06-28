@@ -8,12 +8,11 @@ import scipy.linalg as la
 from hypothesis import assume, given
 
 import gftool as gt
+from gftool._precision import HAS_QUAD
 from gftool.tests.custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
 easy_complex = st.complex_numbers(min_magnitude=1e-2, max_magnitude=1e+2)
-
-HAS_QUAD = gt.precision.HAS_QUAD
 
 
 class TestDecompositionGeneral:

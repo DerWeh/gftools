@@ -8,11 +8,10 @@ import pytest
 from hypothesis import assume, given
 
 import gftool as gt
+from gftool._precision import HAS_QUAD
 from gftool.tests.custom_strategies import gufunc_args
 
 assert_allclose = np.testing.assert_allclose
-
-HAS_QUAD = gt.precision.HAS_QUAD
 
 ignore_close_to_root = pytest.mark.filterwarnings(
     "ignore:(invalid value encountered in (double_scalars|scalar divide)):RuntimeWarning"
