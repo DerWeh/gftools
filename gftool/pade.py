@@ -284,7 +284,7 @@ def coefficients(z, fct_z) -> np.ndarray:
     very sensitive towards rounding errors. Afterwards the type of the result
     is cast back to double precision (complex128) unless the input data of
     `fct_z` was already quad precision {float128, complex256}, see
-    `_PRECISE_TYPES`. This avoids giving the illusion that the results are more
+    `_precision.PRECISE_TYPES`. This avoids giving the illusion that the results are more
     precise than the input.
     """
     if z.shape != fct_z.shape[-1:]:
