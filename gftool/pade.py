@@ -27,8 +27,8 @@ from typing import Optional as Opt
 import numpy as np
 
 from gftool import Result
+from gftool._precision import PRECISE_TYPES as _PRECISE_TYPES
 from gftool._util import _gu_sum
-from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())

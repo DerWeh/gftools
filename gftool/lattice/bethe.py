@@ -11,7 +11,7 @@ import numpy as np
 from mpmath import mp
 from scipy.special import jv
 
-from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
+from gftool._precision import PRECISE_TYPES as _PRECISE_TYPES
 
 _SMALL = np.finfo(np.float64).eps**0.25
 
