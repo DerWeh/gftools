@@ -44,7 +44,10 @@ testpaths = ["gftool/tests"]
 log_cli_level = "INFO"
 # xfail_strict = true
 addopts = ["-ra", "--strict-config", "--strict-markers"]
-filterwarnings = ["error"]
+filterwarnings = [
+  "error",
+  "default:No quad precision data types available!:UserWarning"
+]
 
 [tool.setuptools]
 packages = ["gftool"]
