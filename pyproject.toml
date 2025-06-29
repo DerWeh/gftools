@@ -32,6 +32,13 @@ dependencies = [
 [project.optional-dependencies]
 test = ['pytest>=4.6', 'hypothesis>=4.24.5']
 fast = ['numexpr']
+docs = [
+  'matplotlib',
+  'numpydoc>=1.2,<1.9',
+  'sphinx>=5.0,<8.0',
+  'sphinx-toggleprompt',
+  'sphinx_rtd_theme>0.5',
+]
 
 [project.urls]
 ReadTheDocs = "https://gftools.readthedocs.io/"
