@@ -1,5 +1,3 @@
-.. currentmodule:: gftool
-
 What's New
 ==========
 
