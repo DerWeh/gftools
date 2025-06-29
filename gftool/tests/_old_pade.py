@@ -7,6 +7,8 @@ The algorithm is and exact implementation of the Vidberg & Serene paper.
 """
 import numpy as np
 
+from gftool._precision import complex256
+
 
 # initialize `a`
 def pade_init(iw, u, n_pade):
@@ -33,7 +35,7 @@ def pade_init(iw, u, n_pade):
     if n_pade > len(iw):
         msg = "`n_pade` larger then number of data points"
         raise IndexError(msg)
-    g = np.zeros((n_pade, n_pade), dtype=np.complex256)
+    g = np.zeros((n_pade, n_pade), dtype=complex256)
     iw = iw[:n_pade]
     g[0] = u[:n_pade]
     for i, gi in enumerate(g[1:]):
@@ -43,7 +45,7 @@ def pade_init(iw, u, n_pade):
 
 def test_pade_init_junya(z, u, N):
     """Function copied from Junya's code as reference."""
-    g = np.zeros((N, N), dtype=np.complex256)
+    g = np.zeros((N, N), dtype=complex256)
     for i in range(N):
         g[0][i] = u[i]
 
@@ -51,7 +53,7 @@ def test_pade_init_junya(z, u, N):
         for i in range(n, N):
             g[n][i] = (g[n-1, n-1]/g[n-1, i] - 1.) / (z[i] - z[n-1])
 
-    a = np.zeros((N,), dtype=np.complex256)
+    a = np.zeros((N,), dtype=complex256)
     for i in range(N):
         a[i] = g[i, i]
     return a
@@ -80,7 +82,7 @@ def pade_calc(iw, a, w, n_pade):
     """
     A0, A1 = 0., a[0]
     B0, B1 = 1., 1.
-    w = w.astype(dtype=np.complex256)
+    w = w.astype(dtype=complex256)
     for i in range(1, n_pade):
         A2 = A1 + (w - iw[i-1]) * a[i] * A0
         B2 = B1 + (w - iw[i-1]) * a[i] * B0

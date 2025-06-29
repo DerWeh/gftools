@@ -26,13 +26,13 @@ from typing import Optional as Opt
 
 import numpy as np
 
-from gftool import Result
+from gftool import Result, _precision
 from gftool._util import _gu_sum
-from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.NullHandler())
 
+_complex256 = _precision.complex256
 _nan_std = partial(np.nanstd, ddof=1, axis=0)
 
 
@@ -284,18 +284,18 @@ def coefficients(z, fct_z) -> np.ndarray:
     very sensitive towards rounding errors. Afterwards the type of the result
     is cast back to double precision (complex128) unless the input data of
     `fct_z` was already quad precision {float128, complex256}, see
-    `_PRECISE_TYPES`. This avoids giving the illusion that the results are more
+    `_precision.PRECISE_TYPES`. This avoids giving the illusion that the results are more
     precise than the input.
     """
     if z.shape != fct_z.shape[-1:]:
         msg = f"Dimensions of `z` ({z.shape}) and `fct_z` ({fct_z.shape}) mismatch."
         raise ValueError(msg)
-    res = fct_z.astype(dtype=np.complex256, copy=True)
+    res = fct_z.astype(dtype=_complex256, copy=True)
     for ii in range(z.size - 1):
         res[..., ii+1:] = (res[..., ii:ii+1]/res[..., ii+1:] - 1.)/(z[ii+1:] - z[ii])
-    complex_pres = np.complex256 if fct_z.dtype in _PRECISE_TYPES else complex
+    complex_pres = _complex256 if fct_z.dtype in _precision.PRECISE_TYPES else complex
     LOGGER.debug("Input type %s precise: %s -> result type: %s",
-                 fct_z.dtype, fct_z.dtype in _PRECISE_TYPES, complex_pres)
+                 fct_z.dtype, fct_z.dtype in _precision.PRECISE_TYPES, complex_pres)
     return res.astype(complex_pres, copy=False)
 
 
@@ -306,7 +306,7 @@ def masked_coefficients(z, fct_z):
 
     Like `coefficients` but probably better for noisy data.
     """
-    mat = np.zeros((z.size, *fct_z.shape), dtype=np.complex256)
+    mat = np.zeros((z.size, *fct_z.shape), dtype=_complex256)
     mask = np.empty_like(z, dtype=bool)
     mask[:] = True
     # cutoff = 1e-6

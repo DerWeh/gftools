@@ -16,9 +16,8 @@ from mpmath import fp
 from scipy import integrate
 
 import gftool as gt
+from gftool._precision import HAS_QUAD
 from gftool.tests.custom_strategies import gufunc_args
-
-HAS_QUAD = gt.precision.HAS_QUAD
 
 assert_allclose = np.testing.assert_allclose
 nonneg_float = st.floats(min_value=0.)

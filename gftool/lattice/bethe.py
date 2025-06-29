@@ -11,9 +11,10 @@ import numpy as np
 from mpmath import mp
 from scipy.special import jv
 
-from gftool.precision import PRECISE_TYPES as _PRECISE_TYPES
+from gftool import _precision
 
 _SMALL = np.finfo(np.float64).eps**0.25
+_complex256 = _precision.complex256
 
 
 def gf_z(z, half_bandwidth):
@@ -58,9 +59,9 @@ def gf_z(z, half_bandwidth):
     >>> _ = plt.legend()
     >>> plt.show()
     """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    z_rel = np.array(z / half_bandwidth, dtype=_complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
+        complex_pres = _complex256 if z.dtype in _precision.PRECISE_TYPES else complex
     except AttributeError:
         complex_pres = complex
     gf_z = 2./half_bandwidth*z_rel*(1 - np.sqrt(1 - z_rel**-2))
@@ -88,9 +89,9 @@ def gf_d1_z(z, half_bandwidth):
     --------
     gftool.lattice.bethe.gf_z
     """
-    z_rel_inv = np.array(half_bandwidth / z, dtype=np.complex256)
+    z_rel_inv = np.array(half_bandwidth / z, dtype=_complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
+        complex_pres = _complex256 if z.dtype in _precision.PRECISE_TYPES else complex
     except AttributeError:
         complex_pres = complex
     sqrt = np.sqrt(1 - z_rel_inv**2)
@@ -119,9 +120,9 @@ def gf_d2_z(z, half_bandwidth):
     --------
     gftool.lattice.bethe.gf_z
     """
-    z_rel = np.array(z / half_bandwidth, dtype=np.complex256)
+    z_rel = np.array(z / half_bandwidth, dtype=_complex256)
     try:
-        complex_pres = np.complex256 if z.dtype in _PRECISE_TYPES else complex
+        complex_pres = _complex256 if z.dtype in _precision.PRECISE_TYPES else complex
     except AttributeError:
         complex_pres = complex
     sqrt = np.sqrt(1 - z_rel**-2)

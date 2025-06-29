@@ -5,6 +5,7 @@ import numpy as np
 
 import gftool as gt
 import gftool.pade
+from gftool._precision import HAS_QUAD, complex256
 from gftool.tests import _old_pade as old_pade
 
 logging.basicConfig(level=logging.DEBUG)
@@ -18,7 +19,7 @@ def test_regression():
     D = 1.2
     iws = gt.matsubara_frequencies(np.arange(2**10), beta=1./T)
     # use quad precision for comparability
-    iws = iws.astype(dtype=np.complex256)
+    iws = iws.astype(dtype=complex256)
     rng = np.random.default_rng(42)
     rand = rng.random(iws.size) + 1j*rng.random(iws.size)
     rand *= 1e-3
@@ -32,7 +33,7 @@ def test_regression():
     # FIXME: look into different counting
     gf_bethe_old = old_pade.pade_calc(iw=iws, a=coeff_old, w=omega, n_pade=kind[-1]+2)
     gf_bethe = list(kind.islice(gt.pade.calc_iterator(omega, z_in=iws, coeff=coeff)))[-1]
-    if gt.precision.HAS_QUAD:
+    if HAS_QUAD:
         assert_allclose(gf_bethe_old, gf_bethe, rtol=1e-14, atol=1e-14)
     else:  # reduce test accuracy for Windows
         assert_allclose(gf_bethe_old, gf_bethe, rtol=1e-12, atol=1e-14)
@@ -46,8 +47,8 @@ def test_coeff_type_reduction():
     gf_bethe_iw = gt.bethe_gf_z(iws, half_bandwidth=D)
     coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex128))
     assert coeff.dtype == np.dtype(np.complex128)
-    coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=np.complex256))
-    assert coeff.dtype == np.dtype(np.complex256)
+    coeff = gt.pade.coefficients(iws, fct_z=gf_bethe_iw.astype(dtype=complex256))
+    assert coeff.dtype == np.dtype(complex256)
 
 
 # def passing():  # compare calculation (masked) to exact result

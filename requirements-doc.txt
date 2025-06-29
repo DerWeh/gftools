@@ -1,5 +1,5 @@
 matplotlib
-numpydoc>=1.2.0  # needed for validation
+numpydoc>=1.2.0,<1.9  # needed for validation
 sphinx>=5.0.0,<8.0
 sphinx-toggleprompt
 sphinx_rtd_theme
