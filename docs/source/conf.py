@@ -14,9 +14,6 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 #
 import math
 import os
-import sys
-
-sys.path.insert(0, os.path.abspath('../..'))  # noqa: PTH100
 
 import gftool
 
