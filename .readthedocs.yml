@@ -10,8 +10,7 @@ build:
 
 python:
   install:
-    - requirements: docs/source/requirements.txt
-    - path: .
+    - path: .[docs]
 
 formats:
   - htmlzip

@@ -72,7 +72,7 @@ If you clone the project, you can locally build the documentation:
 
 .. code-block:: console
 
-   $ pip install -r requirements-doc.txt
+   $ pip install .[docs]
    $ sphinx-build docs/source docs/build/html
 
 
