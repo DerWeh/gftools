@@ -1,4 +1,5 @@
-r"""Padé based on robust pole finding.
+r"""
+Padé based on robust pole finding.
 
 Instead of fitting a rational polynomial, poles and zeros or poles and
 corresponding residues are fitted.
@@ -78,8 +79,8 @@ be used:
 * `number_poles` to determine the degree of the Padé approximant
 * `poles`, `zeros` to calculate the poles and zeros of the approximant
 * `residues_ols` to calculate the residues
-
 """
+
 import logging
 import warnings
 from dataclasses import dataclass

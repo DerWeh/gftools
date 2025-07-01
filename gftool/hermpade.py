@@ -1,4 +1,5 @@
-r"""Hermite-Padé approximants from Taylor expansion.
+r"""
+Hermite-Padé approximants from Taylor expansion.
 
 See [fasondini2019]_ for practical applications and [baker1996]_ for the
 extensive theoretical basis.
@@ -84,7 +85,6 @@ It is instructive to plot the error in the complex plane:
 Away from the branch-cut, indicated by the red line, the Padé approximant is a
 reasonable approximation. The crosses indicate the simple poles of the Padé
 approximant.
-
 
 Quadratic Hermite-Padé approximant
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -207,7 +207,6 @@ quadratic Hermite-Padé approximant is best for (almost) all values.
    >>> __ = plt.legend()
    >>> plt.show()
 
-
 Plotting the error in the complex plain shows that Padé fails to resolve the
 branch cut but is else a good approximation globally. The branch-cut is
 indicated by the red line, the crosses mark the poles of Padé. The Hermite-Padé
@@ -253,8 +252,8 @@ References
    https://doi.org/10.20537/2076-7633-2019-11-6-1017-1031
 .. [baker1996] Baker Jr, G. A. & Graves-Morris, Pade Approximants.
    Second edition. (Cambridge University Press, 1996).
-
 """
+
 from dataclasses import dataclass
 from typing import Tuple
 

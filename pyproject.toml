@@ -113,3 +113,27 @@ parametrize-names-type = "csv"  # legacy behaviour
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"  # legacy behaviour
+
+[tool.numpydoc_validation]
+checks = [
+    "all",   # report on all checks, except the below
+    # Allow one-line doc strings
+    "PR01",  # Parameter section
+    "RT01",  # Returns section
+    "EX01",  # Example section
+    "SA01",  # See Also section
+    "ES01",  # Extended summary
+    # others
+    "SA04",  # Description for see also
+    "PR02",  # Not working with dataclasses
+    "PR09",  # We have sections ending with (default: ...) instead of .
+    "RT02",  # We return sometimes multiple arguments in a single line
+    "GL06",  # We allow custom sections on modules
+    "GL07",  # Not working with custom sections
+    "GL08",  # We don't document dunder methods
+]
+override_SS05 = [  # override SS05 to allow docstrings starting with these words
+    '''^Burg's ''',
+    'Least-squares ',
+    '''Green's ''',
+]

@@ -1,12 +1,13 @@
-"""Bethe lattice with infinite coordination number.
+"""
+Bethe lattice with infinite coordination number.
 
 This is in fact no real lattice, but a tree. It corresponds to a semi-circular
 DOS.
 
 :half_bandwidth: The half_bandwidth corresponds to a scaled nearest neighbor
                  hopping of `t=D/2`
-
 """
+
 import numpy as np
 from mpmath import mp
 from scipy.special import jv

@@ -1,4 +1,5 @@
-r"""3D body-centered cubic (bcc) lattice.
+r"""
+3D body-centered cubic (bcc) lattice.
 
 The dispersion of the 3D body-centered cubic lattice is given by
 
@@ -8,8 +9,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-8t, +8t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/8`
-
 """
+
 import numpy as np
 from mpmath import mp
 from numpy.lib.scimath import sqrt

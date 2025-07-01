@@ -1,4 +1,5 @@
-r"""2D triangular lattice.
+r"""
+2D triangular lattice.
 
 The dispersion of the 2D triangular lattice is given by
 
@@ -8,8 +9,8 @@ which takes values :math:`ϵ_{k_x, k_y} ∈ [-1.5t, 3t] = [-2D/3, 4D/3]`.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=4D/9`.
-
 """
+
 import numpy as np
 from mpmath import mp
 from scipy.special import ellipkm1

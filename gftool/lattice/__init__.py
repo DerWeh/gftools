@@ -1,4 +1,5 @@
-r"""Collection of different lattices and their Green's functions.
+r"""
+Collection of different lattices and their Green's functions.
 
 The lattices are described by a tight binding Hamiltonian
 
@@ -26,7 +27,6 @@ Typical quantities provided for the different lattices are:
 
     .. math:: ϵ^{(m)} = ∫dϵ DOS(ϵ) ϵ^m
 
-
 Submodules
 ----------
 
@@ -46,8 +46,8 @@ Submodules
     sc
     bcc
     fcc
-
 """
+
 from . import (
     bcc,
     bethe,

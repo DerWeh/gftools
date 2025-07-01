@@ -1,4 +1,5 @@
-r"""Representation using poles and the corresponding residues.
+r"""
+Representation using poles and the corresponding residues.
 
 Assuming we have only simple poles Green's functions, we can represent Green's
 functions using these poles and their corresponding residues:
@@ -12,8 +13,8 @@ part.
 The pole representation is closely related to the Padé approximation, as rational
 polynomials with numerator degree `N` bigger then dominator degree `M`, can also
 be represented using `M` poles.
-
 """
+
 from typing import NamedTuple
 
 import numpy as np

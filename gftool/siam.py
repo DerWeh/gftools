@@ -1,4 +1,5 @@
-"""Basic functions for the (non-interacting) single impurity Anderson model (SIAM).
+"""
+Basic functions for the (non-interacting) single impurity Anderson model (SIAM).
 
 The Hamiltonian for the SIAM reads
 
@@ -23,8 +24,8 @@ The local action of the impurity reads
 with the hybridization function
 
 .. math:: Δ_σ(z) = ∑_{kσ} |V_{kσ}|^2 / (z - ϵ_{kσ}).
-
 """
+
 import numpy as np
 
 from gftool._util import _gu_sum

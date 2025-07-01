@@ -1,12 +1,13 @@
-r"""2D Lieb lattice.
+r"""
+2D Lieb lattice.
 
 The lieb lattice can be decomposed into `~gftool.lattice.square` and a
 dispersionless flat band.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=D * 2**1.5`
-
 """
+
 from mpmath import mp
 
 from gftool.lattice import square

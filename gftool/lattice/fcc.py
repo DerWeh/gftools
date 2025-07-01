@@ -1,4 +1,5 @@
-r"""3D face-centered cubic (fcc) lattice.
+r"""
+3D face-centered cubic (fcc) lattice.
 
 The dispersion of the 3D face-centered cubic lattice is given by
 
@@ -10,8 +11,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-4t, +12t] = [-0.5D, +1.5D]
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/8`.
-
 """
+
 import numpy as np
 from mpmath import mp
 

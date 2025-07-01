@@ -1,4 +1,5 @@
-r"""Functions to work with Green's functions in matrix from.
+r"""
+Functions to work with Green's functions in matrix from.
 
 A main use case of this library is the calculation of the Green's function
 as the resolvent of the Hermitian or from Dyson equation.
@@ -38,8 +39,8 @@ Recommended functions
 * `decompose_her` to create `UDecomposition` of Hermitian matrices
 
 Rest are mostly legacy functions.
-
 """
+
 from __future__ import annotations
 
 import warnings
@@ -115,6 +116,7 @@ class Decomposition(Sequence):
         Returns
         -------
         Decomposition
+            The object representing the eigen decomposition.
         """
         if isinstance(hamilton, cls):
             return hamilton
@@ -137,6 +139,7 @@ class Decomposition(Sequence):
         Returns
         -------
         Decomposition
+            The object representing the eigen decomposition.
         """
         if isinstance(gf, cls):
             return gf

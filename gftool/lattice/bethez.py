@@ -1,9 +1,10 @@
-"""Bethe lattice for general coordination number Z.
+"""
+Bethe lattice for general coordination number Z.
 
 In the limit of infinite coordination number `Z=∞`, this becomes `gftool.lattice.bethe`,
 in the opposite limit of minimal coordination number `Z=2``, this is `gftool.lattice.onedim`.
-
 """
+
 import numpy as np
 
 

@@ -1,12 +1,13 @@
-r"""2D honeycomb lattice.
+r"""
+2D honeycomb lattice.
 
 The honeycomb lattice can be decomposed into `~gftool.lattice.triangular`
 sublattices.
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=2D/3`.
-
 """
+
 from mpmath import mp
 
 from gftool.lattice import triangular

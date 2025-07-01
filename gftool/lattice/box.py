@@ -1,9 +1,10 @@
-"""Green's function corresponding to a box DOS.
+"""
+Green's function corresponding to a box DOS.
 
 This doesn't correspond to any real lattice. It is mostly meant as very simple
 test case, for which we have analytic expressions.
-
 """
+
 import numpy as np
 
 _SMALL = np.finfo(np.float64).eps**0.25

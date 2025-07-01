@@ -1,4 +1,5 @@
-r"""2D square lattice.
+r"""
+2D square lattice.
 
 The dispersion of the 2D square lattice is given by
 
@@ -8,8 +9,8 @@ which takes values in :math:`ϵ_{k_x, k_y} ∈ [-4t, +4t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/4`
-
 """
+
 import numpy as np
 from mpmath import mp
 from scipy.special import ellipkm1

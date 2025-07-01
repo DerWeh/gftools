@@ -1,4 +1,5 @@
-"""Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.
+"""
+Blackman, Esterling, and Berk (BEB) approach to off-diagonal disorder.
 
 It extends CPA allowing for random hopping amplitudes. [blackman1971]_
 
@@ -21,7 +22,6 @@ the average Green's function is `np.sum(gf, axis=-1)`.
 The diagonal elements of `gf` are the average for a specific component
 (conditional average) multiplied by the concentration of that component.
 
-
 References
 ----------
 .. [blackman1971]
@@ -33,7 +33,6 @@ References
    Dynamical mean-field theory of the Anderson--Hubbard model with local and
    nonlocal disorder in tensor formulation. Phys. Rev. B 104, 045127.
    https://doi.org/10.1103/PhysRevB.104.045127
-
 
 Examples
 --------
@@ -73,8 +72,8 @@ system.
     __ = plt.plot(ww.real, -1./np.pi*np.sum(gf_loc_ww.imag, axis=-1), ':', label='avg')
     __ = plt.legend()
     plt.show()
-
 """
+
 from __future__ import annotations
 
 import logging

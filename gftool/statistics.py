@@ -1,9 +1,10 @@
-"""Functionality related or derived from the Fermi and Bose statistics.
+"""
+Functionality related or derived from the Fermi and Bose statistics.
 
 Per default, the functions refer to Fermi statistics,
 a tailing '_b' indicates Bose statistics instead.
-
 """
+
 from warnings import catch_warnings, filterwarnings
 
 import numpy as np

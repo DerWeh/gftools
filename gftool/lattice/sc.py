@@ -1,4 +1,5 @@
-r"""3D simple cubic (sc) lattice.
+r"""
+3D simple cubic (sc) lattice.
 
 The dispersion of the 3D simple cubic lattice is given by
 
@@ -8,8 +9,8 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-6t, +6t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/6`
-
 """
+
 import numpy as np
 from mpmath import mp
 from numpy.lib.scimath import sqrt

@@ -70,7 +70,7 @@ def _u_ellipk(z):
     Parameters
     ----------
     z : complex or complex array_like
-        Complex argument
+        Complex argument.
 
     Returns
     -------

@@ -1,4 +1,5 @@
-"""Different function bases.
+"""
+Different function bases.
 
 The basis classes are based on `~typing.NamedTuple`, hence they have hardly any overhead.
 On the other hand, no additional checks are performed in the constructor.
@@ -10,8 +11,8 @@ Submodules
    :toctree:
 
    pole
-
 """
+
 from typing import NamedTuple
 
 import numpy as np

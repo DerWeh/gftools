@@ -1,8 +1,9 @@
-"""Helper to temporarily increase working precision for calculations.
+"""
+Helper to temporarily increase working precision for calculations.
 
 Note that in windows no quad-precision is available.
-
 """
+
 import warnings
 
 import numpy as np

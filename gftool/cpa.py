@@ -1,4 +1,5 @@
-"""Coherent cluster approximation (CPA) to substitutional disorder.
+"""
+Coherent cluster approximation (CPA) to substitutional disorder.
 
 For a high-level interface use `solve_root` to solve the CPA problem for
 arbitrary frequencies `z`.
@@ -10,8 +11,8 @@ obtaining the chemical potential `mu` for the given `occ` using
 `solve_fxdocc_root` on the imaginary axis, and then run `solve_root` with the
 given `mu` on the real axis. In fact, we expect this to be more stable than
 fixing the charge on the real axis directly.
-
 """
+
 import logging
 from functools import partial
 from typing import Callable, NamedTuple

@@ -1,4 +1,5 @@
-"""Linear prediction to extrapolated retarded Green's function.
+"""
+Linear prediction to extrapolated retarded Green's function.
 
 A nice introductory description of linear prediction can be found in [Vaidyanathan2007]_;
 [Makhoul1975]_ gives a detailed review.
@@ -104,8 +105,8 @@ This can be amended by setting `stable=True` in `~gftool.linearprediction.predic
    >>> __ = plt.plot(tt_pred, gf_full.imag)
    >>> __ = plt.plot(tt_pred, gf_pred.imag, '--')
    >>> plt.show()
-
 """
+
 import warnings
 
 import numpy as np

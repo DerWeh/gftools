@@ -1,4 +1,5 @@
-r"""1D lattice.
+r"""
+1D lattice.
 
 The dispersion of the 1D lattice is given by
 
@@ -8,8 +9,8 @@ which takes values in :math:`ϵ_k ∈ [-2t, +2t] = [-D, +D]`.
 
 :half_bandwidth: The half_bandwidth corresponds to a nearest neighbor hopping
                  of `t=D/2`
-
 """
+
 import numpy as np
 from mpmath import mp
 

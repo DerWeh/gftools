@@ -1,4 +1,5 @@
-"""2D Kagome lattice.
+"""
+2D Kagome lattice.
 
 The DOS is finite in the interval :math:`[-2D/3, 4D/3]`, where :math:`D` is the
 half-bandwidth.
@@ -9,8 +10,8 @@ dispersionless flat band. The dispersive part looks like the
 
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=2D/3`
-
 """
+
 from mpmath import mp
 
 from gftool.lattice import honeycomb

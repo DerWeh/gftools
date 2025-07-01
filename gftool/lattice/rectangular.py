@@ -1,4 +1,5 @@
-r"""2D rectangular lattice.
+r"""
+2D rectangular lattice.
 
 The dispersion of the 2D rectangular lattice is given by
 
@@ -10,8 +11,8 @@ The DOS has a singularity at :math:`2t(γ-1)=D(γ-1)/(γ+1)`.
 :half_bandwidth: The half-bandwidth `D` corresponds to a nearest neighbor hopping
                  of `t=D/2/(scale + 1)`
 :scale: Relative scale of the different hopping `t_1 = scale*t_2`.
-
 """
+
 import numpy as np
 from numpy.lib import scimath
 

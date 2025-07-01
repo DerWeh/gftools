@@ -1,4 +1,5 @@
-"""Collection of commonly used Green's functions and utilities.
+"""
+Collection of commonly used Green's functions and utilities.
 
 Main purpose is to have a tested base.
 
@@ -49,8 +50,8 @@ Glossary
 
    z
       Complex frequency variable
-
 """
+
 import logging
 import warnings
 from collections import namedtuple

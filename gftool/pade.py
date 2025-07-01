@@ -1,4 +1,5 @@
-"""Padé analytic continuation for Green's functions and self-energies.
+"""
+Padé analytic continuation for Green's functions and self-energies.
 
 The main aim of this module is to provide analytic continuation based on
 averaging over multiple Padé approximants (similar to [1]_).
@@ -16,8 +17,8 @@ References
 .. [1] Schött et al. “Analytic Continuation by Averaging Padé Approximants”.
    Phys Rev B 93, no. 7 (2016): 075104.
    https://doi.org/10.1103/PhysRevB.93.075104.
-
 """
+
 import logging
 from abc import ABC, abstractmethod
 from functools import partial
@@ -463,14 +464,14 @@ def Averager(z_in, coeff, *, valid_pades, kind: KindSelector):
         Parameters
         ----------
         z : complex ndarray
-            points at with the functions will be evaluated
+            Points at with the functions will be evaluated.
 
         Returns
         -------
         pade.x : complex ndarray
-            function evaluated at points `z`
+            Function evaluated at points `z`.
         pade.err : complex ndarray
-            variance associated with the function values `pade.x` at points `z`
+            Variance associated with the function values `pade.x` at points `z`.
 
         Raises
         ------
@@ -577,16 +578,16 @@ def Mod_Averager(z_in, coeff, mod_fct, *, valid_pades, kind: KindSelector, vecto
         Parameters
         ----------
         z : complex ndarray
-            points at with the functions will be evaluated
+            Points at with the functions will be evaluated.
         *args, **kwds
             Passed to the `mod_fct` {mod_fct.__name__}.
 
         Returns
         -------
         pade.x : complex ndarray
-            function evaluated at points `z`
+            Function evaluated at points `z`.
         pade.err : complex ndarray
-            variance associated with the function values `pade.x` at points `z`
+            Variance associated with the function values `pade.x` at points `z`.
 
         Raises
         ------

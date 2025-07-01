@@ -1,4 +1,5 @@
-r"""Fourier transformations of Green's functions.
+r"""
+Fourier transformations of Green's functions.
 
 Fourier transformation between imaginary time and Matsubara frequencies.
 The function in this module should be used after explicitly treating the
@@ -78,8 +79,8 @@ Previously defined:
 * :term:`iv`
 * :term:`iw`
 * :term:`tau`
-
 """
+
 import logging
 
 import numpy as np
