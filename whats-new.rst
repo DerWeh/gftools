@@ -6,6 +6,21 @@ Breaking Changes
 * Drop support for Python 3.7, **minimal version** is now **3.8**.
   This is necessary for modern build system.
   Python 3.7 was dropped by NumPy in 2022, this should be no issue.
+* Make ``gftool.precision`` private (:commit:`1594c9e`).
+  There probably was never any point in using it.
+
+Documentation
+~~~~~~~~~~~~~
+* Use NumPy 2 representation in doc strings (:commit:`b927f3c`)
+
+Internal improvements
+~~~~~~~~~~~~~~~~~~~~~
+* Modernize build tools and dev tools (:commit:`eaa0c6b`)
+
+Bug fixes
+~~~~~~~~~
+* Avoid side effects on the NumPy namespace (:commit:`45eae68`)
+* Fully support NumPy 2 (:commit:`8dca2db`, :commit:`a2df5ef`)
 
 
 0.11.1 (2024-04-27)
