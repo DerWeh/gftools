@@ -12,7 +12,7 @@ import gftool as gt
 
 assert_allclose = np.testing.assert_allclose
 ignore_illconditioned = pytest.mark.filterwarnings(
-    "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"
+    "ignore:((An ill|Ill)-conditioned matrix):scipy.linalg.LinAlgWarning"
 )
 
 

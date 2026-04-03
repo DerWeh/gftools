@@ -17,7 +17,7 @@ ignore_close_to_root = pytest.mark.filterwarnings(
     "ignore:(invalid value encountered in (double_scalars|scalar divide)):RuntimeWarning"
 )
 ignore_illconditioned = pytest.mark.filterwarnings(
-    "ignore:(Ill-conditioned matrix):scipy.linalg.LinAlgWarning"
+    "ignore:((An ill|Ill)-conditioned matrix):scipy.linalg.LinAlgWarning"
 )
 
 
@@ -64,7 +64,7 @@ def test_average(z):
     assert_allclose(np.average(gf_cmpt_z, weights=concentration, axis=-1), gf_coher_z, rtol=1e-5)
 
 
-@pytest.mark.filterwarnings("ignore:Ill-conditioned matrix:scipy.linalg.LinAlgWarning")
+@ignore_illconditioned
 @given(z=st.complex_numbers(max_magnitude=1e-6))
 def test_restriction(z):
     """Check if restricted results yield physical results."""
