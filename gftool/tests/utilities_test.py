@@ -155,6 +155,16 @@ def test_density():
     assert_allclose(gt.density_iw(iws, 1./iws, moments=[1., 0], beta=beta), 0.5)
 
 
+def _fix_residues(residues):
+    """Handle issues for moments with large residues.
+
+    Without me moments, it's fine.
+    """
+    res_sum = residues.sum(axis=-1, keepdims=True)
+    if np.any(res_sum > 10.0):
+        np.divide(residues, res_sum, out=residues, where=res_sum != 0)
+
+
 @given(
     guargs=gufunc_args(
         # we do not test for broadcasting here (max_dims=0)
@@ -171,9 +181,7 @@ def test_density_iw(guargs):
     beta = 17
     poles, residues = guargs.args
     iw = gt.matsubara_frequencies(range(4096), beta=beta)
-    if np.any(residues.sum(axis=-1) > 10.):
-        # there are issues with moments with large residues, without moments it's fine
-        residues /= residues.sum(axis=-1, keepdims=True)
+    _fix_residues(residues)
     gf_poles = pole.PoleGf(poles=poles, residues=residues)
     gf_iw = gf_poles.eval_z(iw)
     moments = gf_poles.moments([1, 2, 3, 4])
@@ -213,9 +221,7 @@ def test_density_izp(guargs, pade_frequencies):
     beta = 17
     poles, residues = guargs.args
     izp, rp = pade_frequencies(beta)
-    if np.any(residues.sum(axis=-1) > 10.):
-        # there are issues with moments with large residues, without moments it's fine
-        residues /= residues.sum(axis=-1, keepdims=True)
+    _fix_residues(residues)
     gf_izp = gt.pole_gf_z(izp, poles[..., np.newaxis, :], residues[..., np.newaxis, :])
     gf_poles = pole.PoleGf(poles=poles, residues=residues)
     occ_ref = gf_poles.occ(beta)
