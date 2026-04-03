@@ -11,12 +11,23 @@ which takes values in :math:`ϵ_{k_x, k_y, k_z} ∈ [-6t, +6t] = [-D, +D]`.
                  of `t=D/6`
 """
 
+from functools import partial
+
+import mpmath
 import numpy as np
 from mpmath import mp
 from numpy.lib.scimath import sqrt
 
 from gftool._util import _u_ellipk
 
+# compatibility
+if tuple(int(x) for x in mpmath.__version__.split(".")[:3]) < (1, 4, 0):
+
+    def _mp_polyval(coeffs, x):
+        """Back-port of `asc` behavior."""
+        return mp.polyval(coeffs[::-1], x)
+else:
+    _mp_polyval = partial(mp.polyval, asc=True)
 
 def gf_z(z, half_bandwidth=1):
     r"""
@@ -376,6 +387,6 @@ def dos_mp(eps, half_bandwidth=1):
         )]
         coeffs = [0] * (2*len(even_coeffs) - 1)
         coeffs[::2] = even_coeffs
-        return mp.polyval(coeffs[::-1], eps)
+        return _mp_polyval(coeffs, eps)
 
     return -mp.im(gf_z_mp(eps, half_bandwidth)) / mp.pi

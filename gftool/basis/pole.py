@@ -380,7 +380,7 @@ def gf_tau(tau, poles, weights, beta):
 
 def _single_pole_gf_ret_t(tt, pole):
     """Retarded time Green's function for a single `pole`."""
-    return np.where(tt >= 0, -1j*np.exp(-1j*pole*tt, where=(tt >= 0)), 0)
+    return np.where(tt >= 0, -1j * np.exp(-1j * pole * tt, where=(tt >= 0), out=None), 0)
 
 
 def gf_ret_t(tt, poles, weights):
