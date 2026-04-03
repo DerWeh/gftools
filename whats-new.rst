@@ -15,6 +15,7 @@ Documentation
 
 Internal improvements
 ~~~~~~~~~~~~~~~~~~~~~
+* Officially support Python 3.13 and 3.14.
 * Modernize build tools and dev tools (:commit:`eaa0c6b`)
 
 Bug fixes
