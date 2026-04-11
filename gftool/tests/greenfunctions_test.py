@@ -202,6 +202,11 @@ class SymLattice(Lattice):
     Mostly checks the DOS and it's relation to other functions.
     """
 
+    @staticmethod
+    def band_edges(*, half_bandwidth):
+        """Return band-edges."""
+        return -half_bandwidth, half_bandwidth
+
     def test_dos_half(self, kwds):
         """DOS should be symmetric -> integral over the half should yield 0.5."""
         dos = partial(self.lattice.dos, **kwds)
@@ -248,11 +253,6 @@ class TestBethe(SymLattice):
         """Half-bandwidth of Bethe lattice."""
         return {"half_bandwidth": request.param}
 
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
-
 
 class TestOnedimGf(GfProperties):
     """Check properties of one-dimensional Gf."""
@@ -281,11 +281,6 @@ class TestOnedim(SymLattice):
         """Half-bandwidth of Onedim lattice."""
         return {"half_bandwidth": request.param}
 
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
-
 
 class TestSquareGf(GfProperties):
     """Check properties of square Gf."""
@@ -313,11 +308,6 @@ class TestSquare(SymLattice):
     def kwds(request):
         """Half-bandwidth of square lattice."""
         return {"half_bandwidth": request.param}
-
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
 
     @staticmethod
     def singularities(half_bandwidth):
@@ -396,7 +386,7 @@ class TestTriangular(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -2*half_bandwidth/3, 4*half_bandwidth/3
 
@@ -445,10 +435,6 @@ class TestHoneycomb(SymLattice):
         """Half-bandwidth of honeycomb lattice."""
         return {"half_bandwidth": request.param}
 
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
 
     @staticmethod
     def singularities(half_bandwidth):
@@ -505,7 +491,7 @@ class TestKagome(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -2*half_bandwidth/3, 4*half_bandwidth/3
 
@@ -664,11 +650,6 @@ class TestSimpleCubic(SymLattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
-
-    @staticmethod
     def singularities(half_bandwidth):
         """Return singularities."""
         return [-half_bandwidth/3, half_bandwidth/3]
@@ -711,11 +692,6 @@ class TestBodyCenteredCubic(SymLattice):
     def kwds(request):
         """Half-bandwidth of simple cubic lattice."""
         return {"half_bandwidth": request.param}
-
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
 
     @staticmethod
     def singularities(half_bandwidth):
@@ -763,7 +739,7 @@ class TestFaceCenteredCubic(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -0.5*half_bandwidth, 1.5*half_bandwidth
 
@@ -1119,11 +1095,6 @@ class TestBox(SymLattice):
     def kwds(self, request):
         """Half-bandwidth of Box lattice."""
         return {"half_bandwidth": request.param}
-
-    @staticmethod
-    def band_edges(half_bandwidth):
-        """Return band-edges."""
-        return -half_bandwidth, half_bandwidth
 
     @pytest.mark.skip(reason="No multi-precision necessary for constant.")
     def test_dos_vs_dos_mp(self, eps, kwds):
