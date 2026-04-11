@@ -386,7 +386,7 @@ class TestTriangular(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -2*half_bandwidth/3, 4*half_bandwidth/3
 
@@ -491,7 +491,7 @@ class TestKagome(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -2*half_bandwidth/3, 4*half_bandwidth/3
 
@@ -739,7 +739,7 @@ class TestFaceCenteredCubic(Lattice):
         return {"half_bandwidth": request.param}
 
     @staticmethod
-    def band_edges(half_bandwidth):
+    def band_edges(*, half_bandwidth):
         """Return band-edges."""
         return -0.5*half_bandwidth, 1.5*half_bandwidth
 
