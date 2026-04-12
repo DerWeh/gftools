@@ -139,18 +139,11 @@ class SpecDec(UDecomposition):
         ushape, uhshape = self.u.shape, self.uh.shape
         return not ushape[-2] == ushape[-1] == uhshape[-2]
 
-    def partition(self, return_sqrts=False):
-        """
-        Symmetrically partition the spectral decomposition as `u * eig**0.5, eig**0.5 * uh`.
-
-        If `return_sqrts` then `us, np.sqrt(s), suh` is returned,
-        else only `us, suh` is returned (default: False).
-        """
+    def partition(self):
+        """Symmetrically partition the spectral decomposition as `u * eig**0.5, eig**0.5 * uh`."""
         sqrt_eig = np.emath.sqrt(self.eig)
         us, suh = self.u * sqrt_eig[..., newaxis, :], sqrt_eig[..., :, newaxis] * self.uh
-        if return_sqrts:
-            return us, sqrt_eig, suh
-        return us, suh
+        return us, sqrt_eig, suh
 
 
 def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex],
@@ -195,7 +188,7 @@ def gf_loc_z(z, self_beb_z, hopping, hilbert_trafo: Callable[[complex], complex]
     kind = 'diag' if diag else 'full'
 
     eye = np.eye(*hopping.shape)
-    us, sqrt_s, suh = hopping_dec.partition(return_sqrts=True)
+    us, sqrt_s, suh = hopping_dec.partition()
     # [..., newaxis]*eye add matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
@@ -248,7 +241,7 @@ def self_root_eq(self_beb_z, z, e_onsite, concentration, hopping_dec: SpecDec,
     eye = np.eye(e_onsite.shape[-1])  # [..., newaxis]*eye adds matrix axis
     z_m_self = z[..., newaxis, newaxis]*eye - self_beb_z
     # split symmetrically
-    us, suh = hopping_dec.partition()
+    us, _, suh = hopping_dec.partition()
     # matrix-products are faster if larger arrays are in Fortran order
     z_m_self_inv = np.asfortranarray(np.linalg.inv(z_m_self))
     dec = decompose_mat(suh @ z_m_self_inv @ us)
@@ -402,7 +395,7 @@ def solve_root(z, e_onsite, concentration, hopping, hilbert_trafo: Callable[[com
 
     if LOGGER.isEnabledFor(logging.INFO):
         # check condition number in matrix diagonalization to make sure it is well defined
-        us, suh = hopping_dec.partition()
+        us, _, suh = hopping_dec.partition()
         z_m_self = z[..., newaxis, newaxis]*np.eye(*hopping.shape) - sol.x
         dec = decompose_mat(suh @ np.linalg.inv(z_m_self) @ us)
         max_cond = np.max(np.linalg.cond(dec.rv))
