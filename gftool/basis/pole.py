@@ -11,7 +11,7 @@ Self-energies can also be represented by the poles after subtracting the static
 part.
 
 The pole representation is closely related to the Padé approximation, as rational
-polynomials with numerator degree `N` bigger then dominator degree `M`, can also
+polynomials with numerator degree `N` bigger than denominator degree `M`, can also
 be represented using `M` poles.
 """
 
@@ -273,7 +273,7 @@ class PoleGf(PoleFct):
         -----
         We employ the similarity of the relation betweens the `moments` and
         the poles and residues with polynomials and the Vandermond matrix.
-        The poles are chooses as Chebyshev nodes, the residues are calculated
+        The poles are chosen as Chebyshev nodes, the residues are calculated
         accordingly.
         """
         return cls(*gf_from_tau(gf_tau, n_pole=n_pole, beta=beta,
@@ -477,7 +477,7 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
     -----
     We employ the similarity of the relation betweens the `moments` and
     the poles and residues with polynomials and the Vandermond matrix.
-    The poles are chooses as Chebyshev nodes, the residues are calculated
+    The poles are chosen as Chebyshev nodes, the residues are calculated
     accordingly.
     """
     moments = np.asarray(moments)
@@ -488,7 +488,7 @@ def gf_from_moments(moments, width=1.) -> PoleFct:
     if width is None:
         if n_mom <= 1:
             width = 1
-        else:  # set width such that second moment is pole unless its very small
+        else:  # set width such that second moment is pole unless it is very small
             width = np.where(abs(moments[..., 1:2]) >= 0.1,  # arbitrarily chosen threshold
                              abs(moments[..., 1:2])/max(poles), 1)
     poles = width * poles
@@ -548,7 +548,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     -----
     We employ the similarity of the relation betweens the `moments` and
     the poles and residues with polynomials and the Vandermond matrix.
-    The poles are chooses as Chebyshev nodes, the residues are calculated
+    The poles are chosen as Chebyshev nodes, the residues are calculated
     accordingly.
     """
     moments = np.asarray(moments)
@@ -556,7 +556,7 @@ def gf_from_z(z, gf_z, n_pole, moments=(), width=1., weight=None) -> PoleFct:
     if width is None:
         if moments.shape[-1] <= 1:
             width = 1
-        else:  # set width such that second moment is pole unless its very small
+        else:  # set width such that second moment is pole unless it is very small
             width = np.where(abs(moments[..., 1:2]) >= 0.1,  # arbitrarily chosen threshold
                              abs(moments[..., 1:2])/max(poles), 1)
     poles = width * poles
@@ -632,7 +632,7 @@ def gf_from_tau(gf_tau, n_pole, beta, moments=(), occ=False, width=1., weight=No
     -----
     We employ the similarity of the relation betweens the `moments` and
     the poles and residues with polynomials and the Vandermond matrix.
-    The poles are chooses as Chebyshev nodes, the residues are calculated
+    The poles are chosen as Chebyshev nodes, the residues are calculated
     accordingly.
     """
     poles = width * _chebyshev_points(n_pole)

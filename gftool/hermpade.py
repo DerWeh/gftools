@@ -207,7 +207,7 @@ quadratic Hermite-Padé approximant is best for (almost) all values.
    >>> __ = plt.legend()
    >>> plt.show()
 
-Plotting the error in the complex plain shows that Padé fails to resolve the
+Plotting the error in the complex plane shows that Padé fails to resolve the
 branch cut but is else a good approximation globally. The branch-cut is
 indicated by the red line, the crosses mark the poles of Padé. The Hermite-Padé
 algorithm yields good results also in the vicinity of the branch cut.

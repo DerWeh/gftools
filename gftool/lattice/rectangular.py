@@ -164,7 +164,7 @@ def dos(eps, half_bandwidth, scale):
     # we don't have to worry about the correct signs here, we just take the positive one
     eps = np.asarray(eps / half_bandwidth)
     dos_ = np.zeros_like(eps)
-    # eps = 1 divergeces in the current formulation and has to be callculated as limit
+    # eps = 1 divergences in the current formulation and has to be calculated as a limit
     eps[abs(eps) == 1] = 1 - np.finfo(float).eps  # avoid 1, inaccurate fix
     nonzero = abs(eps) <= 1
     eps = eps[nonzero]  # calculate only relevant region
