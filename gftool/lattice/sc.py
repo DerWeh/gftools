@@ -122,7 +122,7 @@ def hilbert_transform(xi, half_bandwidth=1):
     return gf_z(xi, half_bandwidth)
 
 
-def _gen_dos_eps0_expansinon():
+def _gen_dos_eps0_expansion():
     """Generate expansion for the DOS around ``eps=0``."""
     # there is a factor 3 from half_bandwidth
     km2 = 0.25 * (2 - np.sqrt(3))
@@ -140,7 +140,7 @@ def _gen_dos_eps0_expansinon():
     return dos_eps0_expansion
 
 
-_dos_eps0_expansion = _gen_dos_eps0_expansinon()
+_dos_eps0_expansion = _gen_dos_eps0_expansion()
 
 
 def dos(eps, half_bandwidth=1):

@@ -225,7 +225,7 @@ def hubbard_dimer_gf_z(z, hopping, interaction, kind="+"):
 
     References
     ----------
-    .. [eder2017] Eder, Robert. “Introduction to the Hubbard Mode.” In The
+    .. [eder2017] Eder, Robert. “Introduction to the Hubbard Model.” In The
        Physics of Correlated Insulators, Metals and Superconductors, edited by
        Eva Pavarini, Erik Koch, Richard Scalettar, and Richard Martin.
        Schriften Des Forschungszentrums Jülich Reihe Modeling and Simulation 7.

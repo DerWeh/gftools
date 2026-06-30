@@ -350,7 +350,7 @@ def masked_coefficients(z, fct_z):
 
 def calc_iterator(z_out, z_in, coeff):
     r"""
-    Calculate Padé continuation of function at points `z_out`.
+    Calculate Padé continuation of function at points `z_out` using the Thiele algorithm.
 
     The continuation is calculated for different numbers of coefficients taken
     into account, where the number is in [n_min, n_max].
@@ -759,5 +759,6 @@ def avg_no_neg_imag(z_out, z_in, *, valid_z=None, fct_z=None, coeff=None,
     return averaged(z_out=z_out, z_in=z_in, valid_z=valid_z, fct_z=fct_z,
                     coeff=coeff, filter_valid=filter_neg_imag, kind=kind)
 
+# Can be removed?
 # def SelectiveAverage(object):
 #     """Do not accept Matsubara frequencies, which make the result unphysical."""
